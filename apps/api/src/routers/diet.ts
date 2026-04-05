@@ -1,0 +1,306 @@
+import { z } from 'zod'
+import { eq } from 'drizzle-orm'
+import { TRPCError } from '@trpc/server'
+import Anthropic from '@anthropic-ai/sdk'
+import { router, protectedProcedure } from '../trpc.js'
+import { users, dietProfiles, dietPlans } from '../db/schema.js'
+
+async function resolveUser(db: any, clerkId: string) {
+  const [user] = await db.select().from(users).where(eq(users.clerkId, clerkId)).limit(1)
+  if (!user) throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' })
+  return user
+}
+
+const dietPlanSchema = z.object({
+  summary: z.object({
+    bmr: z.number(),
+    tdee: z.number(),
+    targetCalories: z.number(),
+    targetProtein: z.number(),
+    targetCarbs: z.number(),
+    targetFat: z.number(),
+    hydrationLiters: z.number(),
+    calculationExplanation: z.string(),
+    macroExplanation: z.string(),
+  }),
+  days: z.array(z.object({
+    dayOfWeek: z.number().int().min(1).max(7), // 1=Mon, 7=Sun
+    theme: z.string(),
+    totalCalories: z.number(),
+    totalProtein: z.number(),
+    totalCarbs: z.number(),
+    totalFat: z.number(),
+    meals: z.array(z.object({
+      type: z.enum(['breakfast', 'lunch', 'dinner', 'dessert']),
+      name: z.string(),
+      calories: z.number(),
+      protein: z.number(),
+      carbs: z.number(),
+      fat: z.number(),
+      batchCookable: z.boolean().optional(),
+      isTreat: z.boolean().optional(),
+    })),
+  })),
+  snackSwaps: z.array(z.object({
+    original: z.string(),
+    swap: z.string(),
+    calories: z.number(),
+    note: z.string(),
+  })),
+  rules: z.array(z.string()),
+  timeline: z.string(),
+  hydrationTips: z.array(z.string()),
+  hydrationFatLossExplanation: z.string(),
+  supplements: z.array(z.object({
+    name: z.string(),
+    dose: z.string(),
+    timing: z.string(),
+    reason: z.string(),
+    budget: z.string(),
+  })),
+})
+
+type DietPlan = z.infer<typeof dietPlanSchema>
+
+const intakeSchema = z.object({
+  // From user profile (pre-filled)
+  age: z.number().int().min(10).max(120),
+  sex: z.string(),
+  goalWeight: z.number().nullable(),
+  goalPace: z.enum(['steady', 'fast']),
+  // Lifestyle
+  jobType: z.string().min(1),
+  exerciseFrequency: z.string().min(1),
+  sleepHours: z.number().min(3).max(12),
+  stressLevel: z.enum(['low', 'moderate', 'high']),
+  alcoholPerWeek: z.string(),
+  // Food preferences
+  favoriteFoods: z.array(z.string()),
+  hatedFoods: z.string(),
+  dietaryRestrictions: z.string(),
+  cookingStyle: z.enum(['scratch', 'quick', 'batch']),
+  foodAdventure: z.number().int().min(1).max(10),
+  // Snack habits
+  currentSnacks: z.string(),
+  snackReason: z.enum(['hunger', 'boredom', 'habit']),
+  snackPreference: z.enum(['sweet', 'savoury', 'both']),
+  nightSnacking: z.boolean(),
+})
+
+export const dietRouter = router({
+  activePlan: protectedProcedure.query(async ({ ctx }) => {
+    const user = await resolveUser(ctx.db, ctx.userId)
+    const [plan] = await ctx.db
+      .select()
+      .from(dietPlans)
+      .where(eq(dietPlans.userId, user.id))
+      .orderBy(dietPlans.createdAt)
+      .limit(1)
+    return plan ?? null
+  }),
+
+  savedProfile: protectedProcedure.query(async ({ ctx }) => {
+    const user = await resolveUser(ctx.db, ctx.userId)
+    const [profile] = await ctx.db
+      .select()
+      .from(dietProfiles)
+      .where(eq(dietProfiles.userId, user.id))
+      .limit(1)
+    return profile ?? null
+  }),
+
+  generatePlan: protectedProcedure
+    .input(intakeSchema)
+    .mutation(async ({ ctx, input }) => {
+      const apiKey = process.env.ANTHROPIC_API_KEY
+      if (!apiKey || apiKey === 'your_key_here') {
+        throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'AI diet generation is not configured.' })
+      }
+
+      const user = await resolveUser(ctx.db, ctx.userId)
+
+      // Save/update intake profile
+      const existing = await ctx.db
+        .select({ id: dietProfiles.id })
+        .from(dietProfiles)
+        .where(eq(dietProfiles.userId, user.id))
+        .limit(1)
+
+      const profileData = {
+        userId: user.id,
+        age: input.age,
+        sex: input.sex,
+        goalWeight: input.goalWeight ?? null,
+        goalPace: input.goalPace,
+        jobType: input.jobType,
+        exerciseFrequency: input.exerciseFrequency,
+        sleepHours: input.sleepHours,
+        stressLevel: input.stressLevel,
+        alcoholPerWeek: input.alcoholPerWeek,
+        favoriteFoods: input.favoriteFoods,
+        hatedFoods: input.hatedFoods,
+        dietaryRestrictions: input.dietaryRestrictions,
+        cookingStyle: input.cookingStyle,
+        foodAdventure: input.foodAdventure,
+        currentSnacks: input.currentSnacks,
+        snackReason: input.snackReason,
+        snackPreference: input.snackPreference,
+        nightSnacking: input.nightSnacking,
+        updatedAt: new Date(),
+      }
+
+      if (existing[0]) {
+        await ctx.db.update(dietProfiles).set(profileData).where(eq(dietProfiles.userId, user.id))
+      } else {
+        await ctx.db.insert(dietProfiles).values(profileData)
+      }
+
+      const heightCm = user.heightCm ?? 170
+      const weightKg = user.weightKg ?? 70
+      const goalWeightStr = input.goalWeight ? `${input.goalWeight}kg` : 'not specified'
+      const cookingLabels = { scratch: 'from scratch', quick: 'quick meals', batch: 'batch meal prep' }
+      const paceLabel = input.goalPace === 'fast' ? 'as fast as possible' : 'steady and sustainable'
+
+      const systemPrompt = `You are an expert nutritionist with 30 years of experience helping clients lose body fat sustainably without miserable dieting. You've worked with everyone from busy parents who can barely find time to cook, to athletes looking to get shredded for competition — and you know that the secret to lasting fat loss isn't bland food and brutal restriction, it's finding an approach that fits the person in front of you. Your tone is encouraging, knowledgeable, and straight-talking — like a brilliant friend who happens to have a nutrition degree and a genuine passion for helping people feel their best without giving up the foods they love.
+
+You have already collected all the user's information. Now generate their full personalised diet plan.
+
+Return ONLY a valid JSON object — no markdown, no explanation, nothing else before or after. Use this exact structure:
+
+{
+  "summary": {
+    "bmr": <number>,
+    "tdee": <number>,
+    "targetCalories": <number>,
+    "targetProtein": <number>,
+    "targetCarbs": <number>,
+    "targetFat": <number>,
+    "hydrationLiters": <number>,
+    "calculationExplanation": "<full step-by-step calorie calculation as friendly prose>",
+    "macroExplanation": "<why these macros, plain English>"
+  },
+  "days": [
+    {
+      "dayOfWeek": <1-7, 1=Monday>,
+      "theme": "<e.g. Mediterranean Monday>",
+      "totalCalories": <number>,
+      "totalProtein": <number>,
+      "totalCarbs": <number>,
+      "totalFat": <number>,
+      "meals": [
+        {
+          "type": "breakfast" | "lunch" | "dinner" | "dessert",
+          "name": "<meal name>",
+          "calories": <number>,
+          "protein": <number>,
+          "carbs": <number>,
+          "fat": <number>,
+          "batchCookable": <true|false>,
+          "isTreat": <true|false>
+        }
+      ]
+    }
+  ],
+  "snackSwaps": [
+    { "original": "<their snack>", "swap": "<better alternative>", "calories": <number>, "note": "<why it works>" }
+  ],
+  "rules": ["<5 personalised rules as strings>"],
+  "timeline": "<honest week-by-week projection as prose>",
+  "hydrationTips": ["<3-4 practical tips>"],
+  "hydrationFatLossExplanation": "<why hydration matters for fat loss>",
+  "supplements": [
+    { "name": "<name>", "dose": "<dose>", "timing": "<when>", "reason": "<why for this person>", "budget": "<product suggestion>" }
+  ]
+}
+
+RULES:
+- days array must have exactly 7 entries (dayOfWeek 1 through 7)
+- Every day must hit the target calories and macros across all meals
+- Protein must hit the daily target — do not leave shortfalls
+- No boring chicken and broccoli unless explicitly requested
+- Every day needs a fun theme/title
+- At least 2 meals per week that feel like a treat but are secretly low calorie (mark isTreat: true)
+- At least 3 meals marked batchCookable: true
+- If user drinks alcohol, factor those calories into relevant days
+- Use Mifflin-St Jeor for BMR. Apply the correct activity multiplier based on job AND exercise combined
+- Set deficit of 500 kcal below TDEE
+- Never go below 500 kcal under TDEE for active individuals
+- Prioritise protein to preserve muscle during the cut
+- Recommend only evidence-backed supplements`
+
+      const userMessage = `Here is my information:
+
+SECTION 1 — MY STATS:
+- Age: ${input.age}
+- Sex: ${input.sex}
+- Height: ${heightCm}cm
+- Current weight: ${weightKg}kg
+- Goal weight: ${goalWeightStr}
+- Pace: ${paceLabel}
+
+SECTION 2 — MY LIFESTYLE:
+- Job type: ${input.jobType}
+- Exercise: ${input.exerciseFrequency}
+- Sleep: ${input.sleepHours} hours/night
+- Stress: ${input.stressLevel}
+- Alcohol: ${input.alcoholPerWeek}
+
+SECTION 3 — MY FOOD PREFERENCES:
+- Favourite meals: ${input.favoriteFoods.join(', ')}
+- Foods I hate: ${input.hatedFoods || 'none'}
+- Dietary restrictions: ${input.dietaryRestrictions || 'none'}
+- Cooking style: ${cookingLabels[input.cookingStyle]}
+- Food adventure level: ${input.foodAdventure}/10
+
+SECTION 4 — MY SNACK HABITS:
+- Current snacks: ${input.currentSnacks || 'nothing specific'}
+- Snack reason: ${input.snackReason}
+- Preference: ${input.snackPreference}
+- Night snacking: ${input.nightSnacking ? 'yes' : 'no'}
+
+Now generate my complete diet plan as JSON.`
+
+      const client = new Anthropic({ apiKey })
+
+      const response = await client.messages.create({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 8000,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: userMessage }],
+      })
+
+      const text = response.content[0]?.type === 'text' ? response.content[0].text : ''
+      const cleaned = text.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim()
+
+      let plan: DietPlan
+      try {
+        const parsed = JSON.parse(cleaned)
+        plan = dietPlanSchema.parse(parsed)
+      } catch {
+        throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'AI returned an invalid response. Please try again.' })
+      }
+
+      // Deactivate old plans
+      await ctx.db.update(dietPlans).set({ isActive: false }).where(eq(dietPlans.userId, user.id))
+
+      // Save new plan
+      const [saved] = await ctx.db.insert(dietPlans).values({
+        userId: user.id,
+        isActive: true,
+        targetCalories: plan.summary.targetCalories,
+        targetProtein: plan.summary.targetProtein,
+        targetCarbs: plan.summary.targetCarbs,
+        targetFat: plan.summary.targetFat,
+        hydrationLiters: plan.summary.hydrationLiters,
+        rawPlan: plan as any,
+      }).returning()
+
+      return saved
+    }),
+
+  deletePlan: protectedProcedure.mutation(async ({ ctx }) => {
+    const user = await resolveUser(ctx.db, ctx.userId)
+    await ctx.db.update(dietPlans).set({ isActive: false }).where(eq(dietPlans.userId, user.id))
+    return { success: true }
+  }),
+})

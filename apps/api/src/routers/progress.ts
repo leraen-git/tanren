@@ -11,6 +11,23 @@ import {
 import { calcDelta, getExerciseStatus } from '@fittrack/shared'
 
 export const progressRouter = router({
+  lastSessionPRCount: protectedProcedure.query(async ({ ctx }) => {
+    const [user] = await ctx.db.select().from(users).where(eq(users.clerkId, ctx.userId)).limit(1)
+    if (!user) throw new Error('User not found')
+    const [lastSession] = await ctx.db
+      .select({ id: workoutSessions.id })
+      .from(workoutSessions)
+      .where(eq(workoutSessions.userId, user.id))
+      .orderBy(desc(workoutSessions.startedAt))
+      .limit(1)
+    if (!lastSession) return 0
+    const prs = await ctx.db
+      .select({ id: personalRecords.id })
+      .from(personalRecords)
+      .where(and(eq(personalRecords.userId, user.id), eq(personalRecords.sessionId, lastSession.id)))
+    return prs.length
+  }),
+
   records: protectedProcedure.query(async ({ ctx }) => {
     const [user] = await ctx.db.select().from(users).where(eq(users.clerkId, ctx.userId)).limit(1)
     if (!user) throw new Error('User not found')

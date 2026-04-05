@@ -6,6 +6,7 @@ import {
   boolean,
   timestamp,
   pgEnum,
+  jsonb,
 } from 'drizzle-orm/pg-core'
 
 // ─── Enums ────────────────────────────────────────────────────────────────────
@@ -25,6 +26,10 @@ export const users = pgTable('users', {
   level: userLevelEnum('level').notNull().default('BEGINNER'),
   goal: userGoalEnum('goal').notNull().default('MUSCLE_GAIN'),
   weeklyTarget: integer('weekly_target').notNull().default(3),
+  heightCm: real('height_cm'),
+  weightKg: real('weight_kg'),
+  gender: text('gender'),
+  onboardingDone: boolean('onboarding_done').notNull().default(false),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 })
@@ -135,6 +140,28 @@ export const programEnrollments = pgTable('program_enrollments', {
   isActive: boolean('is_active').notNull().default(true),
 })
 
+// ─── Workout Plans ────────────────────────────────────────────────────────────
+
+export const workoutPlans = pgTable('workout_plans', {
+  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  userId: text('user_id').notNull().references(() => users.id),
+  name: text('name').notNull(),
+  isActive: boolean('is_active').notNull().default(false),
+  startDate: timestamp('start_date').notNull().defaultNow(),
+  endDate: timestamp('end_date'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+})
+
+// ─── Workout Plan Days ─────────────────────────────────────────────────────────
+// dayOfWeek: 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+
+export const workoutPlanDays = pgTable('workout_plan_days', {
+  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  planId: text('plan_id').notNull().references(() => workoutPlans.id, { onDelete: 'cascade' }),
+  dayOfWeek: integer('day_of_week').notNull(), // 0–6
+  workoutTemplateId: text('workout_template_id').notNull().references(() => workoutTemplates.id),
+})
+
 // ─── Personal Records ─────────────────────────────────────────────────────────
 
 export const personalRecords = pgTable('personal_records', {
@@ -146,4 +173,45 @@ export const personalRecords = pgTable('personal_records', {
   volume: real('volume').notNull(),
   achievedAt: timestamp('achieved_at').notNull().defaultNow(),
   sessionId: text('session_id').notNull().references(() => workoutSessions.id),
+})
+
+// ─── Diet Profiles ────────────────────────────────────────────────────────────
+
+export const dietProfiles = pgTable('diet_profiles', {
+  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  userId: text('user_id').notNull().unique().references(() => users.id),
+  age: integer('age').notNull(),
+  sex: text('sex').notNull(), // 'male' | 'female'
+  goalWeight: real('goal_weight'),
+  goalPace: text('goal_pace').notNull().default('steady'), // 'steady' | 'fast'
+  jobType: text('job_type').notNull(),
+  exerciseFrequency: text('exercise_frequency').notNull(),
+  sleepHours: real('sleep_hours').notNull(),
+  stressLevel: text('stress_level').notNull(), // 'low' | 'moderate' | 'high'
+  alcoholPerWeek: text('alcohol_per_week').notNull().default('none'),
+  favoriteFoods: text('favorite_foods').array().notNull().default([]),
+  hatedFoods: text('hated_foods').notNull().default(''),
+  dietaryRestrictions: text('dietary_restrictions').notNull().default('none'),
+  cookingStyle: text('cooking_style').notNull(), // 'scratch' | 'quick' | 'batch'
+  foodAdventure: integer('food_adventure').notNull().default(5), // 1-10
+  currentSnacks: text('current_snacks').notNull().default(''),
+  snackReason: text('snack_reason').notNull().default('hunger'), // 'hunger' | 'boredom' | 'habit'
+  snackPreference: text('snack_preference').notNull().default('both'), // 'sweet' | 'savoury' | 'both'
+  nightSnacking: boolean('night_snacking').notNull().default(false),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+})
+
+// ─── Diet Plans ───────────────────────────────────────────────────────────────
+
+export const dietPlans = pgTable('diet_plans', {
+  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  userId: text('user_id').notNull().references(() => users.id),
+  isActive: boolean('is_active').notNull().default(true),
+  targetCalories: integer('target_calories').notNull(),
+  targetProtein: integer('target_protein').notNull(),
+  targetCarbs: integer('target_carbs').notNull(),
+  targetFat: integer('target_fat').notNull(),
+  hydrationLiters: real('hydration_liters').notNull(),
+  rawPlan: jsonb('raw_plan').notNull(),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
 })

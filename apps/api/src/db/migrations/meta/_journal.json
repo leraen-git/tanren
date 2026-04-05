@@ -8,6 +8,34 @@
       "when": 1774734855153,
       "tag": "0000_clean_stryfe",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1775249738225,
+      "tag": "0001_tough_goblin_queen",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1775255338178,
+      "tag": "0002_dear_lockjaw",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1775256384884,
+      "tag": "0003_calm_roulette",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1775395717268,
+      "tag": "0004_reflective_centennial",
+      "breakpoints": true
     }
   ]
 }

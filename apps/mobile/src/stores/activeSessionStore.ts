@@ -1,5 +1,12 @@
 import { create } from 'zustand'
-import type { ExerciseSet, WorkoutTemplate } from '@fittrack/shared'
+
+export interface SetConfig {
+  reps: number
+  weight: number
+  restSeconds: number
+  isCompleted: boolean
+  completedAt?: Date
+}
 
 export interface SessionExercise {
   exerciseId: string
@@ -8,41 +15,45 @@ export interface SessionExercise {
   defaultReps: number
   defaultWeight: number
   defaultRestSeconds: number
+  sets: SetConfig[]
 }
 
 interface ActiveSessionState {
-  currentWorkout: WorkoutTemplate | null
+  currentWorkout: { id: string; name: string } | null
+  isQuickSession: boolean
   exercises: SessionExercise[]
   currentExerciseIndex: number
   currentSetIndex: number
-  sets: Map<string, Partial<ExerciseSet>[]>
   startedAt: Date | null
 
-  startSession: (workout: WorkoutTemplate, exercises: SessionExercise[]) => void
+  startSession: (workout: { id: string; name: string }, exercises: SessionExercise[], isQuick?: boolean) => void
   nextExercise: () => void
   prevExercise: () => void
-  completeSet: (exerciseId: string, setIndex: number) => void
-  updateSet: (exerciseId: string, setIndex: number, data: Partial<ExerciseSet>) => void
-  initSetsForExercise: (exerciseId: string, count: number, defaults: Partial<ExerciseSet>) => void
+  completeSet: (exerciseIndex: number, setIndex: number) => void
+  updateSet: (exerciseIndex: number, setIndex: number, data: Partial<SetConfig>) => void
+  addExercise: (exercise: Omit<SessionExercise, 'sets'> & { sets?: SetConfig[] }) => void
   finishSession: () => void
 }
 
 export const useActiveSessionStore = create<ActiveSessionState>((set) => ({
   currentWorkout: null,
+  isQuickSession: false,
   exercises: [],
   currentExerciseIndex: 0,
   currentSetIndex: 0,
-  sets: new Map(),
   startedAt: null,
 
-  startSession: (workout, exercises) =>
+  startSession: (workout, exercises, isQuick = false) =>
     set({
       currentWorkout: workout,
-      exercises,
+      isQuickSession: isQuick,
+      exercises: exercises.map((ex) => ({
+        ...ex,
+        sets: ex.sets.map((s) => ({ ...s, isCompleted: false })),
+      })),
       currentExerciseIndex: 0,
       currentSetIndex: 0,
       startedAt: new Date(),
-      sets: new Map(),
     }),
 
   nextExercise: () =>
@@ -57,55 +68,60 @@ export const useActiveSessionStore = create<ActiveSessionState>((set) => ({
       currentSetIndex: 0,
     })),
 
-  initSetsForExercise: (exerciseId, count, defaults) =>
+  completeSet: (exerciseIndex, setIndex) =>
     set((s) => {
-      const allSets = new Map(s.sets)
-      if (!allSets.has(exerciseId)) {
-        allSets.set(
-          exerciseId,
-          Array.from({ length: count }, (_, i) => ({
-            setNumber: i + 1,
-            reps: defaults.reps ?? 0,
-            weight: defaults.weight ?? 0,
-            restSeconds: defaults.restSeconds ?? 90,
-            isCompleted: false,
-          })),
-        )
+      const exercises = s.exercises.map((ex, eIdx) => {
+        if (eIdx !== exerciseIndex) return ex
+        const sets = ex.sets.map((st, sIdx) => {
+          if (sIdx !== setIndex) return st
+          return { ...st, isCompleted: true, completedAt: new Date() }
+        })
+        return { ...ex, sets }
+      })
+      // Advance currentSetIndex to next incomplete set
+      const nextSetIndex = exercises[exerciseIndex]?.sets.findIndex((st, i) => i > setIndex && !st.isCompleted) ?? -1
+      return {
+        exercises,
+        currentSetIndex: nextSetIndex >= 0 ? nextSetIndex : setIndex,
       }
-      return { sets: allSets }
     }),
 
-  completeSet: (exerciseId, setIndex) =>
-    set((s) => {
-      const allSets = new Map(s.sets)
-      const exerciseSets = [...(allSets.get(exerciseId) ?? [])]
-      if (exerciseSets[setIndex]) {
-        exerciseSets[setIndex] = {
-          ...exerciseSets[setIndex],
-          isCompleted: true,
-          completedAt: new Date(),
+  updateSet: (exerciseIndex, setIndex, data) =>
+    set((s) => ({
+      exercises: s.exercises.map((ex, eIdx) => {
+        if (eIdx !== exerciseIndex) return ex
+        return {
+          ...ex,
+          sets: ex.sets.map((st, sIdx) => (sIdx === setIndex ? { ...st, ...data } : st)),
         }
-      }
-      allSets.set(exerciseId, exerciseSets)
-      return { sets: allSets }
-    }),
+      }),
+    })),
 
-  updateSet: (exerciseId, setIndex, data) =>
-    set((s) => {
-      const allSets = new Map(s.sets)
-      const exerciseSets = [...(allSets.get(exerciseId) ?? [])]
-      exerciseSets[setIndex] = { ...exerciseSets[setIndex], ...data }
-      allSets.set(exerciseId, exerciseSets)
-      return { sets: allSets }
-    }),
+  addExercise: (exercise) =>
+    set((s) => ({
+      exercises: [
+        ...s.exercises,
+        {
+          ...exercise,
+          sets: (exercise.sets ?? Array.from({ length: exercise.defaultSets }, () => ({
+            reps: exercise.defaultReps,
+            weight: exercise.defaultWeight,
+            restSeconds: exercise.defaultRestSeconds,
+            isCompleted: false,
+          }))),
+        },
+      ],
+      currentExerciseIndex: s.exercises.length,
+      currentSetIndex: 0,
+    })),
 
   finishSession: () =>
     set({
       currentWorkout: null,
+      isQuickSession: false,
       exercises: [],
       currentExerciseIndex: 0,
       currentSetIndex: 0,
-      sets: new Map(),
       startedAt: null,
     }),
 }))
