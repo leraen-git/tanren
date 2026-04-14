@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { eq, and, gte, lt } from 'drizzle-orm'
+import { eq, and, gte, lt, count } from 'drizzle-orm'
 import { TRPCError } from '@trpc/server'
 import Anthropic from '@anthropic-ai/sdk'
 import { router, protectedProcedure } from '../trpc.js'
@@ -9,6 +9,19 @@ async function resolveUser(db: any, clerkId: string) {
   const [user] = await db.select().from(users).where(eq(users.clerkId, clerkId)).limit(1)
   if (!user) throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' })
   return user
+}
+
+const AI_GENERATION_LIMIT = 2
+
+/** Monday 00:00:00.000 UTC of the current week */
+function startOfWeekUTC(): Date {
+  const now = new Date()
+  const day = now.getUTCDay()
+  const diff = day === 0 ? -6 : 1 - day
+  const monday = new Date(now)
+  monday.setUTCDate(now.getUTCDate() + diff)
+  monday.setUTCHours(0, 0, 0, 0)
+  return monday
 }
 
 export const plansRouter = router({
@@ -266,6 +279,20 @@ export const plansRouter = router({
       }
 
       const user = await resolveUser(ctx.db, ctx.userId)
+
+      // Rate limit: max 2 AI workout plan generations per week
+      const weekStart = startOfWeekUTC()
+      const [{ value: generationsThisWeek }] = await ctx.db
+        .select({ value: count() })
+        .from(workoutPlans)
+        .where(and(eq(workoutPlans.userId, user.id), gte(workoutPlans.createdAt, weekStart)))
+
+      if (generationsThisWeek >= AI_GENERATION_LIMIT) {
+        throw new TRPCError({
+          code: 'TOO_MANY_REQUESTS',
+          message: `You've already generated ${AI_GENERATION_LIMIT} workout plans this week. Your limit resets on Monday.`,
+        })
+      }
 
       // Fetch exercise library (compact list for prompt)
       const allExercises = await ctx.db.select({

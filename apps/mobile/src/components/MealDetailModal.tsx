@@ -56,7 +56,7 @@ export function MealDetailModal({ meal, onClose }: { meal: DietMeal | null; onCl
             <View style={{ width: 40, height: 4, borderRadius: 2, backgroundColor: colors.surface2 }} />
           </View>
 
-          <ScrollView contentContainerStyle={{ padding: spacing.base, gap: spacing.lg, paddingBottom: 48 }}>
+          <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: spacing.base, gap: spacing.lg, paddingBottom: 48 }}>
             {/* Title row */}
             <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: spacing.md }}>
               <Text style={{ fontSize: 36 }}>{MEAL_ICONS[meal.type] ?? '🍴'}</Text>
