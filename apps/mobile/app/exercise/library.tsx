@@ -34,7 +34,7 @@ export default function ExerciseLibraryScreen() {
           Exercise Library
         </Text>
       </View>
-      <ScrollView contentContainerStyle={{ paddingHorizontal: spacing.base, paddingBottom: spacing.xl, gap: spacing.base }}
+      <ScrollView contentContainerStyle={{ paddingHorizontal: spacing.base, paddingBottom: spacing.xl, gap: spacing.base }}>
 
         <TextInput
           value={search}
