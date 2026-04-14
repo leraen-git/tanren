@@ -47,7 +47,7 @@ export function MealDetailModal({ meal, onClose }: { meal: DietMeal | null; onCl
   return (
     <Modal visible animationType="slide" transparent onRequestClose={onClose}>
       <TouchableOpacity
-        style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)' }}
+        style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' }}
         activeOpacity={1}
         onPress={onClose}
         accessibilityLabel="Close meal detail"
@@ -57,7 +57,6 @@ export function MealDetailModal({ meal, onClose }: { meal: DietMeal | null; onCl
           activeOpacity={1}
           onPress={() => {}}
           style={{
-            position: 'absolute', bottom: 0, left: 0, right: 0,
             backgroundColor: colors.background,
             borderTopLeftRadius: 24,
             borderTopRightRadius: 24,
