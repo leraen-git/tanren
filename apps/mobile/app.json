@@ -3,6 +3,8 @@
     "name": "FitTrack",
     "slug": "fittrack",
     "version": "1.0.0",
+    "entryPoint": "../../node_modules/expo-router/entry",
+    "scheme": "fittrack",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
@@ -24,6 +26,7 @@
       "package": "com.fittrack.app"
     },
     "plugins": [
+      "./plugins/withFixSpacesInPath",
       "expo-router",
       "expo-font",
       [
