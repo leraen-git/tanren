@@ -36,7 +36,6 @@
           "color": "#E8192C"
         }
       ],
-      "expo-localization"
     ],
     "experiments": {
       "typedRoutes": true

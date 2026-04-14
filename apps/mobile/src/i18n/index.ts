@@ -1,6 +1,5 @@
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
-import { getLocales } from 'expo-localization'
 import { en } from './en'
 import { fr } from './fr'
 
@@ -9,9 +8,16 @@ export const resources = {
   fr: { translation: fr },
 } as const
 
-// Detect device language, fall back to English
-const deviceLocale = getLocales()[0]?.languageCode ?? 'en'
-const supportedLocale = deviceLocale.startsWith('fr') ? 'fr' : 'en'
+// Detect device language using the Intl API (works in Hermes without a native module)
+function getDeviceLocale(): string {
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().locale ?? 'en'
+  } catch {
+    return 'en'
+  }
+}
+
+const supportedLocale = getDeviceLocale().startsWith('fr') ? 'fr' : 'en'
 
 i18n
   .use(initReactI18next)
