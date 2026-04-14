@@ -8,6 +8,7 @@ import { SkeletonCard } from '@/components/SkeletonCard'
 import { trpc } from '@/lib/trpc'
 import { colors as tokenColors } from '@/theme/tokens'
 import { useTranslation } from 'react-i18next'
+import { MealDetailModal, MEAL_ICONS, type DietMeal } from '@/components/MealDetailModal'
 
 const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 const DAY_NAMES_FULL = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
@@ -61,6 +62,7 @@ export default function HomeScreen() {
   const isTodayWorkout = nextWorkout?.dayOfWeek === todayJsDow && !isTodayWorkoutDone
 
   const [activeTab, setActiveTab] = useState<'workout' | 'diet'>('workout')
+  const [selectedMeal, setSelectedMeal] = useState<DietMeal | null>(null)
   const hasManuallySet = useRef(false)
 
   // Auto-default to diet tab when today's workout is done (respect manual overrides)
@@ -89,6 +91,7 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView edges={["top"]} style={{ flex: 1, backgroundColor: colors.background }}>
+      <MealDetailModal meal={selectedMeal} onClose={() => setSelectedMeal(null)} />
       <ScrollView
         contentContainerStyle={{ padding: spacing.base, gap: spacing.lg }}
         refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetchPlan} tintColor={colors.primary} />}
@@ -176,16 +179,25 @@ export default function HomeScreen() {
 
                 {/* Meals */}
                 {todayDietDay.meals.map((meal: any, i: number) => (
-                  <View key={i} style={{
-                    backgroundColor: colors.surface,
-                    borderRadius: radius.md,
-                    padding: spacing.base,
-                    gap: spacing.xs,
-                  }}>
+                  <TouchableOpacity
+                    key={i}
+                    onPress={() => setSelectedMeal(meal as DietMeal)}
+                    style={{
+                      backgroundColor: colors.surface,
+                      borderRadius: radius.md,
+                      padding: spacing.base,
+                      gap: spacing.xs,
+                    }}
+                    accessibilityLabel={`${meal.name}, tap for recipe`}
+                    accessibilityRole="button"
+                  >
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.xs, color: colors.textMuted, textTransform: 'uppercase', letterSpacing: 1 }}>
-                        {meal.type}
-                      </Text>
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
+                        <Text style={{ fontSize: 14 }}>{MEAL_ICONS[meal.type] ?? '🍴'}</Text>
+                        <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.xs, color: colors.textMuted, textTransform: 'uppercase', letterSpacing: 1 }}>
+                          {meal.type}
+                        </Text>
+                      </View>
                       <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted }}>
                         {meal.calories} kcal
                       </Text>
@@ -195,8 +207,9 @@ export default function HomeScreen() {
                     </Text>
                     <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted }}>
                       P {meal.protein}g · C {meal.carbs}g · F {meal.fat}g
+                      {(meal.ingredients?.length ?? 0) > 0 ? ' · 📖 recipe' : ''}
                     </Text>
-                  </View>
+                  </TouchableOpacity>
                 ))}
 
                 {/* Log food CTA */}
