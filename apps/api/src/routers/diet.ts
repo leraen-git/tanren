@@ -311,10 +311,15 @@ Now generate my complete diet plan as JSON.`
 
       const response = await client.messages.create({
         model: 'claude-sonnet-4-6',
-        max_tokens: 8000,
+        max_tokens: 16000,
         system: systemPrompt,
         messages: [{ role: 'user', content: userMessage }],
       })
+
+      // Warn if the model hit the token limit — response will be truncated JSON
+      if (response.stop_reason === 'max_tokens') {
+        console.error('[diet] Generation hit max_tokens — response was truncated')
+      }
 
       const text = response.content[0]?.type === 'text' ? response.content[0].text : ''
       const cleaned = text.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim()
@@ -323,8 +328,16 @@ Now generate my complete diet plan as JSON.`
       try {
         const parsed = JSON.parse(cleaned)
         plan = dietPlanSchema.parse(parsed)
-      } catch {
-        throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'AI returned an invalid response. Please try again.' })
+      } catch (err) {
+        console.error('[diet] Failed to parse AI response:', err)
+        console.error('[diet] Raw response (first 500 chars):', cleaned.slice(0, 500))
+        const detail = err instanceof SyntaxError
+          ? 'The AI response was not valid JSON (possibly truncated).'
+          : 'The AI response did not match the expected structure.'
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: `Diet plan generation failed: ${detail} Please try again.`,
+        })
       }
 
       // Deactivate old plans
