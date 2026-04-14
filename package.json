@@ -1,8 +1,12 @@
 {
   "name": "fittrack",
   "private": true,
-  "workspaces": ["apps/*", "packages/*"],
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
+    "postinstall": "patch-package",
     "dev": "turbo run dev",
     "build": "turbo run build",
     "lint": "turbo run lint",
@@ -12,10 +16,11 @@
     "db:seed": "turbo run db:seed"
   },
   "devDependencies": {
-    "turbo": "^2.3.3",
-    "typescript": "^5.7.2",
+    "eslint": "^9.17.0",
+    "patch-package": "^8.0.1",
     "prettier": "^3.4.2",
-    "eslint": "^9.17.0"
+    "turbo": "^2.3.3",
+    "typescript": "^5.7.2"
   },
   "overrides": {
     "ajv": "^8.17.1"
