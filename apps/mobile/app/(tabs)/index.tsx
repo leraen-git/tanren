@@ -8,7 +8,7 @@ import { SkeletonCard } from '@/components/SkeletonCard'
 import { trpc } from '@/lib/trpc'
 import { colors as tokenColors } from '@/theme/tokens'
 import { useTranslation } from 'react-i18next'
-import { MealDetailModal, MEAL_ICONS, type DietMeal } from '@/components/MealDetailModal'
+import { MealDetailModal, MEAL_ICONS, sortMeals, type DietMeal } from '@/components/MealDetailModal'
 
 const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 const DAY_NAMES_FULL = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
@@ -175,8 +175,8 @@ export default function HomeScreen() {
                   </View>
                 </View>
 
-                {/* Meals */}
-                {todayDietDay.meals.map((meal: any, i: number) => (
+                {/* Meals — sorted breakfast→lunch→snack→dinner→dessert */}
+                {sortMeals(todayDietDay.meals).map((meal: any, i: number) => (
                   <TouchableOpacity
                     key={i}
                     onPress={() => setSelectedMeal(meal as DietMeal)}

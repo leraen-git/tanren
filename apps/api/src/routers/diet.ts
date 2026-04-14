@@ -44,7 +44,7 @@ const dietPlanSchema = z.object({
     totalCarbs: z.number(),
     totalFat: z.number(),
     meals: z.array(z.object({
-      type: z.enum(['breakfast', 'lunch', 'dinner', 'dessert']),
+      type: z.enum(['breakfast', 'lunch', 'snack', 'dinner', 'dessert']),
       name: z.string(),
       calories: z.number(),
       protein: z.number(),
@@ -259,7 +259,7 @@ Return ONLY a valid JSON object — no markdown, no explanation, nothing else be
       "totalFat": <number>,
       "meals": [
         {
-          "type": "breakfast" | "lunch" | "dinner" | "dessert",
+          "type": "breakfast" | "lunch" | "snack" | "dinner" | "dessert",
           "name": "<meal name>",
           "calories": <number>,
           "protein": <number>,
@@ -293,6 +293,9 @@ RULES:
 - Protein must hit the daily target — do not leave shortfalls
 - No boring chicken and broccoli unless explicitly requested
 - Every day needs a fun theme/title
+- Meals must appear in this order within each day's meals array: breakfast → lunch → snack → dinner → dessert (dessert is optional)
+- Each day must have exactly ONE breakfast, ONE lunch, ONE snack (afternoon), ONE dinner. Dessert is optional.
+- NEVER use "breakfast" type more than once per day — use "snack" for any mid-day or afternoon snack
 - At least 2 meals per week that feel like a treat but are secretly low calorie (mark isTreat: true)
 - At least 3 meals marked batchCookable: true
 - If user drinks alcohol, factor those calories into relevant days

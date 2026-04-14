@@ -6,8 +6,21 @@ import { colors as tokenColors } from '@/theme/tokens'
 export const MEAL_ICONS: Record<string, string> = {
   breakfast: '🌅',
   lunch: '☀️',
+  snack: '🍎',
   dinner: '🌙',
   dessert: '🍫',
+}
+
+const MEAL_ORDER: Record<string, number> = {
+  breakfast: 0,
+  lunch: 1,
+  snack: 2,
+  dinner: 3,
+  dessert: 4,
+}
+
+export function sortMeals<T extends { type: string }>(meals: T[]): T[] {
+  return [...meals].sort((a, b) => (MEAL_ORDER[a.type] ?? 9) - (MEAL_ORDER[b.type] ?? 9))
 }
 
 export type DietMeal = {

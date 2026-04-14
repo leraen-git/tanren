@@ -6,7 +6,7 @@ import { useTheme } from '@/theme/ThemeContext'
 import { trpc } from '@/lib/trpc'
 import { SkeletonCard } from '@/components/SkeletonCard'
 import { colors as tokenColors } from '@/theme/tokens'
-import { MealDetailModal, MEAL_ICONS, type DietMeal } from '@/components/MealDetailModal'
+import { MealDetailModal, MEAL_ICONS, sortMeals, type DietMeal } from '@/components/MealDetailModal'
 
 const DAY_NAMES = ['', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] // index 1–7
 
@@ -217,8 +217,8 @@ export default function DietScreen() {
               </Text>
             </View>
 
-            {/* Meals — tappable */}
-            {currentDay.meals.map((meal, i) => (
+            {/* Meals — tappable, sorted breakfast→lunch→snack→dinner→dessert */}
+            {sortMeals(currentDay.meals).map((meal, i) => (
               <TouchableOpacity
                 key={i}
                 onPress={() => setSelectedMeal(meal)}
