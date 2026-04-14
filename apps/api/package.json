@@ -5,7 +5,7 @@
   "type": "module",
   "types": "./src/types.ts",
   "scripts": {
-    "dev": "tsx --env-file=.env --watch src/index.ts",
+    "dev": "node --env-file=.env --watch --import tsx/esm src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
     "db:generate": "drizzle-kit generate",

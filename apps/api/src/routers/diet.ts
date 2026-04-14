@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { eq } from 'drizzle-orm'
+import { eq, and, desc } from 'drizzle-orm'
 import { TRPCError } from '@trpc/server'
 import Anthropic from '@anthropic-ai/sdk'
 import { router, protectedProcedure } from '../trpc.js'
@@ -93,8 +93,8 @@ export const dietRouter = router({
     const [plan] = await ctx.db
       .select()
       .from(dietPlans)
-      .where(eq(dietPlans.userId, user.id))
-      .orderBy(dietPlans.createdAt)
+      .where(and(eq(dietPlans.userId, user.id), eq(dietPlans.isActive, true)))
+      .orderBy(desc(dietPlans.createdAt))
       .limit(1)
     return plan ?? null
   }),
