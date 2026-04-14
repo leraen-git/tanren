@@ -210,26 +210,6 @@ export default function HomeScreen() {
                   </TouchableOpacity>
                 ))}
 
-                {/* Log food CTA */}
-                <TouchableOpacity
-                  onPress={() => router.push('/diet/intake' as any)}
-                  style={{
-                    backgroundColor: colors.surface,
-                    borderRadius: radius.lg,
-                    padding: spacing.base,
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    gap: spacing.md,
-                    borderWidth: 1,
-                    borderColor: colors.surface2,
-                  }}
-                  accessibilityLabel="Log today's food"
-                  accessibilityRole="button"
-                >
-                  <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.body, color: colors.primary }}>
-                    + Log today's food
-                  </Text>
-                </TouchableOpacity>
               </>
             ) : (
               <View style={{ backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.xl, alignItems: 'center', gap: spacing.sm }}>
