@@ -246,8 +246,8 @@ export default function HomeScreen() {
 
         {/* Active plan banner */}
         {activePlan ? (
-          isTodayWorkout ? (
-            // Compact single-line banner when today's workout is pending
+          (isTodayWorkout || isRestDay) ? (
+            // Compact single-line banner when today's workout is pending OR it's a rest day
             <View style={{
               backgroundColor: colors.surface,
               borderRadius: radius.md,
@@ -270,7 +270,7 @@ export default function HomeScreen() {
               </Text>
             </View>
           ) : (
-            // Full banner when no workout today or workout already done
+            // Full banner when workout already done
             <View style={{
               backgroundColor: colors.surface,
               borderRadius: radius.md,
@@ -404,22 +404,22 @@ export default function HomeScreen() {
           </View>
         )}
 
-        {/* Rest day notice */}
-        {activePlan && todayPlanDays.length === 0 && !isTodayWorkoutDone && (
+        {/* Rest day hero card — matches workout hero style */}
+        {isRestDay && (
           <View style={{
             backgroundColor: colors.surface,
             borderRadius: radius.lg,
-            padding: spacing.xl,
-            alignItems: 'center',
-            gap: spacing.sm,
+            overflow: 'hidden',
           }}>
-            <Text style={{ fontSize: 40 }}>😴</Text>
-            <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.xl, color: colors.textPrimary }}>
-              {t('home.restDay')}
-            </Text>
-            <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.body, color: colors.textMuted, textAlign: 'center' }}>
-              {t('home.restDayDesc')}
-            </Text>
+            <View style={{ padding: spacing.base, gap: spacing.xs, alignItems: 'center' }}>
+              <Text style={{ fontSize: 48 }}>😴</Text>
+              <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size['3xl'], color: colors.textPrimary }}>
+                {t('home.restDay')}
+              </Text>
+              <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.body, color: colors.textMuted, textAlign: 'center' }}>
+                {t('home.restDayDesc')}
+              </Text>
+            </View>
           </View>
         )}
 
