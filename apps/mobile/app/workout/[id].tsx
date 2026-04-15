@@ -189,7 +189,7 @@ export default function WorkoutDetailScreen() {
                   accessibilityLabel={`Move ${ex.exerciseName} up`}
                   accessibilityRole="button"
                 >
-                  <Text style={{ fontFamily: typography.family.bold, fontSize: 12, color: colors.textMuted, lineHeight: 14 }}>▲</Text>
+                  <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.md, color: colors.textMuted, lineHeight: 14 }}>▲</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => moveExercise(workout.exercises, i, 'down')}
@@ -198,7 +198,7 @@ export default function WorkoutDetailScreen() {
                   accessibilityLabel={`Move ${ex.exerciseName} down`}
                   accessibilityRole="button"
                 >
-                  <Text style={{ fontFamily: typography.family.bold, fontSize: 12, color: colors.textMuted, lineHeight: 14 }}>▼</Text>
+                  <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.md, color: colors.textMuted, lineHeight: 14 }}>▼</Text>
                 </TouchableOpacity>
               </View>
               <View style={{

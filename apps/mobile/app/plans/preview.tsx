@@ -52,7 +52,7 @@ export default function PreviewPlanScreen() {
             Review before activating
           </Text>
         </View>
-        <Text style={{ fontSize: 24 }}>✨</Text>
+        <Text style={{ fontSize: typography.size['2xl'] }}>✨</Text>
       </View>
 
       <ScrollView contentContainerStyle={{ padding: spacing.base, gap: spacing.base, paddingBottom: 120 }}>

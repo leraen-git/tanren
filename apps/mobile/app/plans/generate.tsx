@@ -65,7 +65,7 @@ export default function GeneratePlanScreen() {
               Powered by Claude
             </Text>
           </View>
-          <Text style={{ fontSize: 24 }}>✨</Text>
+          <Text style={{ fontSize: typography.size['2xl'] }}>✨</Text>
         </View>
 
         <ScrollView

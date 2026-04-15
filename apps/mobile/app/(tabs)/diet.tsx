@@ -116,7 +116,7 @@ export default function DietScreen() {
             { icon: '💊', text: 'Evidence-backed supplement recommendations' },
           ].map((f) => (
             <View key={f.icon} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.md, backgroundColor: colors.surface, borderRadius: radius.md, padding: spacing.md }}>
-              <Text style={{ fontSize: 24 }}>{f.icon}</Text>
+              <Text style={{ fontSize: typography.size['2xl'] }}>{f.icon}</Text>
               <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted, flex: 1 }}>{f.text}</Text>
             </View>
           ))}
@@ -227,7 +227,7 @@ export default function DietScreen() {
                 accessibilityRole="button"
               >
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
-                  <Text style={{ fontSize: 20 }}>{MEAL_ICONS[meal.type] ?? '🍴'}</Text>
+                  <Text style={{ fontSize: typography.size.xl }}>{MEAL_ICONS[meal.type] ?? '🍴'}</Text>
                   <View style={{ flex: 1 }}>
                     <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.xs, color: colors.textMuted, textTransform: 'uppercase', letterSpacing: 0.5 }}>
                       {meal.type}

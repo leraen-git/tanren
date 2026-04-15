@@ -159,7 +159,7 @@ export default function ShareScreen() {
           accessibilityLabel="Finish session"
           accessibilityRole="button"
         >
-          <Text style={{ fontSize: 18, color: WHITE }}>✓</Text>
+          <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.title, color: WHITE }}>✓</Text>
         </TouchableOpacity>
       </View>
 
@@ -196,13 +196,13 @@ export default function ShareScreen() {
             }}
             {...titlePanResponder.panHandlers}
           >
-            <Text style={{ fontFamily: 'Inter_400Regular', fontSize: 10, color: 'rgba(255,255,255,0.5)', letterSpacing: 2.5, textTransform: 'uppercase' }}>
+            <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: 'rgba(255,255,255,0.5)', letterSpacing: 2.5, textTransform: 'uppercase' }}>
               Session complete
             </Text>
-            <Text style={{ fontFamily: 'Inter_800ExtraBold', fontSize: 30, color: WHITE, lineHeight: 34, marginTop: 4 }} numberOfLines={2}>
+            <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size['3xl'], color: WHITE, lineHeight: 36, marginTop: 4 }} numberOfLines={2}>
               {workoutName ?? 'Workout'}
             </Text>
-            <Text style={{ fontFamily: 'Inter_400Regular', fontSize: 12, color: 'rgba(255,255,255,0.45)', marginTop: 4 }}>
+            <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.md, color: 'rgba(255,255,255,0.45)', marginTop: 4 }}>
               {new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}
             </Text>
           </Animated.View>
@@ -226,8 +226,8 @@ export default function ShareScreen() {
                 { label: 'Sets', value: completedSets ?? '0' },
               ].map((stat, i) => (
                 <View key={stat.label} style={{ flex: 1, alignItems: i === 0 ? 'flex-start' : i === 2 ? 'flex-end' : 'center' }}>
-                  <Text style={{ fontFamily: 'Inter_800ExtraBold', fontSize: 22, color: WHITE }}>{stat.value}</Text>
-                  <Text style={{ fontFamily: 'Inter_400Regular', fontSize: 10, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: 1 }}>{stat.label}</Text>
+                  <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size['2xl'], color: WHITE }}>{stat.value}</Text>
+                  <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: 1 }}>{stat.label}</Text>
                 </View>
               ))}
             </View>
@@ -242,13 +242,13 @@ export default function ShareScreen() {
                 alignSelf: 'flex-start', marginTop: 10,
               }}>
                 <Text style={{ fontSize: 14 }}>🏆</Text>
-                <Text style={{ fontFamily: 'Inter_700Bold', fontSize: 12, color: RED }}>
+                <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.md, color: RED }}>
                   {prs} new PR{prs > 1 ? 's' : ''} today
                 </Text>
               </View>
             )}
 
-            <Text style={{ fontFamily: 'Inter_400Regular', fontSize: 9, color: 'rgba(255,255,255,0.2)', letterSpacing: 2, textTransform: 'uppercase', marginTop: 10 }}>
+            <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: 'rgba(255,255,255,0.2)', letterSpacing: 2, textTransform: 'uppercase', marginTop: 10 }}>
               Train smarter. Track harder.
             </Text>
           </Animated.View>

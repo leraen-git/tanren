@@ -97,7 +97,7 @@ export default function OnboardingStep1() {
                   accessibilityLabel={label}
                   accessibilityRole="button"
                 >
-                  <Text style={{ fontSize: 32 }}>{emoji}</Text>
+                  <Text style={{ fontSize: typography.size['3xl'] }}>{emoji}</Text>
                   <Text style={{
                     fontFamily: selected ? typography.family.bold : typography.family.regular,
                     fontSize: typography.size.body,

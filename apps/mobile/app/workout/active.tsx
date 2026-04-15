@@ -392,7 +392,7 @@ export default function ActiveWorkoutScreen() {
                   backgroundColor: s.isCompleted ? colors.success : colors.surface2,
                   alignItems: 'center', justifyContent: 'center',
                 }}>
-                  <Text style={{ color: s.isCompleted ? tokenColors.white : colors.textMuted, fontSize: 16 }}>
+                  <Text style={{ fontFamily: typography.family.regular, color: s.isCompleted ? tokenColors.white : colors.textMuted, fontSize: typography.size.title }}>
                     {s.isCompleted ? '✓' : '○'}
                   </Text>
                 </View>

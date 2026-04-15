@@ -199,7 +199,7 @@ export default function WorkoutsScreen() {
               accessibilityLabel="Create your first plan"
               accessibilityRole="button"
             >
-              <Text style={{ fontSize: 32 }}>📋</Text>
+              <Text style={{ fontSize: typography.size['3xl'] }}>📋</Text>
               <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.body, color: colors.textPrimary }}>
                 No plan yet
               </Text>
@@ -266,7 +266,7 @@ export default function WorkoutsScreen() {
               accessibilityLabel="Create your first workout"
               accessibilityRole="button"
             >
-              <Text style={{ fontSize: 32 }}>🏋️</Text>
+              <Text style={{ fontSize: typography.size['3xl'] }}>🏋️</Text>
               <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.body, color: colors.textPrimary }}>
                 No workouts yet
               </Text>

@@ -268,7 +268,7 @@ export default function ProfileScreen() {
               borderRadius: radius.pill,
               padding: 6,
             }}>
-              <Text style={{ fontSize: 14 }}>📷</Text>
+              <Text style={{ fontSize: typography.size.body }}>📷</Text>
             </View>
           </TouchableOpacity>
         </View>
@@ -396,7 +396,7 @@ export default function ProfileScreen() {
                 accessibilityLabel={`${label} theme`}
                 accessibilityRole="button"
               >
-                <Text style={{ fontSize: 20, marginBottom: 4 }}>{icon}</Text>
+                <Text style={{ fontSize: typography.size.xl, marginBottom: 4 }}>{icon}</Text>
                 <Text style={{
                   fontFamily: selected ? typography.family.semiBold : typography.family.regular,
                   fontSize: typography.size.base,

@@ -199,7 +199,7 @@ export default function HomeScreen() {
                   >
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                       <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
-                        <Text style={{ fontSize: 14 }}>{MEAL_ICONS[meal.type] ?? '🍴'}</Text>
+                        <Text style={{ fontSize: typography.size.body }}>{MEAL_ICONS[meal.type] ?? '🍴'}</Text>
                         <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.xs, color: colors.textMuted, textTransform: 'uppercase', letterSpacing: 1 }}>
                           {meal.type}
                         </Text>
@@ -221,7 +221,7 @@ export default function HomeScreen() {
               </>
             ) : (
               <View style={{ backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.xl, alignItems: 'center', gap: spacing.sm }}>
-                <Text style={{ fontSize: 32 }}>🥗</Text>
+                <Text style={{ fontSize: typography.size['3xl'] }}>🥗</Text>
                 <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.body, color: colors.textMuted, textAlign: 'center' }}>
                   {t('home.noMealPlanToday')}
                 </Text>
