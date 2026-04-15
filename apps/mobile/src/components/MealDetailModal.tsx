@@ -2,6 +2,7 @@ import React from 'react'
 import { View, Text, ScrollView, TouchableOpacity, Modal, Linking, Dimensions } from 'react-native'
 import { useTheme } from '@/theme/ThemeContext'
 import { colors as tokenColors } from '@/theme/tokens'
+import { useTranslation } from 'react-i18next'
 
 export const MEAL_ICONS: Record<string, string> = {
   breakfast: '🌅',
@@ -40,6 +41,7 @@ export type DietMeal = {
 
 export function MealDetailModal({ meal, onClose }: { meal: DietMeal | null; onClose: () => void }) {
   const { colors, typography, spacing, radius } = useTheme()
+  const { t } = useTranslation()
   if (!meal) return null
 
   const SHEET_HEIGHT = Dimensions.get('window').height * 0.85
@@ -91,7 +93,8 @@ export function MealDetailModal({ meal, onClose }: { meal: DietMeal | null; onCl
             <Text style={{ fontSize: 36 }}>{MEAL_ICONS[meal.type] ?? '🍴'}</Text>
             <View style={{ flex: 1 }}>
               <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.xs, color: colors.textMuted, textTransform: 'uppercase', letterSpacing: 0.5 }}>
-                {meal.type}{meal.isTreat ? ' ✨' : ''}{meal.batchCookable ? ' · 🍱' : ''}
+                {t(`diet.mealType.${meal.type}`, { defaultValue: meal.type })}
+                {meal.isTreat ? ' ✨' : ''}{meal.batchCookable ? ' · 🍱' : ''}
                 {meal.prepTime ? ` · ${meal.prepTime} min` : ''}
               </Text>
               <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size['2xl'], color: colors.textPrimary }}>
@@ -103,10 +106,10 @@ export function MealDetailModal({ meal, onClose }: { meal: DietMeal | null; onCl
           {/* Macro pills */}
           <View style={{ flexDirection: 'row', gap: spacing.sm }}>
             {[
-              { label: 'kcal', value: meal.calories, color: colors.textPrimary },
-              { label: 'Protein', value: `${meal.protein}g`, color: colors.primary },
-              { label: 'Carbs', value: `${meal.carbs}g`, color: '#F59E0B' },
-              { label: 'Fat', value: `${meal.fat}g`, color: '#8B5CF6' },
+              { label: t('diet.kcal'), value: meal.calories, color: colors.textPrimary },
+              { label: t('diet.protein'), value: `${meal.protein}g`, color: colors.primary },
+              { label: t('diet.carbs'), value: `${meal.carbs}g`, color: '#F59E0B' },
+              { label: t('diet.fat'), value: `${meal.fat}g`, color: '#8B5CF6' },
             ].map((m) => (
               <View key={m.label} style={{ flex: 1, backgroundColor: colors.surface, borderRadius: radius.md, padding: spacing.sm, alignItems: 'center' }}>
                 <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size.base, color: m.color }}>{m.value}</Text>
@@ -119,7 +122,7 @@ export function MealDetailModal({ meal, onClose }: { meal: DietMeal | null; onCl
           {(meal.ingredients?.length ?? 0) > 0 && (
             <View style={{ gap: spacing.sm }}>
               <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.xl, color: colors.textPrimary }}>
-                🛒 Ingredients
+                🛒 {t('diet.ingredients')}
               </Text>
               {meal.ingredients!.map((ing, i) => (
                 <View key={i} style={{ flexDirection: 'row', gap: spacing.sm, alignItems: 'flex-start' }}>
@@ -136,7 +139,7 @@ export function MealDetailModal({ meal, onClose }: { meal: DietMeal | null; onCl
           {(meal.preparationSteps?.length ?? 0) > 0 && (
             <View style={{ gap: spacing.sm }}>
               <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.xl, color: colors.textPrimary }}>
-                👨‍🍳 Preparation
+                👨‍🍳 {t('diet.preparation')}
               </Text>
               {meal.preparationSteps!.map((step, i) => (
                 <View key={i} style={{ flexDirection: 'row', gap: spacing.md, alignItems: 'flex-start', backgroundColor: colors.surface, borderRadius: radius.md, padding: spacing.md }}>
@@ -156,7 +159,7 @@ export function MealDetailModal({ meal, onClose }: { meal: DietMeal | null; onCl
             <View style={{ backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.base, alignItems: 'center', gap: spacing.sm }}>
               <Text style={{ fontSize: 32 }}>🍽️</Text>
               <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted, textAlign: 'center' }}>
-                No recipe stored yet. Regenerate your plan to get full ingredient lists and steps.
+                {t('diet.noRecipe')}
               </Text>
             </View>
           )}
@@ -170,11 +173,11 @@ export function MealDetailModal({ meal, onClose }: { meal: DietMeal | null; onCl
                 gap: spacing.sm, backgroundColor: '#FF0000',
                 borderRadius: radius.lg, paddingVertical: spacing.md,
               }}
-              accessibilityLabel="Watch recipe on YouTube" accessibilityRole="link"
+              accessibilityLabel={t('diet.watchYoutube')} accessibilityRole="link"
             >
               <Text style={{ fontSize: 20 }}>▶️</Text>
               <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.body, color: tokenColors.white }}>
-                Watch recipe on YouTube
+                {t('diet.watchYoutube')}
               </Text>
             </TouchableOpacity>
           )}
@@ -183,9 +186,9 @@ export function MealDetailModal({ meal, onClose }: { meal: DietMeal | null; onCl
           <TouchableOpacity
             onPress={onClose}
             style={{ alignItems: 'center', paddingVertical: spacing.md }}
-            accessibilityLabel="Close" accessibilityRole="button"
+            accessibilityLabel={t('common.close')} accessibilityRole="button"
           >
-            <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.base, color: colors.textMuted }}>Close</Text>
+            <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.base, color: colors.textMuted }}>{t('common.close')}</Text>
           </TouchableOpacity>
         </ScrollView>
       </View>

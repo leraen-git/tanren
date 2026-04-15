@@ -155,31 +155,43 @@ export default function HomeScreen() {
           <View style={{ gap: spacing.md }}>
             {todayDietDay ? (
               <>
-                {/* Day theme + macro targets */}
-                <View style={{
-                  backgroundColor: colors.surface,
-                  borderRadius: radius.lg,
-                  padding: spacing.base,
-                  gap: spacing.sm,
-                }}>
-                  <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.xl, color: colors.textPrimary }}>
-                    {todayDietDay.theme}
-                  </Text>
-                  <View style={{ flexDirection: 'row', gap: spacing.sm }}>
-                    {[
-                      { label: 'Calories', value: `${todayDietDay.totalCalories} kcal` },
-                      { label: 'Protein', value: `${todayDietDay.totalProtein}g` },
-                      { label: 'Carbs', value: `${todayDietDay.totalCarbs}g` },
-                      { label: 'Fat', value: `${todayDietDay.totalFat}g` },
-                    ].map(({ label, value }) => (
-                      <View key={label} style={{
-                        flex: 1, backgroundColor: colors.surface2,
-                        borderRadius: radius.md, padding: spacing.sm, alignItems: 'center',
-                      }}>
-                        <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted }}>{label}</Text>
-                        <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.body, color: colors.textPrimary }}>{value}</Text>
+                {/* Day header card — colored accent strip + theme + colored macros */}
+                <View style={{ backgroundColor: colors.surface, borderRadius: radius.lg, overflow: 'hidden' }}>
+                  <View style={{ height: 3, backgroundColor: colors.primary }} />
+                  <View style={{ padding: spacing.base, gap: spacing.md }}>
+                    {/* Theme + calorie count */}
+                    <View style={{ flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+                      <View style={{ flex: 1, gap: 2 }}>
+                        <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.xs, color: colors.textMuted, textTransform: 'uppercase', letterSpacing: 1 }}>
+                          {t('diet.title')}
+                        </Text>
+                        <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size.xl, color: colors.textPrimary }}>
+                          {todayDietDay.theme}
+                        </Text>
                       </View>
-                    ))}
+                      <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size['2xl'], color: colors.primary }}>
+                        {todayDietDay.totalCalories}
+                        <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted }}> {t('diet.kcal')}</Text>
+                      </Text>
+                    </View>
+                    {/* Colored P / C / F pills */}
+                    <View style={{ flexDirection: 'row', gap: spacing.sm }}>
+                      {[
+                        { label: t('diet.protein'), value: `${todayDietDay.totalProtein}g`, color: colors.primary },
+                        { label: t('diet.carbs'), value: `${todayDietDay.totalCarbs}g`, color: '#F59E0B' },
+                        { label: t('diet.fat'), value: `${todayDietDay.totalFat}g`, color: '#8B5CF6' },
+                      ].map(({ label, value, color }) => (
+                        <View key={label} style={{
+                          flex: 1, borderRadius: radius.md, padding: spacing.sm,
+                          alignItems: 'center',
+                          backgroundColor: `${color}14`,
+                          borderWidth: 1, borderColor: `${color}30`,
+                        }}>
+                          <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size.body, color }}>{value}</Text>
+                          <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted }}>{label}</Text>
+                        </View>
+                      ))}
+                    </View>
                   </View>
                 </View>
 
@@ -190,34 +202,50 @@ export default function HomeScreen() {
                     onPress={() => setSelectedMeal(meal as DietMeal)}
                     style={{
                       backgroundColor: colors.surface,
-                      borderRadius: radius.md,
+                      borderRadius: radius.lg,
                       padding: spacing.base,
-                      gap: spacing.xs,
+                      gap: spacing.md,
                     }}
                     accessibilityLabel={`${meal.name}, tap for recipe`}
                     accessibilityRole="button"
                   >
-                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
-                        <Text style={{ fontSize: typography.size.body }}>{MEAL_ICONS[meal.type] ?? '🍴'}</Text>
-                        <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.xs, color: colors.textMuted, textTransform: 'uppercase', letterSpacing: 1 }}>
-                          {meal.type}
+                    {/* Top row: icon + type/name + calorie */}
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
+                      <Text style={{ fontSize: typography.size.xl }}>{MEAL_ICONS[meal.type] ?? '🍴'}</Text>
+                      <View style={{ flex: 1 }}>
+                        <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.xs, color: colors.textMuted, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                          {t(`diet.mealType.${meal.type}`, { defaultValue: meal.type })}
+                        </Text>
+                        <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.body, color: colors.textPrimary }}>
+                          {meal.name}
                         </Text>
                       </View>
-                      <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted }}>
-                        {meal.calories} kcal
-                      </Text>
+                      <View style={{ alignItems: 'flex-end', gap: 2 }}>
+                        <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size.body, color: colors.primary }}>
+                          {meal.calories} {t('diet.kcal')}
+                        </Text>
+                        {(meal.ingredients?.length ?? 0) > 0 && (
+                          <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted }}>
+                            📖 {t('diet.recipe')}
+                          </Text>
+                        )}
+                      </View>
                     </View>
-                    <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.body, color: colors.textPrimary }}>
-                      {meal.name}
-                    </Text>
-                    <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted }}>
-                      P {meal.protein}g · C {meal.carbs}g · F {meal.fat}g
-                      {(meal.ingredients?.length ?? 0) > 0 ? ' · 📖 recipe' : ''}
-                    </Text>
+                    {/* Colored P / C / F mini pills */}
+                    <View style={{ flexDirection: 'row', gap: spacing.sm }}>
+                      {[
+                        { label: t('diet.proteinShort'), value: `${meal.protein}g`, color: colors.primary },
+                        { label: t('diet.carbsShort'), value: `${meal.carbs}g`, color: '#F59E0B' },
+                        { label: t('diet.fatShort'), value: `${meal.fat}g`, color: '#8B5CF6' },
+                      ].map(({ label, value, color }) => (
+                        <View key={label} style={{ flex: 1, backgroundColor: colors.surface2, borderRadius: radius.sm, padding: spacing.sm, alignItems: 'center' }}>
+                          <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.base, color }}>{value}</Text>
+                          <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted }}>{label}</Text>
+                        </View>
+                      ))}
+                    </View>
                   </TouchableOpacity>
                 ))}
-
               </>
             ) : (
               <View style={{ backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.xl, alignItems: 'center', gap: spacing.sm }}>
