@@ -64,10 +64,14 @@ export default function HomeScreen() {
   const [selectedMeal, setSelectedMeal] = useState<DietMeal | null>(null)
   const hasManuallySet = useRef(false)
 
-  // Auto-default to diet tab when today's workout is done (respect manual overrides)
+  // Rest day = plan exists but no workout scheduled today
+  const isRestDay = !!activePlan && todayPlanDays.length === 0
+
+  // Auto-focus diet tab when: rest day, workout already done, or no workout today
   useEffect(() => {
-    if (!hasManuallySet.current && isTodayWorkoutDone) setActiveTab('diet')
-  }, [isTodayWorkoutDone])
+    if (hasManuallySet.current) return
+    if (isRestDay || isTodayWorkoutDone) setActiveTab('diet')
+  }, [isRestDay, isTodayWorkoutDone])
 
   // Reset manual override when date changes (checked on each focus)
   const lastDateRef = useRef(new Date().toDateString())
@@ -116,29 +120,43 @@ export default function HomeScreen() {
             borderRadius: radius.lg,
             padding: 4,
           }}>
-            {(['workout', 'diet'] as const).map((tab) => (
-              <TouchableOpacity
-                key={tab}
-                onPress={() => handleTabChange(tab)}
-                style={{
-                  flex: 1,
-                  paddingVertical: spacing.sm,
-                  borderRadius: radius.md,
-                  alignItems: 'center',
-                  backgroundColor: activeTab === tab ? colors.background : 'transparent',
-                }}
-                accessibilityLabel={tab === 'workout' ? "Today's workout" : "Today's diet"}
-                accessibilityRole="tab"
-              >
-                <Text style={{
-                  fontFamily: typography.family.bold,
-                  fontSize: typography.size.base,
-                  color: activeTab === tab ? colors.textPrimary : colors.textMuted,
-                }}>
-                  {tab === 'workout' ? `${t('home.workout')}${isTodayWorkoutDone ? ' ✓' : ''}` : t('home.diet')}
-                </Text>
-              </TouchableOpacity>
-            ))}
+            {(['workout', 'diet'] as const).map((tab) => {
+              const isActive = activeTab === tab
+              const workoutStatus = isRestDay ? '😴 Rest day' : isTodayWorkoutDone ? '✓ Done' : null
+              return (
+                <TouchableOpacity
+                  key={tab}
+                  onPress={() => handleTabChange(tab)}
+                  style={{
+                    flex: 1,
+                    paddingVertical: spacing.sm,
+                    borderRadius: radius.md,
+                    alignItems: 'center',
+                    backgroundColor: isActive ? colors.background : 'transparent',
+                  }}
+                  accessibilityLabel={tab === 'workout' ? "Today's workout" : "Today's diet"}
+                  accessibilityRole="tab"
+                >
+                  <Text style={{
+                    fontFamily: typography.family.bold,
+                    fontSize: typography.size.base,
+                    color: isActive ? colors.textPrimary : colors.textMuted,
+                  }}>
+                    {tab === 'workout' ? t('home.workout') : t('home.diet')}
+                  </Text>
+                  {tab === 'workout' && workoutStatus && (
+                    <Text style={{
+                      fontFamily: typography.family.regular,
+                      fontSize: typography.size.xs,
+                      color: isActive ? colors.textMuted : colors.textMuted,
+                      marginTop: 1,
+                    }}>
+                      {workoutStatus}
+                    </Text>
+                  )}
+                </TouchableOpacity>
+              )
+            })}
           </View>
         )}
 
