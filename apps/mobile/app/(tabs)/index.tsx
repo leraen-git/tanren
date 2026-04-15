@@ -122,7 +122,7 @@ export default function HomeScreen() {
           }}>
             {(['workout', 'diet'] as const).map((tab) => {
               const isActive = activeTab === tab
-              const workoutStatus = isRestDay ? '😴 Rest day' : isTodayWorkoutDone ? '✓ Done' : null
+              const workoutEmoji = isRestDay ? ' 😴' : isTodayWorkoutDone ? ' ✓' : ''
               return (
                 <TouchableOpacity
                   key={tab}
@@ -139,21 +139,11 @@ export default function HomeScreen() {
                 >
                   <Text style={{
                     fontFamily: typography.family.bold,
-                    fontSize: typography.size.base,
+                    fontSize: typography.size.body,
                     color: isActive ? colors.textPrimary : colors.textMuted,
                   }}>
-                    {tab === 'workout' ? t('home.workout') : t('home.diet')}
+                    {tab === 'workout' ? `${t('home.workout')}${workoutEmoji}` : t('home.diet')}
                   </Text>
-                  {tab === 'workout' && workoutStatus && (
-                    <Text style={{
-                      fontFamily: typography.family.regular,
-                      fontSize: typography.size.xs,
-                      color: isActive ? colors.textMuted : colors.textMuted,
-                      marginTop: 1,
-                    }}>
-                      {workoutStatus}
-                    </Text>
-                  )}
                 </TouchableOpacity>
               )
             })}
