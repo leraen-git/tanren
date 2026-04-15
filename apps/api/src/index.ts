@@ -8,6 +8,9 @@ import { db } from './db/index.js'
 
 // Explicit boolean guard — never truthy unless explicitly set to 'true'
 const isDev = process.env['NODE_ENV'] === 'development'
+// Extra guard: DEV_CLERK_ID fallback only active when explicitly opted-in.
+// Prevents the bypass from activating if NODE_ENV=development leaks into prod config.
+const isDevAuthEnabled = process.env['ENABLE_DEV_AUTH'] === 'true'
 
 const CLERK_SECRET_KEY = process.env['CLERK_SECRET_KEY']
 
@@ -78,8 +81,9 @@ await server.register(fastifyTRPCPlugin, {
 
       // ── Dev fallback: no token → seeded dev user ──────────────────────────
       // Lets the simulator work without any token during local development.
-      // Unreachable in production (both guards above prevent it).
-      if (!userId && isDev) {
+      // Requires ENABLE_DEV_AUTH=true as an extra safeguard so this never
+      // activates if NODE_ENV=development leaks into a production deployment.
+      if (!userId && isDev && isDevAuthEnabled) {
         const devUserId = process.env['DEV_CLERK_ID']
         if (devUserId) userId = devUserId
       }

@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { eq } from 'drizzle-orm'
+import { TRPCError } from '@trpc/server'
 import { router, protectedProcedure, publicProcedure } from '../trpc.js'
 import { exercises, users } from '../db/schema.js'
 
@@ -16,7 +17,7 @@ export const exercisesRouter = router({
         .from(exercises)
         .where(eq(exercises.id, input.id))
         .limit(1)
-      if (!exercise) throw new Error('Exercise not found')
+      if (!exercise) throw new TRPCError({ code: 'NOT_FOUND', message: 'Exercise not found' })
       return exercise
     }),
 
@@ -32,7 +33,7 @@ export const exercisesRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       const [user] = await ctx.db.select().from(users).where(eq(users.clerkId, ctx.userId)).limit(1)
-      if (!user) throw new Error('User not found')
+      if (!user) throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' })
       const [created] = await ctx.db
         .insert(exercises)
         .values({ ...input, isCustom: true, userId: user.id })

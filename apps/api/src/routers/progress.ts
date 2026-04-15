@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { eq, and, desc, gte, inArray } from 'drizzle-orm'
+import { TRPCError } from '@trpc/server'
 import { router, protectedProcedure } from '../trpc.js'
 import {
   workoutSessions,
@@ -13,7 +14,7 @@ import { calcDelta, getExerciseStatus } from '@fittrack/shared'
 export const progressRouter = router({
   lastSessionPRCount: protectedProcedure.query(async ({ ctx }) => {
     const [user] = await ctx.db.select().from(users).where(eq(users.clerkId, ctx.userId)).limit(1)
-    if (!user) throw new Error('User not found')
+    if (!user) throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' })
     const [lastSession] = await ctx.db
       .select({ id: workoutSessions.id })
       .from(workoutSessions)
@@ -30,7 +31,7 @@ export const progressRouter = router({
 
   records: protectedProcedure.query(async ({ ctx }) => {
     const [user] = await ctx.db.select().from(users).where(eq(users.clerkId, ctx.userId)).limit(1)
-    if (!user) throw new Error('User not found')
+    if (!user) throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' })
     return ctx.db
       .select()
       .from(personalRecords)
@@ -42,7 +43,7 @@ export const progressRouter = router({
     .input(z.object({ weeks: z.number().int().default(16) }))
     .query(async ({ ctx, input }) => {
       const [user] = await ctx.db.select().from(users).where(eq(users.clerkId, ctx.userId)).limit(1)
-      if (!user) throw new Error('User not found')
+      if (!user) throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' })
       const since = new Date()
       since.setDate(since.getDate() - input.weeks * 7)
       const sessions = await ctx.db
@@ -58,7 +59,7 @@ export const progressRouter = router({
     .input(z.object({ exerciseId: z.string() }))
     .query(async ({ ctx, input }) => {
       const [user] = await ctx.db.select().from(users).where(eq(users.clerkId, ctx.userId)).limit(1)
-      if (!user) throw new Error('User not found')
+      if (!user) throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' })
       // IDOR fix: join to workoutSessions to enforce userId ownership
       const userSessions = await ctx.db
         .select({ id: workoutSessions.id })
@@ -82,14 +83,14 @@ export const progressRouter = router({
     .input(z.object({ sessionId: z.string() }))
     .query(async ({ ctx, input }) => {
       const [user] = await ctx.db.select().from(users).where(eq(users.clerkId, ctx.userId)).limit(1)
-      if (!user) throw new Error('User not found')
+      if (!user) throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' })
       // IDOR fix: require session to belong to the authenticated user
       const [session] = await ctx.db
         .select()
         .from(workoutSessions)
         .where(and(eq(workoutSessions.id, input.sessionId), eq(workoutSessions.userId, user.id)))
         .limit(1)
-      if (!session) throw new Error('Session not found')
+      if (!session) throw new TRPCError({ code: 'NOT_FOUND', message: 'Session not found' })
 
       const [prevSession] = await ctx.db
         .select()
