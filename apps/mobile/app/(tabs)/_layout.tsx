@@ -58,8 +58,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="diet"
         options={{
-          title: 'Diet',
-          tabBarLabel: 'Diet',
+          title: t('tabs.diet'),
+          tabBarLabel: t('tabs.diet'),
           tabBarIcon: tabIcon('nutrition', 'nutrition-outline'),
         }}
       />

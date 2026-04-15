@@ -5,18 +5,25 @@ import { useTheme } from '@/theme/ThemeContext'
 import { Card } from '@/components/Card'
 import { trpc } from '@/lib/trpc'
 import { colors as tokenColors } from '@/theme/tokens'
+import { useTranslation } from 'react-i18next'
+import { MUSCLE_GROUPS } from '@fittrack/shared'
 
+// filter id → translation key
 const DATE_FILTERS = [
-  { label: '1w', days: 7 },
-  { label: '1m', days: 30 },
-  { label: '3m', days: 90 },
-  { label: 'All', days: null },
-]
+  { id: '1w', days: 7 },
+  { id: '1m', days: 30 },
+  { id: '3m', days: 90 },
+  { id: 'all', days: null },
+] as const
 
-const MUSCLE_GROUPS = [
-  'All', 'Chest', 'Back', 'Shoulders', 'Biceps', 'Triceps',
-  'Quadriceps', 'Hamstrings', 'Glutes', 'Calves', 'Core', 'Full Body',
-]
+type FilterId = (typeof DATE_FILTERS)[number]['id']
+
+// muscle group string → translation key
+const MG_KEY: Record<string, string> = {
+  'Chest': 'chest', 'Back': 'back', 'Shoulders': 'shoulders', 'Biceps': 'biceps',
+  'Triceps': 'triceps', 'Forearms': 'forearms', 'Core': 'core', 'Quadriceps': 'quadriceps',
+  'Hamstrings': 'hamstrings', 'Glutes': 'glutes', 'Calves': 'calves', 'Full Body': 'fullBody',
+}
 
 function formatDuration(seconds: number): string {
   const m = Math.round(seconds / 60)
@@ -24,14 +31,17 @@ function formatDuration(seconds: number): string {
   return `${Math.floor(m / 60)}h ${m % 60}min`
 }
 
-function formatDate(date: string | Date): string {
-  const d = new Date(date)
-  const now = new Date()
-  const diffDays = Math.floor((now.getTime() - d.getTime()) / (1000 * 60 * 60 * 24))
-  if (diffDays === 0) return 'Today'
-  if (diffDays === 1) return 'Yesterday'
-  if (diffDays < 7) return d.toLocaleDateString(undefined, { weekday: 'long' })
-  return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: diffDays > 365 ? 'numeric' : undefined })
+function useFormatDate() {
+  const { t } = useTranslation()
+  return (date: string | Date): string => {
+    const d = new Date(date)
+    const now = new Date()
+    const diffDays = Math.floor((now.getTime() - d.getTime()) / (1000 * 60 * 60 * 24))
+    if (diffDays === 0) return t('history.today')
+    if (diffDays === 1) return t('history.yesterday')
+    if (diffDays < 7) return d.toLocaleDateString(undefined, { weekday: 'long' })
+    return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: diffDays > 365 ? 'numeric' : undefined })
+  }
 }
 
 function formatTime(date: string | Date): string {
@@ -40,14 +50,16 @@ function formatTime(date: string | Date): string {
 
 export default function HistoryScreen() {
   const { colors, typography, spacing, radius } = useTheme()
-  const [dateFilter, setDateFilter] = useState('All')
+  const { t } = useTranslation()
+  const formatDate = useFormatDate()
+  const [dateFilter, setDateFilter] = useState<FilterId>('all')
   const [muscleFilter, setMuscleFilter] = useState('All')
 
   const { data: sessions } = trpc.sessions.history.useQuery({ limit: 100 })
 
   const filtered = useMemo(() => {
     if (!sessions) return []
-    const dateCutoff = DATE_FILTERS.find((f) => f.label === dateFilter)?.days
+    const dateCutoff = DATE_FILTERS.find((f) => f.id === dateFilter)?.days
     return sessions.filter((s) => {
       if (dateCutoff !== null && dateCutoff !== undefined) {
         const age = (Date.now() - new Date(s.startedAt).getTime()) / (1000 * 60 * 60 * 24)
@@ -68,25 +80,26 @@ export default function HistoryScreen() {
         {/* Header */}
         <View style={{ paddingHorizontal: spacing.base, paddingTop: spacing.base, paddingBottom: spacing.sm }}>
           <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size['2xl'], color: colors.textPrimary }}>
-            History
+            {t('history.screenTitle')}
           </Text>
         </View>
 
         {/* Date filter */}
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: spacing.base, gap: spacing.sm, paddingBottom: spacing.sm }}>
-          {DATE_FILTERS.map(({ label }) => {
-            const selected = dateFilter === label
+          {DATE_FILTERS.map((f) => {
+            const selected = dateFilter === f.id
+            const label = t(`history.filter_${f.id}` as any)
             return (
               <TouchableOpacity
-                key={label}
-                onPress={() => setDateFilter(label)}
+                key={f.id}
+                onPress={() => setDateFilter(f.id)}
                 style={{
                   paddingVertical: spacing.xs,
                   paddingHorizontal: spacing.md,
                   borderRadius: radius.pill,
                   backgroundColor: selected ? colors.primary : colors.surface2,
                 }}
-                accessibilityLabel={`Filter by ${label}`}
+                accessibilityLabel={label}
                 accessibilityRole="button"
               >
                 <Text style={{
@@ -103,8 +116,9 @@ export default function HistoryScreen() {
 
         {/* Muscle group filter */}
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: spacing.base, gap: spacing.sm, paddingBottom: spacing.base }}>
-          {MUSCLE_GROUPS.map((mg) => {
+          {(['All', ...MUSCLE_GROUPS] as string[]).map((mg) => {
             const selected = muscleFilter === mg
+            const label = mg === 'All' ? t('history.muscleAll') : t(`muscleGroups.${MG_KEY[mg] ?? mg.toLowerCase()}` as any)
             return (
               <TouchableOpacity
                 key={mg}
@@ -117,7 +131,7 @@ export default function HistoryScreen() {
                   borderWidth: 1,
                   borderColor: selected ? colors.primary : colors.surface2,
                 }}
-                accessibilityLabel={`Filter by ${mg}`}
+                accessibilityLabel={label}
                 accessibilityRole="button"
               >
                 <Text style={{
@@ -125,7 +139,7 @@ export default function HistoryScreen() {
                   fontSize: typography.size.base,
                   color: selected ? colors.primary : colors.textMuted,
                 }}>
-                  {mg}
+                  {label}
                 </Text>
               </TouchableOpacity>
             )
@@ -136,8 +150,8 @@ export default function HistoryScreen() {
         {filtered.length > 0 && (
           <View style={{ flexDirection: 'row', gap: spacing.sm, paddingHorizontal: spacing.base, marginBottom: spacing.base }}>
             {[
-              { label: 'Sessions', value: String(filtered.length) },
-              { label: 'Volume', value: totalVolume >= 1000 ? `${(totalVolume / 1000).toFixed(1)}t` : `${Math.round(totalVolume)}kg` },
+              { label: t('history.sessions'), value: String(filtered.length) },
+              { label: t('history.volume'), value: totalVolume >= 1000 ? `${(totalVolume / 1000).toFixed(1)}t` : `${Math.round(totalVolume)}kg` },
             ].map(({ label, value }) => (
               <View key={label} style={{ flex: 1, backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.md, alignItems: 'center' }}>
                 <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size['2xl'], color: colors.primary }}>{value}</Text>
@@ -151,27 +165,23 @@ export default function HistoryScreen() {
         <View style={{ paddingHorizontal: spacing.base, gap: spacing.sm }}>
           {filtered.length === 0 && (
             <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.body, color: colors.textMuted, textAlign: 'center', marginTop: spacing.xl }}>
-              No sessions found.
+              {t('history.noSessions')}
             </Text>
           )}
           {filtered.map((s) => (
-            <Card key={s.id} accessibilityLabel={`Session: ${s.workoutName ?? 'Workout'}`}>
+            <Card key={s.id} accessibilityLabel={`${s.workoutName ?? t('history.defaultWorkout')}`}>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <View style={{ flex: 1, gap: 4 }}>
-                  {/* Name */}
                   <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.body, color: colors.textPrimary }}>
-                    {s.workoutName ?? 'Workout'}
+                    {s.workoutName ?? t('history.defaultWorkout')}
                   </Text>
-                  {/* Date + time */}
                   <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted }}>
                     {formatDate(s.startedAt)} · {formatTime(s.startedAt)}
                   </Text>
-                  {/* Stats */}
                   <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted }}>
                     {formatDuration(s.durationSeconds)}
                     {(s.totalVolume ?? 0) > 0 ? ` · ${(s.totalVolume! / 1000).toFixed(1)}t` : ''}
                   </Text>
-                  {/* Muscle group tags */}
                   {s.muscleGroups && s.muscleGroups.length > 0 && (
                     <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs, marginTop: 2 }}>
                       {s.muscleGroups.slice(0, 4).map((mg) => (
@@ -185,14 +195,13 @@ export default function HistoryScreen() {
                           }}
                         >
                           <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted }}>
-                            {mg}
+                            {t(`muscleGroups.${MG_KEY[mg] ?? mg.toLowerCase()}` as any)}
                           </Text>
                         </View>
                       ))}
                     </View>
                   )}
                 </View>
-                {/* Status badge */}
                 <View style={{
                   backgroundColor: s.completedAt ? `${colors.success}18` : `${colors.warning}18`,
                   borderRadius: radius.sm,
@@ -205,7 +214,7 @@ export default function HistoryScreen() {
                     fontSize: typography.size.xs,
                     color: s.completedAt ? colors.success : colors.warning,
                   }}>
-                    {s.completedAt ? 'Done ✓' : 'Incomplete'}
+                    {s.completedAt ? t('history.done') : t('history.incomplete')}
                   </Text>
                 </View>
               </View>

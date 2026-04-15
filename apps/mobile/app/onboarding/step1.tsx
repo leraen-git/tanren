@@ -1,24 +1,26 @@
 import React, { useState } from 'react'
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native'
+import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
 import { colors as tokenColors } from '@/theme/tokens'
 import { trpc } from '@/lib/trpc'
+import { useTranslation } from 'react-i18next'
 
 export default function OnboardingStep1() {
   const { colors, typography, spacing, radius } = useTheme()
+  const { t } = useTranslation()
   const [name, setName] = useState('')
   const [gender, setGender] = useState<'male' | 'female' | null>(null)
   const updateMe = trpc.users.updateMe.useMutation()
 
   const handleNext = async () => {
     if (!name.trim()) {
-      Alert.alert('Missing name', 'Please enter your name.')
+      Alert.alert(t('onboarding.alertMissingName'), t('onboarding.alertMissingNameDesc'))
       return
     }
     if (!gender) {
-      Alert.alert('Missing gender', 'Please select your gender.')
+      Alert.alert(t('onboarding.alertMissingGender'), t('onboarding.alertMissingGenderDesc'))
       return
     }
     await updateMe.mutateAsync({ name: name.trim(), gender })
@@ -38,22 +40,22 @@ export default function OnboardingStep1() {
         {/* Title */}
         <View style={{ gap: spacing.sm }}>
           <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size['3xl'], color: colors.textPrimary }}>
-            Welcome to{'\n'}<Text style={{ color: colors.primary }}>FitTrack</Text>
+            {t('onboarding.welcomeTo')}{'\n'}<Text style={{ color: colors.primary }}>FitTrack</Text>
           </Text>
           <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.body, color: colors.textMuted }}>
-            Let's set up your profile in 2 quick steps.
+            {t('onboarding.step1Subtitle')}
           </Text>
         </View>
 
         {/* Name */}
         <View style={{ gap: spacing.sm }}>
           <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.body, color: colors.textPrimary }}>
-            What's your name?
+            {t('onboarding.nameLabel')}
           </Text>
           <TextInput
             value={name}
             onChangeText={setName}
-            placeholder="e.g. Alex"
+            placeholder={t('onboarding.namePlaceholder')}
             placeholderTextColor={colors.textMuted}
             autoFocus
             style={{
@@ -66,20 +68,20 @@ export default function OnboardingStep1() {
               borderWidth: 2,
               borderColor: name ? colors.primary : 'transparent',
             }}
-            accessibilityLabel="Your name"
+            accessibilityLabel={t('onboarding.nameLabel')}
           />
         </View>
 
         {/* Gender */}
         <View style={{ gap: spacing.sm }}>
           <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.body, color: colors.textPrimary }}>
-            What's your gender?
+            {t('onboarding.genderLabel')}
           </Text>
           <View style={{ flexDirection: 'row', gap: spacing.md }}>
             {(['male', 'female'] as const).map((g) => {
               const selected = gender === g
               const emoji = g === 'male' ? '♂️' : '♀️'
-              const label = g === 'male' ? 'Male' : 'Female'
+              const label = g === 'male' ? t('intake.male') : t('intake.female')
               return (
                 <TouchableOpacity
                   key={g}
@@ -120,7 +122,7 @@ export default function OnboardingStep1() {
           lineHeight: 16,
           marginTop: spacing.base,
         }}>
-          🔒 Your data is stored securely on our servers and never shared with third parties.
+          {t('onboarding.privacyDisclaimer')}
         </Text>
 
         {/* Next button */}
@@ -134,7 +136,7 @@ export default function OnboardingStep1() {
             alignItems: 'center',
             marginTop: spacing.base,
           }}
-          accessibilityLabel="Next step"
+          accessibilityLabel={t('onboarding.continue')}
           accessibilityRole="button"
         >
           <Text style={{
@@ -142,7 +144,7 @@ export default function OnboardingStep1() {
             fontSize: typography.size.xl,
             color: name && gender ? tokenColors.white : colors.textMuted,
           }}>
-            Continue →
+            {t('onboarding.continue')}
           </Text>
         </TouchableOpacity>
       </View>

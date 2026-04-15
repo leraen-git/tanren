@@ -5,25 +5,27 @@ import { router } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
 import { colors as tokenColors } from '@/theme/tokens'
 import { trpc } from '@/lib/trpc'
-
-const LEVELS = [
-  { value: 'BEGINNER', label: 'Beginner', desc: 'Less than 1 year' },
-  { value: 'INTERMEDIATE', label: 'Intermediate', desc: '1–3 years' },
-  { value: 'ADVANCED', label: 'Advanced', desc: '3+ years' },
-] as const
-
-const GOALS = [
-  { value: 'WEIGHT_LOSS', label: 'Weight Loss', emoji: '🔥' },
-  { value: 'MUSCLE_GAIN', label: 'Muscle Gain', emoji: '💪' },
-  { value: 'MAINTENANCE', label: 'Maintenance', emoji: '⚖️' },
-] as const
+import { useTranslation } from 'react-i18next'
 
 export default function OnboardingStep2() {
   const { colors, typography, spacing, radius } = useTheme()
+  const { t } = useTranslation()
   const [level, setLevel] = useState<'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED' | null>(null)
   const [days, setDays] = useState<number | null>(null)
   const [goal, setGoal] = useState<'WEIGHT_LOSS' | 'MUSCLE_GAIN' | 'MAINTENANCE' | null>(null)
   const updateMe = trpc.users.updateMe.useMutation()
+
+  const LEVELS = [
+    { value: 'BEGINNER' as const, label: t('profile.levelBeginner'), desc: t('onboarding.levelBeginnerDesc') },
+    { value: 'INTERMEDIATE' as const, label: t('profile.levelIntermediate'), desc: t('onboarding.levelIntermediateDesc') },
+    { value: 'ADVANCED' as const, label: t('profile.levelAdvanced'), desc: t('onboarding.levelAdvancedDesc') },
+  ]
+
+  const GOALS = [
+    { value: 'WEIGHT_LOSS' as const, label: t('profile.goalWeightLoss'), emoji: '🔥' },
+    { value: 'MUSCLE_GAIN' as const, label: t('profile.goalMuscleGain'), emoji: '💪' },
+    { value: 'MAINTENANCE' as const, label: t('profile.goalMaintenance'), emoji: '⚖️' },
+  ]
 
   const canContinue = level && days && goal
 
@@ -49,17 +51,17 @@ export default function OnboardingStep2() {
         {/* Title */}
         <View style={{ gap: spacing.sm }}>
           <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size['3xl'], color: colors.textPrimary }}>
-            Your{'\n'}<Text style={{ color: colors.primary }}>Training Profile</Text>
+            {t('onboarding.step2TitlePre')}{'\n'}<Text style={{ color: colors.primary }}>{t('onboarding.step2Title')}</Text>
           </Text>
           <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.body, color: colors.textMuted }}>
-            We'll personalize your workouts based on this.
+            {t('onboarding.step2Subtitle')}
           </Text>
         </View>
 
         {/* Level */}
         <View style={{ gap: spacing.sm }}>
           <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.body, color: colors.textPrimary }}>
-            Experience level
+            {t('onboarding.levelLabel')}
           </Text>
           <View style={{ gap: spacing.sm }}>
             {LEVELS.map((l) => {
@@ -104,7 +106,7 @@ export default function OnboardingStep2() {
         {/* Training days */}
         <View style={{ gap: spacing.sm }}>
           <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.body, color: colors.textPrimary }}>
-            Training days per week
+            {t('onboarding.daysLabel')}
           </Text>
           <View style={{ flexDirection: 'row', gap: spacing.sm }}>
             {[1, 2, 3, 4, 5, 6, 7].map((d) => {
@@ -123,7 +125,7 @@ export default function OnboardingStep2() {
                     alignItems: 'center',
                     justifyContent: 'center',
                   }}
-                  accessibilityLabel={`${d} days`}
+                  accessibilityLabel={String(d)}
                   accessibilityRole="button"
                 >
                   <Text style={{
@@ -142,7 +144,7 @@ export default function OnboardingStep2() {
         {/* Goal */}
         <View style={{ gap: spacing.sm }}>
           <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.body, color: colors.textPrimary }}>
-            Primary goal
+            {t('onboarding.goalLabel')}
           </Text>
           <View style={{ flexDirection: 'row', gap: spacing.md }}>
             {GOALS.map((g) => {
@@ -188,7 +190,7 @@ export default function OnboardingStep2() {
           lineHeight: 16,
           marginTop: spacing.base,
         }}>
-          🔒 Your data is stored securely on our servers and never shared with third parties.
+          {t('onboarding.privacyDisclaimer')}
         </Text>
 
         {/* Finish button */}
@@ -203,7 +205,7 @@ export default function OnboardingStep2() {
             marginTop: spacing.sm,
             marginBottom: spacing.xl,
           }}
-          accessibilityLabel="Start training"
+          accessibilityLabel={t('onboarding.continue')}
           accessibilityRole="button"
         >
           <Text style={{
@@ -211,7 +213,7 @@ export default function OnboardingStep2() {
             fontSize: typography.size.xl,
             color: canContinue ? tokenColors.white : colors.textMuted,
           }}>
-            Continue →
+            {t('onboarding.continue')}
           </Text>
         </TouchableOpacity>
       </ScrollView>

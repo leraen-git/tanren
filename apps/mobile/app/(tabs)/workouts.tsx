@@ -6,13 +6,14 @@ import { useTheme } from '@/theme/ThemeContext'
 import { SkeletonCard } from '@/components/SkeletonCard'
 import { trpc } from '@/lib/trpc'
 import { colors as tokenColors } from '@/theme/tokens'
+import { useTranslation } from 'react-i18next'
 
-const DAY_LABELS: Record<number, string> = {
-  0: 'Sun', 1: 'Mon', 2: 'Tue', 3: 'Wed', 4: 'Thu', 5: 'Fri', 6: 'Sat',
-}
+// dayOfWeek 0=Sun,1=Mon,...6=Sat → translation key
+const DOW_KEY = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'] as const
 
 function SectionHeader({ title, onAdd, addLabel }: { title: string; onAdd: () => void; addLabel: string }) {
   const { colors, typography, spacing } = useTheme()
+  const { t } = useTranslation()
   return (
     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.sm }}>
       <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size['2xl'], color: colors.textPrimary }}>
@@ -20,7 +21,7 @@ function SectionHeader({ title, onAdd, addLabel }: { title: string; onAdd: () =>
       </Text>
       <TouchableOpacity onPress={onAdd} accessibilityLabel={addLabel} accessibilityRole="button">
         <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.body, color: colors.primary }}>
-          + New
+          {t('workout.addNew')}
         </Text>
       </TouchableOpacity>
     </View>
@@ -29,6 +30,7 @@ function SectionHeader({ title, onAdd, addLabel }: { title: string; onAdd: () =>
 
 export default function WorkoutsScreen() {
   const { colors, typography, spacing, radius } = useTheme()
+  const { t } = useTranslation()
 
   const utils = trpc.useUtils()
   const { data: plans, isLoading: plansLoading, refetch: refetchPlans, isRefetching } = trpc.plans.list.useQuery()
@@ -56,9 +58,9 @@ export default function WorkoutsScreen() {
         {/* ─── Plans ──────────────────────────────────────────────── */}
         <View>
           <SectionHeader
-            title="My Plan"
+            title={t('workout.myPlan')}
             onAdd={() => router.push('/plans/create' as any)}
-            addLabel="Create new plan"
+            addLabel={t('workout.addNew')}
           />
 
           {plansLoading && <SkeletonCard height={120} />}
@@ -74,7 +76,7 @@ export default function WorkoutsScreen() {
                 borderWidth: 1,
                 borderColor: `${colors.primary}40`,
               }}
-              accessibilityLabel={`Open plan ${activePlan.name}`}
+              accessibilityLabel={`${t('workout.myPlan')}: ${activePlan.name}`}
               accessibilityRole="button"
             >
               <View style={{ padding: spacing.base, gap: 4 }}>
@@ -87,7 +89,7 @@ export default function WorkoutsScreen() {
                       paddingVertical: 2,
                     }}>
                       <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.xs, color: tokenColors.white }}>
-                        ACTIVE
+                        {t('workout.activeBadge')}
                       </Text>
                     </View>
                   </View>
@@ -97,7 +99,7 @@ export default function WorkoutsScreen() {
                   {activePlan.name}
                 </Text>
                 <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted }}>
-                  {activePlan.days.length} day{activePlan.days.length !== 1 ? 's' : ''} / week
+                  {t('workout.daysPerWeek', { count: activePlan.days.length })}
                 </Text>
               </View>
 
@@ -112,7 +114,7 @@ export default function WorkoutsScreen() {
                       alignItems: 'center', justifyContent: 'center',
                     }}>
                       <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.base, color: colors.primary }}>
-                        {DAY_LABELS[d.dayOfWeek]}
+                        {t(`days.${DOW_KEY[d.dayOfWeek]}`)}
                       </Text>
                     </View>
                     <View style={{ flex: 1 }}>
@@ -135,7 +137,7 @@ export default function WorkoutsScreen() {
           {inactivePlans.length > 0 && (
             <View style={{ marginTop: spacing.md, gap: spacing.sm }}>
               <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.base, color: colors.textMuted }}>
-                Other plans
+                {t('workout.otherPlans')}
               </Text>
               {inactivePlans.map((plan) => (
                 <TouchableOpacity
@@ -150,7 +152,7 @@ export default function WorkoutsScreen() {
                     flexDirection: 'row',
                     alignItems: 'center',
                   }}
-                  accessibilityLabel={`Open plan ${plan.name}`}
+                  accessibilityLabel={plan.name}
                   accessibilityRole="button"
                 >
                   <View style={{ flex: 1, gap: 2 }}>
@@ -158,7 +160,7 @@ export default function WorkoutsScreen() {
                       {plan.name}
                     </Text>
                     <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted }}>
-                      {plan.days.length} day{plan.days.length !== 1 ? 's' : ''} / week
+                      {t('workout.daysPerWeek', { count: plan.days.length })}
                     </Text>
                   </View>
                   <TouchableOpacity
@@ -170,11 +172,11 @@ export default function WorkoutsScreen() {
                       paddingVertical: spacing.xs,
                       marginRight: spacing.sm,
                     }}
-                    accessibilityLabel={`Activate ${plan.name}`}
+                    accessibilityLabel={t('workout.activate')}
                     accessibilityRole="button"
                   >
                     <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.base, color: colors.primary }}>
-                      Activate
+                      {t('workout.activate')}
                     </Text>
                   </TouchableOpacity>
                   <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xl, color: colors.textMuted }}>›</Text>
@@ -196,15 +198,15 @@ export default function WorkoutsScreen() {
                 alignItems: 'center',
                 gap: spacing.sm,
               }}
-              accessibilityLabel="Create your first plan"
+              accessibilityLabel={t('workout.noPlanYet')}
               accessibilityRole="button"
             >
               <Text style={{ fontSize: typography.size['3xl'] }}>📋</Text>
               <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.body, color: colors.textPrimary }}>
-                No plan yet
+                {t('workout.noPlanYet')}
               </Text>
               <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted }}>
-                Tap to create your first workout plan
+                {t('workout.noPlanYetDesc')}
               </Text>
             </TouchableOpacity>
           )}
@@ -213,9 +215,9 @@ export default function WorkoutsScreen() {
         {/* ─── Workout templates ──────────────────────────────────── */}
         <View>
           <SectionHeader
-            title="Workouts"
+            title={t('tabs.workouts')}
             onAdd={() => router.push('/workout/build' as any)}
-            addLabel="Create new workout"
+            addLabel={t('workout.addNew')}
           />
 
           {workoutsLoading && [1, 2, 3].map((i) => <SkeletonCard key={i} height={72} />)}
@@ -234,7 +236,7 @@ export default function WorkoutsScreen() {
                   flexDirection: 'row',
                   alignItems: 'center',
                 }}
-                accessibilityLabel={`Open ${w.name}`}
+                accessibilityLabel={w.name}
                 accessibilityRole="button"
               >
                 <View style={{ flex: 1, gap: 2 }}>
@@ -242,7 +244,7 @@ export default function WorkoutsScreen() {
                     {w.name}
                   </Text>
                   <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted }}>
-                    {w.muscleGroups.length > 0 ? `${w.muscleGroups.slice(0, 3).join(' · ')} · ` : ''}{w.estimatedDuration} min
+                    {w.muscleGroups.length > 0 ? `${w.muscleGroups.slice(0, 3).join(' · ')} · ` : ''}{w.estimatedDuration} {t('common.min')}
                   </Text>
                 </View>
                 <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xl, color: colors.textMuted }}>›</Text>
@@ -263,15 +265,15 @@ export default function WorkoutsScreen() {
                 alignItems: 'center',
                 gap: spacing.sm,
               }}
-              accessibilityLabel="Create your first workout"
+              accessibilityLabel={t('workout.noWorkoutsYet')}
               accessibilityRole="button"
             >
               <Text style={{ fontSize: typography.size['3xl'] }}>🏋️</Text>
               <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.body, color: colors.textPrimary }}>
-                No workouts yet
+                {t('workout.noWorkoutsYet')}
               </Text>
               <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted }}>
-                Tap to create your first workout
+                {t('workout.noWorkoutsYetDesc')}
               </Text>
             </TouchableOpacity>
           )}

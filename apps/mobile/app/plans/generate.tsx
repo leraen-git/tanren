@@ -7,36 +7,38 @@ import { Button } from '@/components/Button'
 import { trpc } from '@/lib/trpc'
 import { useAIPlanStore } from '@/stores/aiPlanStore'
 import { colors as tokenColors } from '@/theme/tokens'
-
-const GOAL_LABELS: Record<string, string> = {
-  MUSCLE_GAIN: 'Muscle gain',
-  WEIGHT_LOSS: 'Weight loss',
-  MAINTENANCE: 'Maintenance',
-}
-
-const LEVEL_LABELS: Record<string, string> = {
-  BEGINNER: 'Beginner',
-  INTERMEDIATE: 'Intermediate',
-  ADVANCED: 'Advanced',
-}
-
-const PROMPT_SUGGESTIONS = [
-  'Push/pull/legs 3x per week, focus on compound lifts',
-  'Upper/lower split 4 days, I want to get stronger',
-  'Full body 3 days, I have limited time (~45 min)',
-  '5 days per week, bodybuilding style',
-]
+import { useTranslation } from 'react-i18next'
 
 export default function GeneratePlanScreen() {
   const { colors, typography, spacing, radius } = useTheme()
+  const { t } = useTranslation()
   const { data: user } = trpc.users.me.useQuery()
   const { conversationHistory, lastPrompt, setPendingPrompt, reset } = useAIPlanStore()
   const [prompt, setPrompt] = useState(lastPrompt)
 
+  const GOAL_LABELS: Record<string, string> = {
+    MUSCLE_GAIN: t('profile.goalMuscleGain'),
+    WEIGHT_LOSS: t('profile.goalWeightLoss'),
+    MAINTENANCE: t('profile.goalMaintenance'),
+  }
+
+  const LEVEL_LABELS: Record<string, string> = {
+    BEGINNER: t('profile.levelBeginner'),
+    INTERMEDIATE: t('profile.levelIntermediate'),
+    ADVANCED: t('profile.levelAdvanced'),
+  }
+
+  const PROMPT_SUGGESTIONS = [
+    t('generate.suggestion1'),
+    t('generate.suggestion2'),
+    t('generate.suggestion3'),
+    t('generate.suggestion4'),
+  ]
+
   const handleGenerate = () => {
     const trimmed = prompt.trim()
     if (!trimmed) {
-      Alert.alert('Describe your goals', 'Tell us what kind of plan you are looking for.')
+      Alert.alert(t('generate.alertTitle'), t('generate.alertDesc'))
       return
     }
     setPendingPrompt(trimmed)
@@ -52,17 +54,17 @@ export default function GeneratePlanScreen() {
         <View style={{ flexDirection: 'row', alignItems: 'center', padding: spacing.base, gap: spacing.md }}>
           <TouchableOpacity
             onPress={() => { reset(); router.back() }}
-            accessibilityLabel="Go back"
+            accessibilityLabel={t('common.back')}
             accessibilityRole="button"
           >
             <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.title, color: colors.primary }}>←</Text>
           </TouchableOpacity>
           <View style={{ flex: 1 }}>
             <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size.xl, color: colors.textPrimary }}>
-              {isRefinement ? 'Ask for changes' : 'AI Plan Generator'}
+              {isRefinement ? t('generate.titleRefine') : t('generate.title')}
             </Text>
             <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted }}>
-              Powered by Claude
+              {t('generate.poweredBy')}
             </Text>
           </View>
           <Text style={{ fontSize: typography.size['2xl'] }}>✨</Text>
@@ -76,13 +78,13 @@ export default function GeneratePlanScreen() {
           {user && (
             <View style={{ gap: spacing.xs }}>
               <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.base, color: colors.textMuted }}>
-                Your profile
+                {t('generate.yourProfile')}
               </Text>
               <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs }}>
                 {[
                   LEVEL_LABELS[user.level] ?? user.level,
                   GOAL_LABELS[user.goal] ?? user.goal,
-                  `${user.weeklyTarget}x / week`,
+                  t('generate.xPerWeek', { n: user.weeklyTarget }),
                   ...(user.weightKg ? [`${user.weightKg}kg`] : []),
                   ...(user.heightCm ? [`${user.heightCm}cm`] : []),
                 ].map((chip) => (
@@ -107,16 +109,12 @@ export default function GeneratePlanScreen() {
           {/* Prompt input */}
           <View style={{ gap: spacing.sm }}>
             <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.body, color: colors.textPrimary }}>
-              {isRefinement ? 'What would you like to change?' : 'Describe your ideal plan'}
+              {isRefinement ? t('generate.refinementLabel') : t('generate.describeLabel')}
             </Text>
             <TextInput
               value={prompt}
               onChangeText={setPrompt}
-              placeholder={
-                isRefinement
-                  ? 'e.g. Make it 4 days instead of 3, add more leg work...'
-                  : 'e.g. Push/pull/legs 3 days a week, I want to build muscle and have about 60 min per session...'
-              }
+              placeholder={isRefinement ? t('generate.refinementPlaceholder') : t('generate.placeholder')}
               placeholderTextColor={colors.textMuted}
               multiline
               numberOfLines={5}
@@ -132,7 +130,7 @@ export default function GeneratePlanScreen() {
                 borderWidth: 1,
                 borderColor: colors.surface2,
               }}
-              accessibilityLabel="Describe your plan"
+              accessibilityLabel={t('generate.describeLabel')}
             />
           </View>
 
@@ -140,7 +138,7 @@ export default function GeneratePlanScreen() {
           {!isRefinement && (
             <View style={{ gap: spacing.sm }}>
               <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.base, color: colors.textMuted }}>
-                Quick start
+                {t('generate.quickStart')}
               </Text>
               <View style={{ gap: spacing.xs }}>
                 {PROMPT_SUGGESTIONS.map((s) => (
@@ -157,7 +155,7 @@ export default function GeneratePlanScreen() {
                       borderWidth: 1,
                       borderColor: colors.surface2,
                     }}
-                    accessibilityLabel={`Use suggestion: ${s}`}
+                    accessibilityLabel={s}
                     accessibilityRole="button"
                   >
                     <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted, flex: 1 }}>
@@ -171,7 +169,7 @@ export default function GeneratePlanScreen() {
           )}
 
           <Button
-            label={isRefinement ? '✨ Regenerate with changes' : '✨ Generate my plan'}
+            label={isRefinement ? t('generate.regenerateBtn') : t('generate.generateBtn')}
             onPress={handleGenerate}
           />
         </ScrollView>

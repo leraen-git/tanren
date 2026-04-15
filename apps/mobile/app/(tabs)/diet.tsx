@@ -9,7 +9,8 @@ import { colors as tokenColors } from '@/theme/tokens'
 import { MealDetailModal, MEAL_ICONS, sortMeals, type DietMeal } from '@/components/MealDetailModal'
 import { useTranslation } from 'react-i18next'
 
-const DAY_NAMES = ['', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] // index 1–7
+// DB dayOfWeek 1=Mon … 7=Sun → translation key
+const DOW_DB_KEY = ['', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const
 
 type DietDay = {
   dayOfWeek: number
@@ -213,10 +214,10 @@ export default function DietScreen() {
                   borderWidth: isToday && !isSelected ? 1 : 0,
                   borderColor: colors.primary,
                 }}
-                accessibilityRole="button" accessibilityLabel={DAY_NAMES[d.dayOfWeek]}
+                accessibilityRole="button" accessibilityLabel={t(`days.${DOW_DB_KEY[d.dayOfWeek]}`)}
               >
                 <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.base, color: isSelected ? tokenColors.white : colors.textMuted }}>
-                  {DAY_NAMES[d.dayOfWeek]}
+                  {t(`days.${DOW_DB_KEY[d.dayOfWeek]}`)}
                 </Text>
                 <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: isSelected ? `${tokenColors.white}99` : colors.textMuted }}>
                   {(d.meals ?? []).reduce((s: number, m: any) => s + (m.calories ?? 0), 0)}
@@ -234,7 +235,7 @@ export default function DietScreen() {
                 {currentDay.theme}
               </Text>
               <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted }}>
-                {dayCalories} kcal · P {dayProtein}g · C {dayCarbs}g · F {dayFat}g
+                {dayCalories} {t('diet.kcal')} · {t('diet.proteinShort')} {dayProtein}g · {t('diet.carbsShort')} {dayCarbs}g · {t('diet.fatShort')} {dayFat}g
               </Text>
             </View>
 
