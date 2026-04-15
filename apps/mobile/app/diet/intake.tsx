@@ -10,6 +10,7 @@ import { Button } from '@/components/Button'
 import { trpc } from '@/lib/trpc'
 import { useDietIntakeStore } from '@/stores/dietIntakeStore'
 import { colors as tokenColors } from '@/theme/tokens'
+import { useTranslation } from 'react-i18next'
 
 const TOTAL_STEPS = 4
 
@@ -68,6 +69,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 
 export default function DietIntakeScreen() {
   const { colors, typography, spacing, radius } = useTheme()
+  const { t } = useTranslation()
   const [step, setStep] = useState(0)
   const { intake, update } = useDietIntakeStore()
   const { data: user } = trpc.users.me.useQuery()
@@ -75,9 +77,12 @@ export default function DietIntakeScreen() {
 
   // Pre-fill from user profile on mount
   React.useEffect(() => {
-    if (user) {
-      if (user.gender && !intake.sex) update({ sex: user.gender })
-    }
+    if (!user) return
+    const prefill: Record<string, any> = {}
+    if (user.gender && !intake.sex) prefill.sex = user.gender
+    // Use current weight as a starting point for goal weight if not yet set
+    if (user.weightKg && !intake.goalWeight) prefill.goalWeight = String(Math.round(user.weightKg))
+    if (Object.keys(prefill).length > 0) update(prefill)
   }, [user])
 
   const inputStyle = {
@@ -93,49 +98,44 @@ export default function DietIntakeScreen() {
 
   const validateStep = () => {
     if (step === 0) {
-      if (!intake.age || isNaN(Number(intake.age))) return 'Please enter your age.'
-      if (!intake.sex) return 'Please select your sex.'
+      if (!intake.age || isNaN(Number(intake.age))) return t('intake.errAge')
+      if (!intake.sex) return t('intake.errSex')
     }
     if (step === 1) {
-      if (!intake.jobType.trim()) return 'Please describe your job type.'
-      if (!intake.exerciseFrequency.trim()) return 'Please describe your exercise habits.'
+      if (!intake.jobType.trim()) return t('intake.errJob')
+      if (!intake.exerciseFrequency.trim()) return t('intake.errExercise')
     }
     if (step === 2) {
-      if (intake.favoriteFoods.length === 0) return 'Add at least one favourite meal.'
+      if (intake.favoriteFoods.length === 0) return t('intake.errFoods')
     }
     return null
   }
 
   const handleNext = () => {
     const err = validateStep()
-    if (err) { Alert.alert('Missing info', err); return }
+    if (err) { Alert.alert(t('intake.errMissingInfo'), err); return }
     if (step < TOTAL_STEPS - 1) {
       setStep(step + 1)
       scrollRef.current?.scrollTo({ y: 0, animated: false })
     } else {
-      handleGenerate()
+      router.push('/diet/generating' as any)
     }
   }
 
-  const handleGenerate = () => {
-    router.push('/diet/generating' as any)
-  }
-
   const stepTitles = [
-    'Your stats',
-    'Your lifestyle',
-    'Your food preferences',
-    'Your snack habits',
+    t('intake.step1Title'),
+    t('intake.step2Title'),
+    t('intake.step3Title'),
+    t('intake.step4Title'),
   ]
 
   const stepSubtitles = [
-    "Tell me about yourself — I'll use this to nail your calories exactly.",
-    "Your daily activity shapes your calorie target more than anything else.",
-    "The secret to a plan you'll actually stick to is food you already love.",
-    "Let's fix your snacks — they're often the hidden calories no one talks about.",
+    t('intake.step1Subtitle'),
+    t('intake.step2Subtitle'),
+    t('intake.step3Subtitle'),
+    t('intake.step4Subtitle'),
   ]
 
-  // Favourite foods input helper
   const [foodInput, setFoodInput] = useState('')
   const addFood = () => {
     const trimmed = foodInput.trim()
@@ -152,7 +152,7 @@ export default function DietIntakeScreen() {
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.md }}>
             <TouchableOpacity
               onPress={() => { if (step === 0) router.back(); else setStep(step - 1) }}
-              accessibilityLabel="Go back" accessibilityRole="button"
+              accessibilityLabel={t('common.back')} accessibilityRole="button"
             >
               <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.title, color: colors.primary }}>←</Text>
             </TouchableOpacity>
@@ -179,41 +179,41 @@ export default function DietIntakeScreen() {
           {/* ── STEP 0: Stats ── */}
           {step === 0 && (
             <>
-              <Field label="Age">
+              <Field label={t('intake.ageLabel')}>
                 <TextInput
                   value={intake.age}
                   onChangeText={(v) => update({ age: v })}
                   keyboardType="number-pad"
-                  placeholder="e.g. 28"
+                  placeholder={t('intake.agePlaceholder')}
                   placeholderTextColor={colors.textMuted}
                   style={inputStyle}
-                  accessibilityLabel="Age"
+                  accessibilityLabel={t('intake.ageLabel')}
                 />
               </Field>
 
-              <Field label="Biological sex">
+              <Field label={t('intake.sexLabel')}>
                 <View style={{ flexDirection: 'row', gap: spacing.sm }}>
-                  <Chip label="Male" selected={intake.sex === 'male'} onPress={() => update({ sex: 'male' })} />
-                  <Chip label="Female" selected={intake.sex === 'female'} onPress={() => update({ sex: 'female' })} />
+                  <Chip label={t('intake.male')} selected={intake.sex === 'male'} onPress={() => update({ sex: 'male' })} />
+                  <Chip label={t('intake.female')} selected={intake.sex === 'female'} onPress={() => update({ sex: 'female' })} />
                 </View>
               </Field>
 
-              <Field label="Goal weight (kg) — optional">
+              <Field label={t('intake.goalWeightLabel')}>
                 <TextInput
                   value={intake.goalWeight}
                   onChangeText={(v) => update({ goalWeight: v })}
                   keyboardType="decimal-pad"
-                  placeholder="e.g. 75"
+                  placeholder={t('intake.goalWeightPlaceholder')}
                   placeholderTextColor={colors.textMuted}
                   style={inputStyle}
-                  accessibilityLabel="Goal weight"
+                  accessibilityLabel={t('intake.goalWeightLabel')}
                 />
               </Field>
 
-              <Field label="How quickly do you want to get there?">
+              <Field label={t('intake.goalPaceLabel')}>
                 <View style={{ flexDirection: 'row', gap: spacing.sm }}>
-                  <Chip label="Steady & sustainable" selected={intake.goalPace === 'steady'} onPress={() => update({ goalPace: 'steady' })} />
-                  <Chip label="As fast as possible" selected={intake.goalPace === 'fast'} onPress={() => update({ goalPace: 'fast' })} />
+                  <Chip label={t('intake.goalPaceSteady')} selected={intake.goalPace === 'steady'} onPress={() => update({ goalPace: 'steady' })} />
+                  <Chip label={t('intake.goalPaceFast')} selected={intake.goalPace === 'fast'} onPress={() => update({ goalPace: 'fast' })} />
                 </View>
               </Field>
             </>
@@ -222,29 +222,29 @@ export default function DietIntakeScreen() {
           {/* ── STEP 1: Lifestyle ── */}
           {step === 1 && (
             <>
-              <Field label="What's your job like?">
+              <Field label={t('intake.jobLabel')}>
                 <TextInput
                   value={intake.jobType}
                   onChangeText={(v) => update({ jobType: v })}
-                  placeholder="e.g. desk job, on my feet all day, manual labour..."
+                  placeholder={t('intake.jobPlaceholder')}
                   placeholderTextColor={colors.textMuted}
                   style={inputStyle}
-                  accessibilityLabel="Job type"
+                  accessibilityLabel={t('intake.jobLabel')}
                 />
               </Field>
 
-              <Field label="How often do you exercise, and what type?">
+              <Field label={t('intake.exerciseLabel')}>
                 <TextInput
                   value={intake.exerciseFrequency}
                   onChangeText={(v) => update({ exerciseFrequency: v })}
-                  placeholder="e.g. 4x/week weight training + 1 run"
+                  placeholder={t('intake.exercisePlaceholder')}
                   placeholderTextColor={colors.textMuted}
                   style={inputStyle}
-                  accessibilityLabel="Exercise frequency"
+                  accessibilityLabel={t('intake.exerciseLabel')}
                 />
               </Field>
 
-              <Field label="Hours of sleep per night">
+              <Field label={t('intake.sleepLabel')}>
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}>
                   {['5', '6', '7', '8', '9+'].map((h) => (
                     <Chip key={h} label={h} selected={intake.sleepHours === h} onPress={() => update({ sleepHours: h })} />
@@ -252,18 +252,28 @@ export default function DietIntakeScreen() {
                 </View>
               </Field>
 
-              <Field label="Current stress level">
+              <Field label={t('intake.stressLabel')}>
                 <View style={{ flexDirection: 'row', gap: spacing.sm }}>
-                  {(['low', 'moderate', 'high'] as const).map((s) => (
-                    <Chip key={s} label={s.charAt(0).toUpperCase() + s.slice(1)} selected={intake.stressLevel === s} onPress={() => update({ stressLevel: s })} />
+                  {([
+                    { key: 'low', label: t('intake.stressLow') },
+                    { key: 'moderate', label: t('intake.stressModerate') },
+                    { key: 'high', label: t('intake.stressHigh') },
+                  ] as const).map((s) => (
+                    <Chip key={s.key} label={s.label} selected={intake.stressLevel === s.key} onPress={() => update({ stressLevel: s.key })} />
                   ))}
                 </View>
               </Field>
 
-              <Field label="Alcohol per week">
+              <Field label={t('intake.alcoholLabel')}>
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}>
-                  {['None', '1-2 drinks', '3-5 drinks', '6-10 drinks', '10+ drinks'].map((a) => (
-                    <Chip key={a} label={a} selected={intake.alcoholPerWeek === a.toLowerCase()} onPress={() => update({ alcoholPerWeek: a.toLowerCase() })} />
+                  {([
+                    { key: 'none', label: t('intake.alcoholNone') },
+                    { key: '1-2 drinks', label: t('intake.alcohol12') },
+                    { key: '3-5 drinks', label: t('intake.alcohol35') },
+                    { key: '6-10 drinks', label: t('intake.alcohol610') },
+                    { key: '10+ drinks', label: t('intake.alcohol10plus') },
+                  ]).map((a) => (
+                    <Chip key={a.key} label={a.label} selected={intake.alcoholPerWeek === a.key} onPress={() => update({ alcoholPerWeek: a.key })} />
                   ))}
                 </View>
               </Field>
@@ -273,14 +283,18 @@ export default function DietIntakeScreen() {
           {/* ── STEP 2: Food preferences ── */}
           {step === 2 && (
             <>
-              <Field label={`Favourite meals or dishes (${intake.favoriteFoods.length}/5)`}>
+              <Field label={t('intake.favFoodsLabel', { count: intake.favoriteFoods.length })}>
                 <View style={{ gap: spacing.sm }}>
                   {intake.favoriteFoods.map((f, i) => (
                     <View key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
                       <View style={{ flex: 1, backgroundColor: colors.surface, borderRadius: radius.md, padding: spacing.md, borderWidth: 1, borderColor: colors.surface2 }}>
                         <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.body, color: colors.textPrimary }}>{f}</Text>
                       </View>
-                      <TouchableOpacity onPress={() => update({ favoriteFoods: intake.favoriteFoods.filter((_, j) => j !== i) })} accessibilityLabel={`Remove ${f}`} accessibilityRole="button">
+                      <TouchableOpacity
+                        onPress={() => update({ favoriteFoods: intake.favoriteFoods.filter((_, j) => j !== i) })}
+                        accessibilityLabel={`${t('common.remove')} ${f}`}
+                        accessibilityRole="button"
+                      >
                         <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.title, color: colors.textMuted }}>×</Text>
                       </TouchableOpacity>
                     </View>
@@ -290,17 +304,17 @@ export default function DietIntakeScreen() {
                       <TextInput
                         value={foodInput}
                         onChangeText={setFoodInput}
-                        placeholder="e.g. Pasta carbonara, sushi..."
+                        placeholder={t('intake.favFoodsPlaceholder')}
                         placeholderTextColor={colors.textMuted}
                         style={{ ...inputStyle, flex: 1 }}
                         onSubmitEditing={addFood}
                         returnKeyType="done"
-                        accessibilityLabel="Add favourite food"
+                        accessibilityLabel={t('intake.favFoodsLabel', { count: intake.favoriteFoods.length })}
                       />
                       <TouchableOpacity
                         onPress={addFood}
                         style={{ backgroundColor: colors.primary, borderRadius: radius.md, paddingHorizontal: spacing.md, alignItems: 'center', justifyContent: 'center' }}
-                        accessibilityLabel="Add food" accessibilityRole="button"
+                        accessibilityLabel={t('common.add')} accessibilityRole="button"
                       >
                         <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.xl, color: tokenColors.white }}>+</Text>
                       </TouchableOpacity>
@@ -309,34 +323,34 @@ export default function DietIntakeScreen() {
                 </View>
               </Field>
 
-              <Field label="Foods you hate (optional)">
+              <Field label={t('intake.hatedFoodsLabel')}>
                 <TextInput
                   value={intake.hatedFoods}
                   onChangeText={(v) => update({ hatedFoods: v })}
-                  placeholder="e.g. Mushrooms, liver, blue cheese..."
+                  placeholder={t('intake.hatedFoodsPlaceholder')}
                   placeholderTextColor={colors.textMuted}
                   style={inputStyle}
-                  accessibilityLabel="Hated foods"
+                  accessibilityLabel={t('intake.hatedFoodsLabel')}
                 />
               </Field>
 
-              <Field label="Dietary restrictions or allergies (optional)">
+              <Field label={t('intake.restrictionsLabel')}>
                 <TextInput
                   value={intake.dietaryRestrictions}
                   onChangeText={(v) => update({ dietaryRestrictions: v })}
-                  placeholder="e.g. Vegetarian, lactose intolerant, nut allergy..."
+                  placeholder={t('intake.restrictionsPlaceholder')}
                   placeholderTextColor={colors.textMuted}
                   style={inputStyle}
-                  accessibilityLabel="Dietary restrictions"
+                  accessibilityLabel={t('intake.restrictionsLabel')}
                 />
               </Field>
 
-              <Field label="Cooking style">
+              <Field label={t('intake.cookingStyleLabel')}>
                 <View style={{ gap: spacing.sm }}>
                   {([
-                    { key: 'scratch', label: 'From scratch', desc: 'I enjoy cooking proper meals' },
-                    { key: 'quick', label: 'Quick & easy', desc: 'Under 30 minutes please' },
-                    { key: 'batch', label: 'Batch prep', desc: 'Cook once, eat all week' },
+                    { key: 'scratch', label: t('intake.cookingScratch'), desc: t('intake.cookingScratchDesc') },
+                    { key: 'quick',   label: t('intake.cookingQuick'),   desc: t('intake.cookingQuickDesc') },
+                    { key: 'batch',   label: t('intake.cookingBatch'),   desc: t('intake.cookingBatchDesc') },
                   ] as const).map((o) => (
                     <TouchableOpacity
                       key={o.key}
@@ -362,7 +376,7 @@ export default function DietIntakeScreen() {
                 </View>
               </Field>
 
-              <Field label={`How adventurous with food? ${intake.foodAdventure}/10`}>
+              <Field label={t('intake.adventureLabel', { score: intake.foodAdventure })}>
                 <View style={{ flexDirection: 'row', gap: spacing.xs }}>
                   {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => (
                     <TouchableOpacity
@@ -373,17 +387,17 @@ export default function DietIntakeScreen() {
                         backgroundColor: n <= intake.foodAdventure ? colors.primary : colors.surface2,
                         alignItems: 'center',
                       }}
-                      accessibilityRole="button" accessibilityLabel={`Food adventure ${n}`}
+                      accessibilityRole="button" accessibilityLabel={`${n}`}
                     >
-                      <Text style={{ fontFamily: typography.family.bold, fontSize: 9, color: n <= intake.foodAdventure ? tokenColors.white : colors.textMuted }}>
+                      <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.xs, color: n <= intake.foodAdventure ? tokenColors.white : colors.textMuted }}>
                         {n}
                       </Text>
                     </TouchableOpacity>
                   ))}
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                  <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted }}>Stick to what I know</Text>
-                  <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted }}>Try anything</Text>
+                  <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted }}>{t('intake.adventureMin')}</Text>
+                  <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted }}>{t('intake.adventureMax')}</Text>
                 </View>
               </Field>
             </>
@@ -392,44 +406,52 @@ export default function DietIntakeScreen() {
           {/* ── STEP 3: Snack habits ── */}
           {step === 3 && (
             <>
-              <Field label="What do you typically snack on?">
+              <Field label={t('intake.currentSnacksLabel')}>
                 <TextInput
                   value={intake.currentSnacks}
                   onChangeText={(v) => update({ currentSnacks: v })}
-                  placeholder="e.g. crisps, chocolate, biscuits, fruit..."
+                  placeholder={t('intake.currentSnacksPlaceholder')}
                   placeholderTextColor={colors.textMuted}
                   style={inputStyle}
-                  accessibilityLabel="Current snacks"
+                  accessibilityLabel={t('intake.currentSnacksLabel')}
                 />
               </Field>
 
-              <Field label="Why do you usually snack?">
+              <Field label={t('intake.snackReasonLabel')}>
                 <View style={{ flexDirection: 'row', gap: spacing.sm }}>
-                  {(['hunger', 'boredom', 'habit'] as const).map((r) => (
-                    <Chip key={r} label={r.charAt(0).toUpperCase() + r.slice(1)} selected={intake.snackReason === r} onPress={() => update({ snackReason: r })} />
+                  {([
+                    { key: 'hunger',  label: t('intake.snackReasonHunger') },
+                    { key: 'boredom', label: t('intake.snackReasonBoredom') },
+                    { key: 'habit',   label: t('intake.snackReasonHabit') },
+                  ] as const).map((r) => (
+                    <Chip key={r.key} label={r.label} selected={intake.snackReason === r.key} onPress={() => update({ snackReason: r.key })} />
                   ))}
                 </View>
               </Field>
 
-              <Field label="Snack preference">
+              <Field label={t('intake.snackPrefLabel')}>
                 <View style={{ flexDirection: 'row', gap: spacing.sm }}>
-                  {(['sweet', 'savoury', 'both'] as const).map((p) => (
-                    <Chip key={p} label={p.charAt(0).toUpperCase() + p.slice(1)} selected={intake.snackPreference === p} onPress={() => update({ snackPreference: p })} />
+                  {([
+                    { key: 'sweet',   label: t('intake.snackPrefSweet') },
+                    { key: 'savoury', label: t('intake.snackPrefSavoury') },
+                    { key: 'both',    label: t('intake.snackPrefBoth') },
+                  ] as const).map((p) => (
+                    <Chip key={p.key} label={p.label} selected={intake.snackPreference === p.key} onPress={() => update({ snackPreference: p.key })} />
                   ))}
                 </View>
               </Field>
 
-              <Field label="Do you snack late at night?">
+              <Field label={t('intake.nightSnackLabel')}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: colors.surface, borderRadius: radius.md, padding: spacing.md, borderWidth: 1, borderColor: colors.surface2 }}>
                   <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.body, color: colors.textPrimary }}>
-                    {intake.nightSnacking ? 'Yes, sometimes' : 'No, I stop after dinner'}
+                    {intake.nightSnacking ? t('intake.nightSnackYes') : t('intake.nightSnackNo')}
                   </Text>
                   <Switch
                     value={intake.nightSnacking}
                     onValueChange={(v) => update({ nightSnacking: v })}
                     trackColor={{ true: colors.primary, false: colors.surface2 }}
                     thumbColor={tokenColors.white}
-                    accessibilityLabel="Night snacking"
+                    accessibilityLabel={t('intake.nightSnackLabel')}
                   />
                 </View>
               </Field>
@@ -437,17 +459,17 @@ export default function DietIntakeScreen() {
               {/* Summary before generating */}
               <View style={{ backgroundColor: `${colors.primary}10`, borderRadius: radius.lg, padding: spacing.base, borderWidth: 1, borderColor: `${colors.primary}30`, gap: spacing.xs }}>
                 <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.body, color: colors.primary }}>
-                  ✨ Ready to generate your plan
+                  {t('intake.readyTitle')}
                 </Text>
                 <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted }}>
-                  Claude will calculate your exact calories, build a 7-day meal plan around your favourite foods, and give you personalised rules to live by. This takes about 30–60 seconds.
+                  {t('intake.readyDesc')}
                 </Text>
               </View>
             </>
           )}
 
           <Button
-            label={step < TOTAL_STEPS - 1 ? 'Continue →' : '✨ Generate my diet plan'}
+            label={step < TOTAL_STEPS - 1 ? t('intake.continue') : t('intake.generate')}
             onPress={handleNext}
           />
         </ScrollView>
