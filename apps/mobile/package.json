@@ -46,8 +46,8 @@
     "expo-task-manager": "~13.1.6",
     "expo-web-browser": "~14.2.0",
     "i18next": "^24.2.1",
-    "react": "19.0.0",
-    "react-dom": "19.0.0",
+    "react": "19.2.5",
+    "react-dom": "19.2.5",
     "react-i18next": "^15.4.0",
     "react-native": "0.79.6",
     "react-native-gesture-handler": "~2.24.0",
@@ -62,7 +62,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
-    "@types/react": "~19.0.10",
+    "@types/react": "~19.2.0",
     "typescript": "^5.7.2",
     "vitest": "^4.1.4"
   }
