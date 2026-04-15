@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { View, Text, ScrollView, TouchableOpacity, Alert } from 'react-native'
+import { View, Text, ScrollView, TouchableOpacity } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
@@ -64,24 +64,24 @@ export default function DietScreen() {
   const utils = trpc.useUtils()
   const [selectedMeal, setSelectedMeal] = useState<DietMeal | null>(null)
 
+  const restorePlan = trpc.diet.restoreLastPlan.useMutation({
+    onSuccess: () => Promise.all([
+      utils.diet.activePlan.invalidate(),
+      utils.diet.todayMeals.invalidate(),
+    ]),
+    onError: () => {
+      // No previous plan to restore — silently ignore (button won't show in this case)
+    },
+  })
+
   // Today's day of week mapped to 1-7 (Mon=1, Sun=7)
   const todayJs = new Date().getDay() // 0=Sun
   const todayDow = todayJs === 0 ? 7 : todayJs // convert to 1-7
   const [selectedDay, setSelectedDay] = useState(todayDow)
 
-  const deletePlan = trpc.diet.deletePlan.useMutation({
-    onSuccess: () => Promise.all([
-      utils.diet.activePlan.invalidate(),
-      utils.diet.todayMeals.invalidate(),
-    ]),
-    onError: (err) => Alert.alert('Error', err.message),
-  })
-
   const handleDelete = () => {
-    Alert.alert(t('diet.resetTitle'), t('diet.resetDesc'), [
-      { text: t('common.cancel'), style: 'cancel' },
-      { text: t('diet.reset'), style: 'destructive', onPress: () => deletePlan.mutate() },
-    ])
+    // Navigate to intake — the old plan stays active until a new one is successfully generated
+    router.push('/diet/intake' as any)
   }
 
   if (isLoading) {
@@ -130,6 +130,17 @@ export default function DietScreen() {
           >
             <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size.xl, color: tokenColors.white }}>
               {t('diet.buildPlan')}
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => restorePlan.mutate()}
+            disabled={restorePlan.isPending}
+            style={{ alignItems: 'center', paddingVertical: spacing.sm }}
+            accessibilityLabel={t('diet.restorePlan')} accessibilityRole="button"
+          >
+            <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.base, color: colors.textMuted }}>
+              {restorePlan.isPending ? t('common.loading') : t('diet.restorePlan')}
             </Text>
           </TouchableOpacity>
         </ScrollView>

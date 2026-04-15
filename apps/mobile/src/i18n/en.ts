@@ -156,6 +156,7 @@ export const en = {
     rules: 'Your 5 rules',
     supplements: 'Supplements',
     timeline: 'Your realistic timeline',
+    restorePlan: 'Restore previous plan',
     regeneratePrompt: 'Want a different plan?',
     regenerateLink: 'Regenerate ✨',
     buildPlan: 'Build my diet plan ✨',

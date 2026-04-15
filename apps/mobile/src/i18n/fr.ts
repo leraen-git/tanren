@@ -156,6 +156,7 @@ export const fr = {
     rules: 'Tes 5 règles',
     supplements: 'Compléments',
     timeline: 'Ta timeline réaliste',
+    restorePlan: 'Restaurer le plan précédent',
     regeneratePrompt: 'Envie de changer ?',
     regenerateLink: 'Régénérer ✨',
     buildPlan: 'Créer mon plan alimentaire ✨',

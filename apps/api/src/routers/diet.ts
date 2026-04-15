@@ -393,4 +393,18 @@ Now generate my complete diet plan as JSON.`
     await ctx.db.update(dietPlans).set({ isActive: false }).where(eq(dietPlans.userId, user.id))
     return { success: true }
   }),
+
+  // Reactivate the most recently created plan (useful if user deactivated without generating a new one)
+  restoreLastPlan: protectedProcedure.mutation(async ({ ctx }) => {
+    const user = await resolveUser(ctx.db, ctx.userId)
+    const [latest] = await ctx.db
+      .select({ id: dietPlans.id })
+      .from(dietPlans)
+      .where(eq(dietPlans.userId, user.id))
+      .orderBy(desc(dietPlans.createdAt))
+      .limit(1)
+    if (!latest) throw new TRPCError({ code: 'NOT_FOUND', message: 'No previous diet plan found.' })
+    await ctx.db.update(dietPlans).set({ isActive: true }).where(eq(dietPlans.id, latest.id))
+    return { success: true }
+  }),
 })
