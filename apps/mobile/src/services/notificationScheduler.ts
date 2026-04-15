@@ -66,6 +66,7 @@ export interface WorkoutPlanDay {
 export async function rescheduleWorkoutNotifications(
   settings: NotificationSettings,
   planDays?: WorkoutPlanDay[],
+  lang: 'en' | 'fr' = 'en',
 ): Promise<void> {
   await cancelByPrefix('workout-')
 
@@ -80,13 +81,20 @@ export async function rescheduleWorkoutNotifications(
     if (count >= MAX) break
     const { hour, minute } = subtractMinutes(settings.workoutTime, settings.workoutOffset)
     const workoutName = planMap.get(day)
-    const offsetLabel =
-      settings.workoutOffset === 0
-        ? 'starts now'
-        : `starts in ${settings.workoutOffset} min`
+
+    let offsetLabel: string
+    if (settings.workoutOffset === 0) {
+      offsetLabel = lang === 'fr' ? 'commence maintenant' : 'starts now'
+    } else {
+      offsetLabel = lang === 'fr'
+        ? `dans ${settings.workoutOffset} min`
+        : `in ${settings.workoutOffset} min`
+    }
+
+    const title = lang === 'fr' ? 'Rappel entraînement' : 'Workout reminder'
     const body = workoutName
       ? `${workoutName} ${offsetLabel} 💪`
-      : 'Time to hit the gym 💪'
+      : lang === 'fr' ? "C'est l'heure de t'entraîner 💪" : "Time to hit the gym 💪"
 
     // Expo weekday: 1=Sunday, 2=Monday, …, 7=Saturday
     const weekday = day === 0 ? 1 : day + 1
@@ -94,10 +102,9 @@ export async function rescheduleWorkoutNotifications(
     await Notifications.scheduleNotificationAsync({
       identifier: `workout-${day}`,
       content: {
-        title: 'Workout Reminder',
+        title,
         body,
         data: { screen: 'workout' },
-        ...(true && { categoryIdentifier: undefined }),
       },
       trigger: {
         type: Notifications.SchedulableTriggerInputTypes.WEEKLY,
@@ -197,9 +204,10 @@ export async function rescheduleHydrationNotifications(settings: NotificationSet
 export async function rescheduleAll(
   settings: NotificationSettings,
   planDays?: WorkoutPlanDay[],
+  lang: 'en' | 'fr' = 'en',
 ): Promise<void> {
   await Promise.all([
-    rescheduleWorkoutNotifications(settings, planDays),
+    rescheduleWorkoutNotifications(settings, planDays, lang),
     rescheduleMealNotifications(settings),
     rescheduleHydrationNotifications(settings),
   ])

@@ -6,6 +6,7 @@ import { httpBatchLink } from '@trpc/client'
 import { useState, useEffect, useRef } from 'react'
 import { View, AppState, type AppStateStatus } from 'react-native'
 import * as Notifications from 'expo-notifications'
+import { useTranslation } from 'react-i18next'
 import { SplashScreen } from '@/components/SplashScreen'
 import { initMusicService } from '@/services/musicService'
 import { setupNotificationChannels } from '@/services/notificationPermissions'
@@ -68,6 +69,8 @@ function OnboardingGate() {
 
 function NotificationWatcher() {
   const settings = useNotificationSettingsStore()
+  const { i18n } = useTranslation()
+  const lang = (i18n.language === 'fr' ? 'fr' : 'en') as 'en' | 'fr'
 
   useEffect(() => {
     // Setup Android channels on mount
@@ -76,7 +79,7 @@ function NotificationWatcher() {
     // Reschedule all on foreground (catches DST and timezone changes)
     const sub = AppState.addEventListener('change', (state: AppStateStatus) => {
       if (state === 'active') {
-        rescheduleAll(settings).catch(() => null)
+        rescheduleAll(settings, undefined, lang).catch(() => null)
       }
     })
 

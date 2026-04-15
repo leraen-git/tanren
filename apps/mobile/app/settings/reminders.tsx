@@ -233,6 +233,7 @@ export default function RemindersScreen() {
   const { t } = useTranslation()
   const settings = useNotificationSettingsStore()
   const { enableWithPermission, permDenied } = usePermissionToggle()
+  const lang = (i18n.language === 'fr' ? 'fr' : 'en') as 'en' | 'fr'
   const utils = trpc.useUtils()
 
   const [timePicker, setTimePicker] = useState<{
@@ -341,11 +342,11 @@ export default function RemindersScreen() {
                   if (v) {
                     enableWithPermission(() => {
                       settings.updateWorkout({ workoutEnabled: true })
-                      rescheduleWorkoutNotifications({ ...settings, workoutEnabled: true })
+                      rescheduleWorkoutNotifications({ ...settings, workoutEnabled: true }, undefined, lang)
                     })
                   } else {
                     settings.updateWorkout({ workoutEnabled: false })
-                    rescheduleWorkoutNotifications({ ...settings, workoutEnabled: false })
+                    rescheduleWorkoutNotifications({ ...settings, workoutEnabled: false }, undefined, lang)
                   }
                 }}
                 trackColor={{ true: colors.primary, false: colors.surface2 }}
@@ -365,7 +366,7 @@ export default function RemindersScreen() {
                     onPress={() =>
                       openTimePicker(settings.workoutTime, t('notifications.trainingTime'), (time) => {
                         settings.updateWorkout({ workoutTime: time })
-                        rescheduleWorkoutNotifications({ ...settings, workoutTime: time })
+                        rescheduleWorkoutNotifications({ ...settings, workoutTime: time }, undefined, lang)
                       })
                     }
                   />
@@ -381,7 +382,7 @@ export default function RemindersScreen() {
                   value={settings.workoutOffset}
                   onChange={(v) => {
                     settings.updateWorkout({ workoutOffset: v })
-                    rescheduleWorkoutNotifications({ ...settings, workoutOffset: v })
+                    rescheduleWorkoutNotifications({ ...settings, workoutOffset: v }, undefined, lang)
                   }}
                   labelMap={offsetLabels}
                 />
@@ -395,7 +396,7 @@ export default function RemindersScreen() {
                   value={settings.workoutDays}
                   onChange={(days) => {
                     settings.updateWorkout({ workoutDays: days })
-                    rescheduleWorkoutNotifications({ ...settings, workoutDays: days })
+                    rescheduleWorkoutNotifications({ ...settings, workoutDays: days }, undefined, lang)
                   }}
                 />
               </View>
