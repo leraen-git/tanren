@@ -231,14 +231,14 @@ export default function HomeScreen() {
                         )}
                       </View>
                     </View>
-                    {/* Colored P / C / F mini pills */}
+                    {/* Colored P / C / F inline pills */}
                     <View style={{ flexDirection: 'row', gap: spacing.sm }}>
                       {[
                         { label: t('diet.proteinShort'), value: `${meal.protein}g`, color: colors.primary },
                         { label: t('diet.carbsShort'), value: `${meal.carbs}g`, color: '#F59E0B' },
                         { label: t('diet.fatShort'), value: `${meal.fat}g`, color: '#8B5CF6' },
                       ].map(({ label, value, color }) => (
-                        <View key={label} style={{ flex: 1, backgroundColor: colors.surface2, borderRadius: radius.sm, padding: spacing.sm, alignItems: 'center' }}>
+                        <View key={label} style={{ flex: 1, flexDirection: 'row', backgroundColor: colors.surface2, borderRadius: radius.sm, paddingVertical: spacing.xs, paddingHorizontal: spacing.sm, alignItems: 'center', justifyContent: 'center', gap: 4 }}>
                           <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.base, color }}>{value}</Text>
                           <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted }}>{label}</Text>
                         </View>

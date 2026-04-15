@@ -20,8 +20,41 @@ const MEAL_ORDER: Record<string, number> = {
   dessert: 4,
 }
 
-export function sortMeals<T extends { type: string }>(meals: T[]): T[] {
-  return [...meals].sort((a, b) => (MEAL_ORDER[a.type] ?? 9) - (MEAL_ORDER[b.type] ?? 9))
+// Name keywords that identify a mid-morning snack → sorts after breakfast (0.5)
+const SNACK_AM_KEYWORDS = ['mid-morning', 'mid morning', 'morning snack', 'pre-workout', 'pre workout', 'pre-lunch', 'mid-matin']
+// Name keywords that identify an afternoon snack → sorts between lunch and dinner (2)
+const SNACK_PM_KEYWORDS = ['afternoon', 'après-midi', 'evening snack', 'pre-dinner', 'post-workout', 'post workout', 'post-lunch']
+// All snack-like keywords (union of the above + generic)
+const SNACK_KEYWORDS = [...SNACK_AM_KEYWORDS, ...SNACK_PM_KEYWORDS, 'snack', 'collation']
+
+// Fractional sort order for snack based on AM vs PM timing in the meal name.
+function getSnackSortOrder(name: string): number {
+  const lower = name.toLowerCase()
+  if (SNACK_AM_KEYWORDS.some((k) => lower.includes(k))) return 0.5  // after breakfast, before lunch
+  return 2  // default: between lunch and dinner
+}
+
+// Sorts meals into canonical order and normalises duplicate types:
+// if a type appears more than once (e.g. two breakfasts from a bad AI response)
+// and the meal name looks snack-like, its type is reassigned to 'snack' so the
+// label and sort position are corrected automatically.
+export function sortMeals<T extends { type: string; name: string }>(meals: T[]): T[] {
+  const typeCounts: Record<string, number> = {}
+  for (const m of meals) typeCounts[m.type] = (typeCounts[m.type] ?? 0) + 1
+
+  const normalized = meals.map((m) => {
+    if (typeCounts[m.type] > 1) {
+      const lower = m.name.toLowerCase()
+      if (SNACK_KEYWORDS.some((k) => lower.includes(k))) return { ...m, type: 'snack' }
+    }
+    return m
+  })
+
+  return normalized.sort((a, b) => {
+    const aOrd = a.type === 'snack' ? getSnackSortOrder(a.name) : (MEAL_ORDER[a.type] ?? 9)
+    const bOrd = b.type === 'snack' ? getSnackSortOrder(b.name) : (MEAL_ORDER[b.type] ?? 9)
+    return aOrd - bOrd
+  })
 }
 
 export type DietMeal = {

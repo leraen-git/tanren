@@ -259,7 +259,7 @@ export default function DietScreen() {
                     { label: t('diet.carbsShort'), value: meal.carbs, color: '#F59E0B' },
                     { label: t('diet.fatShort'), value: meal.fat, color: '#8B5CF6' },
                   ].map((m) => (
-                    <View key={m.label} style={{ flex: 1, backgroundColor: colors.surface2, borderRadius: radius.sm, padding: spacing.sm, alignItems: 'center' }}>
+                    <View key={m.label} style={{ flex: 1, flexDirection: 'row', backgroundColor: colors.surface2, borderRadius: radius.sm, paddingVertical: spacing.xs, paddingHorizontal: spacing.sm, alignItems: 'center', justifyContent: 'center', gap: 4 }}>
                       <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.base, color: m.color }}>{m.value}g</Text>
                       <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted }}>{m.label}</Text>
                     </View>
