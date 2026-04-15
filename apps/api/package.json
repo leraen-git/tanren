@@ -18,6 +18,7 @@
     "@anthropic-ai/sdk": "^0.82.0",
     "@clerk/fastify": "^2.2.2",
     "@fastify/cors": "^10.0.2",
+    "@fastify/rate-limit": "^10.3.0",
     "@fittrack/shared": "*",
     "@trpc/server": "^11.0.0",
     "drizzle-orm": "^0.45.2",

@@ -1,5 +1,6 @@
 import Fastify from 'fastify'
 import cors from '@fastify/cors'
+import rateLimit from '@fastify/rate-limit'
 import { fastifyTRPCPlugin } from '@trpc/server/adapters/fastify'
 import { clerkPlugin, getAuth } from '@clerk/fastify'
 import { appRouter } from './router.js'
@@ -23,6 +24,16 @@ const allowedOrigins = isDev
   : (process.env['ALLOWED_ORIGINS'] ?? '').split(',').filter(Boolean)
 
 await server.register(cors, { origin: allowedOrigins })
+
+// Rate limiting: 200 req/min per IP globally
+// AI endpoints have additional app-level limits (plans: 2/week per user via DB counter)
+await server.register(rateLimit, {
+  global: true,
+  max: 200,
+  timeWindow: 60_000,
+  keyGenerator: (req) =>
+    ((req.headers['x-forwarded-for'] as string | undefined)?.split(',')[0]?.trim()) ?? req.ip,
+})
 
 // Register Clerk plugin when secret key is configured.
 // This runs before every request and sets verified auth state on req (getAuth(req).userId).

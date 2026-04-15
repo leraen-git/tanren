@@ -269,8 +269,8 @@ export const plansRouter = router({
       prompt: z.string().min(1).max(2000),
       conversationHistory: z.array(z.object({
         role: z.enum(['user', 'assistant']),
-        content: z.string(),
-      })).default([]),
+        content: z.string().max(2000),
+      })).max(10).default([]),
     }))
     .mutation(async ({ ctx, input }) => {
       const apiKey = process.env.ANTHROPIC_API_KEY

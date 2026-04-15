@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { eq, and, desc, gte } from 'drizzle-orm'
+import { eq, and, desc, gte, inArray } from 'drizzle-orm'
 import { router, protectedProcedure } from '../trpc.js'
 import {
   workoutSessions,
@@ -59,20 +59,35 @@ export const progressRouter = router({
     .query(async ({ ctx, input }) => {
       const [user] = await ctx.db.select().from(users).where(eq(users.clerkId, ctx.userId)).limit(1)
       if (!user) throw new Error('User not found')
+      // IDOR fix: join to workoutSessions to enforce userId ownership
+      const userSessions = await ctx.db
+        .select({ id: workoutSessions.id })
+        .from(workoutSessions)
+        .where(eq(workoutSessions.userId, user.id))
+      if (userSessions.length === 0) return []
+      const sessionIds = userSessions.map((s) => s.id)
       const sessionExs = await ctx.db
         .select()
         .from(sessionExercises)
-        .where(eq(sessionExercises.exerciseId, input.exerciseId))
+        .where(
+          and(
+            eq(sessionExercises.exerciseId, input.exerciseId),
+            inArray(sessionExercises.workoutSessionId, sessionIds),
+          ),
+        )
       return sessionExs
     }),
 
   sessionRecap: protectedProcedure
     .input(z.object({ sessionId: z.string() }))
     .query(async ({ ctx, input }) => {
+      const [user] = await ctx.db.select().from(users).where(eq(users.clerkId, ctx.userId)).limit(1)
+      if (!user) throw new Error('User not found')
+      // IDOR fix: require session to belong to the authenticated user
       const [session] = await ctx.db
         .select()
         .from(workoutSessions)
-        .where(eq(workoutSessions.id, input.sessionId))
+        .where(and(eq(workoutSessions.id, input.sessionId), eq(workoutSessions.userId, user.id)))
         .limit(1)
       if (!session) throw new Error('Session not found')
 
