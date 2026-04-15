@@ -91,6 +91,14 @@ export default function HomeScreen() {
   // todayDietDay comes directly from the server — no client-side JSONB traversal needed
   const todayDietDay = dietToday?.todayDay ?? null
 
+  // Compute day totals from individual meal values so the header always matches
+  // the sum of what's displayed — the AI-provided totals drift from per-meal numbers.
+  const todayMealsSorted = sortMeals((todayDietDay?.meals ?? []) as Array<{ type: string; name: string; calories: number; protein: number; carbs: number; fat: number }>)
+  const todayCalories = todayMealsSorted.reduce((s, m) => s + (m.calories ?? 0), 0)
+  const todayProtein  = todayMealsSorted.reduce((s, m) => s + (m.protein  ?? 0), 0)
+  const todayCarbs    = todayMealsSorted.reduce((s, m) => s + (m.carbs    ?? 0), 0)
+  const todayFat      = todayMealsSorted.reduce((s, m) => s + (m.fat      ?? 0), 0)
+
   return (
     <SafeAreaView edges={["top"]} style={{ flex: 1, backgroundColor: colors.background }}>
       <MealDetailModal meal={selectedMeal} onClose={() => setSelectedMeal(null)} />
@@ -170,16 +178,16 @@ export default function HomeScreen() {
                         </Text>
                       </View>
                       <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size['2xl'], color: colors.primary }}>
-                        {todayDietDay.totalCalories}
+                        {todayCalories}
                         <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted }}> {t('diet.kcal')}</Text>
                       </Text>
                     </View>
                     {/* Colored P / C / F pills */}
                     <View style={{ flexDirection: 'row', gap: spacing.sm }}>
                       {[
-                        { label: t('diet.protein'), value: `${todayDietDay.totalProtein}g`, color: colors.primary },
-                        { label: t('diet.carbs'), value: `${todayDietDay.totalCarbs}g`, color: '#F59E0B' },
-                        { label: t('diet.fat'), value: `${todayDietDay.totalFat}g`, color: '#8B5CF6' },
+                        { label: t('diet.protein'), value: `${todayProtein}g`, color: colors.primary },
+                        { label: t('diet.carbs'), value: `${todayCarbs}g`, color: '#F59E0B' },
+                        { label: t('diet.fat'), value: `${todayFat}g`, color: '#8B5CF6' },
                       ].map(({ label, value, color }) => (
                         <View key={label} style={{
                           flex: 1, borderRadius: radius.md, padding: spacing.sm,
@@ -195,8 +203,8 @@ export default function HomeScreen() {
                   </View>
                 </View>
 
-                {/* Meals — sorted breakfast→lunch→snack→dinner→dessert */}
-                {sortMeals(todayDietDay.meals).map((meal: any, i: number) => (
+                {/* Meals — already sorted + normalised above as todayMealsSorted */}
+                {todayMealsSorted.map((meal: any, i: number) => (
                   <TouchableOpacity
                     key={i}
                     onPress={() => setSelectedMeal(meal as DietMeal)}

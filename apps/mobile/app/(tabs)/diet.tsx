@@ -141,6 +141,14 @@ export default function DietScreen() {
   const days = rawPlan.days ?? []
   const currentDay = days.find((d) => d.dayOfWeek === selectedDay) ?? days[0]
 
+  // Compute totals from individual meal values — the AI-provided day totals are
+  // calculated independently and often drift from the per-meal numbers.
+  const currentMeals = sortMeals(currentDay?.meals ?? [])
+  const dayCalories = currentMeals.reduce((s, m) => s + (m.calories ?? 0), 0)
+  const dayProtein  = currentMeals.reduce((s, m) => s + (m.protein  ?? 0), 0)
+  const dayCarbs    = currentMeals.reduce((s, m) => s + (m.carbs    ?? 0), 0)
+  const dayFat      = currentMeals.reduce((s, m) => s + (m.fat      ?? 0), 0)
+
   return (
     <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: colors.background }}>
       <MealDetailModal meal={selectedMeal} onClose={() => setSelectedMeal(null)} />
@@ -200,7 +208,7 @@ export default function DietScreen() {
                   {DAY_NAMES[d.dayOfWeek]}
                 </Text>
                 <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: isSelected ? `${tokenColors.white}99` : colors.textMuted }}>
-                  {d.totalCalories}
+                  {(d.meals ?? []).reduce((s: number, m: any) => s + (m.calories ?? 0), 0)}
                 </Text>
               </TouchableOpacity>
             )
@@ -215,12 +223,12 @@ export default function DietScreen() {
                 {currentDay.theme}
               </Text>
               <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted }}>
-                {currentDay.totalCalories} kcal · P {currentDay.totalProtein}g · C {currentDay.totalCarbs}g · F {currentDay.totalFat}g
+                {dayCalories} kcal · P {dayProtein}g · C {dayCarbs}g · F {dayFat}g
               </Text>
             </View>
 
-            {/* Meals — tappable, sorted breakfast→lunch→snack→dinner→dessert */}
-            {sortMeals(currentDay.meals).map((meal, i) => (
+            {/* Meals — already sorted + normalised above as currentMeals */}
+            {currentMeals.map((meal, i) => (
               <TouchableOpacity
                 key={i}
                 onPress={() => setSelectedMeal(meal)}
