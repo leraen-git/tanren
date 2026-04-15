@@ -1,15 +1,15 @@
 import { z } from 'zod'
 import { eq } from 'drizzle-orm'
 import { TRPCError } from '@trpc/server'
-import { router, protectedProcedure, publicProcedure } from '../trpc.js'
+import { router, protectedProcedure } from '../trpc.js'
 import { exercises, users } from '../db/schema.js'
 
 export const exercisesRouter = router({
-  list: publicProcedure.query(async ({ ctx }) => {
+  list: protectedProcedure.query(async ({ ctx }) => {
     return ctx.db.select().from(exercises)
   }),
 
-  byId: publicProcedure
+  byId: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
       const [exercise] = await ctx.db

@@ -48,14 +48,14 @@ export const exercises = pgTable('exercises', {
   imageUrl: text('image_url'),
   difficulty: difficultyEnum('difficulty').notNull().default('BEGINNER'),
   isCustom: boolean('is_custom').notNull().default(false),
-  userId: text('user_id').references(() => users.id),
+  userId: text('user_id').references(() => users.id, { onDelete: 'cascade' }),
 })
 
 // ─── Workout Templates ────────────────────────────────────────────────────────
 
 export const workoutTemplates = pgTable('workout_templates', {
   id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
-  userId: text('user_id').notNull().references(() => users.id),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
   name: text('name').notNull(),
   description: text('description'),
   muscleGroups: text('muscle_groups').array().notNull().default([]),
@@ -70,7 +70,7 @@ export const workoutTemplates = pgTable('workout_templates', {
 
 export const workoutExercises = pgTable('workout_exercises', {
   id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
-  workoutTemplateId: text('workout_template_id').notNull().references(() => workoutTemplates.id),
+  workoutTemplateId: text('workout_template_id').notNull().references(() => workoutTemplates.id, { onDelete: 'cascade' }),
   exerciseId: text('exercise_id').notNull().references(() => exercises.id),
   order: integer('order').notNull().default(0),
   defaultSets: integer('default_sets').notNull().default(3),
@@ -84,7 +84,7 @@ export const workoutExercises = pgTable('workout_exercises', {
 
 export const workoutSessions = pgTable('workout_sessions', {
   id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
-  userId: text('user_id').notNull().references(() => users.id),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
   workoutTemplateId: text('workout_template_id').notNull().references(() => workoutTemplates.id),
   startedAt: timestamp('started_at').notNull().defaultNow(),
   completedAt: timestamp('completed_at'),
@@ -98,7 +98,7 @@ export const workoutSessions = pgTable('workout_sessions', {
 
 export const sessionExercises = pgTable('session_exercises', {
   id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
-  workoutSessionId: text('workout_session_id').notNull().references(() => workoutSessions.id),
+  workoutSessionId: text('workout_session_id').notNull().references(() => workoutSessions.id, { onDelete: 'cascade' }),
   exerciseId: text('exercise_id').notNull().references(() => exercises.id),
   order: integer('order').notNull().default(0),
 })
@@ -107,7 +107,7 @@ export const sessionExercises = pgTable('session_exercises', {
 
 export const exerciseSets = pgTable('exercise_sets', {
   id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
-  sessionExerciseId: text('session_exercise_id').notNull().references(() => sessionExercises.id),
+  sessionExerciseId: text('session_exercise_id').notNull().references(() => sessionExercises.id, { onDelete: 'cascade' }),
   setNumber: integer('set_number').notNull(),
   reps: integer('reps').notNull().default(0),
   weight: real('weight').notNull().default(0),
@@ -135,7 +135,7 @@ export const programs = pgTable('programs', {
 
 export const programEnrollments = pgTable('program_enrollments', {
   id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
-  userId: text('user_id').notNull().references(() => users.id),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
   programId: text('program_id').notNull().references(() => programs.id),
   startedAt: timestamp('started_at').notNull().defaultNow(),
   currentWeek: integer('current_week').notNull().default(1),
@@ -146,7 +146,7 @@ export const programEnrollments = pgTable('program_enrollments', {
 
 export const workoutPlans = pgTable('workout_plans', {
   id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
-  userId: text('user_id').notNull().references(() => users.id),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
   name: text('name').notNull(),
   isActive: boolean('is_active').notNull().default(false),
   startDate: timestamp('start_date').notNull().defaultNow(),
@@ -168,20 +168,20 @@ export const workoutPlanDays = pgTable('workout_plan_days', {
 
 export const personalRecords = pgTable('personal_records', {
   id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
-  userId: text('user_id').notNull().references(() => users.id),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
   exerciseId: text('exercise_id').notNull().references(() => exercises.id),
   weight: real('weight').notNull(),
   reps: integer('reps').notNull(),
   volume: real('volume').notNull(),
   achievedAt: timestamp('achieved_at').notNull().defaultNow(),
-  sessionId: text('session_id').notNull().references(() => workoutSessions.id),
+  sessionId: text('session_id').notNull().references(() => workoutSessions.id, { onDelete: 'cascade' }),
 })
 
 // ─── Diet Profiles ────────────────────────────────────────────────────────────
 
 export const dietProfiles = pgTable('diet_profiles', {
   id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
-  userId: text('user_id').notNull().unique().references(() => users.id),
+  userId: text('user_id').notNull().unique().references(() => users.id, { onDelete: 'cascade' }),
   age: integer('age').notNull(),
   sex: text('sex').notNull(), // 'male' | 'female'
   goalWeight: real('goal_weight'),
@@ -207,7 +207,7 @@ export const dietProfiles = pgTable('diet_profiles', {
 
 export const dietPlans = pgTable('diet_plans', {
   id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
-  userId: text('user_id').notNull().references(() => users.id),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
   isActive: boolean('is_active').notNull().default(true),
   targetCalories: integer('target_calories').notNull(),
   targetProtein: integer('target_protein').notNull(),
@@ -222,7 +222,7 @@ export const dietPlans = pgTable('diet_plans', {
 
 export const notificationPreferences = pgTable('notification_preferences', {
   id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
-  userId: text('user_id').notNull().unique().references(() => users.id),
+  userId: text('user_id').notNull().unique().references(() => users.id, { onDelete: 'cascade' }),
 
   // Workout reminders
   workoutEnabled: boolean('workout_enabled').notNull().default(false),

@@ -352,6 +352,7 @@ Return this exact JSON structure:
   ]
 }`
 
+      ctx.req.log.info({ event: 'ai_generation', type: 'workout_plan', userId: user.id }, 'Workout plan generation started')
       const client = new Anthropic({ apiKey })
 
       const messages: Anthropic.MessageParam[] = [

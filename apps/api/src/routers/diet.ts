@@ -347,6 +347,7 @@ SECTION 4 — MY SNACK HABITS:
 
 Now generate my complete diet plan as JSON.`
 
+      ctx.req.log.info({ event: 'ai_generation', type: 'diet_plan', userId: user.id }, 'Diet plan generation started')
       const client = new Anthropic({ apiKey })
 
       const response = await client.messages.create({

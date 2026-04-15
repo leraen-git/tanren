@@ -24,8 +24,9 @@ const t = initTRPC.context<Context>().create({
 export const router = t.router
 export const publicProcedure = t.procedure
 
-export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
+export const protectedProcedure = t.procedure.use(({ ctx, next, path }) => {
   if (!ctx.userId) {
+    ctx.req.log.warn({ event: 'auth_failure', path }, 'Unauthenticated request to protected procedure')
     throw new TRPCError({ code: 'UNAUTHORIZED' })
   }
   return next({ ctx: { ...ctx, userId: ctx.userId } })
