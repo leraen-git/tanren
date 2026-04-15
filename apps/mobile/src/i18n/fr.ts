@@ -114,6 +114,50 @@ export const fr = {
   },
   profile: {
     title: 'Profil',
+    // Stats
+    statSessions: 'Séances',
+    statVolume: 'Volume',
+    statPRs: 'Records',
+    // Sections
+    sectionPersonal: 'Personnel',
+    sectionTraining: 'Entraînement',
+    sectionSettings: 'Paramètres',
+    sectionPrivacy: 'Confidentialité & Compte',
+    // Personal fields
+    fieldName: 'Nom',
+    fieldNamePlaceholder: 'Ton prénom',
+    fieldEmail: 'E-mail',
+    fieldHeight: 'Taille',
+    fieldWeight: 'Poids',
+    // Training fields
+    fieldLevel: 'Niveau',
+    fieldGoal: 'Objectif',
+    weeklyTarget: 'Objectif hebdomadaire',
+    sessionsPerWeek: 'séances / semaine',
+    // Level labels
+    levelBeginner: 'Débutant',
+    levelIntermediate: 'Intermédiaire',
+    levelAdvanced: 'Avancé',
+    // Goal labels
+    goalWeightLoss: 'Perte de poids',
+    goalMuscleGain: 'Prise de muscle',
+    goalMaintenance: 'Maintien',
+    // Settings rows
+    reminders: 'Rappels',
+    remindersSub: 'Entraînement, repas & hydratation',
+    appearance: 'Apparence',
+    // Privacy rows
+    dataUsage: 'Comment mes données sont utilisées',
+    dataUsageSub: 'Stockage, IA & tes droits',
+    deleteAccount: 'Supprimer mon compte',
+    // Dialogs
+    deleteTitle: 'Supprimer le compte',
+    deleteDesc: 'Cela supprimera définitivement ton compte et toutes tes données. Cette action est irréversible.',
+    deleteConfirm: 'Supprimer mon compte',
+    changePhoto: 'Changer la photo de profil',
+    photoPermTitle: 'Permission requise',
+    photoPermDesc: 'Autorise l\'accès aux photos pour définir une photo de profil.',
+    // Legacy
     settings: 'Paramètres',
     theme: 'Thème',
     darkMode: 'Mode sombre',
@@ -121,7 +165,6 @@ export const fr = {
     logout: 'Se déconnecter',
     level: 'Niveau',
     goal: 'Objectif',
-    weeklyTarget: 'Objectif hebdomadaire',
   },
   plans: {
     title: 'Plans',

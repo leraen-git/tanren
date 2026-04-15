@@ -12,17 +12,15 @@ import {
 } from 'react-native'
 import * as ImagePicker from 'expo-image-picker'
 import { router } from 'expo-router'
+import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/theme/ThemeContext'
 import { trpc } from '@/lib/trpc'
 import { colors as tokenColors } from '@/theme/tokens'
 
 const LEVELS = ['BEGINNER', 'INTERMEDIATE', 'ADVANCED'] as const
-const GOALS = ['WEIGHT_LOSS', 'MUSCLE_GAIN', 'MAINTENANCE'] as const
-const GOAL_LABELS: Record<string, string> = {
-  WEIGHT_LOSS: 'Weight Loss',
-  MUSCLE_GAIN: 'Muscle Gain',
-  MAINTENANCE: 'Maintenance',
-}
+const GOALS  = ['WEIGHT_LOSS', 'MUSCLE_GAIN', 'MAINTENANCE'] as const
+
+// ─── Sub-components ───────────────────────────────────────────────────────────
 
 function SectionTitle({ label }: { label: string }) {
   const { colors, typography, spacing } = useTheme()
@@ -31,23 +29,60 @@ function SectionTitle({ label }: { label: string }) {
       fontFamily: typography.family.semiBold,
       fontSize: typography.size.xs,
       color: colors.textMuted,
-      letterSpacing: 1,
-      marginTop: spacing.base,
+      letterSpacing: 1.2,
+      textTransform: 'uppercase',
+      marginTop: spacing.lg,
       marginBottom: spacing.xs,
     }}>
-      {label.toUpperCase()}
+      {label}
     </Text>
   )
 }
 
+function NavRow({
+  icon, label, sublabel, onPress, danger,
+}: {
+  icon: string
+  label: string
+  sublabel?: string
+  onPress: () => void
+  danger?: boolean
+}) {
+  const { colors, typography, spacing } = useTheme()
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      style={{
+        flexDirection: 'row', alignItems: 'center',
+        paddingVertical: spacing.md,
+        borderBottomWidth: 1,
+        borderBottomColor: colors.surface2,
+      }}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+    >
+      <Text style={{ fontSize: typography.size.xl, width: 32 }}>{icon}</Text>
+      <View style={{ flex: 1 }}>
+        <Text style={{
+          fontFamily: typography.family.regular,
+          fontSize: typography.size.body,
+          color: danger ? colors.danger : colors.textPrimary,
+        }}>
+          {label}
+        </Text>
+        {sublabel ? (
+          <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted, marginTop: 2 }}>
+            {sublabel}
+          </Text>
+        ) : null}
+      </View>
+      <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.body, color: danger ? colors.danger : colors.textMuted }}>›</Text>
+    </TouchableOpacity>
+  )
+}
+
 function InlineField({
-  label,
-  value,
-  onSave,
-  placeholder,
-  keyboardType = 'default',
-  editable = true,
-  unit,
+  label, value, onSave, placeholder, keyboardType = 'default', editable = true, unit,
 }: {
   label: string
   value: string
@@ -70,13 +105,17 @@ function InlineField({
 
   return (
     <View style={{
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: 'row', alignItems: 'center',
       paddingVertical: spacing.md,
       borderBottomWidth: 1,
       borderBottomColor: colors.surface2,
     }}>
-      <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.body, color: colors.textMuted, width: 110 }}>
+      <Text style={{
+        fontFamily: typography.family.regular,
+        fontSize: typography.size.body,
+        color: colors.textMuted,
+        width: 100,
+      }}>
         {label}
       </Text>
       {editing ? (
@@ -104,16 +143,27 @@ function InlineField({
         </View>
       ) : (
         <TouchableOpacity
-          style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}
+          style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
           onPress={() => editable && setEditing(true)}
           disabled={!editable}
           accessibilityLabel={`${label}: ${value || placeholder}`}
           accessibilityRole={editable ? 'button' : 'text'}
         >
-          <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.body, color: value ? colors.textPrimary : colors.textMuted }}>
-            {value || placeholder || '—'}
-          </Text>
-          {unit && value ? <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted, marginLeft: 4 }}>{unit}</Text> : null}
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+            <Text style={{
+              fontFamily: typography.family.semiBold,
+              fontSize: typography.size.body,
+              color: value ? colors.textPrimary : colors.textMuted,
+            }}>
+              {value || placeholder || '—'}
+            </Text>
+            {unit && value ? (
+              <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted }}>{unit}</Text>
+            ) : null}
+          </View>
+          {editable && (
+            <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.body, color: colors.textMuted }}>›</Text>
+          )}
         </TouchableOpacity>
       )}
     </View>
@@ -121,11 +171,7 @@ function InlineField({
 }
 
 function ChipSelector<T extends string>({
-  label,
-  options,
-  value,
-  labelMap,
-  onChange,
+  label, options, value, labelMap, onChange,
 }: {
   label: string
   options: readonly T[]
@@ -150,8 +196,9 @@ function ChipSelector<T extends string>({
                 borderRadius: radius.pill,
                 backgroundColor: selected ? colors.primary : colors.surface2,
               }}
-              accessibilityLabel={`${label}: ${labelMap?.[opt] ?? opt}`}
-              accessibilityRole="button"
+              accessibilityLabel={labelMap?.[opt] ?? opt}
+              accessibilityRole="radio"
+              accessibilityState={{ checked: selected }}
             >
               <Text style={{
                 fontFamily: selected ? typography.family.semiBold : typography.family.regular,
@@ -168,50 +215,96 @@ function ChipSelector<T extends string>({
   )
 }
 
-const THEME_OPTIONS: { value: 'light' | 'dark' | 'system'; label: string; icon: string }[] = [
-  { value: 'light', label: 'Light', icon: '☀️' },
-  { value: 'dark', label: 'Dark', icon: '🌙' },
-  { value: 'system', label: 'Auto', icon: '⚙️' },
+// ─── Theme picker (inline segmented row) ─────────────────────────────────────
+
+type ThemeValue = 'light' | 'dark' | 'system'
+const THEME_OPTIONS: { value: ThemeValue; icon: string }[] = [
+  { value: 'light',  icon: '☀️' },
+  { value: 'dark',   icon: '🌙' },
+  { value: 'system', icon: '⚙️' },
 ]
 
-export default function ProfileScreen() {
+function ThemeRow({ label }: { label: string }) {
   const { colors, typography, spacing, radius, preference, setTheme } = useTheme()
+  return (
+    <View style={{
+      flexDirection: 'row', alignItems: 'center',
+      paddingVertical: spacing.md,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.surface2,
+    }}>
+      <Text style={{ fontSize: typography.size.xl, width: 32 }}>🎨</Text>
+      <Text style={{
+        fontFamily: typography.family.regular,
+        fontSize: typography.size.body,
+        color: colors.textPrimary,
+        flex: 1,
+      }}>
+        {label}
+      </Text>
+      <View style={{ flexDirection: 'row', backgroundColor: colors.surface2, borderRadius: radius.md, padding: 3, gap: 2 }}>
+        {THEME_OPTIONS.map(({ value, icon }) => {
+          const selected = preference === value
+          return (
+            <TouchableOpacity
+              key={value}
+              onPress={() => setTheme(value)}
+              style={{
+                paddingHorizontal: spacing.sm,
+                paddingVertical: 4,
+                borderRadius: radius.sm,
+                backgroundColor: selected ? colors.primary : 'transparent',
+              }}
+              accessibilityRole="radio"
+              accessibilityState={{ checked: selected }}
+              accessibilityLabel={`${value} theme`}
+            >
+              <Text style={{ fontSize: typography.size.body }}>{icon}</Text>
+            </TouchableOpacity>
+          )
+        })}
+      </View>
+    </View>
+  )
+}
+
+// ─── Main screen ──────────────────────────────────────────────────────────────
+
+export default function ProfileScreen() {
+  const { colors, typography, spacing, radius } = useTheme()
+  const { t } = useTranslation()
+
   const { data: user, refetch } = trpc.users.me.useQuery()
-  const { data: sessions } = trpc.sessions.history.useQuery({ limit: 100 })
-  const { data: records } = trpc.progress.records.useQuery()
+  const { data: sessions }      = trpc.sessions.history.useQuery({ limit: 100 })
+  const { data: records }       = trpc.progress.records.useQuery()
   const utils = trpc.useUtils()
+
   const updateMe = trpc.users.updateMe.useMutation({ onSuccess: () => refetch() })
   const deleteMe = trpc.users.deleteMe.useMutation({
     onSuccess: async () => {
-      await utils.invalidate() // wipe entire query cache so new account starts fresh
+      await utils.invalidate()
       router.replace('/onboarding/step1' as any)
     },
-    onError: (err) => Alert.alert('Error', err.message),
+    onError: (err) => Alert.alert(t('common.error'), err.message),
   })
 
   const save = (data: Parameters<typeof updateMe.mutate>[0]) => updateMe.mutate(data)
 
   const handleDeleteAccount = () => {
     Alert.alert(
-      'Delete account',
-      'This will permanently delete your account and all your data. This cannot be undone.',
+      t('profile.deleteTitle'),
+      t('profile.deleteDesc'),
       [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete my account',
-          style: 'destructive',
-          onPress: () => deleteMe.mutate(),
-        },
+        { text: t('common.cancel'), style: 'cancel' },
+        { text: t('profile.deleteConfirm'), style: 'destructive', onPress: () => deleteMe.mutate() },
       ],
     )
   }
 
-  const totalVolume = sessions?.reduce((sum, s) => sum + s.totalVolume, 0) ?? 0
-
   const handlePickPhoto = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
     if (status !== 'granted') {
-      Alert.alert('Permission needed', 'Allow photo access to set a profile picture.')
+      Alert.alert(t('profile.photoPermTitle'), t('profile.photoPermDesc'))
       return
     }
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -221,9 +314,22 @@ export default function ProfileScreen() {
       quality: 0.7,
     })
     if (!result.canceled && result.assets[0]) {
-      // Store URI locally — in production this would upload to a CDN
       save({ avatarUrl: result.assets[0].uri })
     }
+  }
+
+  const totalVolume = sessions?.reduce((sum, s) => sum + s.totalVolume, 0) ?? 0
+
+  const goalLabels: Record<string, string> = {
+    WEIGHT_LOSS: t('profile.goalWeightLoss'),
+    MUSCLE_GAIN: t('profile.goalMuscleGain'),
+    MAINTENANCE: t('profile.goalMaintenance'),
+  }
+
+  const levelLabels: Record<string, string> = {
+    BEGINNER:     t('profile.levelBeginner'),
+    INTERMEDIATE: t('profile.levelIntermediate'),
+    ADVANCED:     t('profile.levelAdvanced'),
   }
 
   const cardStyle: ViewStyle = {
@@ -236,24 +342,28 @@ export default function ProfileScreen() {
   if (!user) return null
 
   return (
-    <SafeAreaView edges={["top"]} style={{ flex: 1, backgroundColor: colors.background }}>
-      <ScrollView contentContainerStyle={{ padding: spacing.base, gap: spacing.sm, paddingBottom: spacing.xl }}>
-
-        <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size['2xl'], color: colors.textPrimary }}>
-          Profile
-        </Text>
-
-        {/* Avatar */}
-        <View style={{ alignItems: 'center', paddingVertical: spacing.base }}>
-          <TouchableOpacity onPress={handlePickPhoto} accessibilityLabel="Change profile photo" accessibilityRole="button">
+    <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: colors.background }}>
+      <ScrollView
+        contentContainerStyle={{ paddingBottom: spacing.xl }}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* ── Header ── */}
+        <View style={{ alignItems: 'center', paddingTop: spacing.lg, paddingBottom: spacing.base, gap: spacing.sm }}>
+          {/* Avatar */}
+          <TouchableOpacity
+            onPress={handlePickPhoto}
+            accessibilityLabel={t('profile.changePhoto')}
+            accessibilityRole="button"
+            style={{ position: 'relative' }}
+          >
             {user.avatarUrl ? (
               <Image
                 source={{ uri: user.avatarUrl }}
-                style={{ width: 96, height: 96, borderRadius: 48, backgroundColor: colors.surface2 }}
+                style={{ width: 88, height: 88, borderRadius: 44, backgroundColor: colors.surface2 }}
               />
             ) : (
               <View style={{
-                width: 96, height: 96, borderRadius: 48,
+                width: 88, height: 88, borderRadius: 44,
                 backgroundColor: colors.primary,
                 alignItems: 'center', justifyContent: 'center',
               }}>
@@ -266,184 +376,165 @@ export default function ProfileScreen() {
               position: 'absolute', bottom: 0, right: 0,
               backgroundColor: colors.surface2,
               borderRadius: radius.pill,
-              padding: 6,
+              width: 26, height: 26,
+              alignItems: 'center', justifyContent: 'center',
+              borderWidth: 2, borderColor: colors.background,
             }}>
-              <Text style={{ fontSize: typography.size.body }}>📷</Text>
+              <Text style={{ fontSize: 12 }}>📷</Text>
             </View>
           </TouchableOpacity>
+
+          {/* Name */}
+          <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size['2xl'], color: colors.textPrimary }}>
+            {user.name}
+          </Text>
+
+          {/* Level + Goal badges */}
+          <View style={{ flexDirection: 'row', gap: spacing.sm }}>
+            <View style={{ backgroundColor: colors.surface2, borderRadius: radius.pill, paddingHorizontal: spacing.md, paddingVertical: 3 }}>
+              <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.xs, color: colors.textMuted }}>
+                {levelLabels[user.level] ?? user.level}
+              </Text>
+            </View>
+            <View style={{ backgroundColor: `${colors.primary}18`, borderRadius: radius.pill, paddingHorizontal: spacing.md, paddingVertical: 3 }}>
+              <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.xs, color: colors.primary }}>
+                {goalLabels[user.goal] ?? user.goal}
+              </Text>
+            </View>
+          </View>
         </View>
 
-        {/* Stats row */}
-        <View style={{ flexDirection: 'row', gap: spacing.sm }}>
+        {/* ── Stats strip ── */}
+        <View style={{ flexDirection: 'row', gap: spacing.sm, paddingHorizontal: spacing.base, marginBottom: spacing.xs }}>
           {[
-            { label: 'Sessions', value: String(sessions?.length ?? 0) },
-            { label: 'Volume', value: `${(totalVolume / 1000).toFixed(1)}t` },
-            { label: 'PRs', value: String(records?.length ?? 0) },
+            { label: t('profile.statSessions'), value: String(sessions?.length ?? 0) },
+            { label: t('profile.statVolume'),   value: `${(totalVolume / 1000).toFixed(1)}t` },
+            { label: t('profile.statPRs'),      value: String(records?.length ?? 0) },
           ].map(({ label, value }) => (
-            <View key={label} style={{ flex: 1, backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.md, alignItems: 'center' }}>
+            <View key={label} style={{ flex: 1, backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.md, alignItems: 'center', gap: 2 }}>
               <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size['2xl'], color: colors.primary }}>{value}</Text>
               <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted }}>{label}</Text>
             </View>
           ))}
         </View>
 
-        {/* Identity */}
-        <SectionTitle label="Identity" />
-        <View style={cardStyle}>
-          <InlineField
-            label="Name"
-            value={user.name}
-            onSave={(v) => save({ name: v })}
-            placeholder="Your name"
-          />
-          <InlineField
-            label="Email"
-            value={user.email}
-            onSave={(v) => save({ email: v })}
-            editable={true}
-            keyboardType="default"
-          />
-        </View>
+        <View style={{ paddingHorizontal: spacing.base }}>
 
-        {/* Physical */}
-        <SectionTitle label="Physical" />
-        <View style={cardStyle}>
-          <InlineField
-            label="Height"
-            value={user.heightCm != null ? String(user.heightCm) : ''}
-            onSave={(v) => save({ heightCm: parseFloat(v) || null })}
-            placeholder="e.g. 178"
-            keyboardType="decimal-pad"
-            unit="cm"
-          />
-          <InlineField
-            label="Weight"
-            value={user.weightKg != null ? String(user.weightKg) : ''}
-            onSave={(v) => save({ weightKg: parseFloat(v) || null })}
-            placeholder="e.g. 75"
-            keyboardType="decimal-pad"
-            unit="kg"
-          />
-        </View>
-
-        {/* Training */}
-        <SectionTitle label="Training" />
-        <View style={cardStyle}>
-          <ChipSelector
-            label="Level"
-            options={LEVELS}
-            value={user.level}
-            onChange={(v) => save({ level: v })}
-          />
-          <ChipSelector
-            label="Goal"
-            options={GOALS}
-            value={user.goal}
-            labelMap={GOAL_LABELS}
-            onChange={(v) => save({ goal: v })}
-          />
-          <View style={{ paddingVertical: spacing.md, gap: spacing.sm }}>
-            <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.body, color: colors.textMuted }}>
-              Weekly target
-            </Text>
-            <View style={{ flexDirection: 'row', gap: spacing.sm }}>
-              {[1, 2, 3, 4, 5, 6, 7].map((n) => (
-                <TouchableOpacity
-                  key={n}
-                  onPress={() => save({ weeklyTarget: n })}
-                  style={{
-                    flex: 1, paddingVertical: spacing.sm,
-                    borderRadius: radius.sm,
-                    backgroundColor: user.weeklyTarget === n ? colors.primary : colors.surface2,
-                    alignItems: 'center',
-                  }}
-                  accessibilityLabel={`${n} sessions per week`}
-                  accessibilityRole="button"
-                >
-                  <Text style={{
-                    fontFamily: typography.family.bold,
-                    fontSize: typography.size.base,
-                    color: user.weeklyTarget === n ? tokenColors.white : colors.textMuted,
-                  }}>
-                    {n}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-            <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted, textAlign: 'center' }}>
-              sessions / week
-            </Text>
+          {/* ── Personal info ── */}
+          <SectionTitle label={t('profile.sectionPersonal')} />
+          <View style={cardStyle}>
+            <InlineField
+              label={t('profile.fieldName')}
+              value={user.name}
+              onSave={(v) => save({ name: v })}
+              placeholder={t('profile.fieldNamePlaceholder')}
+            />
+            <InlineField
+              label={t('profile.fieldEmail')}
+              value={user.email}
+              onSave={(v) => save({ email: v })}
+              keyboardType="default"
+            />
+            <InlineField
+              label={t('profile.fieldHeight')}
+              value={user.heightCm != null ? String(user.heightCm) : ''}
+              onSave={(v) => save({ heightCm: parseFloat(v) || null })}
+              placeholder="—"
+              keyboardType="decimal-pad"
+              unit="cm"
+            />
+            <InlineField
+              label={t('profile.fieldWeight')}
+              value={user.weightKg != null ? String(user.weightKg) : ''}
+              onSave={(v) => save({ weightKg: parseFloat(v) || null })}
+              placeholder="—"
+              keyboardType="decimal-pad"
+              unit="kg"
+            />
           </View>
+
+          {/* ── Training ── */}
+          <SectionTitle label={t('profile.sectionTraining')} />
+          <View style={cardStyle}>
+            <ChipSelector
+              label={t('profile.fieldLevel')}
+              options={LEVELS}
+              value={user.level}
+              labelMap={levelLabels}
+              onChange={(v) => save({ level: v })}
+            />
+            <ChipSelector
+              label={t('profile.fieldGoal')}
+              options={GOALS}
+              value={user.goal}
+              labelMap={goalLabels}
+              onChange={(v) => save({ goal: v })}
+            />
+            <View style={{ paddingVertical: spacing.md, gap: spacing.sm }}>
+              <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.body, color: colors.textMuted }}>
+                {t('profile.weeklyTarget')}
+              </Text>
+              <View style={{ flexDirection: 'row', gap: spacing.sm }}>
+                {[1, 2, 3, 4, 5, 6, 7].map((n) => (
+                  <TouchableOpacity
+                    key={n}
+                    onPress={() => save({ weeklyTarget: n })}
+                    style={{
+                      flex: 1, paddingVertical: spacing.sm,
+                      borderRadius: radius.sm,
+                      backgroundColor: user.weeklyTarget === n ? colors.primary : colors.surface2,
+                      alignItems: 'center',
+                    }}
+                    accessibilityLabel={`${n} ${t('profile.sessionsPerWeek')}`}
+                    accessibilityRole="radio"
+                    accessibilityState={{ checked: user.weeklyTarget === n }}
+                  >
+                    <Text style={{
+                      fontFamily: typography.family.bold,
+                      fontSize: typography.size.base,
+                      color: user.weeklyTarget === n ? tokenColors.white : colors.textMuted,
+                    }}>
+                      {n}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+              <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted, textAlign: 'center' }}>
+                {t('profile.sessionsPerWeek')}
+              </Text>
+            </View>
+          </View>
+
+          {/* ── App settings ── */}
+          <SectionTitle label={t('profile.sectionSettings')} />
+          <View style={cardStyle}>
+            <NavRow
+              icon="🔔"
+              label={t('profile.reminders')}
+              sublabel={t('profile.remindersSub')}
+              onPress={() => router.push('/settings/reminders' as any)}
+            />
+            <ThemeRow label={t('profile.appearance')} />
+          </View>
+
+          {/* ── Privacy & account ── */}
+          <SectionTitle label={t('profile.sectionPrivacy')} />
+          <View style={cardStyle}>
+            <NavRow
+              icon="🔒"
+              label={t('profile.dataUsage')}
+              sublabel={t('profile.dataUsageSub')}
+              onPress={() => router.push('/privacy' as any)}
+            />
+            <NavRow
+              icon="🗑️"
+              label={t('profile.deleteAccount')}
+              onPress={handleDeleteAccount}
+              danger
+            />
+          </View>
+
         </View>
-
-        {/* Reminders */}
-        <SectionTitle label="Reminders" />
-        <View style={cardStyle}>
-          <TouchableOpacity
-            onPress={() => router.push('/settings/reminders' as any)}
-            style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: spacing.md }}
-            accessibilityLabel="Reminders settings" accessibilityRole="button"
-          >
-            <Text style={{ fontSize: typography.size.xl, marginRight: spacing.md }}>🔔</Text>
-            <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.body, color: colors.textPrimary, flex: 1 }}>
-              Workout, meal & hydration reminders
-            </Text>
-            <Text style={{ color: colors.textMuted, fontSize: typography.size.body }}>→</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Appearance */}
-        <SectionTitle label="Appearance" />
-        <View style={{ ...cardStyle, flexDirection: 'row', paddingVertical: spacing.sm }}>
-          {THEME_OPTIONS.map(({ value, label, icon }) => {
-            const selected = preference === value
-            return (
-              <TouchableOpacity
-                key={value}
-                onPress={() => setTheme(value)}
-                style={{
-                  flex: 1,
-                  alignItems: 'center',
-                  paddingVertical: spacing.md,
-                  borderRadius: radius.md,
-                  backgroundColor: selected ? colors.primary : 'transparent',
-                  margin: spacing.xs,
-                }}
-                accessibilityLabel={`${label} theme`}
-                accessibilityRole="button"
-              >
-                <Text style={{ fontSize: typography.size.xl, marginBottom: 4 }}>{icon}</Text>
-                <Text style={{
-                  fontFamily: selected ? typography.family.semiBold : typography.family.regular,
-                  fontSize: typography.size.base,
-                  color: selected ? tokenColors.white : colors.textMuted,
-                }}>
-                  {label}
-                </Text>
-              </TouchableOpacity>
-            )
-          })}
-        </View>
-
-        {/* Delete account */}
-        <TouchableOpacity
-          onPress={handleDeleteAccount}
-          style={{
-            marginTop: spacing.xl,
-            paddingVertical: spacing.base,
-            borderRadius: radius.lg,
-            borderWidth: 1,
-            borderColor: `${colors.danger}40`,
-            alignItems: 'center',
-          }}
-          accessibilityLabel="Delete account"
-          accessibilityRole="button"
-        >
-          <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.body, color: colors.danger }}>
-            Delete account
-          </Text>
-        </TouchableOpacity>
-
       </ScrollView>
     </SafeAreaView>
   )

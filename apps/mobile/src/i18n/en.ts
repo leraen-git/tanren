@@ -114,6 +114,50 @@ export const en = {
   },
   profile: {
     title: 'Profile',
+    // Stats
+    statSessions: 'Sessions',
+    statVolume: 'Volume',
+    statPRs: 'PRs',
+    // Sections
+    sectionPersonal: 'Personal',
+    sectionTraining: 'Training',
+    sectionSettings: 'Settings',
+    sectionPrivacy: 'Privacy & Account',
+    // Personal fields
+    fieldName: 'Name',
+    fieldNamePlaceholder: 'Your name',
+    fieldEmail: 'Email',
+    fieldHeight: 'Height',
+    fieldWeight: 'Weight',
+    // Training fields
+    fieldLevel: 'Level',
+    fieldGoal: 'Goal',
+    weeklyTarget: 'Weekly target',
+    sessionsPerWeek: 'sessions / week',
+    // Level labels
+    levelBeginner: 'Beginner',
+    levelIntermediate: 'Intermediate',
+    levelAdvanced: 'Advanced',
+    // Goal labels
+    goalWeightLoss: 'Weight Loss',
+    goalMuscleGain: 'Muscle Gain',
+    goalMaintenance: 'Maintenance',
+    // Settings rows
+    reminders: 'Reminders',
+    remindersSub: 'Workout, meal & hydration',
+    appearance: 'Appearance',
+    // Privacy rows
+    dataUsage: 'How my data is used',
+    dataUsageSub: 'Storage, AI & your rights',
+    deleteAccount: 'Delete my account',
+    // Dialogs
+    deleteTitle: 'Delete account',
+    deleteDesc: 'This will permanently delete your account and all your data. This cannot be undone.',
+    deleteConfirm: 'Delete my account',
+    changePhoto: 'Change profile photo',
+    photoPermTitle: 'Permission needed',
+    photoPermDesc: 'Allow photo access to set a profile picture.',
+    // Legacy (keep for compatibility)
     settings: 'Settings',
     theme: 'Theme',
     darkMode: 'Dark mode',
@@ -121,7 +165,6 @@ export const en = {
     logout: 'Log out',
     level: 'Level',
     goal: 'Goal',
-    weeklyTarget: 'Weekly target',
   },
   plans: {
     title: 'Plans',
