@@ -118,7 +118,7 @@ export default function PrivacyScreen() {
             </Text>
             <Body text={isFr
               ? 'Gère la connexion sécurisée. Stocke ton e-mail et ton mot de passe. Consulte la politique de Clerk sur clerk.com.'
-              : 'Handles secure login. Stores your email and password. See Clerk's policy at clerk.com.'
+              : "Handles secure login. Stores your email and password. See Clerk's policy at clerk.com."
             } />
           </View>
 
