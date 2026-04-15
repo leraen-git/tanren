@@ -372,20 +372,20 @@ export default function RemindersScreen() {
                 }
               />
 
-              <SettingRow
-                label={t('notifications.remindMe')}
-                right={
-                  <PillSelector
-                    options={[0, 15, 30] as (0 | 15 | 30)[]}
-                    value={settings.workoutOffset}
-                    onChange={(v) => {
-                      settings.updateWorkout({ workoutOffset: v })
-                      rescheduleWorkoutNotifications({ ...settings, workoutOffset: v })
-                    }}
-                    labelMap={offsetLabels}
-                  />
-                }
-              />
+              <View style={{ paddingHorizontal: spacing.base, paddingVertical: spacing.md, borderBottomWidth: 1, borderBottomColor: colors.surface2, gap: spacing.sm }}>
+                <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.body, color: colors.textPrimary }}>
+                  {t('notifications.remindMe')}
+                </Text>
+                <PillSelector
+                  options={[0, 15, 30] as (0 | 15 | 30)[]}
+                  value={settings.workoutOffset}
+                  onChange={(v) => {
+                    settings.updateWorkout({ workoutOffset: v })
+                    rescheduleWorkoutNotifications({ ...settings, workoutOffset: v })
+                  }}
+                  labelMap={offsetLabels}
+                />
+              </View>
 
               <View style={{ paddingHorizontal: spacing.base, paddingVertical: spacing.md, borderBottomWidth: 1, borderBottomColor: colors.surface2 }}>
                 <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.body, color: colors.textPrimary, marginBottom: spacing.sm }}>
@@ -483,20 +483,20 @@ export default function RemindersScreen() {
 
           {settings.hydrationEnabled && (
             <>
-              <SettingRow
-                label={t('notifications.interval')}
-                right={
-                  <PillSelector
-                    options={[60, 90, 120] as (60 | 90 | 120)[]}
-                    value={settings.hydrationInterval}
-                    onChange={(v) => {
-                      settings.updateHydration({ hydrationInterval: v })
-                      rescheduleHydrationNotifications({ ...settings, hydrationInterval: v })
-                    }}
-                    labelMap={intervalLabels}
-                  />
-                }
-              />
+              <View style={{ paddingHorizontal: spacing.base, paddingVertical: spacing.md, borderBottomWidth: 1, borderBottomColor: colors.surface2, gap: spacing.sm }}>
+                <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.body, color: colors.textPrimary }}>
+                  {t('notifications.interval')}
+                </Text>
+                <PillSelector
+                  options={[60, 90, 120] as (60 | 90 | 120)[]}
+                  value={settings.hydrationInterval}
+                  onChange={(v) => {
+                    settings.updateHydration({ hydrationInterval: v })
+                    rescheduleHydrationNotifications({ ...settings, hydrationInterval: v })
+                  }}
+                  labelMap={intervalLabels}
+                />
+              </View>
               <SettingRow
                 label={t('notifications.activeFrom')}
                 right={

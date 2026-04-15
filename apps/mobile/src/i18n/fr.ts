@@ -229,7 +229,7 @@ export const fr = {
     hydration: 'Hydratation',
     workoutEnable: 'Activer les rappels d\'entraînement',
     trainingTime: 'Heure d\'entraînement',
-    remindMe: 'Me rappeler',
+    remindMe: 'Rappel',
     atTime: 'À l\'heure',
     minBefore: '{{n}} min avant',
     activeDays: 'Jours actifs',
