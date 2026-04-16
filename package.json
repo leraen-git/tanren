@@ -6,7 +6,7 @@
     "packages/*"
   ],
   "scripts": {
-    "postinstall": "patch-package",
+    "postinstall": "patch-package && node scripts/patch-rn-space-paths.js",
     "dev": "turbo run dev",
     "build": "turbo run build",
     "lint": "turbo run lint",
@@ -24,8 +24,7 @@
   },
   "overrides": {
     "ajv": "^8.17.1",
-    "react": "19.2.5",
-    "react-dom": "19.2.5"
+    "react-native": "0.79.6"
   },
   "packageManager": "npm@11.11.0",
   "engines": {

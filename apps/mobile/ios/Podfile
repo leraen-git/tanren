@@ -84,5 +84,21 @@ target 'FitTrack' do
         end
       end
     end
+
+    # Fix: The project directory contains spaces ("App Claude").
+    # React Native's generated shell scripts pass paths unquoted to /bin/sh -c,
+    # which splits on the space and causes "No such file or directory" at build time.
+    # Patch every generated script phase in the Pods project after each pod install.
+    installer.pods_project.targets.each do |target|
+      target.shell_script_build_phases.each do |phase|
+        next unless phase.shell_script
+        if phase.shell_script.include?('/bin/sh -c "$WITH_ENVIRONMENT $SCRIPT_PHASES_SCRIPT"')
+          phase.shell_script = phase.shell_script.gsub(
+            '/bin/sh -c "$WITH_ENVIRONMENT $SCRIPT_PHASES_SCRIPT"',
+            '/bin/sh "$WITH_ENVIRONMENT" "$SCRIPT_PHASES_SCRIPT"'
+          )
+        end
+      end
+    end
   end
 end

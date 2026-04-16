@@ -148,9 +148,11 @@ const SEED_PROGRAMS = [
 
 async function seed() {
   console.log('Seeding dev user...')
+  // Fixed UUID so DEV_USER_ID in .env is always predictable
   await db
     .insert(users)
     .values({
+      id: '00000000-0000-0000-0000-000000000001',
       authId: 'dev_user',
       name: 'Dev Athlete',
       email: 'dev@fittrack.app',
