@@ -1,4 +1,4 @@
-import type { ExerciseStatus, Trend } from '../types';
+import type { ExerciseStatus, Trend } from '../types.js';
 export declare function calcSetVolume(reps: number, weight: number): number;
 export declare function calcExerciseVolume(sets: Array<{
     reps: number;

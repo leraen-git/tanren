@@ -1,5 +1,5 @@
-import type { ExerciseStatus, Trend } from '../types'
-import { PROGRESSION_THRESHOLD } from '../constants'
+import type { ExerciseStatus, Trend } from '../types.js'
+import { PROGRESSION_THRESHOLD } from '../constants.js'
 
 // ─── Volume calculations ──────────────────────────────────────────────────────
 

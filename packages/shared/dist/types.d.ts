@@ -1,9 +1,7 @@
 export type UserLevel = 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
 export type UserGoal = 'WEIGHT_LOSS' | 'MUSCLE_GAIN' | 'MAINTENANCE';
-export type WeightUnit = 'kg' | 'lbs';
 export interface User {
     id: string;
-    clerkId: string;
     name: string;
     email: string;
     avatarUrl: string | null;

@@ -1,4 +1,4 @@
-import { PROGRESSION_THRESHOLD } from '../constants';
+import { PROGRESSION_THRESHOLD } from '../constants.js';
 // ─── Volume calculations ──────────────────────────────────────────────────────
 export function calcSetVolume(reps, weight) {
     return reps * weight;
