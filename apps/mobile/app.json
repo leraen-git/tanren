@@ -16,7 +16,16 @@
     },
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.fittrack.app"
+      "bundleIdentifier": "com.fittrack.app",
+      "infoPlist": {
+        "CFBundleURLTypes": [
+          {
+            "CFBundleURLSchemes": [
+              "com.googleusercontent.apps.YOUR_IOS_CLIENT_ID"
+            ]
+          }
+        ]
+      }
     },
     "android": {
       "adaptiveIcon": {

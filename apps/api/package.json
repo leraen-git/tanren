@@ -16,7 +16,6 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.82.0",
-    "jose": "^5.9.3",
     "@fastify/cors": "^10.0.2",
     "@fastify/rate-limit": "^10.3.0",
     "@fittrack/shared": "*",
@@ -25,8 +24,10 @@
     "fastify": "^5.2.1",
     "fastify-plugin": "^5.0.1",
     "ioredis": "^5.4.1",
+    "jose": "^5.9.3",
     "pg": "^8.13.1",
     "pino": "^9.5.0",
+    "resend": "^6.12.0",
     "zod": "^3.24.1"
   },
   "devDependencies": {

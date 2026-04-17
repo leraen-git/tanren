@@ -1,4 +1,5 @@
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { useGuestBannerVisible } from '@/contexts/GuestBannerContext'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { View, Text, ScrollView, TouchableOpacity, RefreshControl } from 'react-native'
 import { router, useFocusEffect } from 'expo-router'
@@ -17,6 +18,7 @@ const DAY_NAMES_FULL = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 
 export default function HomeScreen() {
   const { colors, typography, spacing, radius } = useTheme()
   const { t } = useTranslation()
+  const bannerVisible = useGuestBannerVisible()
 
   function getGreeting(): string {
     const hour = new Date().getHours()
@@ -25,6 +27,7 @@ export default function HomeScreen() {
     return t('home.greeting_evening')
   }
   const { data: user, isLoading: userLoading } = trpc.users.me.useQuery()
+  const isGuest = user?.authProvider === 'guest'
   const { data: activePlan, refetch: refetchPlan, isRefetching } = trpc.plans.active.useQuery()
   // todayMeals is a lightweight endpoint — only today's day, no full rawPlan JSON.
   // staleTime: Infinity because the plan never changes unless the user explicitly
@@ -100,7 +103,7 @@ export default function HomeScreen() {
   const todayFat      = todayMealsSorted.reduce((s, m) => s + (m.fat      ?? 0), 0)
 
   return (
-    <SafeAreaView edges={["top"]} style={{ flex: 1, backgroundColor: colors.background }}>
+    <SafeAreaView edges={bannerVisible ? [] : ['top']} style={{ flex: 1, backgroundColor: colors.background }}>
       <MealDetailModal meal={selectedMeal} onClose={() => setSelectedMeal(null)} />
       <ScrollView
         contentContainerStyle={{ padding: spacing.base, gap: spacing.lg }}
@@ -361,9 +364,12 @@ export default function HomeScreen() {
               <View style={{ flex: 1, height: 1, backgroundColor: colors.surface2 }} />
             </View>
 
-            {/* AI generate button */}
+            {/* AI generate button — locked for guests */}
             <TouchableOpacity
-              onPress={() => router.push('/plans/generate' as any)}
+              onPress={() => isGuest
+                ? router.push('/(auth)/sign-in?upgrade=1' as any)
+                : router.push('/plans/generate' as any)
+              }
               style={{
                 backgroundColor: colors.surface,
                 borderRadius: radius.lg,
@@ -372,27 +378,28 @@ export default function HomeScreen() {
                 alignItems: 'center',
                 gap: spacing.md,
                 borderWidth: 1,
-                borderColor: colors.surface2,
+                borderColor: isGuest ? colors.surface2 : colors.surface2,
+                opacity: isGuest ? 0.85 : 1,
               }}
-              accessibilityLabel="Generate a plan with AI"
+              accessibilityLabel={isGuest ? t('guest.aiLocked') : 'Generate a plan with AI'}
               accessibilityRole="button"
             >
               <View style={{
                 width: 44, height: 44, borderRadius: radius.md,
-                backgroundColor: `${colors.primary}18`,
+                backgroundColor: isGuest ? colors.surface2 : `${colors.primary}18`,
                 alignItems: 'center', justifyContent: 'center',
               }}>
-                <Text style={{ fontSize: 22 }}>✨</Text>
+                <Text style={{ fontSize: 22 }}>{isGuest ? '🔒' : '✨'}</Text>
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.body, color: colors.textPrimary }}>
-                  {t('home.generatePlan')}
+                <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.body, color: isGuest ? colors.textMuted : colors.textPrimary }}>
+                  {isGuest ? t('guest.aiLocked') : t('home.generatePlan')}
                 </Text>
                 <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted }}>
-                  {t('home.generatePlanDesc')}
+                  {isGuest ? t('guest.aiLockedDesc') : t('home.generatePlanDesc')}
                 </Text>
               </View>
-              <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.title, color: colors.primary }}>→</Text>
+              <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.title, color: isGuest ? colors.textMuted : colors.primary }}>→</Text>
             </TouchableOpacity>
 
             {/* Just start an exercise */}

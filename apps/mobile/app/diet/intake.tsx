@@ -78,11 +78,30 @@ export default function DietIntakeScreen() {
   // Pre-fill from user profile on mount
   React.useEffect(() => {
     if (!user) return
-    const prefill: Record<string, any> = {}
-    if (user.gender && !intake.sex) prefill.sex = user.gender
-    // Use current weight as a starting point for goal weight if not yet set
-    if (user.weightKg && !intake.goalWeight) prefill.goalWeight = String(Math.round(user.weightKg))
+    const prefill: Partial<typeof intake> = {}
+
+    // Sex — default store value is 'male', so check against profile explicitly
+    if (user.gender && (user.gender === 'female' || user.gender === 'male')) {
+      prefill.sex = user.gender
+    }
+
+    // Goal weight — use current weight as starting point if not yet set
+    if (user.weightKg && !intake.goalWeight) {
+      prefill.goalWeight = String(Math.round(user.weightKg))
+    }
+
+    // Goal pace — derive from fitness goal
+    if (!intake.goalPace || intake.goalPace === 'steady') {
+      prefill.goalPace = user.goal === 'WEIGHT_LOSS' ? 'fast' : 'steady'
+    }
+
+    // Exercise frequency — derive from weekly training target
+    if (user.weeklyTarget && !intake.exerciseFrequency) {
+      prefill.exerciseFrequency = `${user.weeklyTarget} sessions per week`
+    }
+
     if (Object.keys(prefill).length > 0) update(prefill)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user])
 
   const inputStyle = {

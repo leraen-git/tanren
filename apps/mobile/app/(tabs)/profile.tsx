@@ -1,4 +1,5 @@
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { useGuestBannerVisible } from '@/contexts/GuestBannerContext'
 import React, { useState, useEffect } from 'react'
 import {
   View,
@@ -16,6 +17,7 @@ import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/theme/ThemeContext'
 import { trpc } from '@/lib/trpc'
 import { colors as tokenColors } from '@/theme/tokens'
+import { useAuth } from '@/contexts/AuthContext'
 
 const LEVELS = ['BEGINNER', 'INTERMEDIATE', 'ADVANCED'] as const
 const GOALS  = ['WEIGHT_LOSS', 'MUSCLE_GAIN', 'MAINTENANCE'] as const
@@ -78,6 +80,40 @@ function NavRow({
       </View>
       <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.body, color: danger ? colors.danger : colors.textMuted }}>›</Text>
     </TouchableOpacity>
+  )
+}
+
+function InfoRow({
+  icon, label, sublabel,
+}: {
+  icon: string
+  label: string
+  sublabel?: string
+}) {
+  const { colors, typography, spacing } = useTheme()
+  return (
+    <View style={{
+      flexDirection: 'row', alignItems: 'center',
+      paddingVertical: spacing.md,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.surface2,
+    }}>
+      <Text style={{ fontSize: typography.size.xl, width: 32 }}>{icon}</Text>
+      <View style={{ flex: 1 }}>
+        <Text style={{
+          fontFamily: typography.family.regular,
+          fontSize: typography.size.body,
+          color: colors.textMuted,
+        }}>
+          {label}
+        </Text>
+        {sublabel ? (
+          <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted, marginTop: 2 }}>
+            {sublabel}
+          </Text>
+        ) : null}
+      </View>
+    </View>
   )
 }
 
@@ -274,6 +310,7 @@ export default function ProfileScreen() {
   const { colors, typography, spacing, radius } = useTheme()
   const { t } = useTranslation()
 
+  const { signOut } = useAuth()
   const { data: user, refetch } = trpc.users.me.useQuery()
   const { data: sessions }      = trpc.sessions.history.useQuery({ limit: 100 })
   const { data: records }       = trpc.progress.records.useQuery()
@@ -283,20 +320,58 @@ export default function ProfileScreen() {
   const deleteMe = trpc.users.deleteMe.useMutation({
     onSuccess: async () => {
       await utils.invalidate()
-      router.replace('/onboarding/step1' as any)
+      await signOut()
+      router.replace('/(auth)/sign-in' as any)
     },
     onError: (err) => Alert.alert(t('common.error'), err.message),
   })
 
   const save = (data: Parameters<typeof updateMe.mutate>[0]) => updateMe.mutate(data)
 
+  const handleSignOut = () => {
+    Alert.alert(
+      t('profile.signOutTitle'),
+      t('profile.signOutDesc'),
+      [
+        { text: t('common.cancel'), style: 'cancel' },
+        {
+          text: t('profile.signOut'),
+          style: 'destructive',
+          onPress: async () => {
+            await signOut()
+            router.replace('/(auth)/sign-in' as any)
+          },
+        },
+      ],
+    )
+  }
+
   const handleDeleteAccount = () => {
+    // Two-step confirmation — first warning
     Alert.alert(
       t('profile.deleteTitle'),
       t('profile.deleteDesc'),
       [
         { text: t('common.cancel'), style: 'cancel' },
-        { text: t('profile.deleteConfirm'), style: 'destructive', onPress: () => deleteMe.mutate() },
+        {
+          text: t('profile.deleteConfirm'),
+          style: 'destructive',
+          onPress: () => {
+            // Second confirmation — no going back
+            Alert.alert(
+              t('profile.deleteConfirm2Title'),
+              t('profile.deleteConfirm2Desc'),
+              [
+                { text: t('common.cancel'), style: 'cancel' },
+                {
+                  text: t('profile.deleteConfirm2Button'),
+                  style: 'destructive',
+                  onPress: () => deleteMe.mutate(),
+                },
+              ],
+            )
+          },
+        },
       ],
     )
   }
@@ -339,10 +414,13 @@ export default function ProfileScreen() {
     overflow: 'hidden',
   }
 
+  const isGuest = user?.authProvider === 'guest'
+  const bannerVisible = useGuestBannerVisible()
+
   if (!user) return null
 
   return (
-    <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: colors.background }}>
+    <SafeAreaView edges={bannerVisible ? [] : ['top']} style={{ flex: 1, backgroundColor: colors.background }}>
       <ScrollView
         contentContainerStyle={{ paddingBottom: spacing.xl }}
         showsVerticalScrollIndicator={false}
@@ -431,9 +509,11 @@ export default function ProfileScreen() {
             />
             <InlineField
               label={t('profile.fieldEmail')}
-              value={user.email}
-              onSave={(v) => save({ email: v })}
+              value={isGuest ? '' : user.email}
+              onSave={isGuest ? undefined : (v) => save({ email: v })}
+              placeholder={isGuest ? t('guest.emailPlaceholder') : undefined}
               keyboardType="default"
+              editable={!isGuest}
             />
             <InlineField
               label={t('profile.fieldHeight')}
@@ -531,6 +611,25 @@ export default function ProfileScreen() {
               label={t('profile.dataUsage')}
               sublabel={t('profile.dataUsageSub')}
               onPress={() => router.push('/privacy' as any)}
+            />
+            <InfoRow
+              icon=""
+              label={t('profile.connectedWith')}
+              sublabel={(() => {
+                if (isGuest) return t('guest.connectedWith')
+                if (user.authProvider === 'google') return `Google · ${user.email}`
+                if (user.authProvider === 'email') return `Email · ${user.email}`
+                const emailLabel = user.email.endsWith('@privaterelay.appleid.com')
+                  ? t('onboarding.step0PrivateEmail')
+                  : user.email
+                return `Apple Sign-In · ${emailLabel}`
+              })()}
+            />
+            <NavRow
+              icon="🚪"
+              label={t('profile.signOut')}
+              onPress={handleSignOut}
+              danger
             />
             <NavRow
               icon="🗑️"

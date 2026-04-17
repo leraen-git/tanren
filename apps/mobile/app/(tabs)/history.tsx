@@ -1,4 +1,5 @@
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { useGuestBannerVisible } from '@/contexts/GuestBannerContext'
 import React, { useState, useMemo } from 'react'
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native'
 import { useTheme } from '@/theme/ThemeContext'
@@ -50,6 +51,7 @@ function formatTime(date: string | Date): string {
 
 export default function HistoryScreen() {
   const { colors, typography, spacing, radius } = useTheme()
+  const bannerVisible = useGuestBannerVisible()
   const { t } = useTranslation()
   const formatDate = useFormatDate()
   const [dateFilter, setDateFilter] = useState<FilterId>('all')
@@ -75,7 +77,7 @@ export default function HistoryScreen() {
   const totalVolume = filtered.reduce((sum, s) => sum + (s.totalVolume ?? 0), 0)
 
   return (
-    <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: colors.background }}>
+    <SafeAreaView edges={bannerVisible ? [] : ['top']} style={{ flex: 1, backgroundColor: colors.background }}>
       <ScrollView contentContainerStyle={{ paddingBottom: spacing.xl }}>
         {/* Header */}
         <View style={{ paddingHorizontal: spacing.base, paddingTop: spacing.base, paddingBottom: spacing.sm }}>

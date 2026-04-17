@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
@@ -10,9 +10,19 @@ import { useTranslation } from 'react-i18next'
 export default function OnboardingStep1() {
   const { colors, typography, spacing, radius } = useTheme()
   const { t } = useTranslation()
-  const [name, setName] = useState('')
+  const { data: me } = trpc.users.me.useQuery()
+  // Pre-fill name from provider if they gave us one (not the "Athlete" fallback)
+  const providerName = me?.name && me.name !== 'Athlete' ? me.name : ''
+  const isGoogle = me?.authProvider === 'google'
+  const [name, setName] = useState(providerName)
   const [gender, setGender] = useState<'male' | 'female' | null>(null)
   const updateMe = trpc.users.updateMe.useMutation()
+
+  // Apply pre-fill once me loads (query may arrive after component mounts)
+  useEffect(() => {
+    if (providerName && !name) setName(providerName)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [providerName])
 
   const handleNext = async () => {
     if (!name.trim()) {
@@ -70,6 +80,16 @@ export default function OnboardingStep1() {
             }}
             accessibilityLabel={t('onboarding.nameLabel')}
           />
+          {providerName ? (
+            <Text style={{
+              fontFamily: typography.family.regular,
+              fontSize: typography.size.xs,
+              color: colors.textMuted,
+              marginTop: -spacing.xs,
+            }}>
+              {isGoogle ? t('onboarding.nameFromGoogle') : t('onboarding.nameFromApple')}
+            </Text>
+          ) : null}
         </View>
 
         {/* Gender */}

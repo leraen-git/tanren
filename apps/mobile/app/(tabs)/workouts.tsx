@@ -1,4 +1,5 @@
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { useGuestBannerVisible } from '@/contexts/GuestBannerContext'
 import React from 'react'
 import { View, Text, ScrollView, TouchableOpacity, RefreshControl } from 'react-native'
 import { router } from 'expo-router'
@@ -31,6 +32,7 @@ function SectionHeader({ title, onAdd, addLabel }: { title: string; onAdd: () =>
 export default function WorkoutsScreen() {
   const { colors, typography, spacing, radius } = useTheme()
   const { t } = useTranslation()
+  const bannerVisible = useGuestBannerVisible()
 
   const utils = trpc.useUtils()
   const { data: plans, isLoading: plansLoading, refetch: refetchPlans, isRefetching } = trpc.plans.list.useQuery()
@@ -50,7 +52,7 @@ export default function WorkoutsScreen() {
     [...days].sort((a, b) => ((a.dayOfWeek + 6) % 7) - ((b.dayOfWeek + 6) % 7))
 
   return (
-    <SafeAreaView edges={["top"]} style={{ flex: 1, backgroundColor: colors.background }}>
+    <SafeAreaView edges={bannerVisible ? [] : ['top']} style={{ flex: 1, backgroundColor: colors.background }}>
       <ScrollView
         contentContainerStyle={{ padding: spacing.base, gap: spacing.xl }}
         refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor={colors.primary} />}

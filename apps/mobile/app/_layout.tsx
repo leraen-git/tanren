@@ -13,6 +13,8 @@ import { setupNotificationChannels } from '@/services/notificationPermissions'
 import { rescheduleAll } from '@/services/notificationScheduler'
 import { useNotificationSettingsStore } from '@/stores/notificationSettingsStore'
 import { AuthProvider, useAuth } from '@/contexts/AuthContext'
+import { GuestBanner } from '@/components/GuestBanner'
+import { GuestBannerProvider } from '@/contexts/GuestBannerContext'
 import '@/i18n'
 
 // Handle incoming notification taps — deep-link to the relevant screen
@@ -74,7 +76,9 @@ function OnboardingGate() {
     if (redirected.current) return
     if (me.data && !me.data.onboardingDone) {
       redirected.current = true
-      router.replace('/onboarding/step1' as any)
+      // Guests and email users skip the consent screen (no provider data to display)
+      const skipConsent = me.data.authProvider === 'guest' || me.data.authProvider === 'email'
+      router.replace((skipConsent ? '/onboarding/step1' : '/onboarding/step0') as any)
     }
   }, [me.data])
 
@@ -108,6 +112,8 @@ function NotificationWatcher() {
 
 function AuthGate({ children }: { children: React.ReactNode }) {
   const { status } = useAuth()
+  const { data: user } = trpc.users.me.useQuery()
+  const isGuest = user?.authProvider === 'guest'
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -118,7 +124,12 @@ function AuthGate({ children }: { children: React.ReactNode }) {
   // While loading the stored token, render nothing (splash is already shown)
   if (status === 'loading') return null
 
-  return <>{children}</>
+  return (
+    <GuestBannerProvider value={isGuest ?? false}>
+      <GuestBanner />
+      {children}
+    </GuestBannerProvider>
+  )
 }
 
 export default function RootLayout() {

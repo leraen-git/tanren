@@ -1,9 +1,12 @@
+import { randomInt } from 'node:crypto'
 import { z } from 'zod'
 import { eq } from 'drizzle-orm'
 import { TRPCError } from '@trpc/server'
 import { SignJWT, jwtVerify, createRemoteJWKSet } from 'jose'
 import { router, publicProcedure } from '../trpc.js'
 import { users } from '../db/schema.js'
+import { redis } from '../redis.js'
+import { sendOtpEmail } from '../services/emailService.js'
 
 const isDev = process.env['NODE_ENV'] === 'development'
 const JWT_SECRET_RAW = process.env['JWT_SECRET']
@@ -13,22 +16,40 @@ const JWT_SECRET = new TextEncoder().encode(JWT_SECRET_RAW ?? 'dev-secret-change
 const APPLE_JWKS = createRemoteJWKSet(new URL('https://appleid.apple.com/auth/keys'))
 const APPLE_BUNDLE_ID = 'com.fittrack.app'
 
-/** Sign a 30-day JWT containing the internal user UUID as `sub`. */
-async function signToken(internalUserId: string): Promise<string> {
+// ─── Token helpers ────────────────────────────────────────────────────────────
+
+/** Sign a JWT containing the internal user UUID as `sub`. */
+async function signToken(internalUserId: string, expiresIn = '90d'): Promise<string> {
   return new SignJWT({})
     .setProtectedHeader({ alg: 'HS256' })
     .setSubject(internalUserId)
     .setIssuedAt()
-    .setExpirationTime('30d')
+    .setExpirationTime(expiresIn)
     .sign(JWT_SECRET)
 }
+
+// ─── OTP helpers ──────────────────────────────────────────────────────────────
+
+/** Cryptographically secure 6-digit OTP, zero-padded. */
+function generateOtp(): string {
+  return String(randomInt(0, 1_000_000)).padStart(6, '0')
+}
+
+const OTP_TTL_SECONDS = 600       // 10 minutes
+const OTP_MAX_ATTEMPTS = 5        // wrong guesses before invalidation
+const OTP_RATE_TTL_SECONDS = 900  // 15 minutes
+const OTP_RATE_MAX = 3            // sends per window
+
+interface OtpRecord {
+  code: string
+  attempts: number
+}
+
+// ─── Router ───────────────────────────────────────────────────────────────────
 
 export const authRouter = router({
   /**
    * Sign in / sign up with an Apple Identity Token.
-   * The mobile app calls expo-apple-authentication, gets identityToken,
-   * and sends it here for server-side verification.
-   * Returns a signed JWT and the user record.
    */
   signInWithApple: publicProcedure
     .input(z.object({
@@ -52,11 +73,8 @@ export const authRouter = router({
         throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Invalid Apple identity token' })
       }
 
-      // Apple only sends email on first sign-in — use the one from the JWT payload
-      // or fall back to the input if provided by the client
       const email = appleEmail ?? input.email ?? null
 
-      // Find or create the user
       let [user] = await ctx.db
         .select()
         .from(users)
@@ -84,8 +102,196 @@ export const authRouter = router({
     }),
 
   /**
+   * Sign in / sign up with a Google OAuth access token.
+   */
+  signInWithGoogle: publicProcedure
+    .input(z.object({ accessToken: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const googleRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+        headers: { Authorization: `Bearer ${input.accessToken}` },
+      })
+
+      if (!googleRes.ok) {
+        ctx.req.log.warn({ event: 'auth_failure', provider: 'google' }, 'Google token invalid')
+        throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Invalid Google access token' })
+      }
+
+      const googleUser = await googleRes.json() as {
+        sub: string
+        email: string
+        name?: string
+        picture?: string
+        email_verified?: boolean
+      }
+
+      if (!googleUser.sub) {
+        throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Invalid Google token response' })
+      }
+
+      let [user] = await ctx.db
+        .select()
+        .from(users)
+        .where(eq(users.authId, googleUser.sub))
+        .limit(1)
+
+      if (!user) {
+        const name = googleUser.name?.trim() || googleUser.email.split('@')[0] || 'Athlete'
+        const [created] = await ctx.db.insert(users).values({
+          authId: googleUser.sub,
+          authProvider: 'google',
+          name,
+          email: googleUser.email,
+          avatarUrl: googleUser.picture ?? null,
+        }).returning()
+        user = created!
+        ctx.req.log.info({ event: 'user_created', userId: user.id, provider: 'google' }, 'New user signed up')
+      } else {
+        const updates: Record<string, unknown> = { updatedAt: new Date() }
+        if (googleUser.name) updates.name = googleUser.name
+        if (googleUser.picture) updates.avatarUrl = googleUser.picture
+        const [updated] = await ctx.db
+          .update(users)
+          .set(updates)
+          .where(eq(users.id, user.id))
+          .returning()
+        user = updated!
+      }
+
+      const token = await signToken(user.id)
+      ctx.req.log.info({ event: 'auth_success', userId: user.id, provider: 'google' }, 'User signed in')
+      return { token, user }
+    }),
+
+  /**
+   * Email OTP — step 1: request a 6-digit code.
+   * Rate-limited to 3 sends per 15 minutes per email address.
+   */
+  requestOtp: publicProcedure
+    .input(z.object({ email: z.string().email() }))
+    .mutation(async ({ ctx, input }) => {
+      const email = input.email.trim().toLowerCase()
+
+      // Rate limit: max 3 sends per 15-minute window
+      const rateKey = `otp_rate:${email}`
+      const sends = await redis.incr(rateKey)
+      if (sends === 1) await redis.expire(rateKey, OTP_RATE_TTL_SECONDS)
+      if (sends > OTP_RATE_MAX) {
+        throw new TRPCError({
+          code: 'TOO_MANY_REQUESTS',
+          message: 'Too many code requests. Please wait 15 minutes.',
+        })
+      }
+
+      const code = generateOtp()
+      const otpKey = `otp:${email}`
+      const record: OtpRecord = { code, attempts: 0 }
+      await redis.set(otpKey, JSON.stringify(record), 'EX', OTP_TTL_SECONDS)
+
+      try {
+        await sendOtpEmail(email, code)
+      } catch (err) {
+        ctx.req.log.error({ event: 'otp_email_failed', email, err }, 'Failed to send OTP email')
+        throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Could not send email. Please try again.' })
+      }
+
+      ctx.req.log.info({ event: 'otp_sent', email }, 'OTP sent')
+      return { sent: true }
+    }),
+
+  /**
+   * Email OTP — step 2: verify the code and issue a JWT.
+   * Max 5 wrong attempts before the code is invalidated.
+   */
+  verifyOtp: publicProcedure
+    .input(z.object({
+      email: z.string().email(),
+      code: z.string().min(1).max(6),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const email = input.email.trim().toLowerCase()
+      const otpKey = `otp:${email}`
+
+      const raw = await redis.get(otpKey)
+      if (!raw) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'Code expired or not found. Request a new one.',
+        })
+      }
+
+      const record = JSON.parse(raw) as OtpRecord
+
+      // Invalidate after too many wrong guesses — do this check before verifying
+      if (record.attempts >= OTP_MAX_ATTEMPTS) {
+        await redis.del(otpKey)
+        throw new TRPCError({
+          code: 'TOO_MANY_REQUESTS',
+          message: 'Too many incorrect attempts. Please request a new code.',
+        })
+      }
+
+      // Increment attempts before checking (limits timing-based enumeration)
+      const newAttempts = record.attempts + 1
+
+      if (input.code !== record.code) {
+        await redis.set(otpKey, JSON.stringify({ ...record, attempts: newAttempts }), 'KEEPTTL')
+        const remaining = OTP_MAX_ATTEMPTS - newAttempts
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: remaining > 0
+            ? `Incorrect code. ${remaining} attempt${remaining === 1 ? '' : 's'} remaining.`
+            : 'Too many incorrect attempts. Please request a new code.',
+        })
+      }
+
+      // Code is correct — delete immediately (single use)
+      await redis.del(otpKey)
+
+      // Find or create user
+      let [user] = await ctx.db
+        .select()
+        .from(users)
+        .where(eq(users.authId, email))
+        .limit(1)
+
+      if (!user) {
+        const name = email.split('@')[0] || 'User'
+        const [created] = await ctx.db.insert(users).values({
+          authId: email,
+          authProvider: 'email',
+          name,
+          email,
+        }).returning()
+        user = created!
+        ctx.req.log.info({ event: 'user_created', userId: user.id, provider: 'email' }, 'New user signed up')
+      }
+
+      const token = await signToken(user.id)
+      ctx.req.log.info({ event: 'auth_success', userId: user.id, provider: 'email' }, 'User signed in')
+      return { token, user }
+    }),
+
+  /**
+   * Guest sign-in — creates an anonymous user with a 7-day JWT.
+   * Guest accounts are identified by authProvider = 'guest'.
+   */
+  guestSignIn: publicProcedure
+    .mutation(async ({ ctx }) => {
+      const guestId = crypto.randomUUID()
+      const [user] = await ctx.db.insert(users).values({
+        authId: `guest_${guestId}`,
+        authProvider: 'guest',
+        name: 'Guest',
+        email: `guest_${guestId.slice(0, 8)}@guest.fittrack.app`,
+      }).returning()
+
+      const token = await signToken(user!.id, '7d')
+      ctx.req.log.info({ event: 'guest_created', userId: user!.id }, 'Guest account created')
+      return { token, user: user! }
+    }),
+
+  /**
    * Dev-only: sign in as any existing user by internal UUID.
-   * Only works when NODE_ENV=development. Never callable in production.
    */
   devSignIn: publicProcedure
     .input(z.object({ userId: z.string() }))
@@ -105,7 +311,6 @@ export const authRouter = router({
 
   /**
    * Verify the current token is still valid and return the user.
-   * Used on app launch to restore session without re-authenticating.
    */
   me: publicProcedure.query(async ({ ctx }) => {
     if (!ctx.userId) return null

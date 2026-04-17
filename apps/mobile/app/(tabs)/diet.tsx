@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { useGuestBannerVisible } from '@/contexts/GuestBannerContext'
 import { router } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
 import { trpc } from '@/lib/trpc'
@@ -61,7 +62,10 @@ function MacroBar({ label, value, target, color }: { label: string; value: numbe
 export default function DietScreen() {
   const { colors, typography, spacing, radius } = useTheme()
   const { t } = useTranslation()
+  const bannerVisible = useGuestBannerVisible()
   const { data: plan, isLoading } = trpc.diet.activePlan.useQuery()
+  const { data: user } = trpc.users.me.useQuery()
+  const isGuest = user?.authProvider === 'guest'
   const utils = trpc.useUtils()
   const [selectedMeal, setSelectedMeal] = useState<DietMeal | null>(null)
 
@@ -87,7 +91,7 @@ export default function DietScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: colors.background }}>
+      <SafeAreaView edges={bannerVisible ? [] : ['top']} style={{ flex: 1, backgroundColor: colors.background }}>
         <View style={{ padding: spacing.base, gap: spacing.md }}>
           <SkeletonCard height={80} />
           <SkeletonCard height={200} />
@@ -100,7 +104,7 @@ export default function DietScreen() {
   // No plan state
   if (!plan || !plan.isActive) {
     return (
-      <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: colors.background }}>
+      <SafeAreaView edges={bannerVisible ? [] : ['top']} style={{ flex: 1, backgroundColor: colors.background }}>
         <ScrollView contentContainerStyle={{ padding: spacing.base, gap: spacing.lg, flexGrow: 1, justifyContent: 'center' }}>
           <View style={{ alignItems: 'center', gap: spacing.md }}>
             <Text style={{ fontSize: 64 }}>🥗</Text>
@@ -125,13 +129,28 @@ export default function DietScreen() {
           ))}
 
           <TouchableOpacity
-            onPress={() => router.push('/diet/intake' as any)}
-            style={{ backgroundColor: colors.primary, borderRadius: radius.lg, paddingVertical: spacing.lg, alignItems: 'center' }}
-            accessibilityLabel={t('diet.buildPlan')} accessibilityRole="button"
+            onPress={() => isGuest
+              ? router.push('/(auth)/sign-in?upgrade=1' as any)
+              : router.push('/diet/intake' as any)
+            }
+            style={{
+              backgroundColor: isGuest ? colors.surface2 : colors.primary,
+              borderRadius: radius.lg,
+              paddingVertical: spacing.lg,
+              alignItems: 'center',
+              gap: 4,
+            }}
+            accessibilityLabel={isGuest ? t('guest.aiLocked') : t('diet.buildPlan')}
+            accessibilityRole="button"
           >
-            <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size.xl, color: tokenColors.white }}>
-              {t('diet.buildPlan')}
+            <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size.xl, color: isGuest ? colors.textMuted : tokenColors.white }}>
+              {isGuest ? `🔒 ${t('guest.aiLocked')}` : t('diet.buildPlan')}
             </Text>
+            {isGuest && (
+              <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted }}>
+                {t('guest.aiLockedDesc')}
+              </Text>
+            )}
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -162,7 +181,7 @@ export default function DietScreen() {
   const dayFat      = currentMeals.reduce((s, m) => s + (m.fat      ?? 0), 0)
 
   return (
-    <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: colors.background }}>
+    <SafeAreaView edges={bannerVisible ? [] : ['top']} style={{ flex: 1, backgroundColor: colors.background }}>
       <MealDetailModal meal={selectedMeal} onClose={() => setSelectedMeal(null)} />
 
       <ScrollView contentContainerStyle={{ paddingBottom: spacing.xl }}>
@@ -360,12 +379,19 @@ export default function DietScreen() {
 
         {/* Regenerate */}
         <TouchableOpacity
-          onPress={() => router.push('/diet/intake' as any)}
+          onPress={() => isGuest
+            ? router.push('/(auth)/sign-in?upgrade=1' as any)
+            : router.push('/diet/intake' as any)
+          }
           style={{ margin: spacing.base, alignItems: 'center', paddingVertical: spacing.md }}
-          accessibilityLabel={t('diet.regenerateLink')} accessibilityRole="button"
+          accessibilityLabel={isGuest ? t('guest.aiLocked') : t('diet.regenerateLink')}
+          accessibilityRole="button"
         >
           <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.base, color: colors.textMuted }}>
-            {t('diet.regeneratePrompt')}{' '}<Text style={{ color: colors.primary }}>{t('diet.regenerateLink')}</Text>
+            {isGuest
+              ? <Text style={{ color: colors.textMuted }}>🔒 {t('guest.aiLocked')}</Text>
+              : <>{t('diet.regeneratePrompt')}{' '}<Text style={{ color: colors.primary }}>{t('diet.regenerateLink')}</Text></>
+            }
           </Text>
         </TouchableOpacity>
       </ScrollView>

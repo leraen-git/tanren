@@ -20,6 +20,7 @@ export const difficultyEnum = pgEnum('difficulty', ['BEGINNER', 'INTERMEDIATE', 
 export const users = pgTable('users', {
   id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
   authId: text('auth_id').notNull().unique(),
+  authProvider: text('auth_provider').notNull().default('apple'),
   name: text('name').notNull(),
   email: text('email').notNull(),
   avatarUrl: text('avatar_url'),
