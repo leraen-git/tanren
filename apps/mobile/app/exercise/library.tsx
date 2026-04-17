@@ -6,7 +6,7 @@ import { useTheme } from '@/theme/ThemeContext'
 import { Card } from '@/components/Card'
 import { SkeletonCard } from '@/components/SkeletonCard'
 import { trpc } from '@/lib/trpc'
-import { MUSCLE_GROUPS } from '@fittrack/shared'
+import { MUSCLE_GROUPS } from '@tanren/shared'
 import { useTranslation } from 'react-i18next'
 
 const MG_KEY: Record<string, string> = {

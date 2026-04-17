@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TANREN — Logo & Splash Screen</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,300;0,400;0,500;0,700;0,900;1,400&family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #000000;
+    --white: #FFFFFF;
+    --red-light: #E8192C;
+    --red-dark: #FF2D3F;
+    --grey-light: #F2F2F2;
+    --grey-mid: #888888;
+    --grey-border: #CCCCCC;
+    --surface-dark: #111111;
+    --grid-dark: #1A1A1A;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Barlow Condensed', sans-serif;
+    background: var(--white);
+    color: var(--black);
+    line-height: 1.4;
+  }
+
+  /* ===== SECTION TITLES ===== */
+  .section-divider {
+    padding: 80px 60px 40px;
+    background: var(--white);
+    border-top: 1px solid var(--grey-border);
+  }
+  .section-divider:first-child { border-top: none; }
+  .section-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 500;
+    font-size: 12px;
+    letter-spacing: 0.16em;
+    color: var(--grey-mid);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .section-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 48px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--black);
+    margin-bottom: 12px;
+  }
+  .section-desc {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 400;
+    font-size: 18px;
+    color: var(--grey-mid);
+    max-width: 600px;
+  }
+
+  /* ===== HERO ===== */
+  .hero {
+    background: var(--black);
+    color: var(--white);
+    padding: 120px 60px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--grid-dark) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-dark) 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: 0.5;
+  }
+  .hero-inner { position: relative; z-index: 1; }
+  .hero-label {
+    font-weight: 500;
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    color: var(--grey-mid);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+  .hero-wordmark {
+    font-weight: 900;
+    font-size: 144px;
+    letter-spacing: 0.12em;
+    line-height: 1;
+    color: var(--white);
+  }
+  .hero-kanji {
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 700;
+    font-size: 32px;
+    color: var(--red-dark);
+    letter-spacing: 0.5em;
+    margin: 24px 0 16px;
+  }
+  .hero-rule {
+    width: 80px;
+    height: 4px;
+    background: var(--red-dark);
+    margin: 32px auto;
+  }
+  .hero-moto {
+    font-style: italic;
+    font-weight: 400;
+    font-size: 28px;
+    color: var(--red-dark);
+    margin-bottom: 16px;
+  }
+  .hero-baseline {
+    font-weight: 700;
+    font-size: 16px;
+    letter-spacing: 0.4em;
+    color: var(--white);
+  }
+
+  /* ===== LOGO GRID ===== */
+  .logo-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--grey-border);
+    margin: 0 60px;
+  }
+  .logo-cell {
+    background: var(--white);
+    padding: 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 320px;
+    position: relative;
+  }
+  .logo-cell.dark { background: var(--black); color: var(--white); }
+  .logo-cell .label {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--grey-mid);
+  }
+  .logo-cell.dark .label { color: var(--grey-mid); }
+
+  /* ===== FORGE-SPARK MARK ===== */
+  .mark {
+    width: 120px;
+    height: 120px;
+    position: relative;
+  }
+  .mark.lg { width: 200px; height: 200px; }
+  .mark.sm { width: 64px; height: 64px; }
+
+  /* ===== FULL LOGO LOCKUP ===== */
+  .lockup {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+  .lockup-vertical {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+  .wordmark {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 56px;
+    letter-spacing: 0.12em;
+    line-height: 1;
+  }
+  .wordmark.lg { font-size: 80px; }
+  .wordmark.sm { font-size: 32px; }
+  .kanji-mark {
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--red-light);
+    letter-spacing: 0.4em;
+  }
+  .dark .kanji-mark { color: var(--red-dark); }
+  .moto-tag {
+    font-style: italic;
+    font-weight: 400;
+    font-size: 16px;
+    color: var(--red-light);
+  }
+  .dark .moto-tag { color: var(--red-dark); }
+
+  /* ===== APP ICON SHOWCASE ===== */
+  .app-icons {
+    display: flex;
+    gap: 32px;
+    justify-content: center;
+    align-items: flex-end;
+    padding: 60px;
+    background: linear-gradient(135deg, #2a2a2a 0%, #0a0a0a 100%);
+  }
+  .app-icon-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+  .app-icon {
+    border-radius: 22%;
+    overflow: hidden;
+    box-shadow:
+      0 20px 50px rgba(255,45,63,0.15),
+      0 8px 16px rgba(0,0,0,0.4);
+    background: var(--black);
+    position: relative;
+  }
+  .app-icon.s180 { width: 180px; height: 180px; }
+  .app-icon.s120 { width: 120px; height: 120px; }
+  .app-icon.s60 { width: 60px; height: 60px; }
+  .app-icon-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--grey-mid);
+  }
+
+  /* ===== SPLASH SCREENS ===== */
+  .splash-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    padding: 60px;
+    background: var(--grey-light);
+  }
+  .phone-frame {
+    background: #1a1a1a;
+    border-radius: 48px;
+    padding: 12px;
+    box-shadow:
+      0 30px 80px rgba(0,0,0,0.25),
+      0 8px 24px rgba(0,0,0,0.15);
+    margin: 0 auto;
+    width: 320px;
+  }
+  .phone-screen {
+    border-radius: 38px;
+    overflow: hidden;
+    aspect-ratio: 9/19.5;
+    position: relative;
+  }
+  .phone-notch {
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 28px;
+    background: #000;
+    border-radius: 16px;
+    z-index: 10;
+  }
+  .splash-label {
+    text-align: center;
+    margin-top: 20px;
+    font-weight: 500;
+    font-size: 12px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--grey-mid);
+  }
+
+  /* ===== SPLASH DARK ===== */
+  .splash-dark {
+    background: var(--black);
+    color: var(--white);
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .splash-dark::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--grid-dark) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-dark) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+  .splash-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .splash-mark-wrap {
+    position: relative;
+    margin-bottom: 32px;
+  }
+  .splash-mark-wrap::before {
+    content: '';
+    position: absolute;
+    inset: -40%;
+    background: radial-gradient(circle, rgba(255,45,63,0.4) 0%, rgba(255,45,63,0) 70%);
+    border-radius: 50%;
+    animation: pulse 3s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 0.6; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.1); }
+  }
+  .splash-mark {
+    width: 90px;
+    height: 90px;
+    position: relative;
+    z-index: 2;
+  }
+  .splash-wordmark {
+    font-weight: 900;
+    font-size: 36px;
+    letter-spacing: 0.16em;
+    color: var(--white);
+    margin-bottom: 4px;
+  }
+  .splash-kanji {
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--red-dark);
+    letter-spacing: 0.4em;
+    margin-bottom: 16px;
+  }
+  .splash-moto {
+    font-style: italic;
+    font-weight: 400;
+    font-size: 14px;
+    color: var(--red-dark);
+  }
+  .splash-baseline {
+    position: absolute;
+    bottom: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.4em;
+    color: var(--grey-mid);
+    z-index: 2;
+  }
+
+  /* ===== SPLASH LIGHT ===== */
+  .splash-light {
+    background: var(--white);
+    color: var(--black);
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .splash-light::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(#F0F0F0 1px, transparent 1px),
+      linear-gradient(90deg, #F0F0F0 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+  .splash-light .splash-mark-wrap::before {
+    background: radial-gradient(circle, rgba(232,25,44,0.3) 0%, rgba(232,25,44,0) 70%);
+  }
+  .splash-light .splash-wordmark { color: var(--black); }
+  .splash-light .splash-kanji { color: var(--red-light); }
+  .splash-light .splash-moto { color: var(--red-light); }
+  .splash-light .splash-baseline { color: var(--grey-mid); }
+
+  /* ===== CONSTRUCTION GRID ===== */
+  .construction {
+    background: var(--white);
+    padding: 60px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: center;
+  }
+  .construction-visual {
+    background: var(--grey-light);
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--grey-border);
+    position: relative;
+  }
+  .construction-text h3 {
+    font-weight: 900;
+    font-size: 32px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .construction-text p {
+    font-weight: 400;
+    font-size: 16px;
+    color: var(--grey-mid);
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+  .construction-text ul {
+    list-style: none;
+    padding: 0;
+  }
+  .construction-text li {
+    font-weight: 400;
+    font-size: 15px;
+    padding: 8px 0;
+    border-top: 1px solid var(--grey-border);
+    display: flex;
+    justify-content: space-between;
+  }
+  .construction-text li:last-child { border-bottom: 1px solid var(--grey-border); }
+  .construction-text li strong {
+    font-weight: 700;
+    color: var(--black);
+  }
+
+  /* ===== FOOTER ===== */
+  .footer {
+    background: var(--black);
+    color: var(--white);
+    padding: 80px 60px;
+    text-align: center;
+  }
+  .footer-mark {
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: center;
+  }
+  .footer-text {
+    font-weight: 700;
+    font-size: 32px;
+    letter-spacing: 0.12em;
+  }
+  .footer-kanji {
+    font-family: 'Noto Serif JP', serif;
+    color: var(--red-dark);
+    margin: 16px 0;
+    letter-spacing: 0.4em;
+  }
+  .footer-moto {
+    font-style: italic;
+    color: var(--red-dark);
+    font-size: 18px;
+    margin-bottom: 8px;
+  }
+  .footer-meta {
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    color: var(--grey-mid);
+    margin-top: 32px;
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-label">Logo & Splash Screen</div>
+    <div class="hero-wordmark">TANREN</div>
+    <div class="hero-kanji">鍛 錬</div>
+    <div class="hero-rule"></div>
+    <div class="hero-moto">Built rep by rep.</div>
+    <div class="hero-baseline">EAT.&nbsp;&nbsp;TRAIN.&nbsp;&nbsp;REST.</div>
+  </div>
+</section>
+
+<!-- ===== MARK CONSTRUCTION ===== -->
+<section class="section-divider">
+  <div class="section-label">01 — The Mark</div>
+  <div class="section-title">The Forge-Spark</div>
+  <div class="section-desc">A geometric mark evoking the moment of impact: the hammer striking heated steel on the anvil. The vertical axis is the hammer; the horizontal is the anvil; the radiating sparks are the work being done.</div>
+</section>
+
+<div class="construction">
+  <div class="construction-visual">
+    <!-- LARGE MARK FOR CONSTRUCTION -->
+    <svg viewBox="0 0 200 200" width="280" height="280" xmlns="http://www.w3.org/2000/svg">
+      <!-- Construction guides -->
+      <circle cx="100" cy="100" r="80" fill="none" stroke="#CCCCCC" stroke-width="0.5" stroke-dasharray="2,2"/>
+      <circle cx="100" cy="100" r="60" fill="none" stroke="#CCCCCC" stroke-width="0.5" stroke-dasharray="2,2"/>
+      <line x1="100" y1="0" x2="100" y2="200" stroke="#CCCCCC" stroke-width="0.5" stroke-dasharray="2,2"/>
+      <line x1="0" y1="100" x2="200" y2="100" stroke="#CCCCCC" stroke-width="0.5" stroke-dasharray="2,2"/>
+      <line x1="0" y1="0" x2="200" y2="200" stroke="#CCCCCC" stroke-width="0.5" stroke-dasharray="2,2"/>
+      <line x1="200" y1="0" x2="0" y2="200" stroke="#CCCCCC" stroke-width="0.5" stroke-dasharray="2,2"/>
+
+      <!-- The mark -->
+      <!-- Outer ring (anvil) -->
+      <circle cx="100" cy="100" r="72" fill="none" stroke="#000000" stroke-width="6"/>
+      <!-- Inner core (hot steel) -->
+      <circle cx="100" cy="100" r="14" fill="#E8192C"/>
+      <!-- Vertical axis (hammer) -->
+      <rect x="92" y="20" width="16" height="50" fill="#000000"/>
+      <!-- Horizontal axis (anvil top) -->
+      <rect x="20" y="92" width="50" height="16" fill="#000000"/>
+      <rect x="130" y="92" width="50" height="16" fill="#000000"/>
+      <!-- Bottom anchor -->
+      <rect x="92" y="130" width="16" height="50" fill="#000000"/>
+      <!-- Diagonal sparks (subtle, asymmetric for tension) -->
+      <line x1="148" y1="52" x2="135" y2="65" stroke="#E8192C" stroke-width="4" stroke-linecap="square"/>
+      <line x1="52" y1="148" x2="65" y2="135" stroke="#E8192C" stroke-width="4" stroke-linecap="square"/>
+    </svg>
+  </div>
+  <div class="construction-text">
+    <h3>Geometric construction</h3>
+    <p>The mark is built on a strict 4-axis grid. Every element is mathematically defined for perfect reproducibility at any scale.</p>
+    <ul>
+      <li>Outer ring <strong>72r · 6w</strong></li>
+      <li>Inner core (steel) <strong>14r · red</strong></li>
+      <li>Cardinal bars <strong>16w · 50h</strong></li>
+      <li>Diagonal sparks <strong>4w · red</strong></li>
+      <li>Total bounding box <strong>200×200</strong></li>
+    </ul>
+  </div>
+</div>
+
+<!-- ===== LOGO VARIATIONS ===== -->
+<section class="section-divider">
+  <div class="section-label">02 — Logo Variations</div>
+  <div class="section-title">Lockups</div>
+  <div class="section-desc">The logo lives in three configurations. Choose by context: full lockup for hero placements, horizontal for headers and footers, mark-only for app icons and tight spaces.</div>
+</section>
+
+<div class="logo-grid">
+  <!-- VERTICAL LOCKUP - LIGHT -->
+  <div class="logo-cell">
+    <span class="label">Vertical · Light</span>
+    <div class="lockup-vertical">
+      <svg class="mark" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="100" cy="100" r="72" fill="none" stroke="#000000" stroke-width="6"/>
+        <circle cx="100" cy="100" r="14" fill="#E8192C"/>
+        <rect x="92" y="20" width="16" height="50" fill="#000000"/>
+        <rect x="20" y="92" width="50" height="16" fill="#000000"/>
+        <rect x="130" y="92" width="50" height="16" fill="#000000"/>
+        <rect x="92" y="130" width="16" height="50" fill="#000000"/>
+        <line x1="148" y1="52" x2="135" y2="65" stroke="#E8192C" stroke-width="4" stroke-linecap="square"/>
+        <line x1="52" y1="148" x2="65" y2="135" stroke="#E8192C" stroke-width="4" stroke-linecap="square"/>
+      </svg>
+      <div class="wordmark">TANREN</div>
+      <div class="kanji-mark">鍛 錬</div>
+    </div>
+  </div>
+
+  <!-- VERTICAL LOCKUP - DARK -->
+  <div class="logo-cell dark">
+    <span class="label">Vertical · Dark</span>
+    <div class="lockup-vertical">
+      <svg class="mark" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="100" cy="100" r="72" fill="none" stroke="#FFFFFF" stroke-width="6"/>
+        <circle cx="100" cy="100" r="14" fill="#FF2D3F"/>
+        <rect x="92" y="20" width="16" height="50" fill="#FFFFFF"/>
+        <rect x="20" y="92" width="50" height="16" fill="#FFFFFF"/>
+        <rect x="130" y="92" width="50" height="16" fill="#FFFFFF"/>
+        <rect x="92" y="130" width="16" height="50" fill="#FFFFFF"/>
+        <line x1="148" y1="52" x2="135" y2="65" stroke="#FF2D3F" stroke-width="4" stroke-linecap="square"/>
+        <line x1="52" y1="148" x2="65" y2="135" stroke="#FF2D3F" stroke-width="4" stroke-linecap="square"/>
+      </svg>
+      <div class="wordmark" style="color: white;">TANREN</div>
+      <div class="kanji-mark">鍛 錬</div>
+    </div>
+  </div>
+
+  <!-- HORIZONTAL LOCKUP - LIGHT -->
+  <div class="logo-cell">
+    <span class="label">Horizontal · Light</span>
+    <div class="lockup">
+      <svg class="mark sm" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="100" cy="100" r="72" fill="none" stroke="#000000" stroke-width="6"/>
+        <circle cx="100" cy="100" r="14" fill="#E8192C"/>
+        <rect x="92" y="20" width="16" height="50" fill="#000000"/>
+        <rect x="20" y="92" width="50" height="16" fill="#000000"/>
+        <rect x="130" y="92" width="50" height="16" fill="#000000"/>
+        <rect x="92" y="130" width="16" height="50" fill="#000000"/>
+        <line x1="148" y1="52" x2="135" y2="65" stroke="#E8192C" stroke-width="4" stroke-linecap="square"/>
+        <line x1="52" y1="148" x2="65" y2="135" stroke="#E8192C" stroke-width="4" stroke-linecap="square"/>
+      </svg>
+      <div>
+        <div class="wordmark sm">TANREN</div>
+        <div class="moto-tag">Built rep by rep.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HORIZONTAL LOCKUP - DARK -->
+  <div class="logo-cell dark">
+    <span class="label">Horizontal · Dark</span>
+    <div class="lockup">
+      <svg class="mark sm" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="100" cy="100" r="72" fill="none" stroke="#FFFFFF" stroke-width="6"/>
+        <circle cx="100" cy="100" r="14" fill="#FF2D3F"/>
+        <rect x="92" y="20" width="16" height="50" fill="#FFFFFF"/>
+        <rect x="20" y="92" width="50" height="16" fill="#FFFFFF"/>
+        <rect x="130" y="92" width="50" height="16" fill="#FFFFFF"/>
+        <rect x="92" y="130" width="16" height="50" fill="#FFFFFF"/>
+        <line x1="148" y1="52" x2="135" y2="65" stroke="#FF2D3F" stroke-width="4" stroke-linecap="square"/>
+        <line x1="52" y1="148" x2="65" y2="135" stroke="#FF2D3F" stroke-width="4" stroke-linecap="square"/>
+      </svg>
+      <div>
+        <div class="wordmark sm" style="color: white;">TANREN</div>
+        <div class="moto-tag">Built rep by rep.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MARK ONLY - LIGHT -->
+  <div class="logo-cell">
+    <span class="label">Mark only · Light</span>
+    <svg class="mark lg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="100" cy="100" r="72" fill="none" stroke="#000000" stroke-width="6"/>
+      <circle cx="100" cy="100" r="14" fill="#E8192C"/>
+      <rect x="92" y="20" width="16" height="50" fill="#000000"/>
+      <rect x="20" y="92" width="50" height="16" fill="#000000"/>
+      <rect x="130" y="92" width="50" height="16" fill="#000000"/>
+      <rect x="92" y="130" width="16" height="50" fill="#000000"/>
+      <line x1="148" y1="52" x2="135" y2="65" stroke="#E8192C" stroke-width="4" stroke-linecap="square"/>
+      <line x1="52" y1="148" x2="65" y2="135" stroke="#E8192C" stroke-width="4" stroke-linecap="square"/>
+    </svg>
+  </div>
+
+  <!-- MARK ONLY - DARK -->
+  <div class="logo-cell dark">
+    <span class="label">Mark only · Dark</span>
+    <svg class="mark lg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="100" cy="100" r="72" fill="none" stroke="#FFFFFF" stroke-width="6"/>
+      <circle cx="100" cy="100" r="14" fill="#FF2D3F"/>
+      <rect x="92" y="20" width="16" height="50" fill="#FFFFFF"/>
+      <rect x="20" y="92" width="50" height="16" fill="#FFFFFF"/>
+      <rect x="130" y="92" width="50" height="16" fill="#FFFFFF"/>
+      <rect x="92" y="130" width="16" height="50" fill="#FFFFFF"/>
+      <line x1="148" y1="52" x2="135" y2="65" stroke="#FF2D3F" stroke-width="4" stroke-linecap="square"/>
+      <line x1="52" y1="148" x2="65" y2="135" stroke="#FF2D3F" stroke-width="4" stroke-linecap="square"/>
+    </svg>
+  </div>
+</div>
+
+<!-- ===== APP ICONS ===== -->
+<section class="section-divider">
+  <div class="section-label">03 — App Icons</div>
+  <div class="section-title">Mobile presence</div>
+  <div class="section-desc">The mark anchors the app icon at all sizes. Red glow recedes at smaller sizes for clarity. Minimum size: 60×60 px.</div>
+</section>
+
+<div class="app-icons">
+  <div class="app-icon-wrap">
+    <div class="app-icon s180">
+      <svg viewBox="0 0 200 200" width="180" height="180" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="glow180" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#FF2D3F" stop-opacity="0.5"/>
+            <stop offset="60%" stop-color="#FF2D3F" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+        <rect width="200" height="200" fill="#000000"/>
+        <circle cx="100" cy="100" r="80" fill="url(#glow180)"/>
+        <circle cx="100" cy="100" r="64" fill="none" stroke="#FFFFFF" stroke-width="6"/>
+        <circle cx="100" cy="100" r="12" fill="#FF2D3F"/>
+        <rect x="93" y="28" width="14" height="42" fill="#FFFFFF"/>
+        <rect x="28" y="93" width="42" height="14" fill="#FFFFFF"/>
+        <rect x="130" y="93" width="42" height="14" fill="#FFFFFF"/>
+        <rect x="93" y="130" width="14" height="42" fill="#FFFFFF"/>
+        <line x1="144" y1="56" x2="132" y2="68" stroke="#FF2D3F" stroke-width="4" stroke-linecap="square"/>
+        <line x1="56" y1="144" x2="68" y2="132" stroke="#FF2D3F" stroke-width="4" stroke-linecap="square"/>
+      </svg>
+    </div>
+    <span class="app-icon-label">180 × 180</span>
+  </div>
+
+  <div class="app-icon-wrap">
+    <div class="app-icon s120">
+      <svg viewBox="0 0 200 200" width="120" height="120" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="glow120" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#FF2D3F" stop-opacity="0.4"/>
+            <stop offset="60%" stop-color="#FF2D3F" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+        <rect width="200" height="200" fill="#000000"/>
+        <circle cx="100" cy="100" r="80" fill="url(#glow120)"/>
+        <circle cx="100" cy="100" r="64" fill="none" stroke="#FFFFFF" stroke-width="7"/>
+        <circle cx="100" cy="100" r="12" fill="#FF2D3F"/>
+        <rect x="93" y="28" width="14" height="42" fill="#FFFFFF"/>
+        <rect x="28" y="93" width="42" height="14" fill="#FFFFFF"/>
+        <rect x="130" y="93" width="42" height="14" fill="#FFFFFF"/>
+        <rect x="93" y="130" width="14" height="42" fill="#FFFFFF"/>
+      </svg>
+    </div>
+    <span class="app-icon-label">120 × 120</span>
+  </div>
+
+  <div class="app-icon-wrap">
+    <div class="app-icon s60">
+      <svg viewBox="0 0 200 200" width="60" height="60" xmlns="http://www.w3.org/2000/svg">
+        <rect width="200" height="200" fill="#000000"/>
+        <circle cx="100" cy="100" r="64" fill="none" stroke="#FFFFFF" stroke-width="10"/>
+        <circle cx="100" cy="100" r="14" fill="#FF2D3F"/>
+        <rect x="92" y="22" width="16" height="48" fill="#FFFFFF"/>
+        <rect x="22" y="92" width="48" height="16" fill="#FFFFFF"/>
+        <rect x="130" y="92" width="48" height="16" fill="#FFFFFF"/>
+        <rect x="92" y="130" width="16" height="48" fill="#FFFFFF"/>
+      </svg>
+    </div>
+    <span class="app-icon-label">60 × 60</span>
+  </div>
+</div>
+
+<!-- ===== SPLASH SCREENS ===== -->
+<section class="section-divider">
+  <div class="section-label">04 — Splash Screens</div>
+  <div class="section-title">First impression</div>
+  <div class="section-desc">The splash screen on app launch. Dark mode is the default — black is Tanren's structural color. Light mode mirrors the brand for users with light-mode preference.</div>
+</section>
+
+<div class="splash-row">
+  <div>
+    <div class="phone-frame">
+      <div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="splash-dark">
+          <div class="splash-content">
+            <div class="splash-mark-wrap">
+              <svg class="splash-mark" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="100" cy="100" r="72" fill="none" stroke="#FFFFFF" stroke-width="6"/>
+                <circle cx="100" cy="100" r="14" fill="#FF2D3F"/>
+                <rect x="92" y="20" width="16" height="50" fill="#FFFFFF"/>
+                <rect x="20" y="92" width="50" height="16" fill="#FFFFFF"/>
+                <rect x="130" y="92" width="50" height="16" fill="#FFFFFF"/>
+                <rect x="92" y="130" width="16" height="50" fill="#FFFFFF"/>
+                <line x1="148" y1="52" x2="135" y2="65" stroke="#FF2D3F" stroke-width="4" stroke-linecap="square"/>
+                <line x1="52" y1="148" x2="65" y2="135" stroke="#FF2D3F" stroke-width="4" stroke-linecap="square"/>
+              </svg>
+            </div>
+            <div class="splash-wordmark">TANREN</div>
+            <div class="splash-kanji">鍛 錬</div>
+            <div class="splash-moto">Built rep by rep.</div>
+          </div>
+          <div class="splash-baseline">EAT.&nbsp;&nbsp;TRAIN.&nbsp;&nbsp;REST.</div>
+        </div>
+      </div>
+    </div>
+    <div class="splash-label">Splash · Dark mode (default)</div>
+  </div>
+
+  <div>
+    <div class="phone-frame">
+      <div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="splash-light">
+          <div class="splash-content">
+            <div class="splash-mark-wrap">
+              <svg class="splash-mark" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="100" cy="100" r="72" fill="none" stroke="#000000" stroke-width="6"/>
+                <circle cx="100" cy="100" r="14" fill="#E8192C"/>
+                <rect x="92" y="20" width="16" height="50" fill="#000000"/>
+                <rect x="20" y="92" width="50" height="16" fill="#000000"/>
+                <rect x="130" y="92" width="50" height="16" fill="#000000"/>
+                <rect x="92" y="130" width="16" height="50" fill="#000000"/>
+                <line x1="148" y1="52" x2="135" y2="65" stroke="#E8192C" stroke-width="4" stroke-linecap="square"/>
+                <line x1="52" y1="148" x2="65" y2="135" stroke="#E8192C" stroke-width="4" stroke-linecap="square"/>
+              </svg>
+            </div>
+            <div class="splash-wordmark">TANREN</div>
+            <div class="splash-kanji">鍛 錬</div>
+            <div class="splash-moto">Built rep by rep.</div>
+          </div>
+          <div class="splash-baseline">EAT.&nbsp;&nbsp;TRAIN.&nbsp;&nbsp;REST.</div>
+        </div>
+      </div>
+    </div>
+    <div class="splash-label">Splash · Light mode</div>
+  </div>
+</div>
+
+<!-- ===== FOOTER ===== -->
+<section class="footer">
+  <div class="footer-mark">
+    <svg width="80" height="80" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="100" cy="100" r="72" fill="none" stroke="#FFFFFF" stroke-width="6"/>
+      <circle cx="100" cy="100" r="14" fill="#FF2D3F"/>
+      <rect x="92" y="20" width="16" height="50" fill="#FFFFFF"/>
+      <rect x="20" y="92" width="50" height="16" fill="#FFFFFF"/>
+      <rect x="130" y="92" width="50" height="16" fill="#FFFFFF"/>
+      <rect x="92" y="130" width="16" height="50" fill="#FFFFFF"/>
+      <line x1="148" y1="52" x2="135" y2="65" stroke="#FF2D3F" stroke-width="4" stroke-linecap="square"/>
+      <line x1="52" y1="148" x2="65" y2="135" stroke="#FF2D3F" stroke-width="4" stroke-linecap="square"/>
+    </svg>
+  </div>
+  <div class="footer-text">TANREN</div>
+  <div class="footer-kanji">鍛 錬</div>
+  <div class="footer-moto">Built rep by rep.</div>
+  <div class="footer-meta">VISUAL IDENTITY · v1.0 · 2026</div>
+</section>
+
+</body>
+</html>

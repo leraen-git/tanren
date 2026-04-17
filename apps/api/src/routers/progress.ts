@@ -9,7 +9,7 @@ import {
   personalRecords,
   users,
 } from '../db/schema.js'
-import { calcDelta, getExerciseStatus } from '@fittrack/shared'
+import { calcDelta, getExerciseStatus } from '@tanren/shared'
 
 export const progressRouter = router({
   lastSessionPRCount: protectedProcedure.query(async ({ ctx }) => {

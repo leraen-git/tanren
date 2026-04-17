@@ -6,7 +6,7 @@ import { useTheme } from '@/theme/ThemeContext'
 import { Button } from '@/components/Button'
 import { Card } from '@/components/Card'
 import { useActiveSessionStore } from '@/stores/activeSessionStore'
-import { calcSessionVolume } from '@fittrack/shared'
+import { calcSessionVolume } from '@tanren/shared'
 import { trpc } from '@/lib/trpc'
 import { colors as tokenColors } from '@/theme/tokens'
 

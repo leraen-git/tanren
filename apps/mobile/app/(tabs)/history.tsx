@@ -7,7 +7,7 @@ import { Card } from '@/components/Card'
 import { trpc } from '@/lib/trpc'
 import { colors as tokenColors } from '@/theme/tokens'
 import { useTranslation } from 'react-i18next'
-import { MUSCLE_GROUPS } from '@fittrack/shared'
+import { MUSCLE_GROUPS } from '@tanren/shared'
 
 // filter id → translation key
 const DATE_FILTERS = [

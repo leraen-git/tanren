@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import type { User } from '@fittrack/shared'
+import type { User } from '@tanren/shared'
 
 type Theme = 'system' | 'light' | 'dark'
 type WeightUnit = 'kg' | 'lbs'

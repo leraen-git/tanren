@@ -155,7 +155,7 @@ async function seed() {
       id: '00000000-0000-0000-0000-000000000001',
       authId: 'dev_user',
       name: 'Dev Athlete',
-      email: 'dev@fittrack.app',
+      email: 'dev@tanren.app',
       level: 'INTERMEDIATE',
       goal: 'MUSCLE_GAIN',
       weeklyTarget: 4,

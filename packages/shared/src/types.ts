@@ -6,7 +6,6 @@ export type WeightUnit = 'kg' | 'lbs'
 
 export interface User {
   id: string
-  clerkId: string
   name: string
   email: string
   avatarUrl: string | null

@@ -2,7 +2,7 @@ import React from 'react'
 import { View, Text } from 'react-native'
 import { useTheme } from '@/theme/ThemeContext'
 import { Card } from './Card'
-import type { ExerciseStatus } from '@fittrack/shared'
+import type { ExerciseStatus } from '@tanren/shared'
 
 interface ExerciseCardProps {
   name: string

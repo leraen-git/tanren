@@ -10,7 +10,7 @@ import { LineChart } from '@/components/LineChart'
 import { SkeletonCard } from '@/components/SkeletonCard'
 import { ProgressBar } from '@/components/ProgressBar'
 import { trpc } from '@/lib/trpc'
-import { getTrend, getCoachingTip } from '@fittrack/shared'
+import { getTrend, getCoachingTip } from '@tanren/shared'
 
 const METRIC_OPTIONS = ['Max weight', 'Volume', 'Reps']
 

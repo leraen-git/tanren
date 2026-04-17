@@ -1,5 +1,5 @@
 {
-  "name": "fittrack",
+  "name": "tanren",
   "private": true,
   "workspaces": [
     "apps/*",

@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "FitTrack",
-    "slug": "fittrack",
+    "name": "Tanren",
+    "slug": "tanren",
     "version": "1.0.0",
     "entryPoint": "../../node_modules/expo-router/entry",
-    "scheme": "fittrack",
+    "scheme": "tanren",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
@@ -12,11 +12,11 @@
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#0E0E0E"
+      "backgroundColor": "#000000"
     },
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.fittrack.app",
+      "bundleIdentifier": "app.tanren",
       "infoPlist": {
         "CFBundleURLTypes": [
           {
@@ -30,9 +30,9 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#0E0E0E"
+        "backgroundColor": "#000000"
       },
-      "package": "com.fittrack.app"
+      "package": "app.tanren"
     },
     "plugins": [
       "./plugins/withFixSpacesInPath",

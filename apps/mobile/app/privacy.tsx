@@ -255,11 +255,11 @@ export default function PrivacyScreen() {
             {isFr ? 'Des questions ? Contact :' : 'Questions? Contact:'}
           </Text>
           <TouchableOpacity
-            onPress={() => Linking.openURL('mailto:privacy@fittrack.app')}
+            onPress={() => Linking.openURL('mailto:privacy@tanren.app')}
             accessibilityRole="link"
           >
             <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.base, color: colors.primary }}>
-              privacy@fittrack.app
+              privacy@tanren.app
             </Text>
           </TouchableOpacity>
           <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted, marginTop: spacing.sm }}>
