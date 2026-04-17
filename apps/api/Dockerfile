@@ -1,6 +1,9 @@
 FROM node:22-slim AS base
 WORKDIR /app
 
+# Match local npm version to avoid lockfile format mismatch
+RUN npm install -g npm@11.12.1
+
 # Copy full monorepo package manifests so npm ci sees all workspaces
 COPY package.json package-lock.json ./
 COPY apps/api/package.json apps/api/
