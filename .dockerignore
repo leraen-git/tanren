@@ -3,12 +3,12 @@ node_modules
 .env
 .env.*
 !.env.example
+*.mov
+*.mp4
+!apps/mobile/package.json
 apps/mobile/ios
 apps/mobile/android
 apps/mobile/app
 apps/mobile/src
 apps/mobile/assets
 apps/mobile/.expo
-*.mov
-*.mp4
-dist
