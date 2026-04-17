@@ -202,7 +202,7 @@ export default function SignInScreen() {
             style={[styles.logo, { color: colors.primary, fontFamily: typography.family.extraBold }]}
             accessibilityRole="header"
           >
-            FitTrack
+            TANREN
           </Text>
           <Text style={[styles.tagline, { color: colors.textMuted, fontFamily: typography.family.regular, fontSize: typography.size.base }]}>
             {t('signIn.tagline')}

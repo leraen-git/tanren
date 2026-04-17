@@ -71,8 +71,8 @@ export default function PrivacyScreen() {
           </Text>
           <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted, lineHeight: 22 }}>
             {isFr
-              ? 'FitTrack collecte uniquement ce dont il a besoin pour fonctionner. Aucune publicité, aucun profilage, aucune revente de données.'
-              : 'FitTrack only collects what it needs to work. No ads, no profiling, no data selling.'}
+              ? 'Tanren collecte uniquement ce dont il a besoin pour fonctionner. Aucune publicité, aucun profilage, aucune revente de données.'
+              : 'Tanren only collects what it needs to work. No ads, no profiling, no data selling.'}
           </Text>
         </View>
 
@@ -207,8 +207,8 @@ export default function PrivacyScreen() {
           title={isFr ? 'L\'IA et tes données' : 'AI and your data'}
         >
           <Body text={isFr
-            ? 'Quand tu génères un plan alimentaire ou un programme, FitTrack envoie un prompt à l\'API Claude (Anthropic). Ce prompt inclut tes préférences (aliments, style de cuisine, niveau d\'activité, objectif) mais aucune donnée personnellement identifiable.'
-            : 'When you generate a diet plan or workout program, FitTrack sends a prompt to the Claude API (Anthropic). This prompt includes your preferences (foods, cooking style, activity level, goal) but no personally identifiable data.'
+            ? 'Quand tu génères un plan alimentaire ou un programme, Tanren envoie un prompt à l\'API Claude (Anthropic). Ce prompt inclut tes préférences (aliments, style de cuisine, niveau d\'activité, objectif) mais aucune donnée personnellement identifiable.'
+            : 'When you generate a diet plan or workout program, Tanren sends a prompt to the Claude API (Anthropic). This prompt includes your preferences (foods, cooking style, activity level, goal) but no personally identifiable data.'
           } />
           <Body text={isFr
             ? 'La réponse générée (ton plan) est stockée dans notre base de données liée à ton compte. Elle n\'est pas réutilisée pour entraîner des modèles d\'IA.'

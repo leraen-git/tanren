@@ -13,6 +13,7 @@ type ThemeColors = {
   surface2: string
   textPrimary: string
   textMuted: string
+  border: string
   success: string
   warning: string
   danger: string

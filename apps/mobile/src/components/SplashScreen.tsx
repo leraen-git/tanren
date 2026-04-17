@@ -103,12 +103,12 @@ export function SplashScreen({ onFinish }: Props) {
 
         {/* Wordmark */}
         <Animated.Text style={[styles.wordmark, wordStyle]}>
-          {'Fit'}<Text style={{ color: RED }}>{'Track'}</Text>
+          {'TAN'}<Text style={{ color: RED }}>{'REN'}</Text>
         </Animated.Text>
 
         {/* Tagline */}
         <Animated.Text style={[styles.tagline, tagStyle]}>
-          Train smarter. Track harder.
+          Forge your body. Own your progress.
         </Animated.Text>
       </View>
 
@@ -121,7 +121,7 @@ export function SplashScreen({ onFinish }: Props) {
 
       {/* Bottom label */}
       <View style={styles.brandWrap}>
-        <Text style={styles.brandText}>By FitTrack Inc.</Text>
+        <Text style={styles.brandText}>tanren.app</Text>
       </View>
     </Animated.View>
   )
@@ -198,18 +198,19 @@ const styles = StyleSheet.create({
     backgroundColor: WHITE,
   },
   wordmark: {
-    fontFamily: 'Inter_800ExtraBold',
-    fontSize: 52,
+    fontFamily: 'BarlowCondensed_700Bold',
+    fontSize: 64,
     color: WHITE,
-    letterSpacing: -0.5,
+    letterSpacing: 4,
     marginTop: 20,
-    lineHeight: 56,
+    lineHeight: 68,
+    textTransform: 'uppercase',
   },
   tagline: {
-    fontFamily: 'Inter_400Regular',
+    fontFamily: 'BarlowCondensed_300Light',
     fontSize: 11,
     color: '#555',
-    letterSpacing: 3,
+    letterSpacing: 4,
     textTransform: 'uppercase',
     marginTop: 12,
   },
@@ -234,7 +235,7 @@ const styles = StyleSheet.create({
     bottom: '7%',
   },
   brandText: {
-    fontFamily: 'Inter_700Bold',
+    fontFamily: 'BarlowCondensed_300Light',
     fontSize: 10,
     letterSpacing: 3,
     textTransform: 'uppercase',

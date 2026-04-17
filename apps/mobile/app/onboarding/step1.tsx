@@ -50,7 +50,7 @@ export default function OnboardingStep1() {
         {/* Title */}
         <View style={{ gap: spacing.sm }}>
           <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size['3xl'], color: colors.textPrimary }}>
-            {t('onboarding.welcomeTo')}{'\n'}<Text style={{ color: colors.primary }}>FitTrack</Text>
+            {t('onboarding.welcomeTo')}{'\n'}<Text style={{ color: colors.primary }}>Tanren</Text>
           </Text>
           <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.body, color: colors.textMuted }}>
             {t('onboarding.step1Subtitle')}

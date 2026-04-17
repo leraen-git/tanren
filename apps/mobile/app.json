@@ -37,7 +37,17 @@
     "plugins": [
       "./plugins/withFixSpacesInPath",
       "expo-router",
-      "expo-font",
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "../../node_modules/@expo-google-fonts/barlow-condensed/300Light/BarlowCondensed_300Light.ttf",
+            "../../node_modules/@expo-google-fonts/barlow-condensed/400Regular/BarlowCondensed_400Regular.ttf",
+            "../../node_modules/@expo-google-fonts/barlow-condensed/500Medium/BarlowCondensed_500Medium.ttf",
+            "../../node_modules/@expo-google-fonts/barlow-condensed/700Bold/BarlowCondensed_700Bold.ttf"
+          ]
+        }
+      ],
       [
         "expo-notifications",
         {

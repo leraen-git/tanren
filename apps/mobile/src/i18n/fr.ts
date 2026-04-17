@@ -165,7 +165,7 @@ export const fr = {
     goalMuscleGain: 'Prise de muscle',
     goalMaintenance: 'Maintien',
     // Settings rows
-    exploreSub: 'Découvre tout ce que FitTrack peut faire',
+    exploreSub: 'Découvre tout ce que Tanren peut faire',
     reminders: 'Rappels',
     remindersSub: 'Entraînement, repas & hydratation',
     appearance: 'Apparence',
@@ -254,7 +254,7 @@ export const fr = {
     },
   },
   explore: {
-    title: 'Explorer FitTrack',
+    title: 'Explorer Tanren',
     subtitle: '{{used}} fonctionnalités découvertes sur {{total}}',
     new: 'NEW',
     tryIt: 'Essayer',
@@ -311,11 +311,11 @@ export const fr = {
     activeTo: 'Actif jusqu\'à',
     osSettings: 'Permissions de notifications →',
     permExplainTitle: 'Autoriser les notifications',
-    permExplainDesc: 'FitTrack te rappellera tes entraînements, repas et objectifs d\'hydratation. Tu peux tout personnaliser et désactiver à tout moment.',
+    permExplainDesc: 'Tanren te rappellera tes entraînements, repas et objectifs d\'hydratation. Tu peux tout personnaliser et désactiver à tout moment.',
     allow: 'Autoriser',
     notNow: 'Pas maintenant',
     permDeniedTitle: 'Notifications bloquées',
-    permDeniedDesc: 'Va dans les Réglages pour autoriser les notifications FitTrack.',
+    permDeniedDesc: 'Va dans les Réglages pour autoriser les notifications Tanren.',
     openSettings: 'Ouvrir les réglages',
   },
   intake: {

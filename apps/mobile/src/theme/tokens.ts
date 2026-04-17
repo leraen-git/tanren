@@ -7,40 +7,51 @@ export const colors = {
     surface2: '#EBEBEB',
     textPrimary: '#0E0E0E',
     textMuted: '#888888',
+    border: '#D4D4D4',
   },
   dark: {
-    primary: '#FF2D3F',
-    background: '#0E0E0E',
-    surface: '#1A1A1A',
-    surface2: '#252525',
-    textPrimary: '#F0F0F0',
-    textMuted: '#555555',
+    primary: '#E8192C',
+    background: '#000000',
+    surface: '#111111',
+    surface2: '#1C1C1C',
+    textPrimary: '#FFFFFF',
+    textMuted: '#666666',
+    border: '#2A2A2A',
   },
   shared: {
     success: '#22C55E',
     warning: '#F59E0B',
     danger: '#E8192C',
   },
-  heatmap: ['#141414', '#4A0A10', '#8A1520', '#C01E2E', '#FF2D3F'],
+  heatmap: ['#141414', '#4A0A10', '#8A1520', '#C01E2E', '#E8192C'],
 } as const
 
 export const typography = {
   family: {
-    regular: 'Inter_400Regular',
-    semiBold: 'Inter_600SemiBold',
-    bold: 'Inter_700Bold',
-    extraBold: 'Inter_800ExtraBold',
+    light: 'BarlowCondensed_300Light',
+    regular: 'BarlowCondensed_400Regular',
+    medium: 'BarlowCondensed_500Medium',
+    semiBold: 'BarlowCondensed_500Medium',  // mapped to Medium — no SemiBold in Barlow Condensed
+    bold: 'BarlowCondensed_700Bold',
+    extraBold: 'BarlowCondensed_700Bold',  // mapped to Bold — no ExtraBold in Barlow Condensed
   },
   size: {
-    xs: 10,
-    sm: 11,
-    md: 12,
-    base: 13,
-    body: 14,
-    title: 17,
-    xl: 20,
-    '2xl': 24,
-    '3xl': 32,
+    xs: 11,
+    sm: 12,
+    md: 13,
+    base: 14,
+    body: 16,
+    title: 19,
+    xl: 22,
+    '2xl': 28,
+    '3xl': 36,
+  },
+  letterSpacing: {
+    tight: -0.5,
+    normal: 0,
+    wide: 1,
+    wider: 2,
+    widest: 3,
   },
 } as const
 
@@ -54,9 +65,9 @@ export const spacing = {
 } as const
 
 export const radius = {
-  sm: 8,
-  md: 12,
-  lg: 16,
-  xl: 24,
+  sm: 4,
+  md: 6,
+  lg: 8,
+  xl: 12,
   pill: 9999,
 } as const
