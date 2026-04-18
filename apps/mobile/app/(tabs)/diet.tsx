@@ -64,6 +64,7 @@ export default function DietScreen() {
   const { t } = useTranslation()
   const bannerVisible = useGuestBannerVisible()
   const { data: plan, isLoading } = trpc.diet.activePlan.useQuery()
+  const { data: planCount } = trpc.diet.planCount.useQuery()
   const { data: user } = trpc.users.me.useQuery()
   const isGuest = user?.authProvider === 'guest'
   const utils = trpc.useUtils()
@@ -152,16 +153,18 @@ export default function DietScreen() {
             )}
           </TouchableOpacity>
 
-          <TouchableOpacity
-            onPress={() => restorePlan.mutate()}
-            disabled={restorePlan.isPending}
-            style={{ alignItems: 'center', paddingVertical: spacing.sm }}
-            accessibilityLabel={t('diet.restorePlan')} accessibilityRole="button"
-          >
-            <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.base, color: colors.textMuted }}>
-              {restorePlan.isPending ? t('common.loading') : t('diet.restorePlan')}
-            </Text>
-          </TouchableOpacity>
+          {(planCount ?? 0) > 0 && (
+            <TouchableOpacity
+              onPress={() => restorePlan.mutate()}
+              disabled={restorePlan.isPending}
+              style={{ alignItems: 'center', paddingVertical: spacing.sm }}
+              accessibilityLabel={t('diet.restorePlan')} accessibilityRole="button"
+            >
+              <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.base, color: colors.textMuted }}>
+                {restorePlan.isPending ? t('common.loading') : t('diet.restorePlan')}
+              </Text>
+            </TouchableOpacity>
+          )}
         </ScrollView>
       </SafeAreaView>
     )

@@ -10,7 +10,7 @@ import * as Notifications from 'expo-notifications'
 import { useTranslation } from 'react-i18next'
 import { SplashScreen } from '@/components/SplashScreen'
 import { initMusicService } from '@/services/musicService'
-import { setupNotificationChannels } from '@/services/notificationPermissions'
+import { setupNotificationChannels, requestPermission, getPermissionStatus } from '@/services/notificationPermissions'
 import { rescheduleAll } from '@/services/notificationScheduler'
 import { useNotificationSettingsStore } from '@/stores/notificationSettingsStore'
 import { AuthProvider, useAuth } from '@/contexts/AuthContext'
@@ -53,6 +53,7 @@ function TRPCProvider({ children }: { children: React.ReactNode }) {
     trpc.createClient({
       links: [httpBatchLink({
         url: `${API_URL}/trpc`,
+        methodOverride: 'POST',
         headers: () => {
           const t = tokenRef.current
           const h: Record<string, string> = {
@@ -113,6 +114,16 @@ function NotificationWatcher() {
 
   useEffect(() => {
     setupNotificationChannels()
+
+    const s = settingsRef.current
+    const anyEnabled = s.workoutEnabled || s.hydrationEnabled ||
+      Object.values(s.meals).some((m) => m.enabled)
+    if (anyEnabled) {
+      getPermissionStatus().then((status) => {
+        if (status === 'undetermined') requestPermission()
+      })
+    }
+
     const sub = AppState.addEventListener('change', (state: AppStateStatus) => {
       if (state === 'active') {
         rescheduleAll(settingsRef.current, undefined, langRef.current).catch(() => null)

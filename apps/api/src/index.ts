@@ -44,6 +44,7 @@ await server.register(fastifyTRPCPlugin, {
   prefix: '/trpc',
   trpcOptions: {
     router: appRouter,
+    allowMethodOverride: true,
     createContext: async ({ req }: { req: any }) => {
       let userId: string | null = null
       let sessionToken: string | null = null

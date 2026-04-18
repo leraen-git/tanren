@@ -159,7 +159,7 @@ export default function DietIntakeScreen() {
   const [foodInput, setFoodInput] = useState('')
   const addFood = () => {
     const trimmed = foodInput.trim()
-    if (!trimmed || intake.favoriteFoods.length >= 5) return
+    if (!trimmed || intake.favoriteFoods.length >= 10) return
     update({ favoriteFoods: [...intake.favoriteFoods, trimmed] })
     setFoodInput('')
   }
@@ -319,7 +319,7 @@ export default function DietIntakeScreen() {
                       </TouchableOpacity>
                     </View>
                   ))}
-                  {intake.favoriteFoods.length < 5 && (
+                  {intake.favoriteFoods.length < 10 && (
                     <View style={{ flexDirection: 'row', gap: spacing.sm }}>
                       <TextInput
                         value={foodInput}

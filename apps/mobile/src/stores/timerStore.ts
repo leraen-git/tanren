@@ -1,5 +1,6 @@
 import { createStore } from 'zustand/vanilla'
 import { useStore } from 'zustand'
+import { playTimerChime } from '@/services/timerSoundService'
 
 interface TimerState {
   isRunning: boolean
@@ -38,7 +39,12 @@ export const timerStore = createStore<TimerState>((set) => ({
   tick: () =>
     set((s) => {
       if (!s.isRunning || s.secondsRemaining <= 0) return { isRunning: false }
-      return { secondsRemaining: s.secondsRemaining - 1 }
+      const next = s.secondsRemaining - 1
+      if (next <= 0) {
+        playTimerChime()
+        return { secondsRemaining: 0, isRunning: false }
+      }
+      return { secondsRemaining: next }
     }),
 }))
 

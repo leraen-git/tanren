@@ -312,7 +312,7 @@ export default function ProfileScreen() {
   const { t } = useTranslation()
 
   const { signOut } = useAuth()
-  const { data: user, refetch } = trpc.users.me.useQuery()
+  const { data: user, refetch, isLoading, error } = trpc.users.me.useQuery()
   const { data: sessions }      = trpc.sessions.history.useQuery({ limit: 100 })
   const { data: records }       = trpc.progress.records.useQuery()
   const utils = trpc.useUtils()
@@ -418,7 +418,26 @@ export default function ProfileScreen() {
   const isGuest = user?.authProvider === 'guest'
   const bannerVisible = useGuestBannerVisible()
 
-  if (!user) return null
+  if (isLoading) return (
+    <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center' }}>
+      <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.body, color: colors.textMuted }}>
+        {t('common.loading')}
+      </Text>
+    </SafeAreaView>
+  )
+
+  if (error || !user) return (
+    <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center', padding: spacing.base, gap: spacing.md }}>
+      <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.body, color: colors.danger, textAlign: 'center' }}>
+        {error?.message ?? t('common.error')}
+      </Text>
+      <TouchableOpacity onPress={() => refetch()} accessibilityRole="button" accessibilityLabel={t('common.retry')}>
+        <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.body, color: colors.primary }}>
+          {t('common.retry')}
+        </Text>
+      </TouchableOpacity>
+    </SafeAreaView>
+  )
 
   return (
     <SafeAreaView edges={bannerVisible ? [] : ['top']} style={{ flex: 1, backgroundColor: colors.background }}>

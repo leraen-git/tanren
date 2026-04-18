@@ -1,30 +1,32 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { View, Text, ActivityIndicator } from 'react-native'
+import { View, Text, ActivityIndicator, Alert } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
 import { trpc } from '@/lib/trpc'
 import { useAIPlanStore } from '@/stores/aiPlanStore'
+import { useTranslation } from 'react-i18next'
 
-const MESSAGES = [
-  'Reading your profile...',
-  'Selecting the right exercises...',
-  'Building your weekly schedule...',
-  'Balancing muscle groups across days...',
-  'Checking rest and recovery...',
-  'Finalising your plan...',
-]
+const MSG_KEYS = [
+  'plans.generatingMsg1',
+  'plans.generatingMsg2',
+  'plans.generatingMsg3',
+  'plans.generatingMsg4',
+  'plans.generatingMsg5',
+  'plans.generatingMsg6',
+] as const
 
 export default function PlanGeneratingScreen() {
   const { colors, typography, spacing } = useTheme()
   const { pendingPrompt, conversationHistory, setProposedPlan } = useAIPlanStore()
+  const { t, i18n } = useTranslation()
+  const lang = (i18n.language === 'fr' ? 'fr' : 'en') as 'en' | 'fr'
   const [msgIndex, setMsgIndex] = useState(0)
   const triggered = useRef(false)
 
-  // Cycle through messages
   useEffect(() => {
     const interval = setInterval(() => {
-      setMsgIndex((i) => Math.min(i + 1, MESSAGES.length - 1))
+      setMsgIndex((i) => Math.min(i + 1, MSG_KEYS.length - 1))
     }, 3500)
     return () => clearInterval(interval)
   }, [])
@@ -36,10 +38,8 @@ export default function PlanGeneratingScreen() {
     },
     onError: (err) => {
       router.replace('/plans/generate')
-      // Small delay so screen has transitioned before showing alert
       setTimeout(() => {
-        const { Alert } = require('react-native')
-        Alert.alert('Generation failed', err.message)
+        Alert.alert(t('plans.generatingError'), err.message)
       }, 300)
     },
   })
@@ -47,40 +47,35 @@ export default function PlanGeneratingScreen() {
   useEffect(() => {
     if (triggered.current || !pendingPrompt) return
     triggered.current = true
-    generate.mutate({ prompt: pendingPrompt, conversationHistory })
+    generate.mutate({ prompt: pendingPrompt, language: lang, conversationHistory })
   }, [])
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center' }}>
       <View style={{ alignItems: 'center', gap: spacing.xl, paddingHorizontal: spacing.xl }}>
-        {/* Mark */}
         <View style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: `${colors.primary}18`, alignItems: 'center', justifyContent: 'center' }}>
           <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.base, color: colors.primary, letterSpacing: 1 }}>AI</Text>
         </View>
 
-        {/* Title */}
         <View style={{ alignItems: 'center', gap: spacing.sm }}>
           <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size['2xl'], color: colors.textPrimary, textAlign: 'center' }}>
-            Building your plan
+            {t('plans.generatingTitle')}
           </Text>
           <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted, textAlign: 'center' }}>
-            This may take up to a minute
+            {t('plans.generatingSubtitle')}
           </Text>
         </View>
 
-        {/* Spinner */}
         <ActivityIndicator size="large" color={colors.primary} />
 
-        {/* Cycling message */}
         <View style={{ height: 48, alignItems: 'center', justifyContent: 'center' }}>
           <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.body, color: colors.textMuted, textAlign: 'center' }}>
-            {MESSAGES[msgIndex]}
+            {t(MSG_KEYS[msgIndex] ?? MSG_KEYS[0])}
           </Text>
         </View>
 
-        {/* Progress dots */}
         <View style={{ flexDirection: 'row', gap: spacing.xs }}>
-          {MESSAGES.map((_, i) => (
+          {MSG_KEYS.map((_, i) => (
             <View
               key={i}
               style={{
