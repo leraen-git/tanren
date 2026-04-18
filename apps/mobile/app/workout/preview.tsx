@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Modal,
+  Image,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router, useLocalSearchParams } from 'expo-router'
@@ -71,7 +72,7 @@ function ExercisePicker({
           <TouchableOpacity onPress={onClose} accessibilityLabel="Close" accessibilityRole="button">
             <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.title, color: colors.primary }}>✕</Text>
           </TouchableOpacity>
-          <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size.xl, color: colors.textPrimary, flex: 1 }}>
+          <Text numberOfLines={1} style={{ fontFamily: typography.family.extraBold, fontSize: typography.size.title, color: colors.textPrimary, flex: 1 }}>
             {t('workout.addExercise')}
           </Text>
         </View>
@@ -150,6 +151,13 @@ function ExercisePicker({
                 accessibilityLabel={`${added ? 'Already added' : 'Add'} ${ex.name}`}
                 accessibilityRole="button"
               >
+                {ex.imageUrl && (
+                  <Image
+                    source={{ uri: ex.imageUrl }}
+                    style={{ width: 48, height: 48, borderRadius: radius.sm, marginRight: spacing.md }}
+                    resizeMode="cover"
+                  />
+                )}
                 <View style={{ flex: 1 }}>
                   <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.body, color: colors.textPrimary }}>
                     {ex.name}

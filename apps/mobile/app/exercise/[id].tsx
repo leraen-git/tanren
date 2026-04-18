@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { View, Text, ScrollView } from 'react-native'
+import { View, Text, ScrollView, TouchableOpacity, Image, Linking } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams, router } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
@@ -18,7 +18,7 @@ const METRIC_OPTIONS = ['Max weight', 'Volume', 'Reps']
 
 export default function ExerciseDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
-  const { colors, typography, spacing } = useTheme()
+  const { colors, typography, spacing, radius } = useTheme()
   const { t } = useTranslation()
   const [metric, setMetric] = useState('Max weight')
 
@@ -71,6 +71,49 @@ export default function ExerciseDetailScreen() {
                   {exercise.description}
                 </Text>
               </Card>
+            )}
+
+            {exercise.videoUrl && exercise.imageUrl && (
+              <TouchableOpacity
+                onPress={() => {
+                  const watchUrl = exercise.videoUrl!.replace('/embed/', '/watch?v=').split('?')[0] ?? ''
+                  Linking.openURL(watchUrl)
+                }}
+                accessibilityLabel={t('exercise.watchVideo')}
+                accessibilityRole="button"
+                activeOpacity={0.8}
+              >
+                <Card>
+                  <Text style={{
+                    fontFamily: typography.family.bold,
+                    color: colors.textPrimary,
+                    marginBottom: spacing.sm,
+                    textTransform: 'uppercase',
+                  }}>
+                    {t('exercise.demonstration')}
+                  </Text>
+                  <View style={{ borderRadius: radius.md, overflow: 'hidden' }}>
+                    <Image
+                      source={{ uri: exercise.imageUrl }}
+                      style={{ width: '100%', height: 180 }}
+                      resizeMode="cover"
+                    />
+                    <View style={{
+                      position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+                      justifyContent: 'center', alignItems: 'center',
+                      backgroundColor: 'rgba(0,0,0,0.3)',
+                    }}>
+                      <View style={{
+                        width: 48, height: 48, borderRadius: 24,
+                        backgroundColor: colors.primary,
+                        justifyContent: 'center', alignItems: 'center',
+                      }}>
+                        <Text style={{ color: '#FFFFFF', fontSize: 20, marginLeft: 3 }}>▶</Text>
+                      </View>
+                    </View>
+                  </View>
+                </Card>
+              </TouchableOpacity>
             )}
 
             {/* Metric toggle */}

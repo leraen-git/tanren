@@ -255,6 +255,8 @@ export const en = {
     difficulty: 'Difficulty',
     equipment: 'Equipment',
     muscles: 'Muscles',
+    demonstration: 'Demonstration',
+    watchVideo: 'Watch video',
   },
   diet: {
     title: 'Diet plan',

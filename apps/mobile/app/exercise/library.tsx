@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { View, Text, TextInput, ScrollView, TouchableOpacity } from 'react-native'
+import { View, Text, TextInput, ScrollView, TouchableOpacity, Image } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
@@ -25,7 +25,7 @@ export default function ExerciseLibraryScreen() {
   const allFilters = ['All', ...MUSCLE_GROUPS] as string[]
 
   return (
-    <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: colors.background }}>
+    <SafeAreaView edges={['top', 'bottom']} style={{ flex: 1, backgroundColor: colors.background }}>
       {/* Header */}
       <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: spacing.base, paddingVertical: spacing.md, gap: spacing.md }}>
         <TouchableOpacity onPress={() => router.back()} accessibilityLabel={t('common.back')} accessibilityRole="button">
@@ -87,14 +87,36 @@ export default function ExerciseLibraryScreen() {
         {isLoading && [1, 2, 3, 4, 5].map((i) => <SkeletonCard key={i} height={70} />)}
 
         {filtered?.map((exercise) => (
-          <Card key={exercise.id} accessibilityLabel={exercise.name}>
-            <Text style={{ fontFamily: typography.family.semiBold, color: colors.textPrimary }}>
-              {exercise.name}
-            </Text>
-            <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted }}>
-              {exercise.muscleGroups.map((mg) => translateMuscleGroup(mg, t)).join(' · ')} · {translateDifficulty(exercise.difficulty, t)}
-            </Text>
-          </Card>
+          <TouchableOpacity
+            key={exercise.id}
+            onPress={() => router.push(`/exercise/${exercise.id}`)}
+            activeOpacity={0.7}
+            accessibilityLabel={exercise.name}
+            accessibilityRole="button"
+          >
+            <Card>
+              <View style={{ flexDirection: 'row', gap: spacing.md }}>
+                {exercise.imageUrl && (
+                  <Image
+                    source={{ uri: exercise.imageUrl }}
+                    style={{
+                      width: 64, height: 64,
+                      borderRadius: radius.sm,
+                    }}
+                    resizeMode="cover"
+                  />
+                )}
+                <View style={{ flex: 1, justifyContent: 'center' }}>
+                  <Text style={{ fontFamily: typography.family.semiBold, color: colors.textPrimary }}>
+                    {exercise.name}
+                  </Text>
+                  <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted, marginTop: 2 }}>
+                    {exercise.muscleGroups.map((mg) => translateMuscleGroup(mg, t)).join(' · ')} · {translateDifficulty(exercise.difficulty, t)}
+                  </Text>
+                </View>
+              </View>
+            </Card>
+          </TouchableOpacity>
         ))}
       </ScrollView>
     </SafeAreaView>

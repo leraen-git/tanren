@@ -21,7 +21,6 @@ import '@/i18n'
 // Handle incoming notification taps — deep-link to the relevant screen
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
-    shouldShowAlert: true,
     shouldPlaySound: true,
     shouldSetBadge: false,
     shouldShowBanner: true,
