@@ -50,7 +50,11 @@ function TRPCProvider({ children }: { children: React.ReactNode }) {
         url: `${API_URL}/trpc`,
         headers: () => {
           const t = tokenRef.current
-          return t ? { Authorization: `Bearer ${t}` } : {}
+          const h: Record<string, string> = {
+            'X-Request-Timestamp': Date.now().toString(),
+          }
+          if (t) h['Authorization'] = `Bearer ${t}`
+          return h
         },
       })],
     }),

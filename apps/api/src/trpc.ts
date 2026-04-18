@@ -7,9 +7,11 @@ export interface Context {
   req: FastifyRequest
   db: DB
   userId: string | null
+  sessionToken: string | null
 }
 
 const isDev = process.env['NODE_ENV'] === 'development'
+const MAX_REQUEST_AGE_MS = 5 * 60 * 1000
 
 const t = initTRPC.context<Context>().create({
   errorFormatter({ shape, error }) {
@@ -26,10 +28,35 @@ const t = initTRPC.context<Context>().create({
   },
 })
 
-export const router = t.router
-export const publicProcedure = t.procedure
+const withRequestValidation = t.middleware(({ ctx, next, path, type }) => {
+  const contentType = ctx.req.headers['content-type']
+  if (type === 'mutation' && !contentType?.includes('application/json')) {
+    throw new TRPCError({ code: 'BAD_REQUEST', message: 'Content-Type must be application/json' })
+  }
 
-export const protectedProcedure = t.procedure.use(({ ctx, next, path }) => {
+  const timestamp = ctx.req.headers['x-request-timestamp'] as string | undefined
+  if (timestamp) {
+    const age = Date.now() - Number(timestamp)
+    if (Number.isNaN(age) || age > MAX_REQUEST_AGE_MS) {
+      throw new TRPCError({ code: 'BAD_REQUEST', message: 'Request expired' })
+    }
+  }
+
+  ctx.req.log.info({
+    event: 'request',
+    path,
+    type,
+    userId: ctx.userId,
+  })
+
+  return next()
+})
+
+export const router = t.router
+const baseProcedure = t.procedure.use(withRequestValidation)
+export const publicProcedure = baseProcedure
+
+export const protectedProcedure = baseProcedure.use(({ ctx, next, path }) => {
   if (!ctx.userId) {
     ctx.req.log.warn({ event: 'auth_failure', path }, 'Unauthenticated request to protected procedure')
     throw new TRPCError({ code: 'UNAUTHORIZED' })

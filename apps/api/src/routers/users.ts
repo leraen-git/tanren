@@ -3,6 +3,7 @@ import { eq } from 'drizzle-orm'
 import { TRPCError } from '@trpc/server'
 import { router, protectedProcedure } from '../trpc.js'
 import { users } from '../db/schema.js'
+import { encryptUserFields, decryptUserFields } from '../db/encryption.js'
 
 export const usersRouter = router({
   me: protectedProcedure.query(async ({ ctx }) => {
@@ -12,7 +13,7 @@ export const usersRouter = router({
       .where(eq(users.id, ctx.userId))
       .limit(1)
     if (!user) throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' })
-    return user
+    return decryptUserFields(user)
   }),
 
   updateMe: protectedProcedure
@@ -31,13 +32,15 @@ export const usersRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      const { name, email, ...rest } = input
+      const encryptedPii = encryptUserFields({ name, email })
       const [updated] = await ctx.db
         .update(users)
-        .set({ ...input, updatedAt: new Date() })
+        .set({ ...rest, ...encryptedPii, updatedAt: new Date() })
         .where(eq(users.id, ctx.userId))
         .returning()
       if (!updated) throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' })
-      return updated
+      return decryptUserFields(updated)
     }),
 
   deleteMe: protectedProcedure.mutation(async ({ ctx }) => {

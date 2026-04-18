@@ -2,31 +2,19 @@ import { randomInt } from 'node:crypto'
 import { z } from 'zod'
 import { eq } from 'drizzle-orm'
 import { TRPCError } from '@trpc/server'
-import { SignJWT, jwtVerify, createRemoteJWKSet } from 'jose'
-import { router, publicProcedure } from '../trpc.js'
+import { jwtVerify, createRemoteJWKSet } from 'jose'
+import { router, publicProcedure, protectedProcedure } from '../trpc.js'
 import { users } from '../db/schema.js'
 import { redis } from '../redis.js'
 import { sendOtpEmail } from '../services/emailService.js'
+import { createSession, revokeSession, GUEST_TTL } from '../services/sessionService.js'
+import { encryptUserFields, decryptUserFields } from '../db/encryption.js'
 
 const isDev = process.env['NODE_ENV'] === 'development'
-const JWT_SECRET_RAW = process.env['JWT_SECRET']
-const JWT_SECRET = new TextEncoder().encode(JWT_SECRET_RAW ?? 'dev-secret-change-in-production')
 
 // Apple's public key set — fetched once and cached automatically by jose
 const APPLE_JWKS = createRemoteJWKSet(new URL('https://appleid.apple.com/auth/keys'))
 const APPLE_BUNDLE_ID = 'app.tanren'
-
-// ─── Token helpers ────────────────────────────────────────────────────────────
-
-/** Sign a JWT containing the internal user UUID as `sub`. */
-async function signToken(internalUserId: string, expiresIn = '90d'): Promise<string> {
-  return new SignJWT({})
-    .setProtectedHeader({ alg: 'HS256' })
-    .setSubject(internalUserId)
-    .setIssuedAt()
-    .setExpirationTime(expiresIn)
-    .sign(JWT_SECRET)
-}
 
 // ─── OTP helpers ──────────────────────────────────────────────────────────────
 
@@ -87,18 +75,20 @@ export const authRouter = router({
           email?.split('@')[0] ||
           'Athlete'
 
+        const encrypted = encryptUserFields({ name, email: email ?? `${appleUserId}@apple.id` })
         const [created] = await ctx.db.insert(users).values({
           authId: appleUserId,
-          name,
-          email: email ?? `${appleUserId}@apple.id`,
+          name: encrypted.name!,
+          email: encrypted.email!,
+          emailHash: encrypted.emailHash,
         }).returning()
         user = created!
         ctx.req.log.info({ event: 'user_created', userId: user.id, provider: 'apple' }, 'New user signed up')
       }
 
-      const token = await signToken(user.id)
+      const token = await createSession(user.id)
       ctx.req.log.info({ event: 'auth_success', userId: user.id, provider: 'apple' }, 'User signed in')
-      return { token, user }
+      return { token, user: decryptUserFields(user) }
     }),
 
   /**
@@ -136,18 +126,20 @@ export const authRouter = router({
 
       if (!user) {
         const name = googleUser.name?.trim() || googleUser.email.split('@')[0] || 'Athlete'
+        const encrypted = encryptUserFields({ name, email: googleUser.email })
         const [created] = await ctx.db.insert(users).values({
           authId: googleUser.sub,
           authProvider: 'google',
-          name,
-          email: googleUser.email,
+          name: encrypted.name!,
+          email: encrypted.email!,
+          emailHash: encrypted.emailHash,
           avatarUrl: googleUser.picture ?? null,
         }).returning()
         user = created!
         ctx.req.log.info({ event: 'user_created', userId: user.id, provider: 'google' }, 'New user signed up')
       } else {
         const updates: Record<string, unknown> = { updatedAt: new Date() }
-        if (googleUser.name) updates.name = googleUser.name
+        if (googleUser.name) Object.assign(updates, encryptUserFields({ name: googleUser.name }))
         if (googleUser.picture) updates.avatarUrl = googleUser.picture
         const [updated] = await ctx.db
           .update(users)
@@ -157,9 +149,9 @@ export const authRouter = router({
         user = updated!
       }
 
-      const token = await signToken(user.id)
+      const token = await createSession(user.id)
       ctx.req.log.info({ event: 'auth_success', userId: user.id, provider: 'google' }, 'User signed in')
-      return { token, user }
+      return { token, user: decryptUserFields(user) }
     }),
 
   /**
@@ -256,19 +248,21 @@ export const authRouter = router({
 
       if (!user) {
         const name = email.split('@')[0] || 'User'
+        const encrypted = encryptUserFields({ name, email })
         const [created] = await ctx.db.insert(users).values({
           authId: email,
           authProvider: 'email',
-          name,
-          email,
+          name: encrypted.name!,
+          email: encrypted.email!,
+          emailHash: encrypted.emailHash,
         }).returning()
         user = created!
         ctx.req.log.info({ event: 'user_created', userId: user.id, provider: 'email' }, 'New user signed up')
       }
 
-      const token = await signToken(user.id)
+      const token = await createSession(user.id)
       ctx.req.log.info({ event: 'auth_success', userId: user.id, provider: 'email' }, 'User signed in')
-      return { token, user }
+      return { token, user: decryptUserFields(user) }
     }),
 
   /**
@@ -278,16 +272,18 @@ export const authRouter = router({
   guestSignIn: publicProcedure
     .mutation(async ({ ctx }) => {
       const guestId = crypto.randomUUID()
+      const guestEncrypted = encryptUserFields({ name: 'Guest', email: `guest_${guestId.slice(0, 8)}@guest.tanren.app` })
       const [user] = await ctx.db.insert(users).values({
         authId: `guest_${guestId}`,
         authProvider: 'guest',
-        name: 'Guest',
-        email: `guest_${guestId.slice(0, 8)}@guest.tanren.app`,
+        name: guestEncrypted.name!,
+        email: guestEncrypted.email!,
+        emailHash: guestEncrypted.emailHash,
       }).returning()
 
-      const token = await signToken(user!.id, '7d')
+      const token = await createSession(user!.id, GUEST_TTL)
       ctx.req.log.info({ event: 'guest_created', userId: user!.id }, 'Guest account created')
-      return { token, user: user! }
+      return { token, user: decryptUserFields(user!) }
     }),
 
   /**
@@ -305,8 +301,8 @@ export const authRouter = router({
         .where(eq(users.id, input.userId))
         .limit(1)
       if (!user) throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' })
-      const token = await signToken(user.id)
-      return { token, user }
+      const token = await createSession(user.id)
+      return { token, user: decryptUserFields(user) }
     }),
 
   /**
@@ -319,6 +315,16 @@ export const authRouter = router({
       .from(users)
       .where(eq(users.id, ctx.userId))
       .limit(1)
-    return user ?? null
+    return user ? decryptUserFields(user) : null
+  }),
+
+  /**
+   * Sign out — revokes the server-side session.
+   */
+  signOut: protectedProcedure.mutation(async ({ ctx }) => {
+    if (ctx.sessionToken) {
+      await revokeSession(ctx.sessionToken)
+    }
+    return { success: true }
   }),
 })

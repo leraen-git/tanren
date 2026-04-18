@@ -8,42 +8,42 @@
 
 /* Begin PBXBuildFile section */
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
-		233BCC944DE94FDFABDA979A /* BarlowCondensed_500Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 16F40BB8CF1F4F168A72E9E0 /* BarlowCondensed_500Medium.ttf */; };
-		2F6276BEC383936E433184AB /* libPods-Tanren.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6E201C2AB2262021B018BA77 /* libPods-Tanren.a */; };
+		317D026E0EBDC650BFF6BBAE /* libPods-Tanren.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C517C60475ECBA7EB603ACA /* libPods-Tanren.a */; };
+		3C68C927263040D79713D7B5 /* NotoSerifJP_700Bold_subset.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3BD0E669DAC04EC287B4F4DE /* NotoSerifJP_700Bold_subset.ttf */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
-		44E271C02CEA442C98264421 /* BarlowCondensed_300Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D31425EC3F944ABB930D6CA4 /* BarlowCondensed_300Light.ttf */; };
-		4C91E4348E7AEDAC01973995 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE5346D650CBEED6C6196F7C /* ExpoModulesProvider.swift */; };
-		52ED103313484DE89D085D05 /* BarlowCondensed_400Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E7D44E5922754B98A712893F /* BarlowCondensed_400Regular.ttf */; };
-		778993493B154786BB284536 /* NotoSerifJP_700Bold_subset.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6BC249DF3C8146F3B206E525 /* NotoSerifJP_700Bold_subset.ttf */; };
-		80220E842F6D4ACA8FF9245A /* NotoSerifJP_900Black_subset.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 07CBED6A7FEE4A6C96DFF84E /* NotoSerifJP_900Black_subset.ttf */; };
-		B190D5211DDB43D89D75FD41 /* BarlowCondensed_900Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 60A02958547843E7992ACA1E /* BarlowCondensed_900Black.ttf */; };
+		4542419F77B342288F742F2D /* BarlowCondensed_400Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9F9E2358213449F2BC6541DD /* BarlowCondensed_400Regular.ttf */; };
+		90D9EFE275354947BB0EBB0E /* BarlowCondensed_900Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6C4632266CAA4F9E96D97C8F /* BarlowCondensed_900Black.ttf */; };
+		954CEAFCD2FA4E69B9305F7D /* NotoSerifJP_900Black_subset.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 94889248792141B1B9934589 /* NotoSerifJP_900Black_subset.ttf */; };
+		A2877F28FD36F4E73925B211 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B9EA2D9DD554F4268C566D /* ExpoModulesProvider.swift */; };
+		AA425610ACBE4840930FBC37 /* BarlowCondensed_700Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4C8A381AACAB45A09FCE3475 /* BarlowCondensed_700Bold.ttf */; };
+		AD15EE5570D948A1B5E6E802 /* BarlowCondensed_300Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A05556E84B20458193DA77F1 /* BarlowCondensed_300Light.ttf */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
-		DE85B0F326847DF98BE5F552 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 1FA8F9970CF78E089CC7D599 /* PrivacyInfo.xcprivacy */; };
-		E79871223AED48F4A0A1934A /* BarlowCondensed_700Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 876CD21CD3444282844CA596 /* BarlowCondensed_700Bold.ttf */; };
+		C65B5CE06A359BFB365440D9 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 21EA1556092A3BE09CCD2568 /* PrivacyInfo.xcprivacy */; };
+		CB65A82F059540A2ACB63D70 /* BarlowCondensed_500Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CFD3176477E4471794836AAA /* BarlowCondensed_500Medium.ttf */; };
 		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		07CBED6A7FEE4A6C96DFF84E /* NotoSerifJP_900Black_subset.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = NotoSerifJP_900Black_subset.ttf; path = ../assets/fonts/NotoSerifJP_900Black_subset.ttf; sourceTree = "<group>"; };
+		08B9EA2D9DD554F4268C566D /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-Tanren/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* Tanren.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tanren.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Tanren/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Tanren/Info.plist; sourceTree = "<group>"; };
-		16F40BB8CF1F4F168A72E9E0 /* BarlowCondensed_500Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = BarlowCondensed_500Medium.ttf; path = "../../../node_modules/@expo-google-fonts/barlow-condensed/500Medium/BarlowCondensed_500Medium.ttf"; sourceTree = "<group>"; };
-		1FA8F9970CF78E089CC7D599 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = Tanren/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		5821D415435A31A9F5135384 /* Pods-Tanren.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tanren.release.xcconfig"; path = "Target Support Files/Pods-Tanren/Pods-Tanren.release.xcconfig"; sourceTree = "<group>"; };
-		60A02958547843E7992ACA1E /* BarlowCondensed_900Black.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = BarlowCondensed_900Black.ttf; path = "../../../node_modules/@expo-google-fonts/barlow-condensed/900Black/BarlowCondensed_900Black.ttf"; sourceTree = "<group>"; };
-		6BC249DF3C8146F3B206E525 /* NotoSerifJP_700Bold_subset.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = NotoSerifJP_700Bold_subset.ttf; path = ../assets/fonts/NotoSerifJP_700Bold_subset.ttf; sourceTree = "<group>"; };
-		6E201C2AB2262021B018BA77 /* libPods-Tanren.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Tanren.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		876CD21CD3444282844CA596 /* BarlowCondensed_700Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = BarlowCondensed_700Bold.ttf; path = "../../../node_modules/@expo-google-fonts/barlow-condensed/700Bold/BarlowCondensed_700Bold.ttf"; sourceTree = "<group>"; };
+		1C517C60475ECBA7EB603ACA /* libPods-Tanren.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Tanren.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		21EA1556092A3BE09CCD2568 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = Tanren/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		3BD0E669DAC04EC287B4F4DE /* NotoSerifJP_700Bold_subset.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = NotoSerifJP_700Bold_subset.ttf; path = ../assets/fonts/NotoSerifJP_700Bold_subset.ttf; sourceTree = "<group>"; };
+		3C6B6291ECF9C37AEF537327 /* Pods-Tanren.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tanren.debug.xcconfig"; path = "Target Support Files/Pods-Tanren/Pods-Tanren.debug.xcconfig"; sourceTree = "<group>"; };
+		4680E35445F21079F57313E3 /* Pods-Tanren.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tanren.release.xcconfig"; path = "Target Support Files/Pods-Tanren/Pods-Tanren.release.xcconfig"; sourceTree = "<group>"; };
+		4C8A381AACAB45A09FCE3475 /* BarlowCondensed_700Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = BarlowCondensed_700Bold.ttf; path = "../../../node_modules/@expo-google-fonts/barlow-condensed/700Bold/BarlowCondensed_700Bold.ttf"; sourceTree = "<group>"; };
+		6C4632266CAA4F9E96D97C8F /* BarlowCondensed_900Black.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = BarlowCondensed_900Black.ttf; path = "../../../node_modules/@expo-google-fonts/barlow-condensed/900Black/BarlowCondensed_900Black.ttf"; sourceTree = "<group>"; };
+		94889248792141B1B9934589 /* NotoSerifJP_900Black_subset.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = NotoSerifJP_900Black_subset.ttf; path = ../assets/fonts/NotoSerifJP_900Black_subset.ttf; sourceTree = "<group>"; };
+		9F9E2358213449F2BC6541DD /* BarlowCondensed_400Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = BarlowCondensed_400Regular.ttf; path = "../../../node_modules/@expo-google-fonts/barlow-condensed/400Regular/BarlowCondensed_400Regular.ttf"; sourceTree = "<group>"; };
+		A05556E84B20458193DA77F1 /* BarlowCondensed_300Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = BarlowCondensed_300Light.ttf; path = "../../../node_modules/@expo-google-fonts/barlow-condensed/300Light/BarlowCondensed_300Light.ttf"; sourceTree = "<group>"; };
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = Tanren/SplashScreen.storyboard; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
-		D31425EC3F944ABB930D6CA4 /* BarlowCondensed_300Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = BarlowCondensed_300Light.ttf; path = "../../../node_modules/@expo-google-fonts/barlow-condensed/300Light/BarlowCondensed_300Light.ttf"; sourceTree = "<group>"; };
-		E7D44E5922754B98A712893F /* BarlowCondensed_400Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = BarlowCondensed_400Regular.ttf; path = "../../../node_modules/@expo-google-fonts/barlow-condensed/400Regular/BarlowCondensed_400Regular.ttf"; sourceTree = "<group>"; };
+		CFD3176477E4471794836AAA /* BarlowCondensed_500Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = BarlowCondensed_500Medium.ttf; path = "../../../node_modules/@expo-google-fonts/barlow-condensed/500Medium/BarlowCondensed_500Medium.ttf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
-		EDFAD1C7A049BD332DCC9383 /* Pods-Tanren.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tanren.debug.xcconfig"; path = "Target Support Files/Pods-Tanren/Pods-Tanren.debug.xcconfig"; sourceTree = "<group>"; };
 		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = Tanren/AppDelegate.swift; sourceTree = "<group>"; };
 		F11748442D0722820044C1D9 /* Tanren-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "Tanren-Bridging-Header.h"; path = "Tanren/Tanren-Bridging-Header.h"; sourceTree = "<group>"; };
-		FE5346D650CBEED6C6196F7C /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-Tanren/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -51,7 +51,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2F6276BEC383936E433184AB /* libPods-Tanren.a in Frameworks */,
+				317D026E0EBDC650BFF6BBAE /* libPods-Tanren.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -67,15 +67,7 @@
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
-				1FA8F9970CF78E089CC7D599 /* PrivacyInfo.xcprivacy */,
-			);
-			name = Tanren;
-			sourceTree = "<group>";
-		};
-		2A276E23DDB10D936B7B1D0D /* Tanren */ = {
-			isa = PBXGroup;
-			children = (
-				FE5346D650CBEED6C6196F7C /* ExpoModulesProvider.swift */,
+				21EA1556092A3BE09CCD2568 /* PrivacyInfo.xcprivacy */,
 			);
 			name = Tanren;
 			sourceTree = "<group>";
@@ -84,9 +76,26 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				6E201C2AB2262021B018BA77 /* libPods-Tanren.a */,
+				1C517C60475ECBA7EB603ACA /* libPods-Tanren.a */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		6943E2AC9474334BDFB5D3FF /* ExpoModulesProviders */ = {
+			isa = PBXGroup;
+			children = (
+				AB1B34EE2CF4CB4CFD4B8D18 /* Tanren */,
+			);
+			name = ExpoModulesProviders;
+			sourceTree = "<group>";
+		};
+		7407FB976D0EA79BBF87F067 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				3C6B6291ECF9C37AEF537327 /* Pods-Tanren.debug.xcconfig */,
+				4680E35445F21079F57313E3 /* Pods-Tanren.release.xcconfig */,
+			);
+			path = Pods;
 			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
@@ -103,9 +112,9 @@
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
-				B59E3A62C9B44670AC856B84 /* Resources */,
-				CC0AB768530FCDFAF033BE5D /* Pods */,
-				C0626FFC9F563817FB48CB4E /* ExpoModulesProviders */,
+				FE155A560112469E953D4660 /* Resources */,
+				7407FB976D0EA79BBF87F067 /* Pods */,
+				6943E2AC9474334BDFB5D3FF /* ExpoModulesProviders */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -120,19 +129,12 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		B59E3A62C9B44670AC856B84 /* Resources */ = {
+		AB1B34EE2CF4CB4CFD4B8D18 /* Tanren */ = {
 			isa = PBXGroup;
 			children = (
-				D31425EC3F944ABB930D6CA4 /* BarlowCondensed_300Light.ttf */,
-				E7D44E5922754B98A712893F /* BarlowCondensed_400Regular.ttf */,
-				16F40BB8CF1F4F168A72E9E0 /* BarlowCondensed_500Medium.ttf */,
-				876CD21CD3444282844CA596 /* BarlowCondensed_700Bold.ttf */,
-				60A02958547843E7992ACA1E /* BarlowCondensed_900Black.ttf */,
-				6BC249DF3C8146F3B206E525 /* NotoSerifJP_700Bold_subset.ttf */,
-				07CBED6A7FEE4A6C96DFF84E /* NotoSerifJP_900Black_subset.ttf */,
+				08B9EA2D9DD554F4268C566D /* ExpoModulesProvider.swift */,
 			);
-			name = Resources;
-			path = "";
+			name = Tanren;
 			sourceTree = "<group>";
 		};
 		BB2F792B24A3F905000567C9 /* Supporting */ = {
@@ -144,22 +146,18 @@
 			path = Tanren/Supporting;
 			sourceTree = "<group>";
 		};
-		C0626FFC9F563817FB48CB4E /* ExpoModulesProviders */ = {
+		FE155A560112469E953D4660 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				2A276E23DDB10D936B7B1D0D /* Tanren */,
+				A05556E84B20458193DA77F1 /* BarlowCondensed_300Light.ttf */,
+				9F9E2358213449F2BC6541DD /* BarlowCondensed_400Regular.ttf */,
+				CFD3176477E4471794836AAA /* BarlowCondensed_500Medium.ttf */,
+				4C8A381AACAB45A09FCE3475 /* BarlowCondensed_700Bold.ttf */,
+				6C4632266CAA4F9E96D97C8F /* BarlowCondensed_900Black.ttf */,
+				3BD0E669DAC04EC287B4F4DE /* NotoSerifJP_700Bold_subset.ttf */,
+				94889248792141B1B9934589 /* NotoSerifJP_900Black_subset.ttf */,
 			);
-			name = ExpoModulesProviders;
-			sourceTree = "<group>";
-		};
-		CC0AB768530FCDFAF033BE5D /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				EDFAD1C7A049BD332DCC9383 /* Pods-Tanren.debug.xcconfig */,
-				5821D415435A31A9F5135384 /* Pods-Tanren.release.xcconfig */,
-			);
-			name = Pods;
-			path = Pods;
+			name = Resources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -170,13 +168,13 @@
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "Tanren" */;
 			buildPhases = (
 				08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */,
-				E79F2CE413470269441BD35E /* [Expo] Configure project */,
+				B701A25E984D570D78CE0205 /* [Expo] Configure project */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */,
-				C1B7023B757CB2034C43EA81 /* [CP] Embed Pods Frameworks */,
+				B9E44FE78AD9F117696C85FC /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -226,14 +224,14 @@
 				BB2F792D24A3F905000567C9 /* Expo.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
-				44E271C02CEA442C98264421 /* BarlowCondensed_300Light.ttf in Resources */,
-				52ED103313484DE89D085D05 /* BarlowCondensed_400Regular.ttf in Resources */,
-				233BCC944DE94FDFABDA979A /* BarlowCondensed_500Medium.ttf in Resources */,
-				E79871223AED48F4A0A1934A /* BarlowCondensed_700Bold.ttf in Resources */,
-				B190D5211DDB43D89D75FD41 /* BarlowCondensed_900Black.ttf in Resources */,
-				778993493B154786BB284536 /* NotoSerifJP_700Bold_subset.ttf in Resources */,
-				80220E842F6D4ACA8FF9245A /* NotoSerifJP_900Black_subset.ttf in Resources */,
-				DE85B0F326847DF98BE5F552 /* PrivacyInfo.xcprivacy in Resources */,
+				AD15EE5570D948A1B5E6E802 /* BarlowCondensed_300Light.ttf in Resources */,
+				4542419F77B342288F742F2D /* BarlowCondensed_400Regular.ttf in Resources */,
+				CB65A82F059540A2ACB63D70 /* BarlowCondensed_500Medium.ttf in Resources */,
+				AA425610ACBE4840930FBC37 /* BarlowCondensed_700Bold.ttf in Resources */,
+				90D9EFE275354947BB0EBB0E /* BarlowCondensed_900Black.ttf in Resources */,
+				3C68C927263040D79713D7B5 /* NotoSerifJP_700Bold_subset.ttf in Resources */,
+				954CEAFCD2FA4E69B9305F7D /* NotoSerifJP_900Black_subset.ttf in Resources */,
+				C65B5CE06A359BFB365440D9 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -323,25 +321,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Tanren/Pods-Tanren-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		C1B7023B757CB2034C43EA81 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Tanren/Pods-Tanren-frameworks.sh",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built/hermes.framework/hermes",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermes.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Tanren/Pods-Tanren-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		E79F2CE413470269441BD35E /* [Expo] Configure project */ = {
+		B701A25E984D570D78CE0205 /* [Expo] Configure project */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
@@ -360,6 +340,24 @@
 			shellPath = /bin/sh;
 			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-Tanren/expo-configure-project.sh\"\n";
 		};
+		B9E44FE78AD9F117696C85FC /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Tanren/Pods-Tanren-frameworks.sh",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built/hermes.framework/hermes",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermes.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Tanren/Pods-Tanren-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -368,7 +366,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */,
-				4C91E4348E7AEDAC01973995 /* ExpoModulesProvider.swift in Sources */,
+				A2877F28FD36F4E73925B211 /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -377,12 +375,13 @@
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = EDFAD1C7A049BD332DCC9383 /* Pods-Tanren.debug.xcconfig */;
+			baseConfigurationReference = 3C6B6291ECF9C37AEF537327 /* Pods-Tanren.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Tanren/Tanren.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = LD4R76JH22;
 				ENABLE_BITCODE = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
@@ -413,12 +412,13 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5821D415435A31A9F5135384 /* Pods-Tanren.release.xcconfig */;
+			baseConfigurationReference = 4680E35445F21079F57313E3 /* Pods-Tanren.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Tanren/Tanren.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = LD4R76JH22;
 				INFOPLIST_FILE = Tanren/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (

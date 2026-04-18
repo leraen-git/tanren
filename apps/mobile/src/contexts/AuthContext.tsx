@@ -176,10 +176,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [saveAndAuthenticate])
 
   const signOut = useCallback(async () => {
+    const currentToken = token
+    if (currentToken) {
+      try {
+        await fetch(`${API_URL}/trpc/auth.signOut`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${currentToken}`,
+          },
+          body: JSON.stringify({}),
+        })
+      } catch {}
+    }
     await clearToken()
     setTokenState(null)
     setStatus('unauthenticated')
-  }, [])
+  }, [token])
 
   return (
     <AuthContext.Provider value={{

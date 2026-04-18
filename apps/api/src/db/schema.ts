@@ -23,6 +23,7 @@ export const users = pgTable('users', {
   authProvider: text('auth_provider').notNull().default('apple'),
   name: text('name').notNull(),
   email: text('email').notNull(),
+  emailHash: text('email_hash'),
   avatarUrl: text('avatar_url'),
   level: userLevelEnum('level').notNull().default('BEGINNER'),
   goal: userGoalEnum('goal').notNull().default('MUSCLE_GAIN'),

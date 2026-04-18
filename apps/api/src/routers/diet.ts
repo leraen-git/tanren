@@ -4,6 +4,7 @@ import { TRPCError } from '@trpc/server'
 import Anthropic from '@anthropic-ai/sdk'
 import { router, protectedProcedure } from '../trpc.js'
 import { users, dietProfiles, dietPlans } from '../db/schema.js'
+import { encryptDietFields, decryptDietFields } from '../db/encryption.js'
 
 type RawPlanDay = { dayOfWeek: number; theme?: string; meals: unknown[] }
 type RawPlan = { days?: RawPlanDay[] }
@@ -173,7 +174,7 @@ export const dietRouter = router({
       .from(dietProfiles)
       .where(eq(dietProfiles.userId, user.id))
       .limit(1)
-    return profile ?? null
+    return profile ? decryptDietFields(profile) : null
   }),
 
   generatePlan: protectedProcedure
@@ -231,10 +232,11 @@ export const dietRouter = router({
         updatedAt: new Date(),
       }
 
+      const encryptedProfile = encryptDietFields(profileData)
       if (existing[0]) {
-        await ctx.db.update(dietProfiles).set(profileData).where(eq(dietProfiles.userId, user.id))
+        await ctx.db.update(dietProfiles).set(encryptedProfile).where(eq(dietProfiles.userId, user.id))
       } else {
-        await ctx.db.insert(dietProfiles).values(profileData)
+        await ctx.db.insert(dietProfiles).values(encryptedProfile)
       }
 
       const heightCm = user.heightCm ?? 170
