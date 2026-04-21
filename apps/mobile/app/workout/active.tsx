@@ -21,6 +21,7 @@ import { scheduleRestEndNotification, cancelRestNotification } from '@/services/
 import { colors as tokenColors } from '@/theme/tokens'
 import { MusicControlBar } from '@/components/MusicControlBar'
 import { useWorkletTimer } from '@/hooks/useWorkletTimer'
+import { useTranslation } from 'react-i18next'
 
 const WAKE_LOCK_TAG = 'active-workout'
 const HEARTBEAT_FILE = FileSystem.documentDirectory + 'session-heartbeat.json'
@@ -28,7 +29,8 @@ const HEARTBEAT_INTERVAL_MS = 30_000
 const DEFAULT_REST_SECONDS = 90
 
 export default function ActiveWorkoutScreen() {
-  const { colors, typography, spacing, radius } = useTheme()
+  const { colors, tokens, typography, spacing, radius } = useTheme()
+  const { t } = useTranslation()
   const {
     currentWorkout,
     exercises,
@@ -46,6 +48,7 @@ export default function ActiveWorkoutScreen() {
   const totalSeconds = useTimerStore((s) => s.totalSeconds)
   const start = useTimerStore((s) => s.start)
   const skip = useTimerStore((s) => s.skip)
+  const pauseTimer = useTimerStore((s) => s.pause)
   const addSeconds = useTimerStore((s) => s.addSeconds)
   // UI-thread frame-based timer — replaces JS-thread setInterval
   useWorkletTimer()
@@ -180,7 +183,7 @@ export default function ActiveWorkoutScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* Rest timer — full screen overlay */}
+      {/* Rest timer — full screen overlay (charter layout: 2-row controls) */}
       {isRunning && (
         <View style={{
           position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
@@ -191,41 +194,45 @@ export default function ActiveWorkoutScreen() {
           zIndex: 10,
           paddingHorizontal: spacing.xl,
         }}>
-          <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.body, color: colors.textMuted, letterSpacing: 2 }}>
-            REST
-          </Text>
-          <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.title, color: colors.textMuted, textAlign: 'center' }}>
-            Next: {currentExercise.exerciseName}
+          <Text style={{ fontFamily: typography.family.sansM, fontSize: 10, letterSpacing: 1.6, textTransform: 'uppercase', color: colors.textMuted }}>
+            {currentExercise.exerciseName}
           </Text>
 
-          <TimerRing progress={progress} secondsRemaining={secondsRemaining} size={260} />
+          <TimerRing progress={progress} secondsRemaining={secondsRemaining} totalSeconds={totalSeconds} size={240} />
 
-          {/* ±15s adjust */}
-          <View style={{ flexDirection: 'row', gap: spacing.base }}>
+          {/* Top row: −15s / +15s / ⏸ */}
+          <View style={{ flexDirection: 'row', gap: spacing.sm, width: '100%' }}>
             <TouchableOpacity
               onPress={() => addSeconds(-15)}
-              style={{ flex: 1, paddingVertical: spacing.md, borderRadius: radius.lg, backgroundColor: colors.surface2, alignItems: 'center' }}
+              style={{ flex: 1, height: 52, borderWidth: 1, borderColor: colors.border, alignItems: 'center', justifyContent: 'center' }}
               accessibilityLabel="Subtract 15 seconds" accessibilityRole="button"
             >
-              <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.title, color: colors.textPrimary }}>−15s</Text>
+              <Text style={{ fontFamily: typography.family.sansB, fontSize: 16, color: colors.textPrimary }}>−15s</Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => addSeconds(15)}
-              style={{ flex: 1, paddingVertical: spacing.md, borderRadius: radius.lg, backgroundColor: colors.surface2, alignItems: 'center' }}
+              style={{ flex: 1, height: 52, borderWidth: 1, borderColor: colors.border, alignItems: 'center', justifyContent: 'center' }}
               accessibilityLabel="Add 15 seconds" accessibilityRole="button"
             >
-              <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.title, color: colors.textPrimary }}>+15s</Text>
+              <Text style={{ fontFamily: typography.family.sansB, fontSize: 16, color: colors.textPrimary }}>+15s</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={pauseTimer}
+              style={{ width: 48, height: 52, borderWidth: 1, borderColor: colors.border, alignItems: 'center', justifyContent: 'center' }}
+              accessibilityLabel="Pause timer" accessibilityRole="button"
+            >
+              <Text style={{ fontFamily: typography.family.sans, fontSize: 13, color: colors.textMuted }}>⏸</Text>
             </TouchableOpacity>
           </View>
 
-          {/* Big skip button */}
+          {/* Bottom row: PASSER full width */}
           <TouchableOpacity
             onPress={handleSkipRest}
-            style={{ width: '100%', paddingVertical: spacing.lg, borderRadius: radius.lg, backgroundColor: colors.primary, alignItems: 'center' }}
+            style={{ width: '100%', height: 52, backgroundColor: colors.primary, borderRadius: 4, alignItems: 'center', justifyContent: 'center' }}
             accessibilityLabel="Skip rest" accessibilityRole="button"
           >
-            <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size['2xl'], color: tokenColors.white }}>
-              Skip rest
+            <Text style={{ fontFamily: typography.family.sansB, fontSize: 15, letterSpacing: 0.6, textTransform: 'uppercase', color: '#FFFFFF' }}>
+              {t('workout.skip') ?? 'Passer'}
             </Text>
           </TouchableOpacity>
         </View>

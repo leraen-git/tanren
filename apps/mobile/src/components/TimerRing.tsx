@@ -1,29 +1,29 @@
 import React from 'react'
 import { View, Text } from 'react-native'
-import { Canvas, Circle, Path, Skia } from '@shopify/react-native-skia'
+import { Canvas, Path, Skia } from '@shopify/react-native-skia'
 import { useTheme } from '@/theme/ThemeContext'
 
 interface TimerRingProps {
-  progress: number // 0–1, where 1 = full ring
+  progress: number
   secondsRemaining: number
+  totalSeconds: number
   size?: number
 }
 
-export const TimerRing = React.memo(function TimerRing({ progress, secondsRemaining, size = 200 }: TimerRingProps) {
-  const { colors, typography } = useTheme()
+export const TimerRing = React.memo(function TimerRing({ progress, secondsRemaining, totalSeconds, size = 240 }: TimerRingProps) {
+  const { tokens, typography } = useTheme()
 
-  const strokeWidth = 12
+  const strokeWidth = 6
   const center = size / 2
   const radius = center - strokeWidth / 2
-  const circumference = 2 * Math.PI * radius
 
   const mins = Math.floor(secondsRemaining / 60)
   const secs = secondsRemaining % 60
   const timeLabel = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`
 
-  // Build arc path using Skia
-  const startAngle = -Math.PI / 2 // top of circle
-  const sweepAngle = 2 * Math.PI * progress
+  const totalMins = Math.floor(totalSeconds / 60)
+  const totalSecs = totalSeconds % 60
+  const totalLabel = `/ ${String(totalMins).padStart(2, '0')}:${String(totalSecs).padStart(2, '0')}`
 
   const path = Skia.Path.Make()
   path.addArc(
@@ -42,30 +42,27 @@ export const TimerRing = React.memo(function TimerRing({ progress, secondsRemain
   return (
     <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
       <Canvas style={{ width: size, height: size, position: 'absolute' }}>
-        {/* Track */}
         <Path
           path={trackPath}
-          color={colors.surface2}
+          color={tokens.surface2}
           style="stroke"
           strokeWidth={strokeWidth}
           strokeCap="round"
         />
-        {/* Progress arc */}
         <Path
           path={path}
-          color={colors.primary}
+          color={tokens.accent}
           style="stroke"
           strokeWidth={strokeWidth}
           strokeCap="round"
         />
       </Canvas>
 
-      {/* Time label */}
       <Text
         style={{
-          fontFamily: typography.family.extraBold,
-          fontSize: typography.size['3xl'],
-          color: colors.textPrimary,
+          fontFamily: typography.family.monoB,
+          fontSize: 56,
+          color: tokens.text,
         }}
         accessibilityLabel={`Rest timer: ${timeLabel}`}
       >
@@ -73,12 +70,12 @@ export const TimerRing = React.memo(function TimerRing({ progress, secondsRemain
       </Text>
       <Text
         style={{
-          fontFamily: typography.family.regular,
-          fontSize: typography.size.base,
-          color: colors.textMuted,
+          fontFamily: typography.family.mono,
+          fontSize: 14,
+          color: tokens.textMute,
         }}
       >
-        REST
+        {totalLabel}
       </Text>
     </View>
   )
