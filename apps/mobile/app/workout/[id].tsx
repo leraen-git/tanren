@@ -103,7 +103,7 @@ export default function WorkoutDetailScreen() {
         </TouchableOpacity>
       </View>
 
-      <ScrollView contentContainerStyle={{ padding: 16, gap: 20 }}>
+      <ScrollView contentContainerStyle={{ padding: 16, gap: 16, paddingBottom: 8 }}>
         {/* Name */}
         <View style={{ gap: 4 }}>
           <TouchableOpacity
@@ -122,7 +122,7 @@ export default function WorkoutDetailScreen() {
                 style={{
                   flex: 1,
                   fontFamily: fonts.sansX,
-                  fontSize: 24,
+                  fontSize: 22,
                   color: tokens.text,
                   borderBottomWidth: 1,
                   borderBottomColor: tokens.accent,
@@ -132,86 +132,87 @@ export default function WorkoutDetailScreen() {
                 accessibilityLabel="Workout name input"
               />
             ) : (
-              <Text style={{ fontFamily: fonts.sansX, fontSize: 24, color: tokens.text, textTransform: 'uppercase', flex: 1 }}>
+              <Text style={{ fontFamily: fonts.sansX, fontSize: 22, color: tokens.text, textTransform: 'uppercase', flex: 1 }}>
                 {workout.name}
               </Text>
             )}
           </TouchableOpacity>
 
-          <Text style={{ fontFamily: fonts.mono, fontSize: 12, color: tokens.textMute }}>
-            {workout.exercises.length} exercise{workout.exercises.length !== 1 ? 's' : ''} / ~{workout.estimatedDuration} min
-          </Text>
-
-          {workout.muscleGroups && workout.muscleGroups.length > 0 && (
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 4, marginTop: 4 }}>
-              {workout.muscleGroups.map((mg) => (
-                <View key={mg} style={{
-                  borderWidth: 1,
-                  borderColor: tokens.border,
-                  paddingHorizontal: 6,
-                  paddingVertical: 2,
-                }}>
-                  <Text style={{ fontFamily: fonts.sansB, fontSize: 8, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 1 }}>
-                    {mg}
-                  </Text>
-                </View>
-              ))}
-            </View>
-          )}
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+            <Text style={{ fontFamily: fonts.mono, fontSize: 11, color: tokens.textMute }}>
+              {workout.exercises.length} exercise{workout.exercises.length !== 1 ? 's' : ''} / ~{workout.estimatedDuration} min
+            </Text>
+            {workout.muscleGroups && workout.muscleGroups.length > 0 && (
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 4 }}>
+                {workout.muscleGroups.map((mg) => (
+                  <View key={mg} style={{
+                    borderWidth: 1,
+                    borderColor: tokens.border,
+                    paddingHorizontal: 5,
+                    paddingVertical: 1,
+                  }}>
+                    <Text style={{ fontFamily: fonts.sansB, fontSize: 8, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 1 }}>
+                      {mg}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+            )}
+          </View>
         </View>
 
         {/* Divider */}
         <View style={{ height: 1, backgroundColor: tokens.border }} />
 
         {/* Exercises */}
-        <View style={{ gap: 0 }}>
-          <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2, marginBottom: 12 }}>
+        <View>
+          <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2, marginBottom: 8 }}>
             EXERCISES
           </Text>
           {workout.exercises.map((ex, i) => (
             <View key={ex.id} style={{
               flexDirection: 'row',
               alignItems: 'center',
-              gap: 10,
-              paddingVertical: 10,
+              gap: 8,
+              paddingVertical: 6,
               borderTopWidth: i > 0 ? 1 : 0,
               borderTopColor: tokens.border,
             }}>
-              <View style={{ gap: 2 }}>
+              <View style={{ flexDirection: 'row', gap: 2 }}>
                 <TouchableOpacity
                   onPress={() => moveExercise(workout.exercises, i, 'up')}
                   disabled={i === 0}
-                  style={{ opacity: i === 0 ? 0.2 : 1, padding: 2 }}
+                  style={{ opacity: i === 0 ? 0.2 : 1, padding: 4 }}
                   accessibilityLabel={`Move ${ex.exerciseName} up`}
                   accessibilityRole="button"
                 >
-                  <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.textMute }}>^</Text>
+                  <Text style={{ fontFamily: fonts.sansB, fontSize: 16, color: tokens.textMute, lineHeight: 16 }}>▲</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => moveExercise(workout.exercises, i, 'down')}
                   disabled={i === workout.exercises.length - 1}
-                  style={{ opacity: i === workout.exercises.length - 1 ? 0.2 : 1, padding: 2 }}
+                  style={{ opacity: i === workout.exercises.length - 1 ? 0.2 : 1, padding: 4 }}
                   accessibilityLabel={`Move ${ex.exerciseName} down`}
                   accessibilityRole="button"
                 >
-                  <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.textMute }}>v</Text>
+                  <Text style={{ fontFamily: fonts.sansB, fontSize: 16, color: tokens.textMute, lineHeight: 16 }}>▼</Text>
                 </TouchableOpacity>
               </View>
               <View style={{
-                width: 28, height: 28,
+                width: 24, height: 24,
                 borderWidth: 1,
                 borderColor: tokens.accent,
                 alignItems: 'center', justifyContent: 'center',
               }}>
-                <Text style={{ fontFamily: fonts.sansB, fontSize: 11, color: tokens.accent }}>
+                <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.accent }}>
                   {i + 1}
                 </Text>
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={{ fontFamily: fonts.sansB, fontSize: 13, color: tokens.text, textTransform: 'uppercase' }}>
+                <Text style={{ fontFamily: fonts.sansB, fontSize: 12, color: tokens.text, textTransform: 'uppercase' }}>
                   {ex.exerciseName}
                 </Text>
-                <Text style={{ fontFamily: fonts.mono, fontSize: 11, color: tokens.textMute }}>
+                <Text style={{ fontFamily: fonts.mono, fontSize: 10, color: tokens.textMute }}>
                   {ex.defaultSets}s x {ex.defaultReps}r{ex.defaultWeight > 0 ? ` / ${ex.defaultWeight}kg` : ''}
                 </Text>
               </View>
@@ -223,8 +224,10 @@ export default function WorkoutDetailScreen() {
             </Text>
           )}
         </View>
+      </ScrollView>
 
-        {/* Start button */}
+      {/* Start button — pinned to bottom */}
+      <View style={{ paddingHorizontal: 16, paddingTop: 12, paddingBottom: 16, borderTopWidth: 1, borderTopColor: tokens.border }}>
         <TouchableOpacity
           onPress={() => router.push(`/workout/preview?templateId=${id}`)}
           style={{
@@ -232,8 +235,6 @@ export default function WorkoutDetailScreen() {
             height: 48,
             alignItems: 'center',
             justifyContent: 'center',
-            marginTop: 4,
-            marginBottom: 40,
           }}
           accessibilityLabel="Start this workout"
           accessibilityRole="button"
@@ -242,7 +243,7 @@ export default function WorkoutDetailScreen() {
             START WORKOUT
           </Text>
         </TouchableOpacity>
-      </ScrollView>
+      </View>
     </SafeAreaView>
   )
 }

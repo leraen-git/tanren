@@ -14,17 +14,24 @@ import { useGuestBannerVisible } from '@/contexts/GuestBannerContext'
 import { MealDetailModal, sortMeals, type DietMeal } from '@/components/MealDetailModal'
 
 const DAY_NAMES_FULL = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+const DAY_NAMES_FR = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi']
 
 export default function HomeScreen() {
   const { tokens, fonts } = useTheme()
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const bannerVisible = useGuestBannerVisible()
 
   function getGreeting(): string {
-    const hour = new Date().getHours()
-    if (hour < 12) return t('home.greeting_morning')
-    if (hour < 17) return t('home.greeting_afternoon')
-    return t('home.greeting_evening')
+    const now = new Date()
+    const hour = now.getHours()
+    const dayIdx = now.getDay()
+    const isFr = i18n.language === 'fr'
+    const dayName = isFr ? DAY_NAMES_FR[dayIdx] : DAY_NAMES_FULL[dayIdx]
+    let timeOfDay: string
+    if (hour < 12) timeOfDay = t('home.greeting_morning')
+    else if (hour < 17) timeOfDay = t('home.greeting_afternoon')
+    else timeOfDay = t('home.greeting_evening')
+    return `${dayName} ${timeOfDay}`
   }
 
   const { data: user, isLoading: userLoading } = trpc.users.me.useQuery()
@@ -101,22 +108,21 @@ export default function HomeScreen() {
         refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetchPlan} tintColor={tokens.accent} />}
       >
         {/* Greeting */}
-        <View style={{ gap: 2 }}>
+        <View style={{ gap: 4 }}>
           <Text style={{
             fontFamily: fonts.sansM,
-            fontSize: 13,
-            letterSpacing: 2,
+            fontSize: 12,
+            letterSpacing: 2.5,
             textTransform: 'uppercase',
             color: tokens.textMute,
           }}>
             {getGreeting()}
           </Text>
           {userLoading ? (
-            <SkeletonCard height={36} />
+            <SkeletonCard height={32} />
           ) : (
-            <Text style={{ fontFamily: fonts.sansX, fontSize: 32, color: tokens.text }}>
-              {user?.name.split(' ')[0] ?? 'Athlete'}
-              <Text style={{ color: tokens.accent }}>.</Text>
+            <Text style={{ fontFamily: fonts.sansX, fontSize: 28, color: tokens.text }}>
+              {t('home.salut')} <Text style={{ color: tokens.accent }}>{user?.name.split(' ')[0] ?? 'Athlete'}.</Text>
             </Text>
           )}
         </View>
@@ -144,21 +150,28 @@ export default function HomeScreen() {
 
         {/* Home tabs: Entraînement / Nutrition */}
         {showTodayTabs && (
-          <View style={{ flexDirection: 'row', gap: 16 }}>
+          <View style={{ flexDirection: 'row', borderBottomWidth: 1, borderBottomColor: tokens.border }}>
             {(['workout', 'diet'] as const).map((tab) => {
               const isActive = activeTab === tab
               return (
                 <TouchableOpacity
                   key={tab}
                   onPress={() => handleTabChange(tab)}
-                  style={{ paddingBottom: 8, borderBottomWidth: isActive ? 2 : 0, borderBottomColor: tokens.accent }}
+                  style={{
+                    flex: 1,
+                    alignItems: 'center',
+                    paddingVertical: 12,
+                    borderBottomWidth: isActive ? 2 : 0,
+                    borderBottomColor: tokens.accent,
+                    marginBottom: isActive ? -1 : 0,
+                  }}
                   accessibilityLabel={tab === 'workout' ? t('home.workout') : t('home.diet')}
                   accessibilityRole="tab"
                 >
                   <Text style={{
                     fontFamily: fonts.sansB,
-                    fontSize: 14,
-                    letterSpacing: 1,
+                    fontSize: 12,
+                    letterSpacing: 3,
                     textTransform: 'uppercase',
                     color: isActive ? tokens.accent : tokens.textMute,
                   }}>
@@ -175,29 +188,57 @@ export default function HomeScreen() {
           <View style={{ gap: 12 }}>
             {todayDietDay ? (
               <>
-                {/* Day header with macro row */}
-                <View style={{ gap: 12 }}>
-                  <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between' }}>
-                    <View>
-                      <Text style={{
-                        fontFamily: fonts.sansM, fontSize: 10, letterSpacing: 1.6,
-                        textTransform: 'uppercase', color: tokens.accent,
-                      }}>
-                        {t('diet.title')}
-                      </Text>
-                      <Text style={{ fontFamily: fonts.sansX, fontSize: 22, color: tokens.text }}>
-                        {todayDietDay.theme}
-                      </Text>
-                    </View>
-                    <Text style={{ fontFamily: fonts.sansX, fontSize: 22, color: tokens.accent }}>
-                      {todayCalories}
-                      <Text style={{ fontFamily: fonts.sansM, fontSize: 11, color: tokens.textMute }}> kcal</Text>
-                    </Text>
-                  </View>
-                  <MacroRow protein={todayProtein} carbs={todayCarbs} fat={todayFat} />
+                {/* Day theme — accent left border */}
+                <View style={{
+                  paddingVertical: 14, paddingHorizontal: 16,
+                  backgroundColor: tokens.ghostBg,
+                  borderLeftWidth: 3, borderLeftColor: tokens.accent,
+                }}>
+                  <Text style={{
+                    fontFamily: fonts.sansB, fontSize: 10, letterSpacing: 3,
+                    textTransform: 'uppercase', color: tokens.accent, marginBottom: 4,
+                  }}>
+                    {t('home.today')}
+                  </Text>
+                  <Text style={{
+                    fontFamily: fonts.sansB, fontSize: 15, letterSpacing: 0.5,
+                    textTransform: 'uppercase', color: tokens.text,
+                  }}>
+                    {todayDietDay.theme}
+                  </Text>
                 </View>
 
-                {/* Meal cards with red left border */}
+                {/* Calorie target */}
+                <View style={{
+                  flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline',
+                  paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: tokens.border,
+                }}>
+                  <Text style={{
+                    fontFamily: fonts.sansM, fontSize: 11, letterSpacing: 2,
+                    textTransform: 'uppercase', color: tokens.textMute,
+                  }}>
+                    {t('diet.calorieTarget')}
+                  </Text>
+                  <Text style={{ fontFamily: fonts.sansX, fontSize: 22, color: tokens.text }}>
+                    {todayCalories.toLocaleString('fr-FR')}
+                    <Text style={{ fontFamily: fonts.sansM, fontSize: 12, color: tokens.textMute }}> kcal</Text>
+                  </Text>
+                </View>
+
+                {/* Macros */}
+                <MacroRow protein={todayProtein} carbs={todayCarbs} fat={todayFat} />
+
+                {/* Section divider */}
+                <View style={{ borderBottomWidth: 1, borderBottomColor: tokens.border, paddingBottom: 6, marginTop: 4 }}>
+                  <Text style={{
+                    fontFamily: fonts.sansB, fontSize: 10, letterSpacing: 3,
+                    textTransform: 'uppercase', color: tokens.textMute,
+                  }}>
+                    {t('diet.mealsToday')}
+                  </Text>
+                </View>
+
+                {/* Meal cards */}
                 {todayMealsSorted.map((meal) => (
                   <MealCard
                     key={`${meal.type}-${meal.name}`}
@@ -233,10 +274,10 @@ export default function HomeScreen() {
                     fontFamily: fonts.sansM, fontSize: 10, letterSpacing: 1.6,
                     textTransform: 'uppercase', color: tokens.green,
                   }}>
-                    {t('home.today') ?? 'Today'}
+                    {t('home.today')}
                   </Text>
                   <Text style={{ fontFamily: fonts.sansX, fontSize: 22, color: tokens.text, textTransform: 'uppercase' }}>
-                    {t('home.workoutComplete') ?? 'Workout complete'}
+                    {t('home.workoutComplete')}
                   </Text>
                 </View>
                 {showTodayTabs && (
@@ -246,7 +287,7 @@ export default function HomeScreen() {
                     accessibilityLabel="View today's diet" accessibilityRole="button"
                   >
                     <Text style={{ fontFamily: fonts.sansB, fontSize: 14, letterSpacing: 0.6, textTransform: 'uppercase', color: '#FFFFFF' }}>
-                      {t('home.viewMeals') ?? 'View meals'}
+                      {t('home.viewMeals')}
                     </Text>
                   </TouchableOpacity>
                 )}
@@ -275,13 +316,13 @@ export default function HomeScreen() {
                       fontFamily: fonts.sansM, fontSize: 10, letterSpacing: 1.6,
                       textTransform: 'uppercase', color: tokens.accent,
                     }}>
-                      {isTodayWorkout ? (t('home.today') ?? 'Today') : DAY_NAMES_FULL[nextWorkout.dayOfWeek]}
+                      {isTodayWorkout ? t('home.today') : (i18n.language === 'fr' ? DAY_NAMES_FR : DAY_NAMES_FULL)[nextWorkout.dayOfWeek]}
                     </Text>
                     <Text style={{ fontFamily: fonts.sansX, fontSize: 22, color: tokens.text, textTransform: 'uppercase' }}>
                       {nextWorkout.workoutName}
                     </Text>
                     <Text style={{ fontFamily: fonts.sans, fontSize: 14, color: tokens.textMute }}>
-                      {t('home.estimatedDuration') ?? 'Durée estimée'} · {nextWorkout.estimatedDuration} min
+                      {t('home.estimatedDuration')} · {nextWorkout.estimatedDuration} min
                     </Text>
 
                     {/* Muscle tags */}
@@ -289,11 +330,11 @@ export default function HomeScreen() {
                       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 4 }}>
                         {nextWorkout.muscleGroups.map((mg) => (
                           <View key={mg} style={{
-                            backgroundColor: `${tokens.accent}18`,
+                            backgroundColor: tokens.surface2,
                             paddingHorizontal: 8,
-                            paddingVertical: 3,
+                            paddingVertical: 4,
                           }}>
-                            <Text style={{ fontFamily: fonts.sansM, fontSize: 10, letterSpacing: 1, textTransform: 'uppercase', color: tokens.accent }}>
+                            <Text style={{ fontFamily: fonts.sansB, fontSize: 10, letterSpacing: 1.5, textTransform: 'uppercase', color: tokens.text }}>
                               {mg}
                             </Text>
                           </View>
@@ -318,7 +359,7 @@ export default function HomeScreen() {
                           ))}
                           {workoutDetail.exercises.length > 3 && (
                             <Text style={{ fontFamily: fonts.sans, fontSize: 14, color: tokens.textMute, fontStyle: 'italic', marginLeft: 20 }}>
-                              +{workoutDetail.exercises.length - 3} {t('home.moreExercises') ?? 'autres exercices'}
+                              +{workoutDetail.exercises.length - 3} {t('home.moreExercises')}
                             </Text>
                           )}
                         </>
@@ -348,12 +389,14 @@ export default function HomeScreen() {
                 {/* This week */}
                 {remainingWorkouts.length > 0 && (
                   <View style={{ gap: 8 }}>
-                    <Text style={{
-                      fontFamily: fonts.sansM, fontSize: 10, letterSpacing: 1.6,
-                      textTransform: 'uppercase', color: tokens.textMute,
-                    }}>
-                      {t('home.alsoThisWeek')}
-                    </Text>
+                    <View style={{ borderBottomWidth: 1, borderBottomColor: tokens.border, paddingBottom: 6 }}>
+                      <Text style={{
+                        fontFamily: fonts.sansB, fontSize: 10, letterSpacing: 3,
+                        textTransform: 'uppercase', color: tokens.textMute,
+                      }}>
+                        {t('home.alsoThisWeek')}
+                      </Text>
+                    </View>
                     {remainingWorkouts.map((d) => (
                       <TouchableOpacity
                         key={d.workoutTemplateId}
@@ -370,7 +413,7 @@ export default function HomeScreen() {
                             {d.workoutName}
                           </Text>
                           <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute }}>
-                            {DAY_NAMES_FULL[d.dayOfWeek]} · {d.estimatedDuration} min
+                            {(i18n.language === 'fr' ? DAY_NAMES_FR : DAY_NAMES_FULL)[d.dayOfWeek]} · {d.estimatedDuration} min
                           </Text>
                         </View>
                         <Text style={{ fontFamily: fonts.sansB, fontSize: 16, color: tokens.accent }}>›</Text>

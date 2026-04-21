@@ -240,7 +240,7 @@ function ChipSelector<T extends string>({
 }
 
 type ThemeValue = 'light' | 'dark' | 'system'
-const THEME_LABELS: Record<ThemeValue, string> = { light: 'L', dark: 'D', system: 'S' }
+const THEME_LABELS: Record<ThemeValue, string> = { light: '☀️', dark: '🌙', system: '⚙️' }
 
 function ThemeRow({ label }: { label: string }) {
   const { tokens, fonts, preference, setTheme } = useTheme()
@@ -487,7 +487,7 @@ export default function ProfileScreen() {
           {[
             { label: t('profile.statSessions'), value: String(sessions?.length ?? 0) },
             { label: t('profile.statVolume'), value: formatVolume(totalVolume) },
-            { label: t('profile.statPRs'), value: String(records?.length ?? 0) },
+            { label: t('profile.statPRs'), value: String(new Set(records?.map((r) => r.exerciseId) ?? []).size) },
           ].map(({ label, value }, i) => (
             <View key={label} style={{
               flex: 1,

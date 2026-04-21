@@ -47,7 +47,29 @@ export default function RecapScreen() {
   const durationH = Math.floor(durationMins / 60)
   const durationM = durationMins % 60
 
-  const [savedPRCount, setSavedPRCount] = useState(0)
+  // Compute per-exercise comparisons client-side from store data
+  const exerciseComparisons = useMemo(() => {
+    return exercises.map((ex) => {
+      const completedSetsList = ex.sets.filter((s) => s.isCompleted)
+      const currentVolume = completedSetsList.reduce((sum, s) => sum + s.reps * s.weight, 0)
+      const prevVol = ex.previousVolume
+      let delta: number | null = null
+      if (prevVol != null && prevVol > 0) {
+        delta = (currentVolume - prevVol) / prevVol
+      }
+      return {
+        exerciseId: ex.exerciseId,
+        exerciseName: ex.exerciseName,
+        currentVolume,
+        previousVolume: prevVol ?? null,
+        delta,
+      }
+    })
+  }, [exercises])
+
+  // Count exercises with improved volume as "records"
+  const improvedCount = exerciseComparisons.filter((c) => c.delta !== null && c.delta > 0.01).length
+
   const saveSession = trpc.sessions.save.useMutation()
   const saveQuick = trpc.sessions.saveQuick.useMutation()
   const utils = trpc.useUtils()
@@ -99,10 +121,7 @@ export default function RecapScreen() {
             })),
           })),
         },
-        {
-          onSuccess: (data) => { setSavedPRCount(data.newPRCount ?? 0); invalidate() },
-          onError,
-        },
+        { onSuccess: invalidate, onError },
       )
     }
   }, [])
@@ -133,30 +152,52 @@ export default function RecapScreen() {
     router.replace('/')
   }
 
-  const dateDisplay = new Date().toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })
-  const durationLabel = durationH > 0 ? `${durationH}h${String(durationM).padStart(2, '0')}` : `${durationMins}min`
+  const dateDisplay = new Date().toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' }).toUpperCase()
+  const durationLabel = durationH > 0 ? `${durationH}H${String(durationM).padStart(2, '0')}` : `${durationMins}MIN`
+
+  const getDeltaColor = (delta: number | null) => {
+    if (delta === null) return tokens.textMute
+    if (delta > 0.01) return tokens.green
+    if (delta < -0.01) return tokens.accent
+    return tokens.textMute
+  }
+
+  const getDeltaBg = (delta: number | null) => {
+    if (delta === null) return 'transparent'
+    if (delta > 0.01) return 'rgba(26,127,44,0.12)'
+    if (delta < -0.01) return 'rgba(232,25,44,0.12)'
+    return 'transparent'
+  }
+
+  const formatDelta = (delta: number | null) => {
+    if (delta === null) return null
+    if (delta >= -0.01 && delta <= 0.01) return null
+    const pct = (delta * 100).toLocaleString('fr-FR', { maximumFractionDigits: 1, minimumFractionDigits: 1 })
+    if (delta > 0.01) return `+${pct} %`
+    return `${pct} %`
+  }
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: tokens.bg }}>
-      <ScrollView contentContainerStyle={{ paddingBottom: 24 }}>
-        {/* Header: kanji stamp + title + date */}
-        <View style={{ alignItems: 'center', paddingTop: 24, paddingBottom: 32 }}>
+      <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
+        {/* Header */}
+        <View style={{ alignItems: 'center', paddingTop: 32, paddingBottom: 32 }}>
           <Text style={{
             fontFamily: fonts.jpX,
-            fontSize: 20,
+            fontSize: 22,
             color: tokens.accent,
-            letterSpacing: 4,
-            marginBottom: 8,
+            letterSpacing: 6,
+            marginBottom: 10,
           }}>
             鍛 錬
           </Text>
           <Text style={{
             fontFamily: fonts.sansX,
-            fontSize: 24,
+            fontSize: 26,
             letterSpacing: 1,
             textTransform: 'uppercase',
             textAlign: 'center',
-            lineHeight: 26,
+            lineHeight: 30,
             color: tokens.text,
           }}>
             {t('recap.title')}
@@ -167,7 +208,7 @@ export default function RecapScreen() {
             letterSpacing: 1.6,
             color: tokens.textMute,
             textTransform: 'uppercase',
-            marginTop: 6,
+            marginTop: 8,
           }}>
             {dateDisplay} · {currentWorkout?.name ?? ''} · {durationLabel}
           </Text>
@@ -187,7 +228,7 @@ export default function RecapScreen() {
             { label: t('share.volume'), value: totalVolume.toLocaleString('fr-FR'), unit: 'kg' },
             { label: t('recap.duration'), value: durationH > 0 ? `${durationH}:${String(durationM).padStart(2, '0')}` : String(durationMins), unit: durationH > 0 ? 'h' : 'min' },
             { label: t('share.sets'), value: String(completedSets) },
-            { label: t('share.records'), value: String(savedPRCount), isPR: true },
+            { label: t('share.records'), value: String(improvedCount), isPR: improvedCount > 0 },
           ].map((stat, i) => (
             <View
               key={stat.label}
@@ -231,49 +272,8 @@ export default function RecapScreen() {
           ))}
         </View>
 
-        {/* PR highlight (if any) */}
-        {savedPRCount > 0 && (
-          <View style={{
-            marginHorizontal: 16,
-            marginBottom: 20,
-            padding: 14,
-            borderWidth: 1,
-            borderColor: tokens.accent,
-            backgroundColor: 'rgba(255,45,63,0.06)',
-            position: 'relative',
-          }}>
-            <View style={{
-              position: 'absolute',
-              top: -9,
-              left: 14,
-              backgroundColor: tokens.accent,
-              paddingVertical: 2,
-              paddingHorizontal: 8,
-            }}>
-              <Text style={{
-                fontFamily: fonts.sansB,
-                fontSize: 9,
-                letterSpacing: 3,
-                color: '#FFFFFF',
-              }}>
-                NEW PR
-              </Text>
-            </View>
-            <Text style={{
-              fontFamily: fonts.sansB,
-              fontSize: 13,
-              letterSpacing: 0.5,
-              textTransform: 'uppercase',
-              color: tokens.text,
-              marginTop: 4,
-            }}>
-              {savedPRCount} {savedPRCount > 1 ? t('share.newPRs', { count: savedPRCount }) : t('share.newPR', { count: savedPRCount })}
-            </Text>
-          </View>
-        )}
-
-        {/* Per-exercise comparison */}
-        <View style={{ marginHorizontal: 16, marginBottom: 20 }}>
+        {/* Per-exercise comparison — always shown */}
+        <View style={{ marginHorizontal: 16, marginBottom: 24 }}>
           <Text style={{
             fontFamily: fonts.sansB,
             fontSize: 10,
@@ -284,76 +284,90 @@ export default function RecapScreen() {
           }}>
             {t('recap.exerciseComparison')}
           </Text>
-          {exercises.map((ex) => {
-            const exCompleted = ex.sets.filter((s) => s.isCompleted)
-            const exVolume = exCompleted.reduce((sum, s) => sum + s.reps * s.weight, 0)
+          {exerciseComparisons.map((comp) => {
+            const badge = formatDelta(comp.delta)
             return (
               <View
-                key={ex.exerciseId}
+                key={comp.exerciseId}
                 style={{
                   flexDirection: 'row',
                   justifyContent: 'space-between',
                   alignItems: 'center',
-                  paddingVertical: 12,
+                  paddingVertical: 14,
                   borderTopWidth: 1,
                   borderTopColor: tokens.border,
                 }}
               >
-                <View style={{ flex: 1 }}>
-                  <Text style={{
-                    fontFamily: fonts.sansM,
-                    fontSize: 13,
-                    letterSpacing: 0.3,
-                    color: tokens.text,
+                <Text style={{
+                  fontFamily: fonts.sansM,
+                  fontSize: 14,
+                  color: tokens.text,
+                  flex: 1,
+                }}>
+                  {comp.exerciseName}
+                </Text>
+                {badge ? (
+                  <View style={{
+                    backgroundColor: getDeltaBg(comp.delta),
+                    paddingVertical: 4,
+                    paddingHorizontal: 10,
+                    borderWidth: 1,
+                    borderColor: getDeltaColor(comp.delta),
                   }}>
-                    {ex.exerciseName}
-                  </Text>
-                  <Text style={{
-                    fontFamily: fonts.sans,
-                    fontSize: 11,
-                    color: tokens.textMute,
-                    marginTop: 2,
-                  }}>
-                    {exCompleted.length}/{ex.sets.length} {t('common.sets')} · {exVolume.toLocaleString('fr-FR')} kg
-                  </Text>
-                </View>
-                {exCompleted.length > 0 && (
+                    <Text style={{
+                      fontFamily: fonts.mono,
+                      fontSize: 11,
+                      color: getDeltaColor(comp.delta),
+                    }}>
+                      {badge}
+                    </Text>
+                  </View>
+                ) : (
                   <Text style={{
                     fontFamily: fonts.mono,
                     fontSize: 11,
-                    color: tokens.textDim,
+                    color: tokens.textMute,
                   }}>
-                    {exCompleted.map((s) => `${s.reps}x${s.weight}`).join(' · ')}
+                    {comp.currentVolume.toLocaleString('fr-FR')} kg
                   </Text>
                 )}
               </View>
             )
           })}
-          {exercises.length > 0 && (
-            <View style={{ borderTopWidth: 1, borderTopColor: tokens.border }} />
-          )}
+          <View style={{ borderTopWidth: 1, borderTopColor: tokens.border }} />
         </View>
 
         {/* Action buttons */}
-        <View style={{ paddingHorizontal: 16, gap: 6 }}>
+        <View style={{ paddingHorizontal: 16, gap: 8 }}>
           <Button
-            label={t('recap.saveAndShare')}
-            onPress={() => router.push({
-              pathname: '/workout/share',
-              params: {
-                workoutName: currentWorkout?.name ?? '',
-                durationMins: String(durationMins),
-                totalVolume: String(totalVolume),
-                completedSets: String(completedSets),
-                prCount: String(savedPRCount),
-              },
-            })}
+            label={t('share.finishSession')}
+            onPress={handleDone}
           />
-          <Button
-            label={t('recap.addExercises')}
-            variant="ghost"
-            onPress={() => setPickerVisible(true)}
-          />
+          <View style={{ flexDirection: 'row', gap: 6 }}>
+            <View style={{ flex: 1 }}>
+              <Button
+                label={t('recap.saveAndShare')}
+                variant="outline"
+                onPress={() => router.push({
+                  pathname: '/workout/share',
+                  params: {
+                    workoutName: currentWorkout?.name ?? '',
+                    durationMins: String(durationMins),
+                    totalVolume: String(totalVolume),
+                    completedSets: String(completedSets),
+                    prCount: String(improvedCount),
+                  },
+                })}
+              />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Button
+                label={t('recap.addExercises')}
+                variant="outline"
+                onPress={() => setPickerVisible(true)}
+              />
+            </View>
+          </View>
         </View>
       </ScrollView>
 

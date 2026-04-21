@@ -58,9 +58,9 @@ export default function ShareScreen() {
     prCount: string
   }>()
 
-  const HORIZONTAL_PAD = 32
+  const HORIZONTAL_PAD = 48
   const CARD_WIDTH = screenWidth - HORIZONTAL_PAD * 2
-  const maxCardHeight = screenHeight - 220
+  const maxCardHeight = screenHeight - 340
   const naturalCardHeight = CARD_WIDTH / CARD_RATIO
   const CARD_HEIGHT = Math.min(naturalCardHeight, maxCardHeight)
   const FINAL_CARD_WIDTH = CARD_HEIGHT === maxCardHeight ? CARD_HEIGHT * CARD_RATIO : CARD_WIDTH

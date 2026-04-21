@@ -1,8 +1,8 @@
 import { z } from 'zod'
-import { eq, and, desc } from 'drizzle-orm'
+import { eq, and, desc, inArray } from 'drizzle-orm'
 import { TRPCError } from '@trpc/server'
 import { router, protectedProcedure } from '../trpc.js'
-import { workoutSessions, sessionExercises, exerciseSets, users, personalRecords, workoutTemplates, workoutExercises } from '../db/schema.js'
+import { workoutSessions, sessionExercises, exerciseSets, users, personalRecords, workoutTemplates, workoutExercises, exercises } from '../db/schema.js'
 
 async function resolveUser(db: any, userId: string) {
   const [user] = await db.select().from(users).where(eq(users.id, userId)).limit(1)
@@ -130,8 +130,48 @@ export const sessionsRouter = router({
         })
         .returning()
 
-      // Insert session exercises + sets
-      let newPRCount = 0
+      // Fetch previous session for same template (for per-exercise comparison)
+      const [prevSession] = await ctx.db
+        .select({ id: workoutSessions.id })
+        .from(workoutSessions)
+        .where(
+          and(
+            eq(workoutSessions.userId, user.id),
+            eq(workoutSessions.workoutTemplateId, input.workoutTemplateId),
+          ),
+        )
+        .orderBy(desc(workoutSessions.startedAt))
+        .offset(1)
+        .limit(1)
+
+      let prevExerciseVolumes: Record<string, number> = {}
+      if (prevSession) {
+        const prevSessExercises = await ctx.db
+          .select({ exerciseId: sessionExercises.exerciseId, id: sessionExercises.id })
+          .from(sessionExercises)
+          .where(eq(sessionExercises.workoutSessionId, prevSession.id))
+        for (const pse of prevSessExercises) {
+          const sets = await ctx.db
+            .select({ reps: exerciseSets.reps, weight: exerciseSets.weight, isCompleted: exerciseSets.isCompleted })
+            .from(exerciseSets)
+            .where(eq(exerciseSets.sessionExerciseId, pse.id))
+          prevExerciseVolumes[pse.exerciseId] = sets
+            .filter((s) => s.isCompleted)
+            .reduce((sum, s) => sum + s.reps * s.weight, 0)
+        }
+      }
+
+      // Insert session exercises + sets, collect PRs and comparisons
+      const newPRs: Array<{ exerciseName: string; weight: number; reps: number }> = []
+      const exerciseComparisons: Array<{ exerciseId: string; exerciseName: string; currentVolume: number; previousVolume: number | null; delta: number | null }> = []
+
+      // Pre-fetch exercise names
+      const exerciseIds = input.exercises.map((e) => e.exerciseId)
+      const exerciseRows = exerciseIds.length > 0
+        ? await ctx.db.select({ id: exercises.id, name: exercises.name, nameFr: exercises.nameFr }).from(exercises).where(inArray(exercises.id, exerciseIds))
+        : []
+      const exerciseNameMap = Object.fromEntries(exerciseRows.map((e) => [e.id, { name: e.name, nameFr: e.nameFr }]))
+
       for (const ex of input.exercises) {
         const [sessEx] = await ctx.db
           .insert(sessionExercises)
@@ -152,12 +192,27 @@ export const sessionsRouter = router({
           )
         }
 
-        // Check and save personal record for this exercise
         const exerciseCompletedSets = ex.sets.filter((s) => s.isCompleted)
+        const exVolume = exerciseCompletedSets.reduce((sum, s) => sum + s.reps * s.weight, 0)
+        const prevVol = prevExerciseVolumes[ex.exerciseId] ?? null
+        const delta = prevVol !== null && prevVol > 0 ? (exVolume - prevVol) / prevVol : null
+        const exName = exerciseNameMap[ex.exerciseId]
+
+        exerciseComparisons.push({
+          exerciseId: ex.exerciseId,
+          exerciseName: exName?.name ?? '',
+          currentVolume: exVolume,
+          previousVolume: prevVol,
+          delta,
+        })
+
         if (exerciseCompletedSets.length === 0) continue
 
-        const maxWeight = Math.max(...exerciseCompletedSets.map((s) => s.weight))
-        const exVolume = exerciseCompletedSets.reduce((sum, s) => sum + s.reps * s.weight, 0)
+        const bestSet = exerciseCompletedSets.reduce((best, s) => {
+          if (s.weight > best.weight) return s
+          if (s.weight === best.weight && s.reps > best.reps) return s
+          return best
+        }, exerciseCompletedSets[0]!)
 
         const [existingPR] = await ctx.db
           .select()
@@ -166,21 +221,25 @@ export const sessionsRouter = router({
           .orderBy(desc(personalRecords.weight))
           .limit(1)
 
-        if (!existingPR || maxWeight > existingPR.weight) {
+        const isPR = !existingPR
+          || bestSet.weight > existingPR.weight
+          || (bestSet.weight === existingPR.weight && bestSet.reps > existingPR.reps)
+
+        if (isPR) {
           await ctx.db.insert(personalRecords).values({
             userId: user.id,
             exerciseId: ex.exerciseId,
-            weight: maxWeight,
-            reps: exerciseCompletedSets.find((s) => s.weight === maxWeight)?.reps ?? 1,
+            weight: bestSet.weight,
+            reps: bestSet.reps,
             volume: exVolume,
             achievedAt: new Date(),
             sessionId: session!.id,
           })
-          newPRCount++
+          newPRs.push({ exerciseName: exName?.nameFr ?? exName?.name ?? '', weight: bestSet.weight, reps: bestSet.reps })
         }
       }
 
-      return { sessionId: session!.id, totalVolume, newPRCount }
+      return { sessionId: session!.id, totalVolume, newPRCount: newPRs.length, newPRs, exerciseComparisons }
     }),
 
   history: protectedProcedure

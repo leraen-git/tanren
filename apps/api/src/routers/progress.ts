@@ -15,18 +15,58 @@ export const progressRouter = router({
   lastSessionPRCount: protectedProcedure.query(async ({ ctx }) => {
     const [user] = await ctx.db.select().from(users).where(eq(users.id, ctx.userId)).limit(1)
     if (!user) throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' })
+
     const [lastSession] = await ctx.db
-      .select({ id: workoutSessions.id })
+      .select({ id: workoutSessions.id, workoutTemplateId: workoutSessions.workoutTemplateId })
       .from(workoutSessions)
       .where(eq(workoutSessions.userId, user.id))
       .orderBy(desc(workoutSessions.startedAt))
       .limit(1)
     if (!lastSession) return 0
-    const prs = await ctx.db
-      .select({ id: personalRecords.id })
-      .from(personalRecords)
-      .where(and(eq(personalRecords.userId, user.id), eq(personalRecords.sessionId, lastSession.id)))
-    return prs.length
+
+    // Find the session before this one for the same template
+    const [prevSession] = await ctx.db
+      .select({ id: workoutSessions.id })
+      .from(workoutSessions)
+      .where(
+        and(
+          eq(workoutSessions.userId, user.id),
+          eq(workoutSessions.workoutTemplateId, lastSession.workoutTemplateId),
+        ),
+      )
+      .orderBy(desc(workoutSessions.startedAt))
+      .offset(1)
+      .limit(1)
+    if (!prevSession) return 0
+
+    // Compute per-exercise volumes for both sessions
+    async function getExerciseVolumes(sessionId: string) {
+      const sessExs = await ctx.db
+        .select({ id: sessionExercises.id, exerciseId: sessionExercises.exerciseId })
+        .from(sessionExercises)
+        .where(eq(sessionExercises.workoutSessionId, sessionId))
+      const volumes: Record<string, number> = {}
+      for (const se of sessExs) {
+        const sets = await ctx.db
+          .select({ reps: exerciseSets.reps, weight: exerciseSets.weight, isCompleted: exerciseSets.isCompleted })
+          .from(exerciseSets)
+          .where(eq(exerciseSets.sessionExerciseId, se.id))
+        volumes[se.exerciseId] = sets
+          .filter((s) => s.isCompleted)
+          .reduce((sum, s) => sum + s.reps * s.weight, 0)
+      }
+      return volumes
+    }
+
+    const currentVols = await getExerciseVolumes(lastSession.id)
+    const prevVols = await getExerciseVolumes(prevSession.id)
+
+    let improved = 0
+    for (const [exId, vol] of Object.entries(currentVols)) {
+      const prev = prevVols[exId]
+      if (prev != null && prev > 0 && (vol - prev) / prev > 0.01) improved++
+    }
+    return improved
   }),
 
   records: protectedProcedure.query(async ({ ctx }) => {

@@ -320,6 +320,11 @@ export default function ActiveWorkoutScreen() {
           {/* Set rows */}
           {sets.map((s, idx) => {
             const isActive = idx === currentSetIndex && !s.isCompleted
+            const hasPR = currentExercise.prWeight != null && currentExercise.prWeight > 0
+            const isBeatingPR = hasPR && s.weight > 0 && s.reps > 0 && (
+              s.weight > currentExercise.prWeight!
+              || (s.weight === currentExercise.prWeight && s.reps > (currentExercise.prReps ?? 0))
+            )
             return (
               <TouchableOpacity
                 key={idx}
@@ -416,18 +421,30 @@ export default function ActiveWorkoutScreen() {
                   </View>
                 </View>
 
-                <View style={{
-                  width: 28, height: 28,
-                  backgroundColor: s.isCompleted ? tokens.green : tokens.surface2,
-                  alignItems: 'center', justifyContent: 'center',
-                }}>
-                  <Text style={{
-                    fontFamily: fonts.sansB,
-                    color: s.isCompleted ? '#FFFFFF' : tokens.textMute,
-                    fontSize: 12,
+                <View style={{ alignItems: 'center', gap: 2 }}>
+                  <View style={{
+                    width: 28, height: 28,
+                    backgroundColor: s.isCompleted ? tokens.green : tokens.surface2,
+                    alignItems: 'center', justifyContent: 'center',
                   }}>
-                    {s.isCompleted ? '✓' : ''}
-                  </Text>
+                    <Text style={{
+                      fontFamily: fonts.sansB,
+                      color: s.isCompleted ? '#FFFFFF' : tokens.textMute,
+                      fontSize: 12,
+                    }}>
+                      {s.isCompleted ? '✓' : ''}
+                    </Text>
+                  </View>
+                  {isBeatingPR && s.isCompleted && (
+                    <Text style={{
+                      fontFamily: fonts.sansB,
+                      fontSize: 8,
+                      letterSpacing: 1,
+                      color: tokens.accent,
+                    }}>
+                      PR
+                    </Text>
+                  )}
                 </View>
               </TouchableOpacity>
             )

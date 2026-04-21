@@ -257,6 +257,11 @@ export default function WorkoutPreviewScreen() {
       defaultRestSeconds: ex.defaultRestSeconds,
       lastWeight: ex.previousSets[0]?.weight,
       lastReps: ex.previousSets[0]?.reps,
+      prWeight: ex.prWeight ?? undefined,
+      prReps: ex.prReps ?? undefined,
+      previousVolume: ex.previousSets.length > 0
+        ? ex.previousSets.reduce((sum: number, s: { reps: number; weight: number }) => sum + s.reps * s.weight, 0)
+        : undefined,
       sets: withCompleted(setsConfig[ex.exerciseId] ?? []),
     }))
     const additionalExercises = extraExercises.map((ex) => ({

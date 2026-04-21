@@ -20,15 +20,15 @@ export function MacroRow({ protein, carbs, fat }: MacroRowProps) {
   ]
 
   return (
-    <View style={{ flexDirection: 'row', gap: 6 }}>
+    <View style={{ flexDirection: 'row', gap: 8 }}>
       {macros.map((m) => (
-        <View key={m.label} style={{ flex: 1, borderWidth: 1, borderColor: m.color, padding: 12 }}>
-          <Text style={{ fontFamily: fonts.sansM, fontSize: 10, letterSpacing: 1.6, textTransform: 'uppercase', color: tokens.textMute }}>
+        <View key={m.label} style={{ flex: 1, borderWidth: 1, borderColor: m.color, paddingVertical: 10, paddingHorizontal: 8, alignItems: 'center' }}>
+          <Text style={{ fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 2.5, textTransform: 'uppercase', color: tokens.textMute, marginBottom: 2 }}>
             {m.label}
           </Text>
-          <Text style={{ fontFamily: fonts.sansX, fontSize: 20, color: m.color }}>
+          <Text style={{ fontFamily: fonts.sansX, fontSize: 18, color: m.color, lineHeight: 18 }}>
             {m.value}
-            <Text style={{ fontFamily: fonts.sansM, fontSize: 11, color: tokens.textMute }}>g</Text>
+            <Text style={{ fontFamily: fonts.sansM, fontSize: 10, color: tokens.textMute }}>g</Text>
           </Text>
         </View>
       ))}

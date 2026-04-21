@@ -2,7 +2,7 @@ import { z } from 'zod'
 import { eq, and, desc } from 'drizzle-orm'
 import { TRPCError } from '@trpc/server'
 import { router, protectedProcedure } from '../trpc.js'
-import { workoutTemplates, workoutExercises, exercises, users, workoutSessions, sessionExercises, exerciseSets } from '../db/schema.js'
+import { workoutTemplates, workoutExercises, exercises, users, workoutSessions, sessionExercises, exerciseSets, personalRecords } from '../db/schema.js'
 
 export const workoutsRouter = router({
   list: protectedProcedure.query(async ({ ctx }) => {
@@ -195,11 +195,25 @@ export const workoutsRouter = router({
         }
       }
 
+      // Fetch current PR for each exercise
+      const prMap: Record<string, { weight: number; reps: number }> = {}
+      for (const ex of workoutExs) {
+        const [pr] = await ctx.db
+          .select({ weight: personalRecords.weight, reps: personalRecords.reps })
+          .from(personalRecords)
+          .where(and(eq(personalRecords.userId, user.id), eq(personalRecords.exerciseId, ex.exerciseId)))
+          .orderBy(desc(personalRecords.weight))
+          .limit(1)
+        if (pr) prMap[ex.exerciseId] = pr
+      }
+
       return {
         ...template,
         exercises: workoutExs.map((ex) => ({
           ...ex,
           previousSets: previousSets[ex.exerciseId] ?? [],
+          prWeight: prMap[ex.exerciseId]?.weight ?? null,
+          prReps: prMap[ex.exerciseId]?.reps ?? null,
         })),
       }
     }),
