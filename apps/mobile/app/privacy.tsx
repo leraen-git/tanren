@@ -6,10 +6,10 @@ import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/theme/ThemeContext'
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  const { colors, typography, spacing, radius } = useTheme()
+  const { tokens, fonts } = useTheme()
   return (
-    <View style={{ backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.base, gap: spacing.sm }}>
-      <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.body, color: colors.textPrimary }}>
+    <View style={{ borderWidth: 1, borderColor: tokens.border, padding: 12, gap: 8 }}>
+      <Text style={{ fontFamily: fonts.sansB, fontSize: 13, color: tokens.text, textTransform: 'uppercase' }}>
         {title}
       </Text>
       {children}
@@ -18,11 +18,11 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 }
 
 function Bullet({ text }: { text: string }) {
-  const { colors, typography } = useTheme()
+  const { tokens, fonts } = useTheme()
   return (
     <View style={{ flexDirection: 'row', gap: 8 }}>
-      <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.primary, marginTop: 1 }}>•</Text>
-      <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted, flex: 1, lineHeight: 20 }}>
+      <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.accent, marginTop: 1 }}>-</Text>
+      <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute, flex: 1, lineHeight: 18 }}>
         {text}
       </Text>
     </View>
@@ -30,100 +30,72 @@ function Bullet({ text }: { text: string }) {
 }
 
 function Body({ text }: { text: string }) {
-  const { colors, typography } = useTheme()
+  const { tokens, fonts } = useTheme()
   return (
-    <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted, lineHeight: 22 }}>
+    <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute, lineHeight: 18 }}>
       {text}
     </Text>
   )
 }
 
 export default function PrivacyScreen() {
-  const { colors, typography, spacing } = useTheme()
+  const { tokens, fonts } = useTheme()
   const { t, i18n } = useTranslation()
   const isFr = i18n.language === 'fr'
 
   return (
-    <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: colors.background }}>
-      {/* Header */}
-      <View style={{ flexDirection: 'row', alignItems: 'center', padding: spacing.base, gap: spacing.md }}>
+    <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: tokens.bg }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', padding: 16, gap: 12 }}>
         <TouchableOpacity
           onPress={() => router.back()}
           accessibilityLabel={t('common.back')}
           accessibilityRole="button"
         >
-          <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.title, color: colors.primary }}>←</Text>
+          <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.accent, textTransform: 'uppercase', letterSpacing: 2 }}>
+            {'< BACK'}
+          </Text>
         </TouchableOpacity>
-        <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size.xl, color: colors.textPrimary }}>
+        <Text style={{ fontFamily: fonts.sansX, fontSize: 20, color: tokens.text, textTransform: 'uppercase' }}>
           {t('profile.dataUsage')}
         </Text>
       </View>
 
-      <ScrollView contentContainerStyle={{ padding: spacing.base, gap: spacing.md, paddingBottom: spacing.xl }}>
-
-        {/* Intro */}
-        <View style={{ gap: spacing.xs }}>
-          <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.xl, color: colors.textPrimary }}>
+      <ScrollView contentContainerStyle={{ padding: 16, gap: 16, paddingBottom: 40 }}>
+        <View style={{ gap: 6 }}>
+          <Text style={{ fontFamily: fonts.sansX, fontSize: 20, color: tokens.text, textTransform: 'uppercase' }}>
             {isFr ? 'Tes données, ton contrôle.' : 'Your data, your control.'}
           </Text>
-          <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted, lineHeight: 22 }}>
+          <Text style={{ fontFamily: fonts.sans, fontSize: 13, color: tokens.textMute, lineHeight: 20 }}>
             {isFr
               ? 'Tanren collecte uniquement ce dont il a besoin pour fonctionner. Aucune publicité, aucun profilage, aucune revente de données.'
               : 'Tanren only collects what it needs to work. No ads, no profiling, no data selling.'}
           </Text>
         </View>
 
-        {/* What we collect */}
-        <Section
-          title={isFr ? 'Ce que nous collectons' : 'What we collect'}
-        >
-          <Body text={isFr
-            ? 'Trois sources distinctes :'
-            : 'Three distinct sources:'
-          } />
+        <Section title={isFr ? 'Ce que nous collectons' : 'What we collect'}>
+          <Body text={isFr ? 'Trois sources distinctes :' : 'Three distinct sources:'} />
 
           <View style={{ gap: 4, paddingTop: 4 }}>
-            <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.base, color: colors.textPrimary }}>
+            <Text style={{ fontFamily: fonts.sansB, fontSize: 11, color: tokens.text, textTransform: 'uppercase' }}>
               {isFr ? 'Fourni par Apple Sign-In (automatique)' : 'Provided by Apple Sign-In (automatic)'}
             </Text>
-            <Bullet text={isFr
-              ? 'Adresse e-mail — Apple peut fournir une adresse privée relay (@privaterelay.appleid.com) à ta place'
-              : 'Email address — Apple may provide a private relay address (@privaterelay.appleid.com) on your behalf'
-            } />
-            <Bullet text={isFr
-              ? 'Nom et prénom — fourni uniquement lors de la première connexion, jamais lors des suivantes'
-              : 'Full name — provided only on first sign-in, never on subsequent ones'
-            } />
-            <Bullet text={isFr
-              ? 'Identifiant Apple opaque (jamais ton Apple ID visible)'
-              : 'Opaque Apple user identifier (never your visible Apple ID)'
-            } />
+            <Bullet text={isFr ? 'Adresse e-mail — Apple peut fournir une adresse privée relay (@privaterelay.appleid.com) à ta place' : 'Email address — Apple may provide a private relay address (@privaterelay.appleid.com) on your behalf'} />
+            <Bullet text={isFr ? 'Nom et prénom — fourni uniquement lors de la première connexion' : 'Full name — provided only on first sign-in'} />
+            <Bullet text={isFr ? 'Identifiant Apple opaque (jamais ton Apple ID visible)' : 'Opaque Apple user identifier (never your visible Apple ID)'} />
           </View>
 
           <View style={{ gap: 4, paddingTop: 4 }}>
-            <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.base, color: colors.textPrimary }}>
+            <Text style={{ fontFamily: fonts.sansB, fontSize: 11, color: tokens.text, textTransform: 'uppercase' }}>
               {isFr ? 'Fourni par Google Sign-In (automatique)' : 'Provided by Google Sign-In (automatic)'}
             </Text>
-            <Bullet text={isFr
-              ? 'Adresse e-mail vérifiée (toujours ton adresse Google réelle)'
-              : 'Verified email address (always your real Google address)'
-            } />
-            <Bullet text={isFr
-              ? 'Nom complet — fourni à chaque connexion'
-              : 'Full name — provided on every sign-in'
-            } />
-            <Bullet text={isFr
-              ? 'Photo de profil Google — mise à jour à chaque connexion'
-              : 'Google profile photo — refreshed on every sign-in'
-            } />
-            <Bullet text={isFr
-              ? 'Identifiant Google opaque (jamais ton adresse e-mail utilisée comme clé)'
-              : 'Opaque Google user identifier (your email is never used as a key)'
-            } />
+            <Bullet text={isFr ? 'Adresse e-mail vérifiée (toujours ton adresse Google réelle)' : 'Verified email address (always your real Google address)'} />
+            <Bullet text={isFr ? 'Nom complet — fourni à chaque connexion' : 'Full name — provided on every sign-in'} />
+            <Bullet text={isFr ? 'Photo de profil Google' : 'Google profile photo'} />
+            <Bullet text={isFr ? 'Identifiant Google opaque' : 'Opaque Google user identifier'} />
           </View>
 
           <View style={{ gap: 4, paddingTop: 4 }}>
-            <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.base, color: colors.textPrimary }}>
+            <Text style={{ fontFamily: fonts.sansB, fontSize: 11, color: tokens.text, textTransform: 'uppercase' }}>
               {isFr ? 'Saisi par toi lors de l\'inscription' : 'Entered by you during sign-up'}
             </Text>
             <Bullet text={isFr ? 'Genre' : 'Gender'} />
@@ -133,7 +105,7 @@ export default function PrivacyScreen() {
           </View>
 
           <View style={{ gap: 4, paddingTop: 4 }}>
-            <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.base, color: colors.textPrimary }}>
+            <Text style={{ fontFamily: fonts.sansB, fontSize: 11, color: tokens.text, textTransform: 'uppercase' }}>
               {isFr ? 'Généré par ton utilisation de l\'app' : 'Generated by your use of the app'}
             </Text>
             <Bullet text={isFr ? 'Séances d\'entraînement, exercices, séries, répétitions et charges' : 'Training sessions, exercises, sets, reps and weights'} />
@@ -143,126 +115,49 @@ export default function PrivacyScreen() {
           </View>
         </Section>
 
-        {/* Where it's stored */}
-        <Section
-          title={isFr ? 'Où sont stockées tes données' : 'Where your data is stored'}
-        >
+        <Section title={isFr ? 'Où sont stockées tes données' : 'Where your data is stored'}>
           <Body text={isFr
-            ? 'Tes données sont hébergées sur une base de données sécurisée. Tes informations personnelles (nom, e-mail) sont chiffrées au repos. Elles ne sont jamais partagées, vendues ou transmises à des tiers, sauf exceptions listées ci-dessous.'
-            : 'Your data is hosted on a secure database. Your personal information (name, email) is encrypted at rest. It is never shared, sold or transferred to third parties, except as listed below.'
+            ? 'Tes données sont hébergées sur une base de données sécurisée. Tes informations personnelles (nom, e-mail) sont chiffrées au repos.'
+            : 'Your data is hosted on a secure database. Your personal information (name, email) is encrypted at rest.'
           } />
-          <Bullet text={isFr ? 'Sur l\'appareil : préférences de rappels et catalogue d\'exercices (stockage local)' : 'On device: reminder preferences and exercise catalog (local storage)'} />
-          <Bullet text={isFr ? 'Serveur : toutes les autres données (authentification, séances, plans)' : 'Server: all other data (authentication, sessions, plans)'} />
-          <Bullet text={isFr ? 'Les sessions de connexion expirent automatiquement après une période d\'inactivité' : 'Login sessions expire automatically after a period of inactivity'} />
+          <Bullet text={isFr ? 'Sur l\'appareil : préférences de rappels et catalogue d\'exercices' : 'On device: reminder preferences and exercise catalog'} />
+          <Bullet text={isFr ? 'Serveur : toutes les autres données' : 'Server: all other data'} />
+          <Bullet text={isFr ? 'Les sessions expirent automatiquement' : 'Login sessions expire automatically'} />
         </Section>
 
-        {/* Third parties */}
-        <Section
-          title={isFr ? 'Tiers impliqués' : 'Third parties involved'}
-        >
+        <Section title={isFr ? 'Tiers impliqués' : 'Third parties involved'}>
           <Body text={isFr
-            ? 'Seuls quatre services tiers accèdent à des données dans le cadre du fonctionnement normal de l\'app :'
-            : 'Only four third-party services access data as part of normal app operation:'
+            ? 'Seuls quatre services tiers accèdent à des données :'
+            : 'Only four third-party services access data:'
           } />
-
-          <View style={{ gap: 4, paddingTop: 4 }}>
-            <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.base, color: colors.textPrimary }}>
-              Apple Sign-In {isFr ? '(authentification)' : '(authentication)'}
-            </Text>
-            <Body text={isFr
-              ? 'Utilisé pour t\'identifier de façon sécurisée. Apple nous transmet un identifiant opaque, ton e-mail (ou une adresse relay privée) et ton nom uniquement lors de la première connexion. Nous ne stockons jamais de mot de passe. Apple ne reçoit aucune donnée de ta progression.'
-              : 'Used to identify you securely. Apple sends us an opaque user ID, your email (or a private relay address) and your name only on first sign-in. We never store a password. Apple does not receive any of your training data.'
-            } />
-          </View>
-
-          <View style={{ gap: 4, paddingTop: 4 }}>
-            <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.base, color: colors.textPrimary }}>
-              Google Sign-In {isFr ? '(authentification)' : '(authentication)'}
-            </Text>
-            <Body text={isFr
-              ? 'Utilisé comme alternative de connexion. Google nous transmet ton adresse e-mail vérifiée, ton nom et ta photo de profil à chaque connexion. Nous ne stockons jamais de mot de passe. Google ne reçoit aucune donnée de ta progression ou de ton alimentation.'
-              : 'Used as an alternative sign-in method. Google sends us your verified email, name and profile photo on every sign-in. We never store a password. Google does not receive any of your training or diet data.'
-            } />
-          </View>
-
-          <View style={{ gap: 4, paddingTop: 4 }}>
-            <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.base, color: colors.textPrimary }}>
-              Anthropic / Claude (IA)
-            </Text>
-            <Body text={isFr
-              ? 'Utilisé uniquement pour générer des plans alimentaires et de workout. Les requêtes contiennent tes préférences alimentaires, niveau et objectifs — jamais ton nom, e-mail ou données identifiantes. Anthropic ne stocke pas ces requêtes au-delà du traitement immédiat.'
-              : 'Used only to generate diet and workout plans. Requests contain your food preferences, level and goals — never your name, email or identifying data. Anthropic does not retain these requests beyond immediate processing.'
-            } />
-          </View>
-
-          <View style={{ gap: 4, paddingTop: 4 }}>
-            <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.base, color: colors.textPrimary }}>
-              Resend {isFr ? '(e-mail)' : '(email)'}
-            </Text>
-            <Body text={isFr
-              ? 'Utilisé pour envoyer les codes de connexion par e-mail (OTP). Seule ton adresse e-mail est transmise pour l\'envoi du code. Aucune autre donnée n\'est partagée avec ce service.'
-              : 'Used to send login codes by email (OTP). Only your email address is transmitted to send the code. No other data is shared with this service.'
-            } />
-          </View>
+          {[
+            { name: 'Apple Sign-In', desc: isFr ? 'Authentification sécurisée. Apple ne reçoit aucune donnée de ta progression.' : 'Secure authentication. Apple does not receive any of your training data.' },
+            { name: 'Google Sign-In', desc: isFr ? 'Alternative de connexion. Google ne reçoit aucune donnée de ta progression.' : 'Alternative sign-in. Google does not receive any of your training data.' },
+            { name: 'Anthropic / Claude', desc: isFr ? 'Génération de plans. Jamais ton nom ou e-mail.' : 'Plan generation. Never your name or email.' },
+            { name: 'Resend', desc: isFr ? 'Envoi de codes OTP. Seul ton e-mail est transmis.' : 'OTP code delivery. Only your email is transmitted.' },
+          ].map((tp) => (
+            <View key={tp.name} style={{ gap: 2, paddingTop: 4 }}>
+              <Text style={{ fontFamily: fonts.sansB, fontSize: 11, color: tokens.text, textTransform: 'uppercase' }}>{tp.name}</Text>
+              <Body text={tp.desc} />
+            </View>
+          ))}
         </Section>
 
-        {/* AI & your data */}
-        <Section
-          title={isFr ? 'L\'IA et tes données' : 'AI and your data'}
-        >
+        <Section title={isFr ? 'L\'IA et tes données' : 'AI and your data'}>
           <Body text={isFr
-            ? 'Quand tu génères un plan alimentaire ou un programme, Tanren envoie un prompt à l\'API Claude (Anthropic). Ce prompt inclut tes préférences (aliments, style de cuisine, niveau d\'activité, objectif) mais aucune donnée personnellement identifiable.'
-            : 'When you generate a diet plan or workout program, Tanren sends a prompt to the Claude API (Anthropic). This prompt includes your preferences (foods, cooking style, activity level, goal) but no personally identifiable data.'
-          } />
-          <Body text={isFr
-            ? 'La réponse générée (ton plan) est stockée dans notre base de données liée à ton compte. Elle n\'est pas réutilisée pour entraîner des modèles d\'IA.'
-            : 'The generated response (your plan) is stored in our database linked to your account. It is not reused to train AI models.'
+            ? 'Les prompts incluent tes préférences mais aucune donnée personnellement identifiable. La réponse n\'est pas réutilisée pour entraîner des modèles.'
+            : 'Prompts include your preferences but no personally identifiable data. Responses are not reused to train models.'
           } />
         </Section>
 
-        {/* Notifications */}
-        <Section
-          title={isFr ? 'Notifications locales' : 'Local notifications'}
-        >
-          <Body text={isFr
-            ? 'Les rappels (entraînement, repas, hydratation) sont des notifications locales planifiées directement sur ton appareil par iOS/Android. Aucune donnée n\'est envoyée à un serveur pour les déclencher.'
-            : 'Reminders (workout, meal, hydration) are local notifications scheduled directly on your device by iOS/Android. No data is sent to a server to trigger them.'
-          } />
+        <Section title={isFr ? 'Tes droits' : 'Your rights'}>
+          <Bullet text={isFr ? 'Consulter toutes tes données via l\'app' : 'View all your data via the app'} />
+          <Bullet text={isFr ? 'Modifier tes données à tout moment' : 'Edit your data at any time'} />
+          <Bullet text={isFr ? 'Supprimer ton compte définitivement depuis le profil' : 'Delete your account permanently from profile'} />
         </Section>
 
-        {/* Camera & photos */}
-        <Section
-          title={isFr ? 'Appareil photo et photos' : 'Camera and photos'}
-        >
-          <Body text={isFr
-            ? 'Tanren peut demander l\'accès à ta caméra et ta photothèque uniquement pour ajouter une photo de fond à ta carte de partage de séance. Ces photos restent sur ton appareil et ne sont jamais envoyées à nos serveurs.'
-            : 'Tanren may request access to your camera and photo library only to add a background photo to your session share card. These photos stay on your device and are never sent to our servers.'
-          } />
-        </Section>
-
-        {/* Your rights */}
-        <Section
-          title={isFr ? 'Tes droits' : 'Your rights'}
-        >
-          <Bullet text={isFr ? 'Consulter toutes tes données via les écrans de l\'app' : 'View all your data via the app screens'} />
-          <Bullet text={isFr ? 'Modifier tes données à tout moment (profil, séances, plans)' : 'Edit your data at any time (profile, sessions, plans)'} />
-          <Bullet text={isFr ? 'Supprimer ton compte et toutes tes données définitivement depuis le profil' : 'Delete your account and all data permanently from the profile screen'} />
-          <Bullet text={isFr ? 'Désactiver les rappels à tout moment sans perdre tes données' : 'Disable reminders at any time without losing your data'} />
-        </Section>
-
-        {/* Data retention */}
-        <Section
-          title={isFr ? 'Conservation des données' : 'Data retention'}
-        >
-          <Body text={isFr
-            ? 'Tes données sont conservées tant que ton compte est actif. La suppression du compte entraîne la suppression irréversible de toutes tes données dans les 30 jours.'
-            : 'Your data is retained as long as your account is active. Deleting your account results in permanent deletion of all your data within 30 days.'
-          } />
-        </Section>
-
-        {/* Contact */}
-        <View style={{ alignItems: 'center', paddingTop: spacing.sm, gap: spacing.xs }}>
-          <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted, textAlign: 'center' }}>
+        <View style={{ alignItems: 'center', paddingTop: 8, gap: 4 }}>
+          <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute, textAlign: 'center' }}>
             {isFr ? 'Des questions ? Contact :' : 'Questions? Contact:'}
           </Text>
           <TouchableOpacity
@@ -270,15 +165,14 @@ export default function PrivacyScreen() {
             accessibilityRole="link"
             accessibilityLabel="Email privacy@tanren.app"
           >
-            <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.base, color: colors.primary }}>
+            <Text style={{ fontFamily: fonts.sansB, fontSize: 12, color: tokens.accent }}>
               privacy@tanren.app
             </Text>
           </TouchableOpacity>
-          <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted, marginTop: spacing.sm }}>
+          <Text style={{ fontFamily: fonts.sans, fontSize: 10, color: tokens.textMute, marginTop: 8 }}>
             {isFr ? 'Dernière mise à jour : avril 2026' : 'Last updated: April 2026'}
           </Text>
         </View>
-
       </ScrollView>
     </SafeAreaView>
   )

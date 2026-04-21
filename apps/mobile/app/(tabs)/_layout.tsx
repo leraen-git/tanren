@@ -15,7 +15,7 @@ function tabIcon(active: string, inactive: string) {
 }
 
 export default function TabLayout() {
-  const { tokens, typography } = useTheme()
+  const { tokens, fonts } = useTheme()
   const { t } = useTranslation()
 
   return (
@@ -32,7 +32,7 @@ export default function TabLayout() {
         tabBarActiveTintColor: tokens.accent,
         tabBarInactiveTintColor: tokens.textMute,
         tabBarLabelStyle: {
-          fontFamily: typography.family.sansM,
+          fontFamily: fonts.sansM,
           fontSize: 9,
           letterSpacing: 1,
           textTransform: 'uppercase',

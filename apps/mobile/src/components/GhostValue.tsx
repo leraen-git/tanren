@@ -8,20 +8,12 @@ interface GhostValueProps {
 }
 
 export function GhostValue({ label, value }: GhostValueProps) {
-  const { tokens, typography } = useTheme()
+  const { tokens, fonts } = useTheme()
 
   return (
-    <Text
-      style={{
-        fontFamily: typography.family.sansM,
-        fontSize: 10,
-        letterSpacing: 1,
-        textTransform: 'uppercase',
-        color: tokens.textGhost,
-      }}
-    >
+    <Text style={{ fontFamily: fonts.sansM, fontSize: 10, letterSpacing: 1, textTransform: 'uppercase', color: tokens.textGhost }}>
       {label}{' '}
-      <Text style={{ fontFamily: typography.family.sansB, color: tokens.textMute }}>
+      <Text style={{ fontFamily: fonts.sansB, color: tokens.textMute }}>
         {value}
       </Text>
     </Text>

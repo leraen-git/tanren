@@ -1,7 +1,6 @@
 import React, { useCallback } from 'react'
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native'
 import { useTheme } from '@/theme/ThemeContext'
-import { colors as tokenColors } from '@/theme/tokens'
 
 const DAY_ORDER = [1, 2, 3, 4, 5, 6, 0]
 const DAY_LABELS_EN = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
@@ -14,7 +13,7 @@ interface Props {
 }
 
 export const DayPicker = React.memo(function DayPicker({ value, onChange, lang = 'en' }: Props) {
-  const { colors, typography, spacing, radius } = useTheme()
+  const { tokens, fonts } = useTheme()
   const labels = lang === 'fr' ? DAY_LABELS_FR : DAY_LABELS_EN
 
   const toggle = useCallback((day: number) => {
@@ -26,7 +25,7 @@ export const DayPicker = React.memo(function DayPicker({ value, onChange, lang =
   }, [value, onChange])
 
   return (
-    <View style={[styles.row, { gap: spacing.xs }]}>
+    <View style={styles.row}>
       {DAY_ORDER.map((day, i) => {
         const selected = value.includes(day)
         return (
@@ -34,17 +33,19 @@ export const DayPicker = React.memo(function DayPicker({ value, onChange, lang =
             key={day}
             onPress={() => toggle(day)}
             style={[styles.cell, {
-              borderRadius: radius.pill,
-              backgroundColor: selected ? colors.primary : colors.surface2,
+              borderWidth: 1,
+              borderColor: selected ? tokens.accent : tokens.border,
+              backgroundColor: selected ? tokens.accent : 'transparent',
+              marginLeft: i > 0 ? -1 : 0,
             }]}
             accessibilityRole="checkbox"
             accessibilityState={{ checked: selected }}
             accessibilityLabel={`Day ${labels[i]}`}
           >
             <Text style={{
-              fontFamily: typography.family.bold,
-              fontSize: typography.size.xs,
-              color: selected ? tokenColors.white : colors.textMuted,
+              fontFamily: fonts.sansB,
+              fontSize: 10,
+              color: selected ? '#FFFFFF' : tokens.textMute,
             }}>
               {labels[i]}
             </Text>

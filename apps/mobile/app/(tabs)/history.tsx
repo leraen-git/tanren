@@ -3,9 +3,7 @@ import { useGuestBannerVisible } from '@/contexts/GuestBannerContext'
 import React, { useState, useMemo } from 'react'
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native'
 import { useTheme } from '@/theme/ThemeContext'
-import { Card } from '@/components/Card'
 import { trpc } from '@/lib/trpc'
-import { colors as tokenColors } from '@/theme/tokens'
 import { useTranslation } from 'react-i18next'
 import { MUSCLE_GROUPS } from '@tanren/shared'
 import { formatVolume, formatDuration } from '@/utils/format'
@@ -20,7 +18,6 @@ const DATE_FILTERS = [
 
 type FilterId = (typeof DATE_FILTERS)[number]['id']
 
-
 function useFormatDate() {
   const { t } = useTranslation()
   return (date: string | Date): string => {
@@ -29,17 +26,17 @@ function useFormatDate() {
     const diffDays = Math.floor((now.getTime() - d.getTime()) / (1000 * 60 * 60 * 24))
     if (diffDays === 0) return t('history.today')
     if (diffDays === 1) return t('history.yesterday')
-    if (diffDays < 7) return d.toLocaleDateString(undefined, { weekday: 'long' })
-    return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: diffDays > 365 ? 'numeric' : undefined })
+    if (diffDays < 7) return d.toLocaleDateString('fr-FR', { weekday: 'long' })
+    return d.toLocaleDateString('fr-FR', { month: 'short', day: 'numeric', year: diffDays > 365 ? 'numeric' : undefined })
   }
 }
 
 function formatTime(date: string | Date): string {
-  return new Date(date).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })
+  return new Date(date).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
 }
 
 export default function HistoryScreen() {
-  const { colors, typography, spacing, radius } = useTheme()
+  const { tokens, fonts } = useTheme()
   const bannerVisible = useGuestBannerVisible()
   const { t } = useTranslation()
   const formatDate = useFormatDate()
@@ -66,17 +63,23 @@ export default function HistoryScreen() {
   const totalVolume = filtered.reduce((sum, s) => sum + (s.totalVolume ?? 0), 0)
 
   return (
-    <SafeAreaView edges={bannerVisible ? [] : ['top']} style={{ flex: 1, backgroundColor: colors.background }}>
-      <ScrollView contentContainerStyle={{ paddingBottom: spacing.xl }}>
+    <SafeAreaView edges={bannerVisible ? [] : ['top']} style={{ flex: 1, backgroundColor: tokens.bg }}>
+      <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
         {/* Header */}
-        <View style={{ paddingHorizontal: spacing.base, paddingTop: spacing.base, paddingBottom: spacing.sm }}>
-          <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size['2xl'], color: colors.textPrimary }}>
+        <View style={{ paddingHorizontal: 16, paddingTop: 16, paddingBottom: 12 }}>
+          <Text style={{
+            fontFamily: fonts.sansX,
+            fontSize: 24,
+            color: tokens.text,
+            textTransform: 'uppercase',
+            letterSpacing: 0.5,
+          }}>
             {t('history.screenTitle')}
           </Text>
         </View>
 
-        {/* Date filter */}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: spacing.base, gap: spacing.sm, paddingBottom: spacing.sm }}>
+        {/* Date filter chips */}
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16, gap: 8, paddingBottom: 8 }}>
           {DATE_FILTERS.map((f) => {
             const selected = dateFilter === f.id
             const label = t(`history.filter_${f.id}`)
@@ -85,18 +88,21 @@ export default function HistoryScreen() {
                 key={f.id}
                 onPress={() => setDateFilter(f.id)}
                 style={{
-                  paddingVertical: spacing.xs,
-                  paddingHorizontal: spacing.md,
-                  borderRadius: radius.pill,
-                  backgroundColor: selected ? colors.primary : colors.surface2,
+                  paddingVertical: 4,
+                  paddingHorizontal: 12,
+                  backgroundColor: selected ? tokens.accent : 'transparent',
+                  borderWidth: 1,
+                  borderColor: selected ? tokens.accent : tokens.borderStrong,
                 }}
                 accessibilityLabel={label}
                 accessibilityRole="button"
               >
                 <Text style={{
-                  fontFamily: selected ? typography.family.semiBold : typography.family.regular,
-                  fontSize: typography.size.base,
-                  color: selected ? tokenColors.white : colors.textMuted,
+                  fontFamily: fonts.sansB,
+                  fontSize: 10,
+                  letterSpacing: 1.4,
+                  textTransform: 'uppercase',
+                  color: selected ? '#FFFFFF' : tokens.textMute,
                 }}>
                   {label}
                 </Text>
@@ -105,8 +111,8 @@ export default function HistoryScreen() {
           })}
         </ScrollView>
 
-        {/* Muscle group filter */}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: spacing.base, gap: spacing.sm, paddingBottom: spacing.base }}>
+        {/* Muscle group filter chips */}
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16, gap: 8, paddingBottom: 16 }}>
           {(['All', ...MUSCLE_GROUPS] as string[]).map((mg) => {
             const selected = muscleFilter === mg
             const label = mg === 'All' ? t('history.muscleAll') : translateMuscleGroup(mg, t)
@@ -115,20 +121,21 @@ export default function HistoryScreen() {
                 key={mg}
                 onPress={() => setMuscleFilter(mg)}
                 style={{
-                  paddingVertical: spacing.xs,
-                  paddingHorizontal: spacing.md,
-                  borderRadius: radius.pill,
-                  backgroundColor: selected ? `${colors.primary}22` : colors.surface,
+                  paddingVertical: 4,
+                  paddingHorizontal: 12,
+                  backgroundColor: selected ? `${tokens.accent}22` : 'transparent',
                   borderWidth: 1,
-                  borderColor: selected ? colors.primary : colors.surface2,
+                  borderColor: selected ? tokens.accent : tokens.border,
                 }}
                 accessibilityLabel={label}
                 accessibilityRole="button"
               >
                 <Text style={{
-                  fontFamily: selected ? typography.family.semiBold : typography.family.regular,
-                  fontSize: typography.size.base,
-                  color: selected ? colors.primary : colors.textMuted,
+                  fontFamily: fonts.sansB,
+                  fontSize: 10,
+                  letterSpacing: 1.4,
+                  textTransform: 'uppercase',
+                  color: selected ? tokens.accent : tokens.textMute,
                 }}>
                   {label}
                 </Text>
@@ -137,79 +144,124 @@ export default function HistoryScreen() {
           })}
         </ScrollView>
 
-        {/* Summary row */}
+        {/* Summary strip */}
         {filtered.length > 0 && (
-          <View style={{ flexDirection: 'row', gap: spacing.sm, paddingHorizontal: spacing.base, marginBottom: spacing.base }}>
+          <View style={{
+            flexDirection: 'row',
+            marginHorizontal: 16,
+            marginBottom: 16,
+            borderWidth: 1,
+            borderColor: tokens.border,
+          }}>
             {[
               { label: t('history.sessions'), value: String(filtered.length) },
               { label: t('history.volume'), value: formatVolume(totalVolume) },
-            ].map(({ label, value }) => (
-              <View key={label} style={{ flex: 1, backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.md, alignItems: 'center' }}>
-                <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size['2xl'], color: colors.primary }}>{value}</Text>
-                <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted }}>{label}</Text>
+            ].map(({ label, value }, i) => (
+              <View key={label} style={{
+                flex: 1,
+                padding: 12,
+                alignItems: 'center',
+                borderLeftWidth: i > 0 ? 1 : 0,
+                borderLeftColor: tokens.border,
+              }}>
+                <Text style={{ fontFamily: fonts.sansX, fontSize: 24, color: tokens.accent }}>{value}</Text>
+                <Text style={{
+                  fontFamily: fonts.sansB,
+                  fontSize: 9,
+                  letterSpacing: 2,
+                  color: tokens.textMute,
+                  textTransform: 'uppercase',
+                  marginTop: 2,
+                }}>
+                  {label}
+                </Text>
               </View>
             ))}
           </View>
         )}
 
         {/* Session list */}
-        <View style={{ paddingHorizontal: spacing.base, gap: spacing.sm }}>
+        <View style={{ paddingHorizontal: 16 }}>
           {filtered.length === 0 && (
-            <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.body, color: colors.textMuted, textAlign: 'center', marginTop: spacing.xl }}>
+            <Text style={{
+              fontFamily: fonts.sans,
+              fontSize: 14,
+              color: tokens.textMute,
+              textAlign: 'center',
+              marginTop: 20,
+            }}>
               {t('history.noSessions')}
             </Text>
           )}
-          {filtered.map((s) => (
-            <Card key={s.id} accessibilityLabel={`${s.workoutName ?? t('history.defaultWorkout')}`}>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <View style={{ flex: 1, gap: 4 }}>
-                  <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.body, color: colors.textPrimary }}>
-                    {s.workoutName ?? t('history.defaultWorkout')}
-                  </Text>
-                  <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted }}>
-                    {formatDate(s.startedAt)} · {formatTime(s.startedAt)}
-                  </Text>
-                  <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted }}>
-                    {formatDuration(s.durationSeconds)}
-                    {(s.totalVolume ?? 0) > 0 ? ` · ${formatVolume(s.totalVolume!)}` : ''}
-                  </Text>
-                  {s.muscleGroups && s.muscleGroups.length > 0 && (
-                    <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs, marginTop: 2 }}>
-                      {s.muscleGroups.slice(0, 4).map((mg) => (
-                        <View
-                          key={mg}
-                          style={{
-                            backgroundColor: colors.surface2,
-                            borderRadius: radius.pill,
-                            paddingHorizontal: spacing.sm,
-                            paddingVertical: 2,
-                          }}
-                        >
-                          <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted }}>
-                            {translateMuscleGroup(mg, t)}
-                          </Text>
-                        </View>
-                      ))}
-                    </View>
-                  )}
-                </View>
-                <View style={{
-                  backgroundColor: s.completedAt ? `${colors.success}18` : `${colors.warning}18`,
-                  borderRadius: radius.sm,
-                  paddingHorizontal: spacing.sm,
-                  paddingVertical: 3,
-                  marginLeft: spacing.sm,
-                }}>
-                  <Text style={{
-                    fontFamily: typography.family.semiBold,
-                    fontSize: typography.size.xs,
-                    color: s.completedAt ? colors.success : colors.warning,
-                  }}>
-                    {s.completedAt ? t('history.done') : t('history.incomplete')}
-                  </Text>
-                </View>
+          {filtered.map((s, idx) => (
+            <View
+              key={s.id}
+              style={{
+                paddingVertical: 14,
+                borderTopWidth: idx === 0 ? 1 : 0,
+                borderBottomWidth: 1,
+                borderColor: tokens.border,
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'flex-start',
+              }}
+              accessibilityLabel={`${s.workoutName ?? t('history.defaultWorkout')}`}
+            >
+              <View style={{ flex: 1, gap: 3 }}>
+                <Text style={{ fontFamily: fonts.sansB, fontSize: 14, color: tokens.text }}>
+                  {s.workoutName ?? t('history.defaultWorkout')}
+                </Text>
+                <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute }}>
+                  {formatDate(s.startedAt)} · {formatTime(s.startedAt)}
+                </Text>
+                <Text style={{ fontFamily: fonts.mono, fontSize: 11, color: tokens.textDim }}>
+                  {formatDuration(s.durationSeconds)}
+                  {(s.totalVolume ?? 0) > 0 ? ` · ${formatVolume(s.totalVolume!)} kg` : ''}
+                </Text>
+                {s.muscleGroups && s.muscleGroups.length > 0 && (
+                  <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 4, marginTop: 2 }}>
+                    {s.muscleGroups.slice(0, 4).map((mg) => (
+                      <View
+                        key={mg}
+                        style={{
+                          borderWidth: 1,
+                          borderColor: tokens.border,
+                          paddingHorizontal: 6,
+                          paddingVertical: 1,
+                        }}
+                      >
+                        <Text style={{
+                          fontFamily: fonts.sansB,
+                          fontSize: 8,
+                          letterSpacing: 1,
+                          color: tokens.textGhost,
+                          textTransform: 'uppercase',
+                        }}>
+                          {translateMuscleGroup(mg, t)}
+                        </Text>
+                      </View>
+                    ))}
+                  </View>
+                )}
               </View>
-            </Card>
+              <View style={{
+                borderWidth: 1,
+                borderColor: s.completedAt ? tokens.green : tokens.amber,
+                paddingHorizontal: 8,
+                paddingVertical: 2,
+                marginLeft: 8,
+              }}>
+                <Text style={{
+                  fontFamily: fonts.sansB,
+                  fontSize: 8,
+                  letterSpacing: 1,
+                  textTransform: 'uppercase',
+                  color: s.completedAt ? tokens.green : tokens.amber,
+                }}>
+                  {s.completedAt ? t('history.done') : t('history.incomplete')}
+                </Text>
+              </View>
+            </View>
           ))}
         </View>
       </ScrollView>

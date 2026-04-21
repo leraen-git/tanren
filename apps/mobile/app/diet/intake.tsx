@@ -9,20 +9,18 @@ import { useTheme } from '@/theme/ThemeContext'
 import { Button } from '@/components/Button'
 import { trpc } from '@/lib/trpc'
 import { useDietIntakeStore } from '@/stores/dietIntakeStore'
-import { colors as tokenColors } from '@/theme/tokens'
 import { useTranslation } from 'react-i18next'
 
 const TOTAL_STEPS = 4
 
 function ProgressDots({ step }: { step: number }) {
-  const { colors, spacing } = useTheme()
+  const { tokens } = useTheme()
   return (
-    <View style={{ flexDirection: 'row', gap: spacing.xs, justifyContent: 'center' }}>
+    <View style={{ flexDirection: 'row', gap: 4, justifyContent: 'center' }}>
       {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
         <View key={i} style={{
-          width: i === step ? 20 : 8, height: 8,
-          borderRadius: 4,
-          backgroundColor: i === step ? colors.primary : colors.surface2,
+          width: i === step ? 16 : 6, height: 6,
+          backgroundColor: i === step ? tokens.accent : tokens.surface2,
         }} />
       ))}
     </View>
@@ -32,35 +30,36 @@ function ProgressDots({ step }: { step: number }) {
 function Chip({
   label, selected, onPress,
 }: { label: string; selected: boolean; onPress: () => void }) {
-  const { colors, typography, spacing, radius } = useTheme()
+  const { tokens, fonts } = useTheme()
   return (
     <TouchableOpacity
       onPress={onPress}
       style={{
-        paddingVertical: spacing.sm,
-        paddingHorizontal: spacing.md,
-        borderRadius: radius.pill,
-        backgroundColor: selected ? colors.primary : colors.surface2,
-        borderWidth: selected ? 0 : 1,
-        borderColor: colors.surface2,
+        paddingVertical: 6,
+        paddingHorizontal: 12,
+        borderWidth: 1,
+        borderColor: selected ? tokens.accent : tokens.border,
+        backgroundColor: selected ? tokens.accent : 'transparent',
       }}
       accessibilityRole="button"
       accessibilityLabel={label}
     >
       <Text style={{
-        fontFamily: selected ? typography.family.semiBold : typography.family.regular,
-        fontSize: typography.size.base,
-        color: selected ? tokenColors.white : colors.textMuted,
+        fontFamily: fonts.sansB,
+        fontSize: 10,
+        letterSpacing: 1.4,
+        color: selected ? '#FFFFFF' : tokens.textMute,
+        textTransform: 'uppercase',
       }}>{label}</Text>
     </TouchableOpacity>
   )
 }
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  const { colors, typography, spacing } = useTheme()
+  const { tokens, fonts } = useTheme()
   return (
-    <View style={{ gap: spacing.xs }}>
-      <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.base, color: colors.textMuted }}>
+    <View style={{ gap: 6 }}>
+      <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
         {label}
       </Text>
       {children}
@@ -69,51 +68,39 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 }
 
 export default function DietIntakeScreen() {
-  const { colors, typography, spacing, radius } = useTheme()
+  const { tokens, fonts } = useTheme()
   const { t } = useTranslation()
   const [step, setStep] = useState(0)
   const { intake, update } = useDietIntakeStore()
   const { data: user } = trpc.users.me.useQuery()
   const scrollRef = useRef<ScrollView>(null)
 
-  // Pre-fill from user profile on mount
   React.useEffect(() => {
     if (!user) return
     const prefill: Partial<typeof intake> = {}
-
-    // Sex — default store value is 'male', so check against profile explicitly
     if (user.gender && (user.gender === 'female' || user.gender === 'male')) {
       prefill.sex = user.gender
     }
-
-    // Goal weight — use current weight as starting point if not yet set
     if (user.weightKg && !intake.goalWeight) {
       prefill.goalWeight = String(Math.round(user.weightKg))
     }
-
-    // Goal pace — derive from fitness goal
     if (!intake.goalPace || intake.goalPace === 'steady') {
       prefill.goalPace = user.goal === 'WEIGHT_LOSS' ? 'fast' : 'steady'
     }
-
-    // Exercise frequency — derive from weekly training target
     if (user.weeklyTarget && !intake.exerciseFrequency) {
       prefill.exerciseFrequency = `${user.weeklyTarget} sessions per week`
     }
-
     if (Object.keys(prefill).length > 0) update(prefill)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user])
 
   const inputStyle = {
-    backgroundColor: colors.surface,
-    borderRadius: radius.md,
-    padding: spacing.md,
-    color: colors.textPrimary,
-    fontFamily: typography.family.regular,
-    fontSize: typography.size.body,
-    borderWidth: 1,
-    borderColor: colors.surface2,
+    fontFamily: fonts.mono,
+    fontSize: 14,
+    color: tokens.text,
+    borderBottomWidth: 1,
+    borderBottomColor: tokens.border,
+    paddingVertical: 8,
   }
 
   const validateStep = () => {
@@ -165,38 +152,39 @@ export default function DietIntakeScreen() {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: tokens.bg }}>
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         {/* Header */}
-        <View style={{ padding: spacing.base, gap: spacing.sm }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.md }}>
+        <View style={{ padding: 16, gap: 8 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
             <TouchableOpacity
               onPress={() => { if (step === 0) router.back(); else setStep(step - 1) }}
               accessibilityLabel={t('common.back')} accessibilityRole="button"
             >
-              <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.title, color: colors.primary }}>←</Text>
-            </TouchableOpacity>
-            <View style={{ flex: 1 }}>
-              <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size.xl, color: colors.textPrimary }}>
-                {stepTitles[step]}
+              <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.accent, textTransform: 'uppercase', letterSpacing: 2 }}>
+                {'< BACK'}
               </Text>
-            </View>
-            <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.base, color: colors.textMuted }}>
+            </TouchableOpacity>
+            <View style={{ flex: 1 }} />
+            <Text style={{ fontFamily: fonts.monoB, fontSize: 12, color: tokens.textMute }}>
               {step + 1}/{TOTAL_STEPS}
             </Text>
           </View>
+          <Text style={{ fontFamily: fonts.sansX, fontSize: 20, color: tokens.text, textTransform: 'uppercase' }}>
+            {stepTitles[step]}
+          </Text>
           <ProgressDots step={step} />
-          <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted }}>
+          <Text style={{ fontFamily: fonts.sans, fontSize: 13, color: tokens.textDim }}>
             {stepSubtitles[step]}
           </Text>
         </View>
 
         <ScrollView
           ref={scrollRef}
-          contentContainerStyle={{ padding: spacing.base, gap: spacing.lg, paddingBottom: spacing.xl }}
+          contentContainerStyle={{ padding: 16, gap: 20, paddingBottom: 40 }}
           keyboardShouldPersistTaps="handled"
         >
-          {/* ── STEP 0: Stats ── */}
+          {/* STEP 0: Stats */}
           {step === 0 && (
             <>
               <Field label={t('intake.ageLabel')}>
@@ -205,14 +193,14 @@ export default function DietIntakeScreen() {
                   onChangeText={(v) => update({ age: v })}
                   keyboardType="number-pad"
                   placeholder={t('intake.agePlaceholder')}
-                  placeholderTextColor={colors.textMuted}
+                  placeholderTextColor={tokens.textGhost}
                   style={inputStyle}
                   accessibilityLabel={t('intake.ageLabel')}
                 />
               </Field>
 
               <Field label={t('intake.sexLabel')}>
-                <View style={{ flexDirection: 'row', gap: spacing.sm }}>
+                <View style={{ flexDirection: 'row', gap: 8 }}>
                   <Chip label={t('intake.male')} selected={intake.sex === 'male'} onPress={() => update({ sex: 'male' })} />
                   <Chip label={t('intake.female')} selected={intake.sex === 'female'} onPress={() => update({ sex: 'female' })} />
                 </View>
@@ -224,14 +212,14 @@ export default function DietIntakeScreen() {
                   onChangeText={(v) => update({ goalWeight: v })}
                   keyboardType="decimal-pad"
                   placeholder={t('intake.goalWeightPlaceholder')}
-                  placeholderTextColor={colors.textMuted}
+                  placeholderTextColor={tokens.textGhost}
                   style={inputStyle}
                   accessibilityLabel={t('intake.goalWeightLabel')}
                 />
               </Field>
 
               <Field label={t('intake.goalPaceLabel')}>
-                <View style={{ flexDirection: 'row', gap: spacing.sm }}>
+                <View style={{ flexDirection: 'row', gap: 8 }}>
                   <Chip label={t('intake.goalPaceSteady')} selected={intake.goalPace === 'steady'} onPress={() => update({ goalPace: 'steady' })} />
                   <Chip label={t('intake.goalPaceFast')} selected={intake.goalPace === 'fast'} onPress={() => update({ goalPace: 'fast' })} />
                 </View>
@@ -239,7 +227,7 @@ export default function DietIntakeScreen() {
             </>
           )}
 
-          {/* ── STEP 1: Lifestyle ── */}
+          {/* STEP 1: Lifestyle */}
           {step === 1 && (
             <>
               <Field label={t('intake.jobLabel')}>
@@ -247,7 +235,7 @@ export default function DietIntakeScreen() {
                   value={intake.jobType}
                   onChangeText={(v) => update({ jobType: v })}
                   placeholder={t('intake.jobPlaceholder')}
-                  placeholderTextColor={colors.textMuted}
+                  placeholderTextColor={tokens.textGhost}
                   style={inputStyle}
                   accessibilityLabel={t('intake.jobLabel')}
                 />
@@ -258,14 +246,14 @@ export default function DietIntakeScreen() {
                   value={intake.exerciseFrequency}
                   onChangeText={(v) => update({ exerciseFrequency: v })}
                   placeholder={t('intake.exercisePlaceholder')}
-                  placeholderTextColor={colors.textMuted}
+                  placeholderTextColor={tokens.textGhost}
                   style={inputStyle}
                   accessibilityLabel={t('intake.exerciseLabel')}
                 />
               </Field>
 
               <Field label={t('intake.sleepLabel')}>
-                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}>
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
                   {['5', '6', '7', '8', '9+'].map((h) => (
                     <Chip key={h} label={h} selected={intake.sleepHours === h} onPress={() => update({ sleepHours: h })} />
                   ))}
@@ -273,7 +261,7 @@ export default function DietIntakeScreen() {
               </Field>
 
               <Field label={t('intake.stressLabel')}>
-                <View style={{ flexDirection: 'row', gap: spacing.sm }}>
+                <View style={{ flexDirection: 'row', gap: 6 }}>
                   {([
                     { key: 'low', label: t('intake.stressLow') },
                     { key: 'moderate', label: t('intake.stressModerate') },
@@ -285,7 +273,7 @@ export default function DietIntakeScreen() {
               </Field>
 
               <Field label={t('intake.alcoholLabel')}>
-                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}>
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
                   {([
                     { key: 'none', label: t('intake.alcoholNone') },
                     { key: '1-2 drinks', label: t('intake.alcohol12') },
@@ -300,32 +288,32 @@ export default function DietIntakeScreen() {
             </>
           )}
 
-          {/* ── STEP 2: Food preferences ── */}
+          {/* STEP 2: Food preferences */}
           {step === 2 && (
             <>
               <Field label={t('intake.favFoodsLabel', { count: intake.favoriteFoods.length })}>
-                <View style={{ gap: spacing.sm }}>
+                <View style={{ gap: 8 }}>
                   {intake.favoriteFoods.map((f, i) => (
-                    <View key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
-                      <View style={{ flex: 1, backgroundColor: colors.surface, borderRadius: radius.md, padding: spacing.md, borderWidth: 1, borderColor: colors.surface2 }}>
-                        <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.body, color: colors.textPrimary }}>{f}</Text>
+                    <View key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                      <View style={{ flex: 1, borderBottomWidth: 1, borderBottomColor: tokens.border, paddingVertical: 8 }}>
+                        <Text style={{ fontFamily: fonts.sans, fontSize: 14, color: tokens.text }}>{f}</Text>
                       </View>
                       <TouchableOpacity
                         onPress={() => update({ favoriteFoods: intake.favoriteFoods.filter((_, j) => j !== i) })}
                         accessibilityLabel={`${t('common.remove')} ${f}`}
                         accessibilityRole="button"
                       >
-                        <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.title, color: colors.textMuted }}>×</Text>
+                        <Text style={{ fontFamily: fonts.sansB, fontSize: 17, color: tokens.textMute }}>x</Text>
                       </TouchableOpacity>
                     </View>
                   ))}
                   {intake.favoriteFoods.length < 10 && (
-                    <View style={{ flexDirection: 'row', gap: spacing.sm }}>
+                    <View style={{ flexDirection: 'row', gap: 8 }}>
                       <TextInput
                         value={foodInput}
                         onChangeText={setFoodInput}
                         placeholder={t('intake.favFoodsPlaceholder')}
-                        placeholderTextColor={colors.textMuted}
+                        placeholderTextColor={tokens.textGhost}
                         style={{ ...inputStyle, flex: 1 }}
                         onSubmitEditing={addFood}
                         returnKeyType="done"
@@ -333,10 +321,14 @@ export default function DietIntakeScreen() {
                       />
                       <TouchableOpacity
                         onPress={addFood}
-                        style={{ backgroundColor: colors.primary, borderRadius: radius.md, paddingHorizontal: spacing.md, alignItems: 'center', justifyContent: 'center' }}
+                        style={{
+                          backgroundColor: tokens.accent,
+                          width: 40, height: 40,
+                          alignItems: 'center', justifyContent: 'center',
+                        }}
                         accessibilityLabel={t('common.add')} accessibilityRole="button"
                       >
-                        <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.xl, color: tokenColors.white }}>+</Text>
+                        <Text style={{ fontFamily: fonts.sansB, fontSize: 20, color: '#FFFFFF' }}>+</Text>
                       </TouchableOpacity>
                     </View>
                   )}
@@ -348,7 +340,7 @@ export default function DietIntakeScreen() {
                   value={intake.hatedFoods}
                   onChangeText={(v) => update({ hatedFoods: v })}
                   placeholder={t('intake.hatedFoodsPlaceholder')}
-                  placeholderTextColor={colors.textMuted}
+                  placeholderTextColor={tokens.textGhost}
                   style={inputStyle}
                   accessibilityLabel={t('intake.hatedFoodsLabel')}
                 />
@@ -359,14 +351,14 @@ export default function DietIntakeScreen() {
                   value={intake.dietaryRestrictions}
                   onChangeText={(v) => update({ dietaryRestrictions: v })}
                   placeholder={t('intake.restrictionsPlaceholder')}
-                  placeholderTextColor={colors.textMuted}
+                  placeholderTextColor={tokens.textGhost}
                   style={inputStyle}
                   accessibilityLabel={t('intake.restrictionsLabel')}
                 />
               </Field>
 
               <Field label={t('intake.cookingStyleLabel')}>
-                <View style={{ gap: spacing.sm }}>
+                <View style={{ gap: 0 }}>
                   {([
                     { key: 'scratch', label: t('intake.cookingScratch'), desc: t('intake.cookingScratchDesc') },
                     { key: 'quick',   label: t('intake.cookingQuick'),   desc: t('intake.cookingQuickDesc') },
@@ -376,21 +368,23 @@ export default function DietIntakeScreen() {
                       key={o.key}
                       onPress={() => update({ cookingStyle: o.key })}
                       style={{
-                        flexDirection: 'row', alignItems: 'center', gap: spacing.md,
-                        padding: spacing.md, borderRadius: radius.md,
-                        backgroundColor: intake.cookingStyle === o.key ? `${colors.primary}18` : colors.surface,
+                        flexDirection: 'row', alignItems: 'center', gap: 12,
+                        padding: 12,
                         borderWidth: 1,
-                        borderColor: intake.cookingStyle === o.key ? colors.primary : colors.surface2,
+                        borderColor: intake.cookingStyle === o.key ? tokens.accent : tokens.border,
+                        borderLeftWidth: intake.cookingStyle === o.key ? 3 : 1,
+                        borderLeftColor: intake.cookingStyle === o.key ? tokens.accent : tokens.border,
+                        marginTop: -1,
                       }}
                       accessibilityRole="button"
                       accessibilityLabel={o.label}
                     >
                       <View style={{ flex: 1 }}>
-                        <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.body, color: colors.textPrimary }}>{o.label}</Text>
-                        <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted }}>{o.desc}</Text>
+                        <Text style={{ fontFamily: fonts.sansB, fontSize: 13, color: tokens.text, textTransform: 'uppercase' }}>{o.label}</Text>
+                        <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute }}>{o.desc}</Text>
                       </View>
                       {intake.cookingStyle === o.key && (
-                        <Text style={{ color: colors.primary, fontFamily: typography.family.bold }}>✓</Text>
+                        <Text style={{ color: tokens.accent, fontFamily: fonts.sansB, fontSize: 12 }}>V</Text>
                       )}
                     </TouchableOpacity>
                   ))}
@@ -398,33 +392,33 @@ export default function DietIntakeScreen() {
               </Field>
 
               <Field label={t('intake.adventureLabel', { score: intake.foodAdventure })}>
-                <View style={{ flexDirection: 'row', gap: spacing.xs }}>
+                <View style={{ flexDirection: 'row', gap: 2 }}>
                   {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => (
                     <TouchableOpacity
                       key={n}
                       onPress={() => update({ foodAdventure: n })}
                       style={{
-                        flex: 1, paddingVertical: spacing.sm, borderRadius: radius.sm,
-                        backgroundColor: n <= intake.foodAdventure ? colors.primary : colors.surface2,
+                        flex: 1, paddingVertical: 8,
+                        backgroundColor: n <= intake.foodAdventure ? tokens.accent : tokens.surface2,
                         alignItems: 'center',
                       }}
                       accessibilityRole="button" accessibilityLabel={`${n}`}
                     >
-                      <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.xs, color: n <= intake.foodAdventure ? tokenColors.white : colors.textMuted }}>
+                      <Text style={{ fontFamily: fonts.monoB, fontSize: 9, color: n <= intake.foodAdventure ? '#FFFFFF' : tokens.textMute }}>
                         {n}
                       </Text>
                     </TouchableOpacity>
                   ))}
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                  <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted }}>{t('intake.adventureMin')}</Text>
-                  <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted }}>{t('intake.adventureMax')}</Text>
+                  <Text style={{ fontFamily: fonts.sans, fontSize: 9, color: tokens.textMute }}>{t('intake.adventureMin')}</Text>
+                  <Text style={{ fontFamily: fonts.sans, fontSize: 9, color: tokens.textMute }}>{t('intake.adventureMax')}</Text>
                 </View>
               </Field>
             </>
           )}
 
-          {/* ── STEP 3: Snack habits ── */}
+          {/* STEP 3: Snack habits */}
           {step === 3 && (
             <>
               <Field label={t('intake.currentSnacksLabel')}>
@@ -432,14 +426,14 @@ export default function DietIntakeScreen() {
                   value={intake.currentSnacks}
                   onChangeText={(v) => update({ currentSnacks: v })}
                   placeholder={t('intake.currentSnacksPlaceholder')}
-                  placeholderTextColor={colors.textMuted}
+                  placeholderTextColor={tokens.textGhost}
                   style={inputStyle}
                   accessibilityLabel={t('intake.currentSnacksLabel')}
                 />
               </Field>
 
               <Field label={t('intake.snackReasonLabel')}>
-                <View style={{ flexDirection: 'row', gap: spacing.sm }}>
+                <View style={{ flexDirection: 'row', gap: 6 }}>
                   {([
                     { key: 'hunger',  label: t('intake.snackReasonHunger') },
                     { key: 'boredom', label: t('intake.snackReasonBoredom') },
@@ -451,7 +445,7 @@ export default function DietIntakeScreen() {
               </Field>
 
               <Field label={t('intake.snackPrefLabel')}>
-                <View style={{ flexDirection: 'row', gap: spacing.sm }}>
+                <View style={{ flexDirection: 'row', gap: 6 }}>
                   {([
                     { key: 'sweet',   label: t('intake.snackPrefSweet') },
                     { key: 'savoury', label: t('intake.snackPrefSavoury') },
@@ -463,26 +457,36 @@ export default function DietIntakeScreen() {
               </Field>
 
               <Field label={t('intake.nightSnackLabel')}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: colors.surface, borderRadius: radius.md, padding: spacing.md, borderWidth: 1, borderColor: colors.surface2 }}>
-                  <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.body, color: colors.textPrimary }}>
+                <View style={{
+                  flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+                  borderWidth: 1, borderColor: tokens.border, padding: 12,
+                }}>
+                  <Text style={{ fontFamily: fonts.sans, fontSize: 14, color: tokens.text }}>
                     {intake.nightSnacking ? t('intake.nightSnackYes') : t('intake.nightSnackNo')}
                   </Text>
                   <Switch
                     value={intake.nightSnacking}
                     onValueChange={(v) => update({ nightSnacking: v })}
-                    trackColor={{ true: colors.primary, false: colors.surface2 }}
-                    thumbColor={tokenColors.white}
+                    trackColor={{ true: tokens.accent, false: tokens.surface2 }}
+                    thumbColor="#FFFFFF"
                     accessibilityLabel={t('intake.nightSnackLabel')}
                   />
                 </View>
               </Field>
 
-              {/* Summary before generating */}
-              <View style={{ backgroundColor: `${colors.primary}10`, borderRadius: radius.lg, padding: spacing.base, borderWidth: 1, borderColor: `${colors.primary}30`, gap: spacing.xs }}>
-                <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.body, color: colors.primary }}>
+              {/* Summary */}
+              <View style={{
+                padding: 12,
+                borderWidth: 1,
+                borderColor: tokens.accent,
+                borderLeftWidth: 3,
+                borderLeftColor: tokens.accent,
+                gap: 4,
+              }}>
+                <Text style={{ fontFamily: fonts.sansB, fontSize: 13, color: tokens.accent, textTransform: 'uppercase' }}>
                   {t('intake.readyTitle')}
                 </Text>
-                <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted }}>
+                <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute }}>
                   {t('intake.readyDesc')}
                 </Text>
               </View>

@@ -1,7 +1,6 @@
 import React from 'react'
 import { View, Text } from 'react-native'
 import { useTheme } from '@/theme/ThemeContext'
-import { colors as tokenColors } from '@/theme/tokens'
 import { Card } from './Card'
 import type { ExerciseStatus } from '@tanren/shared'
 
@@ -17,23 +16,14 @@ interface ExerciseCardProps {
 }
 
 export const ExerciseCard = React.memo(function ExerciseCard({
-  name,
-  muscleGroups,
-  currentVolume,
-  previousVolume,
-  delta,
-  status,
-  isPersonalRecord,
-  onPress,
+  name, muscleGroups, currentVolume, previousVolume, delta, status, isPersonalRecord, onPress,
 }: ExerciseCardProps) {
-  const { colors, typography, spacing, radius } = useTheme()
+  const { tokens, fonts } = useTheme()
 
   const deltaColor =
-    status === 'improved'
-      ? colors.success
-      : status === 'declined'
-        ? colors.danger
-        : colors.warning
+    status === 'improved' ? tokens.green
+    : status === 'declined' ? tokens.accent
+    : tokens.amber
 
   const deltaLabel =
     delta != null
@@ -51,82 +41,42 @@ export const ExerciseCard = React.memo(function ExerciseCard({
 
   return (
     <Card onPress={onPress} accessibilityLabel={`${name} exercise card`}>
-      {/* Header row */}
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <View style={{ flex: 1 }}>
-          <Text
-            style={{
-              fontFamily: typography.family.semiBold,
-              fontSize: typography.size.body,
-              color: colors.textPrimary,
-            }}
-          >
+          <Text style={{ fontFamily: fonts.sansB, fontSize: 13, color: tokens.text, textTransform: 'uppercase' }}>
             {name}
           </Text>
-          <Text
-            style={{
-              fontFamily: typography.family.regular,
-              fontSize: typography.size.base,
-              color: colors.textMuted,
-              marginTop: 2,
-            }}
-          >
-            {muscleGroups.join(' · ')}
+          <Text style={{ fontFamily: fonts.sans, fontSize: 11, color: tokens.textMute, marginTop: 2 }}>
+            {muscleGroups.join(' / ')}
           </Text>
         </View>
 
-        <View style={{ flexDirection: 'row', gap: spacing.xs, alignItems: 'center' }}>
+        <View style={{ flexDirection: 'row', gap: 4, alignItems: 'center' }}>
           {isPersonalRecord && (
-            <View
-              style={{
-                backgroundColor: colors.warning,
-                borderRadius: radius.pill,
-                paddingHorizontal: spacing.sm,
-                paddingVertical: 2,
-              }}
-            >
-              <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.xs, color: tokenColors.white }}>
-                ★ PR
-              </Text>
+            <View style={{ borderWidth: 1, borderColor: tokens.accent, paddingHorizontal: 6, paddingVertical: 2 }}>
+              <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.accent, letterSpacing: 1 }}>PR</Text>
             </View>
           )}
           {deltaLabel && (
-            <View
-              style={{
-                backgroundColor: deltaColor + '22',
-                borderRadius: radius.pill,
-                paddingHorizontal: spacing.sm,
-                paddingVertical: 2,
-              }}
-            >
-              <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.xs, color: deltaColor }}>
-                {deltaLabel}
-              </Text>
+            <View style={{ borderWidth: 1, borderColor: deltaColor, backgroundColor: `${deltaColor}1A`, paddingHorizontal: 6, paddingVertical: 2 }}>
+              <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: deltaColor }}>{deltaLabel}</Text>
             </View>
           )}
         </View>
       </View>
 
-      {/* Comparison bar */}
       {previousVolume != null && (
-        <View style={{ marginTop: spacing.sm, gap: 4 }}>
+        <View style={{ marginTop: 8, gap: 4 }}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted }}>
+            <Text style={{ fontFamily: fonts.mono, fontSize: 10, color: tokens.textMute }}>
               Prev: {previousVolume.toFixed(0)} kg
             </Text>
-            <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.xs, color: deltaColor }}>
+            <Text style={{ fontFamily: fonts.monoB, fontSize: 10, color: deltaColor }}>
               Now: {currentVolume.toFixed(0)} kg
             </Text>
           </View>
-          <View style={{ height: 6, backgroundColor: colors.surface2, borderRadius: radius.pill, overflow: 'hidden' }}>
-            <View
-              style={{
-                height: '100%',
-                width: `${Math.min(barWidth, 100)}%`,
-                backgroundColor: deltaColor,
-                borderRadius: radius.pill,
-              }}
-            />
+          <View style={{ height: 3, backgroundColor: tokens.surface2, overflow: 'hidden' }}>
+            <View style={{ height: '100%', width: `${Math.min(barWidth, 100)}%`, backgroundColor: deltaColor }} />
           </View>
         </View>
       )}

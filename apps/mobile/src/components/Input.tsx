@@ -8,14 +8,14 @@ interface InputProps extends Omit<TextInputProps, 'style'> {
 }
 
 export function Input({ label, accessibilityLabel, ...props }: InputProps) {
-  const { tokens, typography } = useTheme()
+  const { tokens, fonts } = useTheme()
 
   return (
     <View>
       {label && (
         <Text
           style={{
-            fontFamily: typography.family.sansM,
+            fontFamily: fonts.sansM,
             fontSize: 10,
             letterSpacing: 1.6,
             textTransform: 'uppercase',
@@ -30,7 +30,7 @@ export function Input({ label, accessibilityLabel, ...props }: InputProps) {
         {...props}
         placeholderTextColor={tokens.textGhost}
         style={{
-          fontFamily: typography.family.sansM,
+          fontFamily: fonts.sansM,
           fontSize: 16,
           color: tokens.text,
           paddingBottom: 10,

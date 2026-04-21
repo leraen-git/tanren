@@ -22,7 +22,7 @@ function getIntensityColor(value: number, max: number): string {
 }
 
 export const HeatmapGrid = React.memo(function HeatmapGrid({ data, weeks = 16 }: HeatmapGridProps) {
-  const { colors, typography, spacing, radius } = useTheme()
+  const { tokens, fonts } = useTheme()
 
   const { grid, maxValue } = useMemo(() => {
     const dataMap = new Map<string, number>()
@@ -52,8 +52,6 @@ export const HeatmapGrid = React.memo(function HeatmapGrid({ data, weeks = 16 }:
     return { grid: result, maxValue: max }
   }, [data, weeks])
 
-  const halfRadius = radius.sm / 2
-
   return (
     <View>
       <View style={[styles.gridRow, { gap: CELL_GAP }]}>
@@ -62,12 +60,7 @@ export const HeatmapGrid = React.memo(function HeatmapGrid({ data, weeks = 16 }:
             {col.map((cell, di) => (
               <View
                 key={di}
-                style={{
-                  width: CELL_SIZE,
-                  height: CELL_SIZE,
-                  borderRadius: halfRadius,
-                  backgroundColor: getIntensityColor(cell.value, maxValue),
-                }}
+                style={{ width: CELL_SIZE, height: CELL_SIZE, backgroundColor: getIntensityColor(cell.value, maxValue) }}
                 accessibilityLabel={`${cell.date.toLocaleDateString()}: ${cell.value.toFixed(0)} kg volume`}
               />
             ))}
@@ -75,19 +68,12 @@ export const HeatmapGrid = React.memo(function HeatmapGrid({ data, weeks = 16 }:
         ))}
       </View>
 
-      <View style={[styles.legend, { gap: spacing.xs, marginTop: spacing.sm }]}>
-        <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted }}>
-          Less
-        </Text>
+      <View style={[styles.legend, { gap: 4, marginTop: 6 }]}>
+        <Text style={{ fontFamily: fonts.mono, fontSize: 9, color: tokens.textMute }}>Less</Text>
         {HEATMAP.map((c, i) => (
-          <View
-            key={i}
-            style={{ width: CELL_SIZE, height: CELL_SIZE, borderRadius: halfRadius, backgroundColor: c }}
-          />
+          <View key={i} style={{ width: CELL_SIZE, height: CELL_SIZE, backgroundColor: c }} />
         ))}
-        <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted }}>
-          More
-        </Text>
+        <Text style={{ fontFamily: fonts.mono, fontSize: 9, color: tokens.textMute }}>More</Text>
       </View>
     </View>
   )

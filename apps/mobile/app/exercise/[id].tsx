@@ -4,8 +4,6 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams, router } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
 import { Button } from '@/components/Button'
-import { Card } from '@/components/Card'
-import { PillFilter } from '@/components/PillFilter'
 import { LineChart } from '@/components/LineChart'
 import { SkeletonCard } from '@/components/SkeletonCard'
 import { ProgressBar } from '@/components/ProgressBar'
@@ -18,7 +16,7 @@ const METRIC_OPTIONS = ['Max weight', 'Volume', 'Reps']
 
 export default function ExerciseDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
-  const { colors, typography, spacing, radius } = useTheme()
+  const { tokens, fonts } = useTheme()
   const { t } = useTranslation()
   const [metric, setMetric] = useState('Max weight')
 
@@ -30,10 +28,9 @@ export default function ExerciseDetailScreen() {
   const exerciseRecords = records?.filter((r) => r.exerciseId === id) ?? []
   const currentMax = exerciseRecords[0]?.weight ?? 0
 
-  // Build chart data from progress sessions
   const chartData = (progressData ?? []).slice(-12).map((s, i) => ({
     label: `S${i + 1}`,
-    value: currentMax, // simplified — real impl would join session sets
+    value: currentMax,
   }))
 
   const last5 = chartData.slice(-5).map((d) => d.value)
@@ -43,9 +40,20 @@ export default function ExerciseDetailScreen() {
   const isLoading = exLoading || progLoading
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
-      <ScrollView contentContainerStyle={{ padding: spacing.base, gap: spacing.base }}>
-        <Button label="← Back" variant="ghost" onPress={() => router.back()} style={{ alignSelf: 'flex-start' }} />
+    <SafeAreaView style={{ flex: 1, backgroundColor: tokens.bg }}>
+      <ScrollView contentContainerStyle={{ padding: 16, gap: 16 }}>
+        {/* Back link */}
+        <TouchableOpacity onPress={() => router.back()} accessibilityLabel={t('common.back')} accessibilityRole="button">
+          <Text style={{
+            fontFamily: fonts.sansM,
+            fontSize: 12,
+            color: tokens.textMute,
+            textTransform: 'uppercase',
+            letterSpacing: 1,
+          }}>
+            {'‹ '}{t('common.back')}
+          </Text>
+        </TouchableOpacity>
 
         {isLoading && (
           <>
@@ -57,20 +65,26 @@ export default function ExerciseDetailScreen() {
         {exercise && (
           <>
             <View>
-              <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size['2xl'], color: colors.textPrimary }}>
+              <Text style={{
+                fontFamily: fonts.sansX,
+                fontSize: 24,
+                color: tokens.text,
+                textTransform: 'uppercase',
+                letterSpacing: 0.5,
+              }}>
                 {exercise.name}
               </Text>
-              <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted, marginTop: spacing.xs }}>
+              <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute, marginTop: 4 }}>
                 {exercise.muscleGroups.map((mg) => translateMuscleGroup(mg, t)).join(' · ')} · {translateDifficulty(exercise.difficulty, t)}
               </Text>
             </View>
 
             {exercise.description.length > 0 && (
-              <Card accessibilityLabel="Exercise description">
-                <Text style={{ fontFamily: typography.family.regular, color: colors.textPrimary }}>
+              <View style={{ borderWidth: 1, borderColor: tokens.border, padding: 16 }}>
+                <Text style={{ fontFamily: fonts.sans, color: tokens.text }}>
                   {exercise.description}
                 </Text>
-              </Card>
+              </View>
             )}
 
             {exercise.videoUrl && exercise.imageUrl && (
@@ -83,16 +97,19 @@ export default function ExerciseDetailScreen() {
                 accessibilityRole="button"
                 activeOpacity={0.8}
               >
-                <Card>
+                <View style={{ borderWidth: 1, borderColor: tokens.border }}>
                   <Text style={{
-                    fontFamily: typography.family.bold,
-                    color: colors.textPrimary,
-                    marginBottom: spacing.sm,
+                    fontFamily: fonts.sansB,
+                    fontSize: 10,
+                    letterSpacing: 2,
+                    color: tokens.textMute,
                     textTransform: 'uppercase',
+                    padding: 16,
+                    paddingBottom: 8,
                   }}>
                     {t('exercise.demonstration')}
                   </Text>
-                  <View style={{ borderRadius: radius.md, overflow: 'hidden' }}>
+                  <View style={{ overflow: 'hidden' }}>
                     <Image
                       source={{ uri: exercise.imageUrl }}
                       style={{ width: '100%', height: 180 }}
@@ -104,75 +121,146 @@ export default function ExerciseDetailScreen() {
                       backgroundColor: 'rgba(0,0,0,0.3)',
                     }}>
                       <View style={{
-                        width: 48, height: 48, borderRadius: 24,
-                        backgroundColor: colors.primary,
+                        width: 48, height: 48,
+                        backgroundColor: tokens.accent,
                         justifyContent: 'center', alignItems: 'center',
                       }}>
                         <Text style={{ color: '#FFFFFF', fontSize: 20, marginLeft: 3 }}>▶</Text>
                       </View>
                     </View>
                   </View>
-                </Card>
+                </View>
               </TouchableOpacity>
             )}
 
             {/* Metric toggle */}
-            <PillFilter options={METRIC_OPTIONS} selected={metric} onSelect={setMetric} />
+            <View style={{ flexDirection: 'row', gap: 8 }}>
+              {METRIC_OPTIONS.map((opt) => {
+                const active = metric === opt
+                return (
+                  <TouchableOpacity
+                    key={opt}
+                    onPress={() => setMetric(opt)}
+                    style={{
+                      flex: 1,
+                      paddingVertical: 8,
+                      backgroundColor: active ? tokens.accent : 'transparent',
+                      borderWidth: 1,
+                      borderColor: active ? tokens.accent : tokens.borderStrong,
+                      alignItems: 'center',
+                    }}
+                    accessibilityLabel={opt}
+                    accessibilityRole="button"
+                  >
+                    <Text style={{
+                      fontFamily: fonts.sansB,
+                      fontSize: 10,
+                      letterSpacing: 1.4,
+                      textTransform: 'uppercase',
+                      color: active ? '#FFFFFF' : tokens.textMute,
+                    }}>
+                      {opt}
+                    </Text>
+                  </TouchableOpacity>
+                )
+              })}
+            </View>
 
             {/* Progression chart */}
-            <Card accessibilityLabel="Progression chart">
-              <Text style={{ fontFamily: typography.family.bold, color: colors.textPrimary, marginBottom: spacing.sm }}>
+            <View style={{ borderWidth: 1, borderColor: tokens.border, padding: 16 }}>
+              <Text style={{
+                fontFamily: fonts.sansB,
+                fontSize: 10,
+                letterSpacing: 2,
+                color: tokens.textMute,
+                textTransform: 'uppercase',
+                marginBottom: 8,
+              }}>
                 Progression
               </Text>
               <LineChart data={chartData} height={140} width={320} />
-            </Card>
+            </View>
 
             {/* Personal records */}
             {exerciseRecords.length > 0 && (
-              <>
-                <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.xl, color: colors.textPrimary }}>
-                  Personal records
+              <View>
+                <Text style={{
+                  fontFamily: fonts.sansB,
+                  fontSize: 10,
+                  letterSpacing: 3,
+                  color: tokens.textMute,
+                  textTransform: 'uppercase',
+                  marginBottom: 12,
+                }}>
+                  {t('history.records')}
                 </Text>
                 {exerciseRecords.slice(0, 5).map((r) => (
-                  <Card key={r.id} accessibilityLabel={`Record: ${r.weight}kg × ${r.reps} reps`}>
-                    <Text style={{ fontFamily: typography.family.semiBold, color: colors.textPrimary }}>
-                      ★ {r.weight}kg × {r.reps} reps
+                  <View
+                    key={r.id}
+                    style={{
+                      paddingVertical: 10,
+                      borderTopWidth: 1,
+                      borderTopColor: tokens.border,
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <Text style={{ fontFamily: fonts.sansB, fontSize: 14, color: tokens.accent }}>
+                      {r.weight} kg x {r.reps}
                     </Text>
-                    <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted }}>
-                      {new Date(r.achievedAt).toLocaleDateString()}
+                    <Text style={{ fontFamily: fonts.mono, fontSize: 11, color: tokens.textMute }}>
+                      {new Date(r.achievedAt).toLocaleDateString('fr-FR')}
                     </Text>
-                  </Card>
+                  </View>
                 ))}
-              </>
+              </View>
             )}
 
             {/* Goal progress */}
             {currentMax > 0 && (
-              <Card accessibilityLabel="Goal progress">
-                <Text style={{ fontFamily: typography.family.bold, color: colors.textPrimary, marginBottom: spacing.sm }}>
-                  Goal progress
+              <View style={{ borderWidth: 1, borderColor: tokens.border, padding: 16 }}>
+                <Text style={{
+                  fontFamily: fonts.sansB,
+                  fontSize: 10,
+                  letterSpacing: 2,
+                  color: tokens.textMute,
+                  textTransform: 'uppercase',
+                  marginBottom: 8,
+                }}>
+                  {t('exercise.goalProgress')}
                 </Text>
                 <ProgressBar
                   start={0}
                   current={currentMax}
                   target={Math.round(currentMax * 1.1)}
-                  label="+10% target"
+                  label="+10%"
                 />
-              </Card>
+              </View>
             )}
 
             {/* Coaching tip */}
-            <Card
-              style={{ borderLeftWidth: 3, borderLeftColor: colors.primary }}
-              accessibilityLabel="Coaching tip"
-            >
-              <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.base, color: colors.textMuted, marginBottom: spacing.xs }}>
-                Coach says
+            <View style={{
+              borderWidth: 1,
+              borderColor: tokens.border,
+              borderLeftWidth: 3,
+              borderLeftColor: tokens.accent,
+              padding: 16,
+            }}>
+              <Text style={{
+                fontFamily: fonts.sansB,
+                fontSize: 9,
+                letterSpacing: 2,
+                color: tokens.textMute,
+                textTransform: 'uppercase',
+                marginBottom: 4,
+              }}>
+                Coach
               </Text>
-              <Text style={{ fontFamily: typography.family.regular, color: colors.textPrimary }}>
+              <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.text }}>
                 {tip}
               </Text>
-            </Card>
+            </View>
           </>
         )}
       </ScrollView>

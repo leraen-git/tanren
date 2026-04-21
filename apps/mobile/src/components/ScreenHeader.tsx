@@ -12,7 +12,7 @@ interface ScreenHeaderProps {
 }
 
 export function ScreenHeader({ title, showBack = true, onBack, right }: ScreenHeaderProps) {
-  const { tokens, typography, spacing } = useTheme()
+  const { tokens, fonts } = useTheme()
   const { t } = useTranslation()
 
   return (
@@ -20,8 +20,8 @@ export function ScreenHeader({ title, showBack = true, onBack, right }: ScreenHe
       style={{
         flexDirection: 'row',
         alignItems: 'center',
-        paddingHorizontal: spacing.base,
-        paddingVertical: spacing.md,
+        paddingHorizontal: 16,
+        paddingVertical: 12,
         minHeight: 48,
       }}
     >
@@ -30,18 +30,18 @@ export function ScreenHeader({ title, showBack = true, onBack, right }: ScreenHe
           onPress={onBack ?? (() => router.back())}
           accessibilityLabel={t('common.back')}
           accessibilityRole="button"
-          style={{ marginRight: spacing.md }}
+          style={{ marginRight: 12 }}
         >
           <Text
             style={{
-              fontFamily: typography.family.sansM,
-              fontSize: 13,
+              fontFamily: fonts.sansB,
+              fontSize: 10,
               letterSpacing: 2,
               textTransform: 'uppercase',
-              color: tokens.textMute,
+              color: tokens.accent,
             }}
           >
-            {'‹ '}{t('common.back')}
+            {'< BACK'}
           </Text>
         </TouchableOpacity>
       )}
@@ -49,19 +49,19 @@ export function ScreenHeader({ title, showBack = true, onBack, right }: ScreenHe
         <Text
           style={{
             flex: 1,
-            fontFamily: typography.family.sansX,
-            fontSize: typography.size['2xl'],
+            fontFamily: fonts.sansX,
+            fontSize: 20,
             letterSpacing: 0.9,
             textTransform: 'uppercase',
             color: tokens.text,
-            textAlign: showBack ? 'center' : 'left',
+            textAlign: showBack ? 'left' : 'left',
           }}
           numberOfLines={1}
         >
           {title}
         </Text>
       )}
-      {right ? <View style={{ marginLeft: 'auto' }}>{right}</View> : showBack && title ? <View style={{ width: 60 }} /> : null}
+      {right ? <View style={{ marginLeft: 'auto' }}>{right}</View> : null}
     </View>
   )
 }

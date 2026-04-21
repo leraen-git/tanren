@@ -3,7 +3,6 @@ import { View, Text, TouchableOpacity, ScrollView } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
-import { colors as tokenColors } from '@/theme/tokens'
 import { trpc } from '@/lib/trpc'
 import { useTranslation } from 'react-i18next'
 
@@ -14,21 +13,16 @@ function DataRow({
   value: string
   muted?: boolean
 }) {
-  const { colors, typography } = useTheme()
+  const { tokens, fonts } = useTheme()
   return (
-    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-      <Text style={{
-        fontFamily: typography.family.regular,
-        fontSize: typography.size.base,
-        color: colors.textMuted,
-        flex: 1,
-      }}>
+    <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: tokens.border }}>
+      <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute, flex: 1 }}>
         {label}
       </Text>
       <Text style={{
-        fontFamily: muted ? typography.family.regular : typography.family.semiBold,
-        fontSize: typography.size.base,
-        color: muted ? colors.textMuted : colors.textPrimary,
+        fontFamily: muted ? fonts.sans : fonts.sansB,
+        fontSize: 12,
+        color: muted ? tokens.textMute : tokens.text,
         textAlign: 'right',
         maxWidth: '55%',
       }}>
@@ -39,7 +33,7 @@ function DataRow({
 }
 
 export default function OnboardingStep0() {
-  const { colors, typography, spacing, radius } = useTheme()
+  const { tokens, fonts } = useTheme()
   const { t } = useTranslation()
   const { data: user } = trpc.users.me.useQuery()
 
@@ -47,62 +41,40 @@ export default function OnboardingStep0() {
   const isPrivateRelay = user?.email?.endsWith('@privaterelay.appleid.com') ?? false
   const displayEmail = isPrivateRelay
     ? t('onboarding.step0PrivateEmail')
-    : (user?.email ?? '…')
+    : (user?.email ?? '...')
 
-  // Apple: name only on first sign-in (excluded "Athlete" fallback)
-  // Google: always provides name
   const hasName = user?.name && user.name !== 'Athlete'
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: tokens.bg }}>
       <ScrollView
-        contentContainerStyle={{ padding: spacing.xl, gap: spacing.xl }}
+        contentContainerStyle={{ padding: 20, gap: 24 }}
         showsVerticalScrollIndicator={false}
       >
-        {/* Progress dots — 4 steps total, step 0 active */}
-        <View style={{ flexDirection: 'row', gap: spacing.sm, justifyContent: 'center', marginTop: spacing.base }}>
-          <View style={{ width: 24, height: 6, borderRadius: 3, backgroundColor: colors.primary }} />
-          <View style={{ width: 8, height: 6, borderRadius: 3, backgroundColor: colors.surface2 }} />
-          <View style={{ width: 8, height: 6, borderRadius: 3, backgroundColor: colors.surface2 }} />
-          <View style={{ width: 8, height: 6, borderRadius: 3, backgroundColor: colors.surface2 }} />
+        {/* Progress dots */}
+        <View style={{ flexDirection: 'row', gap: 4, justifyContent: 'center', marginTop: 16 }}>
+          <View style={{ width: 16, height: 6, backgroundColor: tokens.accent }} />
+          <View style={{ width: 6, height: 6, backgroundColor: tokens.border }} />
+          <View style={{ width: 6, height: 6, backgroundColor: tokens.border }} />
+          <View style={{ width: 6, height: 6, backgroundColor: tokens.border }} />
         </View>
 
         {/* Title */}
-        <View style={{ gap: spacing.sm }}>
-          <Text style={{
-            fontFamily: typography.family.extraBold,
-            fontSize: typography.size['3xl'],
-            color: colors.textPrimary,
-          }}>
+        <View style={{ gap: 6 }}>
+          <Text style={{ fontFamily: fonts.sansX, fontSize: 24, color: tokens.text, textTransform: 'uppercase' }}>
             {t('onboarding.step0Title')}{'\n'}
-            <Text style={{ color: colors.primary }}>
+            <Text style={{ color: tokens.accent }}>
               {t('onboarding.step0TitleHighlight')}
             </Text>
           </Text>
-          <Text style={{
-            fontFamily: typography.family.regular,
-            fontSize: typography.size.body,
-            color: colors.textMuted,
-            lineHeight: 22,
-          }}>
+          <Text style={{ fontFamily: fonts.sans, fontSize: 13, color: tokens.textMute, lineHeight: 20 }}>
             {t('onboarding.step0Subtitle')}
           </Text>
         </View>
 
         {/* What the provider shared */}
-        <View style={{
-          backgroundColor: colors.surface,
-          borderRadius: radius.lg,
-          padding: spacing.base,
-          gap: spacing.md,
-        }}>
-          <Text style={{
-            fontFamily: typography.family.semiBold,
-            fontSize: typography.size.xs,
-            color: colors.textMuted,
-            textTransform: 'uppercase',
-            letterSpacing: 1.2,
-          }}>
+        <View style={{ borderWidth: 1, borderColor: tokens.border, padding: 12, gap: 4 }}>
+          <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2, marginBottom: 4 }}>
             {isGoogle ? t('onboarding.step0GoogleSection') : t('onboarding.step0AppleSection')}
           </Text>
           <DataRow label={t('onboarding.step0Email')} value={displayEmail} />
@@ -110,24 +82,13 @@ export default function OnboardingStep0() {
             <DataRow label={t('onboarding.step0Name')} value={user!.name} />
           )}
           {isGoogle && user?.avatarUrl && (
-            <DataRow label={t('onboarding.step0AvatarUrl')} value="✓" />
+            <DataRow label={t('onboarding.step0AvatarUrl')} value="V" />
           )}
         </View>
 
         {/* What we'll ask next */}
-        <View style={{
-          backgroundColor: colors.surface,
-          borderRadius: radius.lg,
-          padding: spacing.base,
-          gap: spacing.md,
-        }}>
-          <Text style={{
-            fontFamily: typography.family.semiBold,
-            fontSize: typography.size.xs,
-            color: colors.textMuted,
-            textTransform: 'uppercase',
-            letterSpacing: 1.2,
-          }}>
+        <View style={{ borderWidth: 1, borderColor: tokens.border, padding: 12, gap: 4 }}>
+          <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2, marginBottom: 4 }}>
             {t('onboarding.step0YouSection')}
           </Text>
           <DataRow label={t('onboarding.step0Gender')} value={t('onboarding.step0YouEnter')} muted />
@@ -142,11 +103,8 @@ export default function OnboardingStep0() {
           accessibilityLabel={t('onboarding.step0PrivacyLink')}
         >
           <Text style={{
-            fontFamily: typography.family.regular,
-            fontSize: typography.size.base,
-            color: colors.primary,
-            textAlign: 'center',
-            textDecorationLine: 'underline',
+            fontFamily: fonts.sansB, fontSize: 11, color: tokens.accent,
+            textAlign: 'center', textTransform: 'uppercase', letterSpacing: 1,
           }}>
             {t('onboarding.step0PrivacyLink')}
           </Text>
@@ -156,20 +114,16 @@ export default function OnboardingStep0() {
         <TouchableOpacity
           onPress={() => router.push('/onboarding/step1')}
           style={{
-            backgroundColor: colors.primary,
-            borderRadius: radius.lg,
-            paddingVertical: spacing.base,
+            backgroundColor: tokens.accent,
+            height: 48,
             alignItems: 'center',
-            marginBottom: spacing.xl,
+            justifyContent: 'center',
+            marginBottom: 20,
           }}
           accessibilityLabel={t('onboarding.step0Agree')}
           accessibilityRole="button"
         >
-          <Text style={{
-            fontFamily: typography.family.extraBold,
-            fontSize: typography.size.xl,
-            color: tokenColors.white,
-          }}>
+          <Text style={{ fontFamily: fonts.sansX, fontSize: 14, color: '#FFFFFF', textTransform: 'uppercase', letterSpacing: 1 }}>
             {t('onboarding.step0Agree')}
           </Text>
         </TouchableOpacity>

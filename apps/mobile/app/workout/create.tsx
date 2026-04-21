@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { View, Text, TextInput, ScrollView } from 'react-native'
+import { View, Text, TextInput, ScrollView, TouchableOpacity } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
@@ -7,7 +7,7 @@ import { Button } from '@/components/Button'
 import { trpc } from '@/lib/trpc'
 
 export default function CreateWorkoutScreen() {
-  const { colors, typography, spacing, radius } = useTheme()
+  const { tokens, fonts } = useTheme()
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
   const utils = trpc.useUtils()
@@ -19,43 +19,59 @@ export default function CreateWorkoutScreen() {
     },
   })
 
-  const inputStyle = {
-    backgroundColor: colors.surface,
-    borderRadius: radius.md,
-    padding: spacing.md,
-    color: colors.textPrimary,
-    fontFamily: typography.family.regular,
-    fontSize: typography.size.body,
-    marginTop: spacing.xs,
-  }
-
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
-      <ScrollView contentContainerStyle={{ padding: spacing.base, gap: spacing.base }}>
-        <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size['2xl'], color: colors.textPrimary }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: tokens.bg }}>
+      <ScrollView contentContainerStyle={{ padding: 16, gap: 20 }}>
+        <TouchableOpacity onPress={() => router.back()} accessibilityLabel="Go back" accessibilityRole="button">
+          <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.accent, textTransform: 'uppercase', letterSpacing: 2 }}>
+            {'< BACK'}
+          </Text>
+        </TouchableOpacity>
+
+        <Text style={{ fontFamily: fonts.sansX, fontSize: 24, color: tokens.text, textTransform: 'uppercase' }}>
           New workout
         </Text>
 
-        <View>
-          <Text style={{ fontFamily: typography.family.semiBold, color: colors.textMuted }}>Name *</Text>
+        <View style={{ gap: 6 }}>
+          <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
+            NAME *
+          </Text>
           <TextInput
             value={name}
             onChangeText={setName}
-            style={inputStyle}
+            style={{
+              fontFamily: fonts.sansX,
+              fontSize: 20,
+              color: tokens.text,
+              borderBottomWidth: 1,
+              borderBottomColor: tokens.border,
+              paddingVertical: 6,
+            }}
             placeholder="e.g. Push Day A"
-            placeholderTextColor={colors.textMuted}
+            placeholderTextColor={tokens.textGhost}
             accessibilityLabel="Workout name"
           />
         </View>
 
-        <View>
-          <Text style={{ fontFamily: typography.family.semiBold, color: colors.textMuted }}>Description</Text>
+        <View style={{ gap: 6 }}>
+          <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
+            DESCRIPTION
+          </Text>
           <TextInput
             value={description}
             onChangeText={setDescription}
-            style={[inputStyle, { height: 100, textAlignVertical: 'top' }]}
+            style={{
+              fontFamily: fonts.sans,
+              fontSize: 14,
+              color: tokens.text,
+              borderWidth: 1,
+              borderColor: tokens.border,
+              padding: 12,
+              minHeight: 100,
+              textAlignVertical: 'top',
+            }}
             placeholder="Optional notes..."
-            placeholderTextColor={colors.textMuted}
+            placeholderTextColor={tokens.textGhost}
             multiline
             accessibilityLabel="Workout description"
           />
@@ -67,7 +83,16 @@ export default function CreateWorkoutScreen() {
           loading={createWorkout.isPending}
           disabled={!name.trim()}
         />
-        <Button label="Cancel" variant="ghost" onPress={() => router.back()} />
+        <TouchableOpacity
+          onPress={() => router.back()}
+          style={{ height: 44, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: tokens.border }}
+          accessibilityLabel="Cancel"
+          accessibilityRole="button"
+        >
+          <Text style={{ fontFamily: fonts.sansB, fontSize: 13, color: tokens.textDim, textTransform: 'uppercase', letterSpacing: 1 }}>
+            CANCEL
+          </Text>
+        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   )

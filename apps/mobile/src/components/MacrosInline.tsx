@@ -9,7 +9,7 @@ interface MacrosInlineProps {
 }
 
 export function MacrosInline({ protein, carbs, fat }: MacrosInlineProps) {
-  const { tokens, typography, spacing } = useTheme()
+  const { tokens, fonts } = useTheme()
 
   const items = [
     { key: 'P', value: protein, color: tokens.accent },
@@ -18,17 +18,9 @@ export function MacrosInline({ protein, carbs, fat }: MacrosInlineProps) {
   ]
 
   return (
-    <View style={{ flexDirection: 'row', gap: spacing.md }}>
+    <View style={{ flexDirection: 'row', gap: 12 }}>
       {items.map((m) => (
-        <Text
-          key={m.key}
-          style={{
-            fontFamily: typography.family.sansB,
-            fontSize: 12,
-            letterSpacing: 0.7,
-            color: m.color,
-          }}
-        >
+        <Text key={m.key} style={{ fontFamily: fonts.sansB, fontSize: 12, letterSpacing: 0.7, color: m.color }}>
           {m.key} {m.value}g
         </Text>
       ))}

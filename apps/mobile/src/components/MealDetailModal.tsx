@@ -1,15 +1,14 @@
 import React from 'react'
 import { View, Text, ScrollView, TouchableOpacity, Modal, Linking, Dimensions } from 'react-native'
 import { useTheme } from '@/theme/ThemeContext'
-import { colors as tokenColors } from '@/theme/tokens'
 import { useTranslation } from 'react-i18next'
 
 export const MEAL_ICONS: Record<string, string> = {
-  breakfast: '🌅',
-  lunch: '☀️',
-  snack: '🍎',
-  dinner: '🌙',
-  dessert: '🍫',
+  breakfast: 'AM',
+  lunch: 'MD',
+  snack: 'SN',
+  dinner: 'PM',
+  dessert: 'DS',
 }
 
 const MEAL_ORDER: Record<string, number> = {
@@ -20,24 +19,16 @@ const MEAL_ORDER: Record<string, number> = {
   dessert: 4,
 }
 
-// Name keywords that identify a mid-morning snack → sorts after breakfast (0.5)
 const SNACK_AM_KEYWORDS = ['mid-morning', 'mid morning', 'morning snack', 'pre-workout', 'pre workout', 'pre-lunch', 'mid-matin']
-// Name keywords that identify an afternoon snack → sorts between lunch and dinner (2)
 const SNACK_PM_KEYWORDS = ['afternoon', 'après-midi', 'evening snack', 'pre-dinner', 'post-workout', 'post workout', 'post-lunch']
-// All snack-like keywords (union of the above + generic)
 const SNACK_KEYWORDS = [...SNACK_AM_KEYWORDS, ...SNACK_PM_KEYWORDS, 'snack', 'collation']
 
-// Fractional sort order for snack based on AM vs PM timing in the meal name.
 function getSnackSortOrder(name: string): number {
   const lower = name.toLowerCase()
-  if (SNACK_AM_KEYWORDS.some((k) => lower.includes(k))) return 0.5  // after breakfast, before lunch
-  return 2  // default: between lunch and dinner
+  if (SNACK_AM_KEYWORDS.some((k) => lower.includes(k))) return 0.5
+  return 2
 }
 
-// Sorts meals into canonical order and normalises duplicate types:
-// if a type appears more than once (e.g. two breakfasts from a bad AI response)
-// and the meal name looks snack-like, its type is reassigned to 'snack' so the
-// label and sort position are corrected automatically.
 export function sortMeals<T extends { type: string; name: string }>(meals: T[]): T[] {
   const typeCounts: Record<string, number> = {}
   for (const m of meals) typeCounts[m.type] = (typeCounts[m.type] ?? 0) + 1
@@ -73,7 +64,7 @@ export type DietMeal = {
 }
 
 export const MealDetailModal = React.memo(function MealDetailModal({ meal, onClose }: { meal: DietMeal | null; onClose: () => void }) {
-  const { colors, typography, spacing, radius } = useTheme()
+  const { tokens, fonts } = useTheme()
   const { t } = useTranslation()
   if (!meal) return null
 
@@ -82,85 +73,75 @@ export const MealDetailModal = React.memo(function MealDetailModal({ meal, onClo
 
   return (
     <Modal visible animationType="slide" transparent onRequestClose={onClose}>
-      {/*
-        Layout:
-        - TouchableOpacity (flex:1) = backdrop, fills everything BEHIND the sheet
-        - View (position:absolute, bottom:0, explicit height) = sheet ON TOP
-        Since the sheet is rendered after the backdrop and is position:absolute,
-        it sits in a higher z-layer. Touches on the sheet go to the sheet;
-        touches on the backdrop area (above the sheet) close the modal.
-        The ScrollView gets a concrete pixel height to scroll within.
-      */}
-
-      {/* Backdrop */}
       <TouchableOpacity
-        style={{ flex: 1, backgroundColor: tokenColors.overlay.backdrop }}
+        style={{ flex: 1, backgroundColor: tokens.overlay }}
         activeOpacity={1}
         onPress={onClose}
         accessibilityLabel="Close meal detail"
         accessibilityRole="button"
       />
 
-      {/* Sheet — position:absolute gives it an explicit height the ScrollView can resolve */}
       <View style={{
-        position: 'absolute',
-        bottom: 0, left: 0, right: 0,
-        height: SHEET_HEIGHT,
-        backgroundColor: colors.background,
-        borderTopLeftRadius: 24,
-        borderTopRightRadius: 24,
+        position: 'absolute', bottom: 0, left: 0, right: 0,
+        height: SHEET_HEIGHT, backgroundColor: tokens.bg,
       }}>
         {/* Drag handle */}
-        <View style={{ alignItems: 'center', paddingTop: spacing.md, paddingBottom: spacing.xs }}>
-          <View style={{ width: 40, height: 4, borderRadius: 2, backgroundColor: colors.surface2 }} />
+        <View style={{ alignItems: 'center', paddingTop: 12, paddingBottom: 4 }}>
+          <View style={{ width: 40, height: 3, backgroundColor: tokens.border }} />
         </View>
 
-        {/* Scrollable content — flex:1 fills the remaining sheet height */}
         <ScrollView
           style={{ flex: 1 }}
-          contentContainerStyle={{ padding: spacing.base, gap: spacing.lg, paddingBottom: 48 }}
+          contentContainerStyle={{ padding: 16, gap: 16, paddingBottom: 48 }}
           showsVerticalScrollIndicator={false}
         >
           {/* Title row */}
-          <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: spacing.md }}>
-            <Text style={{ fontSize: 36 }}>{MEAL_ICONS[meal.type] ?? '🍴'}</Text>
-            <View style={{ flex: 1 }}>
-              <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.xs, color: colors.textMuted, textTransform: 'uppercase', letterSpacing: 0.5 }}>
-                {t(`diet.mealType.${meal.type}`, { defaultValue: meal.type })}
-                {meal.isTreat ? ' ✨' : ''}{meal.batchCookable ? ' · 🍱' : ''}
-                {meal.prepTime ? ` · ${meal.prepTime} min` : ''}
+          <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 12 }}>
+            <View style={{ width: 44, height: 44, borderWidth: 1, borderColor: tokens.accent, alignItems: 'center', justifyContent: 'center' }}>
+              <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.accent, letterSpacing: 1 }}>
+                {MEAL_ICONS[meal.type] ?? 'ML'}
               </Text>
-              <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size['2xl'], color: colors.textPrimary }}>
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 1.4 }}>
+                {t(`diet.mealType.${meal.type}`, { defaultValue: meal.type })}
+                {meal.batchCookable ? ' / BATCH' : ''}
+                {meal.prepTime ? ` / ${meal.prepTime} min` : ''}
+              </Text>
+              <Text style={{ fontFamily: fonts.sansX, fontSize: 20, color: tokens.text, textTransform: 'uppercase' }}>
                 {meal.name}
               </Text>
             </View>
           </View>
 
-          {/* Macro pills */}
-          <View style={{ flexDirection: 'row', gap: spacing.sm }}>
+          {/* Macro strip */}
+          <View style={{ flexDirection: 'row', borderWidth: 1, borderColor: tokens.border }}>
             {[
-              { label: t('diet.kcal'), value: meal.calories, color: colors.textPrimary },
-              { label: t('diet.protein'), value: `${meal.protein}g`, color: colors.primary },
-              { label: t('diet.carbs'), value: `${meal.carbs}g`, color: colors.carbsAccent },
-              { label: t('diet.fat'), value: `${meal.fat}g`, color: colors.fatAccent },
-            ].map((m) => (
-              <View key={m.label} style={{ flex: 1, backgroundColor: colors.surface, borderRadius: radius.md, padding: spacing.sm, alignItems: 'center' }}>
-                <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size.base, color: m.color }}>{m.value}</Text>
-                <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted }}>{m.label}</Text>
+              { label: 'KCAL', value: meal.calories, color: tokens.text },
+              { label: t('diet.protein'), value: `${meal.protein}g`, color: tokens.accent },
+              { label: t('diet.carbs'), value: `${meal.carbs}g`, color: tokens.amber },
+              { label: t('diet.fat'), value: `${meal.fat}g`, color: tokens.green },
+            ].map((m, i) => (
+              <View key={m.label} style={{
+                flex: 1, alignItems: 'center', paddingVertical: 10,
+                borderLeftWidth: i > 0 ? 1 : 0, borderLeftColor: tokens.border,
+              }}>
+                <Text style={{ fontFamily: fonts.sansX, fontSize: 16, color: m.color }}>{m.value}</Text>
+                <Text style={{ fontFamily: fonts.sansM, fontSize: 8, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 1 }}>{m.label}</Text>
               </View>
             ))}
           </View>
 
           {/* Ingredients */}
           {(meal.ingredients?.length ?? 0) > 0 && (
-            <View style={{ gap: spacing.sm }}>
-              <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.xl, color: colors.textPrimary }}>
-                🛒 {t('diet.ingredients')}
+            <View style={{ gap: 6 }}>
+              <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
+                {t('diet.ingredients')}
               </Text>
               {meal.ingredients!.map((ing, i) => (
-                <View key={i} style={{ flexDirection: 'row', gap: spacing.sm, alignItems: 'flex-start' }}>
-                  <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: colors.primary, marginTop: 7, flexShrink: 0 }} />
-                  <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.body, color: colors.textPrimary, flex: 1 }}>
+                <View key={i} style={{ flexDirection: 'row', gap: 8, alignItems: 'flex-start' }}>
+                  <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.accent, marginTop: 1 }}>-</Text>
+                  <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.text, flex: 1, lineHeight: 18 }}>
                     {ing}
                   </Text>
                 </View>
@@ -170,16 +151,16 @@ export const MealDetailModal = React.memo(function MealDetailModal({ meal, onClo
 
           {/* Preparation */}
           {(meal.preparationSteps?.length ?? 0) > 0 && (
-            <View style={{ gap: spacing.sm }}>
-              <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.xl, color: colors.textPrimary }}>
-                👨‍🍳 {t('diet.preparation')}
+            <View style={{ gap: 6 }}>
+              <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
+                {t('diet.preparation')}
               </Text>
               {meal.preparationSteps!.map((step, i) => (
-                <View key={i} style={{ flexDirection: 'row', gap: spacing.md, alignItems: 'flex-start', backgroundColor: colors.surface, borderRadius: radius.md, padding: spacing.md }}>
-                  <View style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size.xs, color: tokenColors.white }}>{i + 1}</Text>
+                <View key={i} style={{ flexDirection: 'row', gap: 10, alignItems: 'flex-start', borderBottomWidth: 1, borderBottomColor: tokens.border, paddingVertical: 8 }}>
+                  <View style={{ width: 24, height: 24, borderWidth: 1, borderColor: tokens.accent, alignItems: 'center', justifyContent: 'center' }}>
+                    <Text style={{ fontFamily: fonts.sansB, fontSize: 11, color: tokens.accent }}>{i + 1}</Text>
                   </View>
-                  <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.body, color: colors.textPrimary, flex: 1, lineHeight: 22 }}>
+                  <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.text, flex: 1, lineHeight: 18 }}>
                     {step}
                   </Text>
                 </View>
@@ -187,41 +168,37 @@ export const MealDetailModal = React.memo(function MealDetailModal({ meal, onClo
             </View>
           )}
 
-          {/* No recipe fallback */}
           {!hasRecipe && (
-            <View style={{ backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.base, alignItems: 'center', gap: spacing.sm }}>
-              <Text style={{ fontSize: 32 }}>🍽️</Text>
-              <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted, textAlign: 'center' }}>
+            <View style={{ borderWidth: 1, borderColor: tokens.border, padding: 16, alignItems: 'center', gap: 6 }}>
+              <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute, textAlign: 'center' }}>
                 {t('diet.noRecipe')}
               </Text>
             </View>
           )}
 
-          {/* Video link */}
           {meal.recipeVideoUrl && (
             <TouchableOpacity
               onPress={() => Linking.openURL(meal.recipeVideoUrl!)}
               style={{
                 flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-                gap: spacing.sm, backgroundColor: colors.youtubeRed,
-                borderRadius: radius.lg, paddingVertical: spacing.md,
+                gap: 8, backgroundColor: tokens.accent, height: 44,
               }}
               accessibilityLabel={t('diet.watchYoutube')} accessibilityRole="link"
             >
-              <Text style={{ fontSize: 20 }}>▶️</Text>
-              <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.body, color: tokenColors.white }}>
+              <Text style={{ fontFamily: fonts.sansB, fontSize: 12, color: '#FFFFFF', textTransform: 'uppercase', letterSpacing: 1 }}>
                 {t('diet.watchYoutube')}
               </Text>
             </TouchableOpacity>
           )}
 
-          {/* Close */}
           <TouchableOpacity
             onPress={onClose}
-            style={{ alignItems: 'center', paddingVertical: spacing.md }}
+            style={{ height: 44, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: tokens.border }}
             accessibilityLabel={t('common.close')} accessibilityRole="button"
           >
-            <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.base, color: colors.textMuted }}>{t('common.close')}</Text>
+            <Text style={{ fontFamily: fonts.sansB, fontSize: 11, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 1 }}>
+              {t('common.close')}
+            </Text>
           </TouchableOpacity>
         </ScrollView>
       </View>

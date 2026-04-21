@@ -6,11 +6,10 @@ import { useTheme } from '@/theme/ThemeContext'
 import { Button } from '@/components/Button'
 import { trpc } from '@/lib/trpc'
 import { useAIPlanStore } from '@/stores/aiPlanStore'
-import { colors as tokenColors } from '@/theme/tokens'
 import { useTranslation } from 'react-i18next'
 
 export default function GeneratePlanScreen() {
-  const { colors, typography, spacing, radius } = useTheme()
+  const { tokens, fonts } = useTheme()
   const { t } = useTranslation()
   const { data: user } = trpc.users.me.useQuery()
   const { conversationHistory, lastPrompt, setPendingPrompt, reset } = useAIPlanStore()
@@ -48,39 +47,51 @@ export default function GeneratePlanScreen() {
   const isRefinement = conversationHistory.length > 0
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: tokens.bg }}>
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         {/* Header */}
-        <View style={{ flexDirection: 'row', alignItems: 'center', padding: spacing.base, gap: spacing.md }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', padding: 16, gap: 12 }}>
           <TouchableOpacity
             onPress={() => { reset(); router.back() }}
             accessibilityLabel={t('common.back')}
             accessibilityRole="button"
           >
-            <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.title, color: colors.primary }}>←</Text>
+            <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.accent, textTransform: 'uppercase', letterSpacing: 2 }}>
+              {'< BACK'}
+            </Text>
           </TouchableOpacity>
-          <View style={{ flex: 1 }}>
-            <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size.xl, color: colors.textPrimary }}>
-              {isRefinement ? t('generate.titleRefine') : t('generate.title')}
-            </Text>
-            <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted }}>
-              {t('generate.poweredBy')}
-            </Text>
+          <View style={{ flex: 1 }} />
+          <View style={{
+            borderWidth: 1,
+            borderColor: tokens.accent,
+            paddingHorizontal: 8,
+            paddingVertical: 3,
+          }}>
+            <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.accent, letterSpacing: 1.4 }}>AI</Text>
           </View>
-          <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.xs, color: colors.primary, letterSpacing: 1 }}>AI</Text>
+        </View>
+
+        {/* Title */}
+        <View style={{ paddingHorizontal: 16, marginBottom: 16 }}>
+          <Text style={{ fontFamily: fonts.sansX, fontSize: 24, color: tokens.text, textTransform: 'uppercase' }}>
+            {isRefinement ? t('generate.titleRefine') : t('generate.title')}
+          </Text>
+          <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute, marginTop: 4 }}>
+            {t('generate.poweredBy')}
+          </Text>
         </View>
 
         <ScrollView
-          contentContainerStyle={{ padding: spacing.base, gap: spacing.base, paddingBottom: spacing.xl }}
+          contentContainerStyle={{ padding: 16, gap: 20, paddingBottom: 40 }}
           keyboardShouldPersistTaps="handled"
         >
           {/* Profile chips */}
           {user && (
-            <View style={{ gap: spacing.xs }}>
-              <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.base, color: colors.textMuted }}>
-                {t('generate.yourProfile')}
+            <View style={{ gap: 8 }}>
+              <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
+                YOUR PROFILE
               </Text>
-              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs }}>
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
                 {[
                   LEVEL_LABELS[user.level] ?? user.level,
                   GOAL_LABELS[user.goal] ?? user.goal,
@@ -91,14 +102,14 @@ export default function GeneratePlanScreen() {
                   <View
                     key={chip}
                     style={{
-                      paddingVertical: spacing.xs,
-                      paddingHorizontal: spacing.md,
-                      borderRadius: radius.pill,
-                      backgroundColor: `${colors.primary}18`,
+                      paddingVertical: 4,
+                      paddingHorizontal: 10,
+                      borderWidth: 1,
+                      borderColor: tokens.accent,
                     }}
                   >
-                    <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.base, color: colors.primary }}>
-                      {chip}
+                    <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.accent, letterSpacing: 1 }}>
+                      {chip.toUpperCase()}
                     </Text>
                   </View>
                 ))}
@@ -107,61 +118,61 @@ export default function GeneratePlanScreen() {
           )}
 
           {/* Prompt input */}
-          <View style={{ gap: spacing.sm }}>
-            <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.body, color: colors.textPrimary }}>
-              {isRefinement ? t('generate.refinementLabel') : t('generate.describeLabel')}
+          <View style={{ gap: 8 }}>
+            <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
+              {isRefinement ? t('generate.refinementLabel').toUpperCase() : t('generate.describeLabel').toUpperCase()}
             </Text>
             <TextInput
               value={prompt}
               onChangeText={setPrompt}
               placeholder={isRefinement ? t('generate.refinementPlaceholder') : t('generate.placeholder')}
-              placeholderTextColor={colors.textMuted}
+              placeholderTextColor={tokens.textGhost}
               multiline
               numberOfLines={5}
               textAlignVertical="top"
               style={{
-                backgroundColor: colors.surface,
-                borderRadius: radius.md,
-                padding: spacing.md,
-                color: colors.textPrimary,
-                fontFamily: typography.family.regular,
-                fontSize: typography.size.body,
+                backgroundColor: tokens.surface1,
+                padding: 12,
+                color: tokens.text,
+                fontFamily: fonts.sans,
+                fontSize: 14,
                 minHeight: 120,
                 borderWidth: 1,
-                borderColor: colors.surface2,
+                borderColor: tokens.border,
               }}
               accessibilityLabel={t('generate.describeLabel')}
             />
           </View>
 
-          {/* Quick suggestions (only on first generation) */}
+          {/* Quick suggestions */}
           {!isRefinement && (
-            <View style={{ gap: spacing.sm }}>
-              <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.base, color: colors.textMuted }}>
-                {t('generate.quickStart')}
+            <View style={{ gap: 8 }}>
+              <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
+                QUICK START
               </Text>
-              <View style={{ gap: spacing.xs }}>
-                {PROMPT_SUGGESTIONS.map((s) => (
+              <View style={{ gap: 0 }}>
+                {PROMPT_SUGGESTIONS.map((s, i) => (
                   <TouchableOpacity
                     key={s}
                     onPress={() => setPrompt(s)}
                     style={{
-                      backgroundColor: colors.surface,
-                      borderRadius: radius.md,
-                      padding: spacing.md,
+                      paddingVertical: 12,
+                      paddingHorizontal: 12,
                       flexDirection: 'row',
                       alignItems: 'center',
-                      gap: spacing.sm,
-                      borderWidth: 1,
-                      borderColor: colors.surface2,
+                      gap: 8,
+                      borderBottomWidth: 1,
+                      borderBottomColor: tokens.border,
+                      borderTopWidth: i === 0 ? 1 : 0,
+                      borderTopColor: tokens.border,
                     }}
                     accessibilityLabel={s}
                     accessibilityRole="button"
                   >
-                    <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted, flex: 1 }}>
+                    <Text style={{ fontFamily: fonts.sans, fontSize: 13, color: tokens.textDim, flex: 1 }}>
                       {s}
                     </Text>
-                    <Text style={{ color: colors.primary, fontFamily: typography.family.bold }}>↗</Text>
+                    <Text style={{ color: tokens.accent, fontFamily: fonts.sansB, fontSize: 12 }}>-{'>'}</Text>
                   </TouchableOpacity>
                 ))}
               </View>

@@ -8,7 +8,7 @@ interface BarChartProps {
 }
 
 export const BarChart = React.memo(function BarChart({ data, height = 120 }: BarChartProps) {
-  const { colors, typography, spacing } = useTheme()
+  const { tokens, fonts } = useTheme()
 
   const max = useMemo(() => Math.max(...data.map((d) => d.value), 1), [data])
 
@@ -22,12 +22,7 @@ export const BarChart = React.memo(function BarChart({ data, height = 120 }: Bar
             <View key={i} style={[styles.barCol, { height }]}>
               <View style={styles.barInner}>
                 <View
-                  style={{
-                    height: barHeight,
-                    backgroundColor: isActive ? colors.primary : colors.surface2,
-                    borderRadius: 3,
-                    width: '100%',
-                  }}
+                  style={{ height: barHeight, backgroundColor: isActive ? tokens.accent : tokens.surface2, width: '100%' }}
                   accessibilityLabel={`Week ${item.label}: ${item.value.toFixed(0)} kg`}
                 />
               </View>
@@ -35,11 +30,11 @@ export const BarChart = React.memo(function BarChart({ data, height = 120 }: Bar
           )
         })}
       </View>
-      <View style={[styles.labelRow, { marginTop: spacing.xs }]}>
+      <View style={[styles.labelRow, { marginTop: 4 }]}>
         {data.map((item, i) => (
           <View key={i} style={styles.labelCol}>
             {i % 4 === 0 && (
-              <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted }}>
+              <Text style={{ fontFamily: fonts.mono, fontSize: 9, color: tokens.textMute }}>
                 {item.label}
               </Text>
             )}

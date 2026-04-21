@@ -3,22 +3,19 @@ import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
-import { colors as tokenColors } from '@/theme/tokens'
 import { trpc } from '@/lib/trpc'
 import { useTranslation } from 'react-i18next'
 
 export default function OnboardingStep1() {
-  const { colors, typography, spacing, radius } = useTheme()
+  const { tokens, fonts } = useTheme()
   const { t } = useTranslation()
   const { data: me } = trpc.users.me.useQuery()
-  // Pre-fill name from provider if they gave us one (not the "Athlete" fallback)
   const providerName = me?.name && me.name !== 'Athlete' ? me.name : ''
   const isGoogle = me?.authProvider === 'google'
   const [name, setName] = useState(providerName)
   const [gender, setGender] = useState<'male' | 'female' | null>(null)
   const updateMe = trpc.users.updateMe.useMutation()
 
-  // Apply pre-fill once me loads (query may arrive after component mounts)
   useEffect(() => {
     if (providerName && !name) setName(providerName)
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -38,66 +35,59 @@ export default function OnboardingStep1() {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
-      <View style={{ flex: 1, padding: spacing.xl, gap: spacing.xl, justifyContent: 'center' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: tokens.bg }}>
+      <View style={{ flex: 1, padding: 20, gap: 24, justifyContent: 'center' }}>
 
         {/* Progress dots */}
-        <View style={{ flexDirection: 'row', gap: spacing.sm, justifyContent: 'center' }}>
-          <View style={{ width: 24, height: 6, borderRadius: 3, backgroundColor: colors.primary }} />
-          <View style={{ width: 8, height: 6, borderRadius: 3, backgroundColor: colors.surface2 }} />
+        <View style={{ flexDirection: 'row', gap: 4, justifyContent: 'center' }}>
+          <View style={{ width: 16, height: 6, backgroundColor: tokens.accent }} />
+          <View style={{ width: 6, height: 6, backgroundColor: tokens.border }} />
         </View>
 
         {/* Title */}
-        <View style={{ gap: spacing.sm }}>
-          <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size['3xl'], color: colors.textPrimary }}>
-            {t('onboarding.welcomeTo')}{'\n'}<Text style={{ color: colors.primary }}>Tanren</Text>
+        <View style={{ gap: 6 }}>
+          <Text style={{ fontFamily: fonts.sansX, fontSize: 24, color: tokens.text, textTransform: 'uppercase' }}>
+            {t('onboarding.welcomeTo')}{'\n'}<Text style={{ color: tokens.accent }}>Tanren</Text>
           </Text>
-          <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.body, color: colors.textMuted }}>
+          <Text style={{ fontFamily: fonts.sans, fontSize: 13, color: tokens.textMute }}>
             {t('onboarding.step1Subtitle')}
           </Text>
         </View>
 
         {/* Name */}
-        <View style={{ gap: spacing.sm }}>
-          <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.body, color: colors.textPrimary }}>
+        <View style={{ gap: 6 }}>
+          <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
             {t('onboarding.nameLabel')}
           </Text>
           <TextInput
             value={name}
             onChangeText={setName}
             placeholder={t('onboarding.namePlaceholder')}
-            placeholderTextColor={colors.textMuted}
+            placeholderTextColor={tokens.textGhost}
             autoFocus
             style={{
-              backgroundColor: colors.surface,
-              borderRadius: radius.md,
-              padding: spacing.base,
-              fontFamily: typography.family.semiBold,
-              fontSize: typography.size.xl,
-              color: colors.textPrimary,
-              borderWidth: 2,
-              borderColor: name ? colors.primary : 'transparent',
+              fontFamily: fonts.sansX,
+              fontSize: 20,
+              color: tokens.text,
+              borderBottomWidth: 1,
+              borderBottomColor: name ? tokens.accent : tokens.border,
+              paddingVertical: 8,
             }}
             accessibilityLabel={t('onboarding.nameLabel')}
           />
           {providerName ? (
-            <Text style={{
-              fontFamily: typography.family.regular,
-              fontSize: typography.size.xs,
-              color: colors.textMuted,
-              marginTop: -spacing.xs,
-            }}>
+            <Text style={{ fontFamily: fonts.sans, fontSize: 10, color: tokens.textMute }}>
               {isGoogle ? t('onboarding.nameFromGoogle') : t('onboarding.nameFromApple')}
             </Text>
           ) : null}
         </View>
 
         {/* Gender */}
-        <View style={{ gap: spacing.sm }}>
-          <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.body, color: colors.textPrimary }}>
+        <View style={{ gap: 6 }}>
+          <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
             {t('onboarding.genderLabel')}
           </Text>
-          <View style={{ flexDirection: 'row', gap: spacing.md }}>
+          <View style={{ flexDirection: 'row', gap: 8 }}>
             {(['male', 'female'] as const).map((g) => {
               const selected = gender === g
               const label = g === 'male' ? t('intake.male') : t('intake.female')
@@ -107,21 +97,21 @@ export default function OnboardingStep1() {
                   onPress={() => setGender(g)}
                   style={{
                     flex: 1,
-                    paddingVertical: spacing.lg,
-                    borderRadius: radius.lg,
-                    borderWidth: 2,
-                    borderColor: selected ? colors.primary : colors.surface2,
-                    backgroundColor: selected ? `${colors.primary}18` : colors.surface,
+                    paddingVertical: 16,
+                    borderWidth: 1,
+                    borderColor: selected ? tokens.accent : tokens.border,
+                    backgroundColor: selected ? tokens.accent : 'transparent',
                     alignItems: 'center',
-                    gap: spacing.sm,
                   }}
                   accessibilityLabel={label}
                   accessibilityRole="button"
                 >
                   <Text style={{
-                    fontFamily: selected ? typography.family.bold : typography.family.regular,
-                    fontSize: typography.size.body,
-                    color: selected ? colors.primary : colors.textMuted,
+                    fontFamily: fonts.sansB,
+                    fontSize: 13,
+                    color: selected ? '#FFFFFF' : tokens.textMute,
+                    textTransform: 'uppercase',
+                    letterSpacing: 1,
                   }}>
                     {label}
                   </Text>
@@ -133,12 +123,8 @@ export default function OnboardingStep1() {
 
         {/* Privacy disclaimer */}
         <Text style={{
-          fontFamily: typography.family.regular,
-          fontSize: typography.size.xs,
-          color: colors.textMuted,
-          textAlign: 'center',
-          lineHeight: 16,
-          marginTop: spacing.base,
+          fontFamily: fonts.sans, fontSize: 10, color: tokens.textMute,
+          textAlign: 'center', lineHeight: 16, marginTop: 8,
         }}>
           {t('onboarding.privacyDisclaimer')}
         </Text>
@@ -148,19 +134,19 @@ export default function OnboardingStep1() {
           onPress={handleNext}
           disabled={updateMe.isPending}
           style={{
-            backgroundColor: name && gender ? colors.primary : colors.surface2,
-            borderRadius: radius.lg,
-            paddingVertical: spacing.base,
+            backgroundColor: name && gender ? tokens.accent : tokens.border,
+            height: 48,
             alignItems: 'center',
-            marginTop: spacing.base,
+            justifyContent: 'center',
+            marginTop: 8,
           }}
           accessibilityLabel={t('onboarding.continue')}
           accessibilityRole="button"
         >
           <Text style={{
-            fontFamily: typography.family.extraBold,
-            fontSize: typography.size.xl,
-            color: name && gender ? tokenColors.white : colors.textMuted,
+            fontFamily: fonts.sansX, fontSize: 14,
+            color: name && gender ? '#FFFFFF' : tokens.textMute,
+            textTransform: 'uppercase', letterSpacing: 1,
           }}>
             {t('onboarding.continue')}
           </Text>

@@ -10,7 +10,7 @@ interface MacroRowProps {
 }
 
 export function MacroRow({ protein, carbs, fat }: MacroRowProps) {
-  const { tokens, typography, spacing } = useTheme()
+  const { tokens, fonts } = useTheme()
   const { t } = useTranslation()
 
   const macros = [
@@ -20,45 +20,15 @@ export function MacroRow({ protein, carbs, fat }: MacroRowProps) {
   ]
 
   return (
-    <View style={{ flexDirection: 'row', gap: spacing.sm }}>
+    <View style={{ flexDirection: 'row', gap: 6 }}>
       {macros.map((m) => (
-        <View
-          key={m.label}
-          style={{
-            flex: 1,
-            borderWidth: 1,
-            borderColor: m.color,
-            padding: spacing.md,
-          }}
-        >
-          <Text
-            style={{
-              fontFamily: typography.family.sansM,
-              fontSize: 10,
-              letterSpacing: 1.6,
-              textTransform: 'uppercase',
-              color: tokens.textMute,
-            }}
-          >
+        <View key={m.label} style={{ flex: 1, borderWidth: 1, borderColor: m.color, padding: 12 }}>
+          <Text style={{ fontFamily: fonts.sansM, fontSize: 10, letterSpacing: 1.6, textTransform: 'uppercase', color: tokens.textMute }}>
             {m.label}
           </Text>
-          <Text
-            style={{
-              fontFamily: typography.family.sansX,
-              fontSize: 20,
-              color: m.color,
-            }}
-          >
+          <Text style={{ fontFamily: fonts.sansX, fontSize: 20, color: m.color }}>
             {m.value}
-            <Text
-              style={{
-                fontFamily: typography.family.sansM,
-                fontSize: 11,
-                color: tokens.textMute,
-              }}
-            >
-              g
-            </Text>
+            <Text style={{ fontFamily: fonts.sansM, fontSize: 11, color: tokens.textMute }}>g</Text>
           </Text>
         </View>
       ))}

@@ -3,12 +3,11 @@ import { View, Text, TouchableOpacity, ScrollView } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
-import { colors as tokenColors } from '@/theme/tokens'
 import { trpc } from '@/lib/trpc'
 import { useTranslation } from 'react-i18next'
 
 export default function OnboardingStep2() {
-  const { colors, typography, spacing, radius } = useTheme()
+  const { tokens, fonts } = useTheme()
   const { t } = useTranslation()
   const [level, setLevel] = useState<'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED' | null>(null)
   const [days, setDays] = useState<number | null>(null)
@@ -36,34 +35,34 @@ export default function OnboardingStep2() {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: tokens.bg }}>
       <ScrollView
-        contentContainerStyle={{ padding: spacing.xl, gap: spacing.xl }}
+        contentContainerStyle={{ padding: 20, gap: 24 }}
         showsVerticalScrollIndicator={false}
       >
         {/* Progress dots */}
-        <View style={{ flexDirection: 'row', gap: spacing.sm, justifyContent: 'center', marginTop: spacing.base }}>
-          <View style={{ width: 8, height: 6, borderRadius: 3, backgroundColor: colors.surface2 }} />
-          <View style={{ width: 24, height: 6, borderRadius: 3, backgroundColor: colors.primary }} />
-          <View style={{ width: 8, height: 6, borderRadius: 3, backgroundColor: colors.surface2 }} />
+        <View style={{ flexDirection: 'row', gap: 4, justifyContent: 'center', marginTop: 16 }}>
+          <View style={{ width: 6, height: 6, backgroundColor: tokens.border }} />
+          <View style={{ width: 16, height: 6, backgroundColor: tokens.accent }} />
+          <View style={{ width: 6, height: 6, backgroundColor: tokens.border }} />
         </View>
 
         {/* Title */}
-        <View style={{ gap: spacing.sm }}>
-          <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size['3xl'], color: colors.textPrimary }}>
-            {t('onboarding.step2TitlePre')}{'\n'}<Text style={{ color: colors.primary }}>{t('onboarding.step2Title')}</Text>
+        <View style={{ gap: 6 }}>
+          <Text style={{ fontFamily: fonts.sansX, fontSize: 24, color: tokens.text, textTransform: 'uppercase' }}>
+            {t('onboarding.step2TitlePre')}{'\n'}<Text style={{ color: tokens.accent }}>{t('onboarding.step2Title')}</Text>
           </Text>
-          <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.body, color: colors.textMuted }}>
+          <Text style={{ fontFamily: fonts.sans, fontSize: 13, color: tokens.textMute }}>
             {t('onboarding.step2Subtitle')}
           </Text>
         </View>
 
         {/* Level */}
-        <View style={{ gap: spacing.sm }}>
-          <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.body, color: colors.textPrimary }}>
+        <View style={{ gap: 8 }}>
+          <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
             {t('onboarding.levelLabel')}
           </Text>
-          <View style={{ gap: spacing.sm }}>
+          <View style={{ gap: 6 }}>
             {LEVELS.map((l) => {
               const selected = level === l.value
               return (
@@ -74,27 +73,24 @@ export default function OnboardingStep2() {
                     flexDirection: 'row',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    padding: spacing.base,
-                    borderRadius: radius.md,
-                    borderWidth: 2,
-                    borderColor: selected ? colors.primary : colors.surface2,
-                    backgroundColor: selected ? `${colors.primary}18` : colors.surface,
+                    padding: 12,
+                    borderWidth: 1,
+                    borderColor: selected ? tokens.accent : tokens.border,
+                    borderLeftWidth: selected ? 3 : 1,
+                    borderLeftColor: selected ? tokens.accent : tokens.border,
                   }}
                   accessibilityLabel={l.label}
                   accessibilityRole="button"
                 >
                   <Text style={{
-                    fontFamily: selected ? typography.family.bold : typography.family.semiBold,
-                    fontSize: typography.size.body,
-                    color: selected ? colors.primary : colors.textPrimary,
+                    fontFamily: fonts.sansB,
+                    fontSize: 13,
+                    color: selected ? tokens.accent : tokens.text,
+                    textTransform: 'uppercase',
                   }}>
                     {l.label}
                   </Text>
-                  <Text style={{
-                    fontFamily: typography.family.regular,
-                    fontSize: typography.size.sm,
-                    color: colors.textMuted,
-                  }}>
+                  <Text style={{ fontFamily: fonts.sans, fontSize: 11, color: tokens.textMute }}>
                     {l.desc}
                   </Text>
                 </TouchableOpacity>
@@ -104,11 +100,11 @@ export default function OnboardingStep2() {
         </View>
 
         {/* Training days */}
-        <View style={{ gap: spacing.sm }}>
-          <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.body, color: colors.textPrimary }}>
+        <View style={{ gap: 8 }}>
+          <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
             {t('onboarding.daysLabel')}
           </Text>
-          <View style={{ flexDirection: 'row', gap: spacing.sm }}>
+          <View style={{ flexDirection: 'row', gap: 0 }}>
             {[1, 2, 3, 4, 5, 6, 7].map((d) => {
               const selected = days === d
               return (
@@ -118,20 +114,20 @@ export default function OnboardingStep2() {
                   style={{
                     flex: 1,
                     aspectRatio: 1,
-                    borderRadius: radius.md,
-                    borderWidth: 2,
-                    borderColor: selected ? colors.primary : colors.surface2,
-                    backgroundColor: selected ? colors.primary : colors.surface,
+                    borderWidth: 1,
+                    borderColor: selected ? tokens.accent : tokens.border,
+                    backgroundColor: selected ? tokens.accent : 'transparent',
                     alignItems: 'center',
                     justifyContent: 'center',
+                    marginLeft: d > 1 ? -1 : 0,
                   }}
                   accessibilityLabel={String(d)}
                   accessibilityRole="button"
                 >
                   <Text style={{
-                    fontFamily: typography.family.bold,
-                    fontSize: typography.size.body,
-                    color: selected ? tokenColors.white : colors.textMuted,
+                    fontFamily: fonts.monoB,
+                    fontSize: 14,
+                    color: selected ? '#FFFFFF' : tokens.textMute,
                   }}>
                     {d}
                   </Text>
@@ -142,11 +138,11 @@ export default function OnboardingStep2() {
         </View>
 
         {/* Goal */}
-        <View style={{ gap: spacing.sm }}>
-          <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.body, color: colors.textPrimary }}>
+        <View style={{ gap: 8 }}>
+          <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
             {t('onboarding.goalLabel')}
           </Text>
-          <View style={{ flexDirection: 'row', gap: spacing.md }}>
+          <View style={{ flexDirection: 'row', gap: 6 }}>
             {GOALS.map((g) => {
               const selected = goal === g.value
               return (
@@ -155,22 +151,22 @@ export default function OnboardingStep2() {
                   onPress={() => setGoal(g.value)}
                   style={{
                     flex: 1,
-                    paddingVertical: spacing.lg,
-                    borderRadius: radius.lg,
-                    borderWidth: 2,
-                    borderColor: selected ? colors.primary : colors.surface2,
-                    backgroundColor: selected ? `${colors.primary}18` : colors.surface,
+                    paddingVertical: 16,
+                    borderWidth: 1,
+                    borderColor: selected ? tokens.accent : tokens.border,
+                    backgroundColor: selected ? tokens.accent : 'transparent',
                     alignItems: 'center',
-                    gap: spacing.sm,
                   }}
                   accessibilityLabel={g.label}
                   accessibilityRole="button"
                 >
                   <Text style={{
-                    fontFamily: selected ? typography.family.bold : typography.family.regular,
-                    fontSize: typography.size.body,
-                    color: selected ? colors.primary : colors.textMuted,
+                    fontFamily: fonts.sansB,
+                    fontSize: 10,
+                    color: selected ? '#FFFFFF' : tokens.textMute,
+                    textTransform: 'uppercase',
                     textAlign: 'center',
+                    letterSpacing: 0.5,
                   }}>
                     {g.label}
                   </Text>
@@ -182,35 +178,30 @@ export default function OnboardingStep2() {
 
         {/* Privacy disclaimer */}
         <Text style={{
-          fontFamily: typography.family.regular,
-          fontSize: typography.size.xs,
-          color: colors.textMuted,
-          textAlign: 'center',
-          lineHeight: 16,
-          marginTop: spacing.base,
+          fontFamily: fonts.sans, fontSize: 10, color: tokens.textMute,
+          textAlign: 'center', lineHeight: 16, marginTop: 8,
         }}>
           {t('onboarding.privacyDisclaimer')}
         </Text>
 
-        {/* Finish button */}
+        {/* Continue button */}
         <TouchableOpacity
           onPress={handleFinish}
           disabled={!canContinue || updateMe.isPending}
           style={{
-            backgroundColor: canContinue ? colors.primary : colors.surface2,
-            borderRadius: radius.lg,
-            paddingVertical: spacing.base,
+            backgroundColor: canContinue ? tokens.accent : tokens.border,
+            height: 48,
             alignItems: 'center',
-            marginTop: spacing.sm,
-            marginBottom: spacing.xl,
+            justifyContent: 'center',
+            marginBottom: 20,
           }}
           accessibilityLabel={t('onboarding.continue')}
           accessibilityRole="button"
         >
           <Text style={{
-            fontFamily: typography.family.extraBold,
-            fontSize: typography.size.xl,
-            color: canContinue ? tokenColors.white : colors.textMuted,
+            fontFamily: fonts.sansX, fontSize: 14,
+            color: canContinue ? '#FFFFFF' : tokens.textMute,
+            textTransform: 'uppercase', letterSpacing: 1,
           }}>
             {t('onboarding.continue')}
           </Text>

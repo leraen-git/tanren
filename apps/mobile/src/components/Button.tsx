@@ -34,7 +34,7 @@ export function Button({
   accessibilityLabel,
   style,
 }: ButtonProps) {
-  const { tokens, typography } = useTheme()
+  const { tokens, fonts } = useTheme()
 
   const isPrimary = variant === 'primary' || variant === 'danger'
 
@@ -61,7 +61,7 @@ export function Button({
   }
 
   const textStyle: TextStyle = {
-    fontFamily: typography.family.sansB,
+    fontFamily: fonts.sansB,
     fontSize: size === 'sm' ? 13 : 15,
     letterSpacing: 0.6,
     textTransform: 'uppercase',

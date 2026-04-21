@@ -1,27 +1,6 @@
-/**
- * MusicControlBar — compact mini-player docked above the tab bar.
- *
- * Renders ONLY during an active workout session when music is playing.
- * Shows track title + artist, and play/pause/skip buttons.
- * Tapping the bar expands to show artwork (TBD).
- *
- * States:
- *   no music playing      → null (renders nothing, zero height)
- *   music + no session    → null (not relevant outside workout)
- *   music + active session → compact bar above tab bar
- */
-
 import React, { useEffect, useState } from 'react'
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Image,
-  Animated,
-  StyleSheet,
-} from 'react-native'
+import { View, Text, TouchableOpacity, Image, Animated, StyleSheet } from 'react-native'
 import { useTheme } from '@/theme/ThemeContext'
-import { colors as tokenColors } from '@/theme/tokens'
 import { useActiveSessionStore } from '@/stores/activeSessionStore'
 import {
   subscribeNowPlaying,
@@ -32,12 +11,11 @@ import {
 } from '@/services/musicService'
 
 export const MusicControlBar = React.memo(function MusicControlBar() {
-  const { colors, typography, spacing } = useTheme()
+  const { tokens, fonts } = useTheme()
   const currentWorkout = useActiveSessionStore((s) => s.currentWorkout)
   const [track, setTrack] = useState<NowPlayingInfo | null>(null)
   const fadeAnim = React.useRef(new Animated.Value(0)).current
 
-  // Only subscribe when there is an active session
   useEffect(() => {
     if (!currentWorkout) {
       setTrack(null)
@@ -47,7 +25,6 @@ export const MusicControlBar = React.memo(function MusicControlBar() {
     return unsub
   }, [currentWorkout])
 
-  // Animate in/out when track appears or disappears
   useEffect(() => {
     Animated.timing(fadeAnim, {
       toValue: track ? 1 : 0,
@@ -63,8 +40,8 @@ export const MusicControlBar = React.memo(function MusicControlBar() {
       style={[
         styles.container,
         {
-          backgroundColor: colors.surface,
-          borderTopColor: colors.surface2,
+          backgroundColor: tokens.surface1,
+          borderTopColor: tokens.border,
           opacity: fadeAnim,
           transform: [{ translateY: fadeAnim.interpolate({ inputRange: [0, 1], outputRange: [40, 0] }) }],
         },
@@ -72,36 +49,23 @@ export const MusicControlBar = React.memo(function MusicControlBar() {
       accessibilityLabel="Music controls"
       accessibilityRole="toolbar"
     >
-      {/* Artwork */}
       {track.artwork ? (
-        <Image
-          source={{ uri: track.artwork }}
-          style={[styles.artwork, { borderRadius: 6 }]}
-          accessibilityLabel="Album artwork"
-        />
+        <Image source={{ uri: track.artwork }} style={styles.artwork} accessibilityLabel="Album artwork" />
       ) : (
-        <View style={[styles.artwork, { backgroundColor: colors.surface2, borderRadius: 6, alignItems: 'center', justifyContent: 'center' }]}>
-          <Text style={{ fontSize: 18 }}>♪</Text>
+        <View style={[styles.artwork, { backgroundColor: tokens.surface2, alignItems: 'center', justifyContent: 'center' }]}>
+          <Text style={{ fontFamily: fonts.sansB, fontSize: 14, color: tokens.textMute }}>M</Text>
         </View>
       )}
 
-      {/* Track info */}
       <View style={styles.trackInfo}>
-        <Text
-          style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.base, color: colors.textPrimary }}
-          numberOfLines={1}
-        >
+        <Text style={{ fontFamily: fonts.sansB, fontSize: 12, color: tokens.text }} numberOfLines={1}>
           {track.title}
         </Text>
-        <Text
-          style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted }}
-          numberOfLines={1}
-        >
+        <Text style={{ fontFamily: fonts.sans, fontSize: 10, color: tokens.textMute }} numberOfLines={1}>
           {track.artist}
         </Text>
       </View>
 
-      {/* Controls */}
       <View style={styles.controls}>
         <TouchableOpacity
           onPress={prevTrack}
@@ -110,17 +74,17 @@ export const MusicControlBar = React.memo(function MusicControlBar() {
           accessibilityRole="button"
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
-          <Text style={{ fontSize: 18, color: colors.textPrimary }}>⏮</Text>
+          <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.text }}>{'<<'}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           onPress={playPause}
-          style={[styles.controlBtn, styles.playBtn, { backgroundColor: colors.primary }]}
+          style={[styles.controlBtn, styles.playBtn, { backgroundColor: tokens.accent }]}
           accessibilityLabel={track.isPlaying ? 'Pause' : 'Play'}
           accessibilityRole="button"
         >
-          <Text style={{ fontSize: 16, color: tokenColors.white }}>
-            {track.isPlaying ? '⏸' : '▶'}
+          <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: '#FFFFFF' }}>
+            {track.isPlaying ? '||' : '>'}
           </Text>
         </TouchableOpacity>
 
@@ -131,7 +95,7 @@ export const MusicControlBar = React.memo(function MusicControlBar() {
           accessibilityRole="button"
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
-          <Text style={{ fontSize: 18, color: colors.textPrimary }}>⏭</Text>
+          <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.text }}>{'>>'}</Text>
         </TouchableOpacity>
       </View>
     </Animated.View>
@@ -144,32 +108,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 12,
     paddingVertical: 8,
-    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopWidth: 1,
     gap: 10,
   },
-  artwork: {
-    width: 40,
-    height: 40,
-  },
-  trackInfo: {
-    flex: 1,
-    gap: 2,
-    overflow: 'hidden',
-  },
-  controls: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  controlBtn: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: 32,
-    height: 32,
-  },
-  playBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-  },
+  artwork: { width: 40, height: 40 },
+  trackInfo: { flex: 1, gap: 2, overflow: 'hidden' },
+  controls: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  controlBtn: { alignItems: 'center', justifyContent: 'center', width: 28, height: 28 },
+  playBtn: { width: 32, height: 32 },
 })

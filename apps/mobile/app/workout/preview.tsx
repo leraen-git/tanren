@@ -15,7 +15,6 @@ import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/theme/ThemeContext'
 import { trpc } from '@/lib/trpc'
 import { useActiveSessionStore } from '@/stores/activeSessionStore'
-import { colors as tokenColors } from '@/theme/tokens'
 import { useExercises, translateMuscleGroup, translateDifficulty } from '@/hooks/useExercises'
 
 type SetConfig = { reps: number; weight: number; restSeconds: number }
@@ -49,7 +48,7 @@ function ExercisePicker({
   onPick: (ex: { id: string; name: string; muscleGroups: string[] }) => void
   alreadyAdded: string[]
 }) {
-  const { colors, typography, spacing, radius } = useTheme()
+  const { tokens, fonts } = useTheme()
   const { t } = useTranslation()
   const [search, setSearch] = useState('')
   const [muscle, setMuscle] = useState('All')
@@ -66,58 +65,73 @@ function ExercisePicker({
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="fullScreen" onRequestClose={onClose}>
-      <SafeAreaView edges={['top', 'bottom']} style={{ flex: 1, backgroundColor: colors.background }}>
-        {/* Header */}
-        <View style={{ flexDirection: 'row', alignItems: 'center', padding: spacing.base, gap: spacing.md, borderBottomWidth: 1, borderBottomColor: colors.surface2 }}>
-          <TouchableOpacity onPress={onClose} accessibilityLabel="Close" accessibilityRole="button">
-            <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.title, color: colors.primary }}>✕</Text>
+      <SafeAreaView edges={['top', 'bottom']} style={{ flex: 1, backgroundColor: tokens.bg }}>
+        <View style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          padding: 16,
+          gap: 12,
+          borderBottomWidth: 1,
+          borderBottomColor: tokens.border,
+        }}>
+          <TouchableOpacity onPress={onClose} accessibilityLabel={t('common.close')} accessibilityRole="button">
+            <Text style={{ fontFamily: fonts.sansB, fontSize: 32, color: tokens.accent }}>X</Text>
           </TouchableOpacity>
-          <Text numberOfLines={1} style={{ fontFamily: typography.family.extraBold, fontSize: typography.size.title, color: colors.textPrimary, flex: 1 }}>
+          <Text numberOfLines={1} style={{
+            fontFamily: fonts.sansX,
+            fontSize: 32,
+            color: tokens.text,
+            flex: 1,
+            textTransform: 'uppercase',
+            letterSpacing: 0.5,
+          }}>
             {t('workout.addExercise')}
           </Text>
         </View>
 
-        {/* Search */}
-        <View style={{ padding: spacing.base, paddingBottom: spacing.sm, gap: spacing.sm }}>
+        <View style={{ padding: 16, paddingBottom: 8, gap: 8 }}>
           <TextInput
             value={search}
             onChangeText={setSearch}
             placeholder={t('workout.searchExercises')}
-            placeholderTextColor={colors.textMuted}
+            placeholderTextColor={tokens.textGhost}
             style={{
-              backgroundColor: colors.surface,
-              borderRadius: radius.md,
-              padding: spacing.md,
-              color: colors.textPrimary,
-              fontFamily: typography.family.regular,
-              fontSize: typography.size.body,
+              borderBottomWidth: 1,
+              borderBottomColor: tokens.border,
+              paddingVertical: 12,
+              color: tokens.text,
+              fontFamily: fonts.sans,
+              fontSize: 14,
             }}
-            accessibilityLabel="Search exercises"
+            accessibilityLabel={t('workout.searchExercises')}
             autoFocus
           />
 
-          {/* Muscle filter */}
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            <View style={{ flexDirection: 'row', gap: spacing.sm }}>
+            <View style={{ flexDirection: 'row', gap: 8 }}>
               {MUSCLE_GROUPS.map((mg) => {
                 const label = translateMuscleGroup(mg, t)
+                const active = muscle === mg
                 return (
                   <TouchableOpacity
                     key={mg}
                     onPress={() => setMuscle(mg)}
                     style={{
-                      paddingVertical: spacing.xs,
-                      paddingHorizontal: spacing.md,
-                      borderRadius: radius.pill,
-                      backgroundColor: muscle === mg ? colors.primary : colors.surface2,
+                      paddingVertical: 4,
+                      paddingHorizontal: 12,
+                      backgroundColor: active ? tokens.accent : 'transparent',
+                      borderWidth: 1,
+                      borderColor: active ? tokens.accent : tokens.borderStrong,
                     }}
                     accessibilityLabel={label}
                     accessibilityRole="button"
                   >
                     <Text style={{
-                      fontFamily: muscle === mg ? typography.family.semiBold : typography.family.regular,
-                      fontSize: typography.size.base,
-                      color: muscle === mg ? tokenColors.white : colors.textMuted,
+                      fontFamily: fonts.sansB,
+                      fontSize: 10,
+                      letterSpacing: 1.4,
+                      textTransform: 'uppercase',
+                      color: active ? '#FFFFFF' : tokens.textMute,
                     }}>
                       {label}
                     </Text>
@@ -128,8 +142,7 @@ function ExercisePicker({
           </ScrollView>
         </View>
 
-        {/* Results */}
-        <ScrollView contentContainerStyle={{ paddingHorizontal: spacing.base, gap: spacing.sm, paddingBottom: spacing.xl }}>
+        <ScrollView contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 20 }}>
           {filtered.map((ex) => {
             const added = alreadyAdded.includes(ex.id)
             return (
@@ -140,9 +153,9 @@ function ExercisePicker({
                 }}
                 disabled={added}
                 style={{
-                  backgroundColor: colors.surface,
-                  borderRadius: radius.md,
-                  padding: spacing.base,
+                  paddingVertical: 12,
+                  borderBottomWidth: 1,
+                  borderBottomColor: tokens.border,
                   flexDirection: 'row',
                   alignItems: 'center',
                   justifyContent: 'space-between',
@@ -154,19 +167,19 @@ function ExercisePicker({
                 {ex.imageUrl && (
                   <Image
                     source={{ uri: ex.imageUrl }}
-                    style={{ width: 48, height: 48, borderRadius: radius.sm, marginRight: spacing.md }}
+                    style={{ width: 48, height: 48, marginRight: 12 }}
                     resizeMode="cover"
                   />
                 )}
                 <View style={{ flex: 1 }}>
-                  <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.body, color: colors.textPrimary }}>
+                  <Text style={{ fontFamily: fonts.sansM, fontSize: 14, color: tokens.text }}>
                     {ex.name}
                   </Text>
-                  <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted }}>
+                  <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute }}>
                     {ex.muscleGroups.map((mg) => translateMuscleGroup(mg, t)).join(' · ')} · {translateDifficulty(ex.difficulty, t)}
                   </Text>
                 </View>
-                <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.xl, color: added ? colors.textMuted : colors.primary }}>
+                <Text style={{ fontFamily: fonts.sansB, fontSize: 20, color: added ? tokens.textMute : tokens.accent }}>
                   {added ? '✓' : '+'}
                 </Text>
               </TouchableOpacity>
@@ -180,7 +193,7 @@ function ExercisePicker({
 
 export default function WorkoutPreviewScreen() {
   const { templateId } = useLocalSearchParams<{ templateId: string }>()
-  const { colors, typography, spacing, radius } = useTheme()
+  const { tokens, fonts } = useTheme()
   const { t } = useTranslation()
   const { data: workout, isLoading } = trpc.workouts.detail.useQuery(
     { id: templateId ?? '' },
@@ -286,15 +299,14 @@ export default function WorkoutPreviewScreen() {
 
   if (isLoading || !workout) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center' }}>
-        <ActivityIndicator color={colors.primary} size="large" />
+      <SafeAreaView style={{ flex: 1, backgroundColor: tokens.bg, alignItems: 'center', justifyContent: 'center' }}>
+        <ActivityIndicator color={tokens.accent} size="large" />
       </SafeAreaView>
     )
   }
 
   const totalExercises = workout.exercises.length + extraExercises.length
 
-  // Unified render for an exercise block
   const renderExerciseBlock = (
     exerciseId: string,
     exerciseName: string,
@@ -313,53 +325,75 @@ export default function WorkoutPreviewScreen() {
     const hasPrev = opts.previousSets.length > 0
 
     return (
-      <View key={exerciseId} style={{ gap: spacing.sm }}>
-        {/* Exercise header */}
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
-          <View style={{ width: 28, height: 28, borderRadius: 14, backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center' }}>
-            <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.base, color: tokenColors.white }}>{exIdx + 1}</Text>
+      <View key={exerciseId} style={{ gap: 8 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <View style={{
+            width: 28,
+            height: 28,
+            backgroundColor: tokens.accent,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+            <Text style={{ fontFamily: fonts.sansB, fontSize: 12, color: '#FFFFFF' }}>{exIdx + 1}</Text>
           </View>
           <View style={{ flex: 1 }}>
-            <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.title, color: colors.textPrimary }}>
+            <Text style={{ fontFamily: fonts.sansB, fontSize: 32, color: tokens.text, textTransform: 'uppercase', letterSpacing: 0.3 }}>
               {exerciseName}
             </Text>
-            <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted }}>
-              {muscleGroups.join(' · ')}{hasPrev ? `  ·  prev: ${opts.previousSets[0]?.weight ?? 0}kg` : ''}
+            <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute }}>
+              {muscleGroups.map((mg) => translateMuscleGroup(mg, t)).join(' · ')}{hasPrev ? `  ·  prev: ${opts.previousSets[0]?.weight ?? 0}kg` : ''}
             </Text>
           </View>
           {opts.removable && (
             <TouchableOpacity
               onPress={() => removeExtraExercise(exerciseId)}
-              style={{ padding: spacing.xs }}
+              style={{ padding: 4 }}
               accessibilityLabel={`Remove ${exerciseName}`}
               accessibilityRole="button"
             >
-              <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.xl, color: colors.danger }}>×</Text>
+              <Text style={{ fontFamily: fonts.sansB, fontSize: 20, color: tokens.accent }}>X</Text>
             </TouchableOpacity>
           )}
         </View>
 
         {/* Column headers */}
-        <View style={{ flexDirection: 'row', paddingHorizontal: spacing.xs, gap: spacing.sm }}>
-          <Text style={{ width: 28, fontFamily: typography.family.semiBold, fontSize: typography.size.xs, color: colors.textMuted, textAlign: 'center' }}>#</Text>
-          <Text style={{ flex: 1, fontFamily: typography.family.semiBold, fontSize: typography.size.xs, color: colors.textMuted, textAlign: 'center' }}>{t('workout.columnReps')}</Text>
-          <Text style={{ flex: 1, fontFamily: typography.family.semiBold, fontSize: typography.size.xs, color: colors.textMuted, textAlign: 'center' }}>
-            {t('workout.columnKg')}{hasPrev ? ` (${t('workout.prevLabel')} ${recWeight}kg)` : recWeight > 0 ? ` (${t('workout.recLabel')} ${recWeight}kg)` : ''}
+        <View style={{ flexDirection: 'row', paddingHorizontal: 4, gap: 8 }}>
+          <Text style={{ width: 28, fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 1, color: tokens.textGhost, textAlign: 'center' }}>#</Text>
+          <Text style={{ flex: 1, fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 1, color: tokens.textGhost, textAlign: 'center', textTransform: 'uppercase' }}>{t('workout.columnReps')}</Text>
+          <Text style={{ flex: 1, fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 1, color: tokens.textGhost, textAlign: 'center', textTransform: 'uppercase' }}>
+            {t('workout.columnKg')}{hasPrev ? ` (prev ${recWeight})` : recWeight > 0 ? ` (rec ${recWeight})` : ''}
           </Text>
-          <Text style={{ width: 56, fontFamily: typography.family.semiBold, fontSize: typography.size.xs, color: colors.textMuted, textAlign: 'center' }}>{t('workout.columnRest')}</Text>
+          <Text style={{ width: 56, fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 1, color: tokens.textGhost, textAlign: 'center', textTransform: 'uppercase' }}>{t('workout.columnRest')}</Text>
         </View>
 
         {/* Set rows */}
         {sets.map((s, idx) => (
-          <View key={idx} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, backgroundColor: colors.surface, borderRadius: radius.md, padding: spacing.sm, paddingHorizontal: spacing.xs }}>
-            <Text style={{ width: 28, fontFamily: typography.family.bold, fontSize: typography.size.base, color: colors.textMuted, textAlign: 'center' }}>{idx + 1}</Text>
+          <View key={idx} style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 8,
+            borderWidth: 1,
+            borderColor: tokens.border,
+            padding: 8,
+            paddingHorizontal: 4,
+          }}>
+            <Text style={{ width: 28, fontFamily: fonts.sansB, fontSize: 12, color: tokens.textMute, textAlign: 'center' }}>{idx + 1}</Text>
             <TextInput
               value={s.reps > 0 ? String(s.reps) : ''}
               onChangeText={(v) => updateSet(exerciseId, idx, 'reps', parseInt(v) || 0)}
               keyboardType="number-pad"
               placeholder={String(opts.defaultReps)}
-              placeholderTextColor={colors.textMuted}
-              style={{ flex: 1, backgroundColor: colors.background, borderRadius: radius.sm, padding: spacing.xs, color: colors.textPrimary, fontFamily: typography.family.semiBold, fontSize: typography.size.body, textAlign: 'center' }}
+              placeholderTextColor={tokens.textGhost}
+              style={{
+                flex: 1,
+                borderBottomWidth: 1,
+                borderBottomColor: tokens.border,
+                paddingVertical: 4,
+                color: tokens.text,
+                fontFamily: fonts.monoB,
+                fontSize: 14,
+                textAlign: 'center',
+              }}
               accessibilityLabel={`Exercise ${exIdx + 1} set ${idx + 1} reps`}
             />
             <TextInput
@@ -367,8 +401,17 @@ export default function WorkoutPreviewScreen() {
               onChangeText={(v) => updateSet(exerciseId, idx, 'weight', parseFloat(v) || 0)}
               keyboardType="decimal-pad"
               placeholder={recWeight > 0 ? String(recWeight) : '0'}
-              placeholderTextColor={colors.textMuted}
-              style={{ flex: 1, backgroundColor: colors.background, borderRadius: radius.sm, padding: spacing.xs, color: colors.textPrimary, fontFamily: typography.family.semiBold, fontSize: typography.size.body, textAlign: 'center' }}
+              placeholderTextColor={tokens.textGhost}
+              style={{
+                flex: 1,
+                borderBottomWidth: 1,
+                borderBottomColor: tokens.border,
+                paddingVertical: 4,
+                color: tokens.text,
+                fontFamily: fonts.monoB,
+                fontSize: 14,
+                textAlign: 'center',
+              }}
               accessibilityLabel={`Exercise ${exIdx + 1} set ${idx + 1} weight`}
             />
             <View style={{ width: 56, flexDirection: 'row', alignItems: 'center', gap: 2 }}>
@@ -376,30 +419,53 @@ export default function WorkoutPreviewScreen() {
                 value={String(s.restSeconds)}
                 onChangeText={(v) => updateSet(exerciseId, idx, 'restSeconds', parseInt(v) || 60)}
                 keyboardType="number-pad"
-                style={{ flex: 1, backgroundColor: colors.background, borderRadius: radius.sm, padding: spacing.xs, color: colors.textPrimary, fontFamily: typography.family.semiBold, fontSize: typography.size.xs, textAlign: 'center' }}
+                style={{
+                  flex: 1,
+                  borderBottomWidth: 1,
+                  borderBottomColor: tokens.border,
+                  paddingVertical: 4,
+                  color: tokens.text,
+                  fontFamily: fonts.mono,
+                  fontSize: 10,
+                  textAlign: 'center',
+                }}
                 accessibilityLabel={`Exercise ${exIdx + 1} set ${idx + 1} rest seconds`}
               />
-              <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted }}>s</Text>
+              <Text style={{ fontFamily: fonts.sans, fontSize: 10, color: tokens.textGhost }}>s</Text>
             </View>
           </View>
         ))}
 
         {/* Add / remove set */}
-        <View style={{ flexDirection: 'row', gap: spacing.sm }}>
+        <View style={{ flexDirection: 'row', gap: 8 }}>
           <TouchableOpacity
             onPress={() => addSet(exerciseId, sets[sets.length - 1] ?? { reps: opts.defaultReps, weight: recWeight, restSeconds: opts.defaultRestSeconds })}
-            style={{ flex: 1, alignItems: 'center', paddingVertical: spacing.xs, borderRadius: radius.md, borderWidth: 1, borderColor: colors.primary }}
-            accessibilityLabel="Add set" accessibilityRole="button"
+            style={{
+              flex: 1,
+              alignItems: 'center',
+              paddingVertical: 4,
+              borderWidth: 1,
+              borderColor: tokens.accent,
+            }}
+            accessibilityLabel={t('workout.addSet')}
+            accessibilityRole="button"
           >
-            <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.base, color: colors.primary }}>{t('workout.addSet')}</Text>
+            <Text style={{ fontFamily: fonts.sansB, fontSize: 10, letterSpacing: 1, textTransform: 'uppercase', color: tokens.accent }}>{t('workout.addSet')}</Text>
           </TouchableOpacity>
           {sets.length > 1 && (
             <TouchableOpacity
               onPress={() => removeSet(exerciseId)}
-              style={{ paddingHorizontal: spacing.md, alignItems: 'center', justifyContent: 'center', borderRadius: radius.md, borderWidth: 1, borderColor: colors.surface2 }}
-              accessibilityLabel="Remove last set" accessibilityRole="button"
+              style={{
+                paddingHorizontal: 12,
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderWidth: 1,
+                borderColor: tokens.borderStrong,
+              }}
+              accessibilityLabel={t('workout.removeSet')}
+              accessibilityRole="button"
             >
-              <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.base, color: colors.textMuted }}>{t('workout.removeSet')}</Text>
+              <Text style={{ fontFamily: fonts.sansB, fontSize: 10, letterSpacing: 1, textTransform: 'uppercase', color: tokens.textMute }}>{t('workout.removeSet')}</Text>
             </TouchableOpacity>
           )}
         </View>
@@ -408,37 +474,55 @@ export default function WorkoutPreviewScreen() {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: tokens.bg }}>
       {/* Header */}
-      <View style={{ padding: spacing.base, paddingBottom: 0, flexDirection: 'row', alignItems: 'center', gap: spacing.md }}>
-        <TouchableOpacity onPress={() => router.back()} accessibilityLabel="Go back" accessibilityRole="button">
-          <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.title, color: colors.primary }}>←</Text>
+      <View style={{ padding: 16, paddingBottom: 0, flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+        <TouchableOpacity onPress={() => router.back()} accessibilityLabel={t('common.back')} accessibilityRole="button">
+          <Text style={{ fontFamily: fonts.sansM, fontSize: 12, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 1 }}>
+            {'‹ '}{t('common.back')}
+          </Text>
         </TouchableOpacity>
-        <View style={{ flex: 1 }}>
-          <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size['2xl'], color: colors.textPrimary }}>
-            {workout.name}
-          </Text>
-          <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted }}>
-            {totalExercises} exercises · ~{workout.estimatedDuration} min
-          </Text>
-        </View>
+      </View>
+      <View style={{ paddingHorizontal: 16, paddingTop: 8 }}>
+        <Text style={{
+          fontFamily: fonts.sansX,
+          fontSize: 24,
+          color: tokens.text,
+          textTransform: 'uppercase',
+          letterSpacing: 0.5,
+        }}>
+          {workout.name}
+        </Text>
+        <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute, marginTop: 2 }}>
+          {totalExercises} {t('common.exercises')} · ~{workout.estimatedDuration} min
+        </Text>
       </View>
 
-      {/* Big START button */}
-      <View style={{ padding: spacing.base, paddingTop: spacing.md }}>
+      {/* START button */}
+      <View style={{ padding: 16, paddingTop: 12 }}>
         <TouchableOpacity
           onPress={handleStart}
-          style={{ backgroundColor: colors.primary, borderRadius: radius.lg, paddingVertical: spacing.lg, alignItems: 'center' }}
-          accessibilityLabel="Start workout" accessibilityRole="button"
+          style={{
+            backgroundColor: tokens.accent,
+            paddingVertical: 16,
+            alignItems: 'center',
+          }}
+          accessibilityLabel={t('workout.start')}
+          accessibilityRole="button"
         >
-          <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size['2xl'], color: tokenColors.white, letterSpacing: 2 }}>
+          <Text style={{
+            fontFamily: fonts.sansX,
+            fontSize: 24,
+            color: '#FFFFFF',
+            letterSpacing: 2,
+            textTransform: 'uppercase',
+          }}>
             {t('workout.start')}
           </Text>
         </TouchableOpacity>
       </View>
 
-      <ScrollView contentContainerStyle={{ padding: spacing.base, gap: spacing.xl }}>
-        {/* Template exercises */}
+      <ScrollView contentContainerStyle={{ padding: 16, gap: 20 }}>
         {workout.exercises.map((ex, idx) =>
           renderExerciseBlock(ex.exerciseId, ex.exerciseName, ex.muscleGroups, idx, {
             defaultReps: ex.defaultReps,
@@ -449,7 +533,6 @@ export default function WorkoutPreviewScreen() {
           }),
         )}
 
-        {/* Extra exercises added by user */}
         {extraExercises.map((ex, idx) =>
           renderExerciseBlock(ex.exerciseId, ex.exerciseName, ex.muscleGroups, workout.exercises.length + idx, {
             defaultReps: DEFAULT_REPS,
@@ -460,27 +543,27 @@ export default function WorkoutPreviewScreen() {
           }),
         )}
 
-        {/* Add exercise button */}
+        {/* Add exercise */}
         <TouchableOpacity
           onPress={() => setPickerVisible(true)}
           style={{
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: spacing.sm,
-            paddingVertical: spacing.base,
-            borderRadius: radius.lg,
-            borderWidth: 2,
+            gap: 8,
+            paddingVertical: 16,
+            borderWidth: 1,
             borderStyle: 'dashed',
-            borderColor: colors.primary,
+            borderColor: tokens.accent,
           }}
-          accessibilityLabel={t('workout.addExercise')} accessibilityRole="button"
+          accessibilityLabel={t('workout.addExercise')}
+          accessibilityRole="button"
         >
-          <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size.xl, color: colors.primary }}>+</Text>
-          <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.body, color: colors.primary }}>{t('workout.addExercise')}</Text>
+          <Text style={{ fontFamily: fonts.sansX, fontSize: 20, color: tokens.accent }}>+</Text>
+          <Text style={{ fontFamily: fonts.sansB, fontSize: 12, letterSpacing: 1, textTransform: 'uppercase', color: tokens.accent }}>{t('workout.addExercise')}</Text>
         </TouchableOpacity>
 
-        <View style={{ height: spacing.xl }} />
+        <View style={{ height: 20 }} />
       </ScrollView>
 
       <ExercisePicker

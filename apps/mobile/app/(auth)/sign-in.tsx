@@ -20,18 +20,15 @@ import Animated, {
   withSequence,
   Easing,
 } from 'react-native-reanimated'
-import Svg, { Path, Rect, Circle, Line, Defs, RadialGradient, Stop } from 'react-native-svg'
+import Svg, { Path, Rect, Circle, Defs, RadialGradient, Stop } from 'react-native-svg'
 import { useAuth } from '@/contexts/AuthContext'
 import { useTheme } from '@/theme/ThemeContext'
-import { colors as tokenColors } from '@/theme/tokens'
 import { useTranslation } from 'react-i18next'
 import { router, useLocalSearchParams } from 'expo-router'
 import { KanjiWatermark } from '@/components/KanjiWatermark'
 import { ForgeMark } from '@/components/ForgeMark'
 
 type EmailStep = 'idle' | 'emailInput' | 'sending' | 'otpInput' | 'verifying'
-
-// ── SVG Icons ──────────────────────────────────────────────────────────────
 
 function AppleIcon() {
   return (
@@ -55,16 +52,14 @@ function GoogleIcon() {
 function MailIcon({ color }: { color: string }) {
   return (
     <Svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2}>
-      <Rect x={3} y={5} width={18} height={14} rx={2} />
+      <Rect x={3} y={5} width={18} height={14} rx={0} />
       <Path d="m3 7 9 6 9-6" />
     </Svg>
   )
 }
 
-// ── Main Screen ────────────────────────────────────────────────────────────
-
 export default function SignInScreen() {
-  const { colors, typography, spacing, radius, isDark } = useTheme()
+  const { tokens, fonts, isDark } = useTheme()
   const { t } = useTranslation()
   const params = useLocalSearchParams<{ upgrade?: string }>()
   const isUpgrade = params.upgrade === '1'
@@ -82,8 +77,6 @@ export default function SignInScreen() {
   const [otpError, setOtpError] = useState('')
   const [resendCountdown, setResendCountdown] = useState(0)
   const otpInputRef = useRef<TextInput>(null)
-
-  // ── Animations ─────────────────────────────────────────────────────────
 
   const logoOpacity = useSharedValue(0)
   const logoY = useSharedValue(8)
@@ -127,8 +120,6 @@ export default function SignInScreen() {
     opacity: glowOpacity.value,
   }))
 
-  // ── Redirects ──────────────────────────────────────────────────────────
-
   useEffect(() => {
     if (status === 'authenticated' && !isUpgrade) {
       router.replace('/')
@@ -145,8 +136,6 @@ export default function SignInScreen() {
     if (otpCode.length === 6 && emailStep === 'otpInput') handleVerifyOtp()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [otpCode])
-
-  // ── Handlers ───────────────────────────────────────────────────────────
 
   async function handleAppleSignIn() {
     setSocialLoading(true)
@@ -252,20 +241,13 @@ export default function SignInScreen() {
     }
   }
 
-  // ── Derived colors ─────────────────────────────────────────────────────
-
-  const bg = colors.background
-  const fg = colors.textPrimary
-  const red = colors.primary
-  const muted = colors.textMuted
-  const borderColor = isDark ? colors.surface2 : colors.border
-
-  const secondaryBg = isDark ? tokenColors.white : tokenColors.black
-  const secondaryFg = isDark ? tokenColors.black : tokenColors.white
+  const red = tokens.accent
+  const fg = tokens.text
+  const muted = tokens.textMute
+  const secondaryBg = isDark ? '#FFFFFF' : '#000000'
+  const secondaryFg = isDark ? '#000000' : '#FFFFFF'
 
   const inEmailFlow = emailStep !== 'idle'
-
-  // ── Render ─────────────────────────────────────────────────────────────
 
   return (
     <KeyboardAvoidingView
@@ -273,11 +255,10 @@ export default function SignInScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ScrollView
-        contentContainerStyle={[styles.container, { backgroundColor: bg }]}
+        contentContainerStyle={[styles.container, { backgroundColor: tokens.bg }]}
         keyboardShouldPersistTaps="handled"
         bounces={false}
       >
-        {/* Background layers */}
         <KanjiWatermark color={fg} />
 
         {/* Logo block */}
@@ -298,42 +279,40 @@ export default function SignInScreen() {
           </View>
 
           <Text
-            style={[styles.wordmark, { color: fg, fontFamily: typography.family.black }]}
+            style={[styles.wordmark, { color: fg, fontFamily: fonts.sansX }]}
             accessibilityRole="header"
           >
             TANREN
           </Text>
 
-          <Text style={[styles.kanjiSmall, { color: red, fontFamily: typography.family.notoSerifBold }]}>
+          <Text style={[styles.kanjiSmall, { color: red, fontFamily: fonts.jp }]}>
             鍛{'  '}錬
           </Text>
 
-          <Text style={[styles.baseline, { color: red, fontFamily: typography.family.regular }]}>
+          <Text style={[styles.baseline, { color: red, fontFamily: fonts.sans }]}>
             {t('signIn.tagline')}
           </Text>
         </Animated.View>
 
-        {/* Spacer */}
         <View style={styles.spacer} />
 
         {/* CTA block */}
-        <Animated.View style={[styles.ctaBlock, { paddingHorizontal: spacing.xl }, ctaStyle]}>
+        <Animated.View style={[styles.ctaBlock, { paddingHorizontal: 24 }, ctaStyle]}>
 
           {socialLoading && !inEmailFlow ? (
             <ActivityIndicator size="large" color={red} />
           ) : inEmailFlow ? (
-            /* ── Email OTP flow ── */
-            <View style={{ width: '100%', gap: spacing.md }}>
+            <View style={{ width: '100%', gap: 12 }}>
               {emailStep === 'emailInput' || emailStep === 'sending' ? (
                 <>
-                  <Text style={[styles.formLabel, { color: muted, fontFamily: typography.family.medium }]}>
-                    {t('signIn.emailLabel')}
+                  <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: muted, textTransform: 'uppercase', letterSpacing: 2 }}>
+                    {t('signIn.emailLabel').toUpperCase()}
                   </Text>
                   <TextInput
                     value={emailValue}
                     onChangeText={setEmailValue}
                     placeholder={t('signIn.emailPlaceholder')}
-                    placeholderTextColor={muted}
+                    placeholderTextColor={tokens.textGhost}
                     keyboardType="email-address"
                     autoCapitalize="none"
                     autoCorrect={false}
@@ -341,12 +320,11 @@ export default function SignInScreen() {
                     returnKeyType="go"
                     onSubmitEditing={handleSendCode}
                     style={[styles.input, {
-                      backgroundColor: isDark ? colors.surface : colors.surface,
-                      borderRadius: radius.sm,
+                      backgroundColor: tokens.surface1,
                       color: fg,
-                      fontFamily: typography.family.regular,
-                      fontSize: typography.size.body,
-                      borderColor: emailValue ? red : 'transparent',
+                      fontFamily: fonts.mono,
+                      fontSize: 14,
+                      borderColor: emailValue ? red : tokens.border,
                     }]}
                     accessibilityLabel={t('signIn.emailLabel')}
                   />
@@ -354,24 +332,23 @@ export default function SignInScreen() {
                     onPress={handleSendCode}
                     disabled={emailStep === 'sending' || !emailValue.trim()}
                     style={[styles.cta, {
-                      backgroundColor: emailValue.trim() ? red : colors.surface2,
-                      borderRadius: radius.sm,
+                      backgroundColor: emailValue.trim() ? red : tokens.surface2,
                     }]}
                     accessibilityLabel={t('signIn.sendCode')}
                     accessibilityRole="button"
                   >
                     {emailStep === 'sending' ? (
-                      <ActivityIndicator color={tokenColors.white} />
+                      <ActivityIndicator color="#FFFFFF" />
                     ) : (
-                      <Text style={[styles.ctaText, { fontFamily: typography.family.bold, color: emailValue.trim() ? tokenColors.white : muted }]}>
-                        {t('signIn.sendCode')}
+                      <Text style={[styles.ctaText, { fontFamily: fonts.sansB, color: emailValue.trim() ? '#FFFFFF' : muted }]}>
+                        {t('signIn.sendCode').toUpperCase()}
                       </Text>
                     )}
                   </TouchableOpacity>
                 </>
               ) : (
                 <>
-                  <Text style={[styles.formLabel, { color: muted, fontFamily: typography.family.regular }]}>
+                  <Text style={{ fontFamily: fonts.sans, fontSize: 13, color: muted }}>
                     {t('signIn.codeSentTo', { email: emailValue.trim() })}
                   </Text>
                   <TextInput
@@ -382,22 +359,21 @@ export default function SignInScreen() {
                       setOtpError('')
                     }}
                     placeholder={t('signIn.codePlaceholder')}
-                    placeholderTextColor={muted}
+                    placeholderTextColor={tokens.textGhost}
                     keyboardType="number-pad"
                     textContentType="oneTimeCode"
                     maxLength={6}
                     autoFocus
                     style={[styles.otpInput, {
-                      backgroundColor: colors.surface,
-                      borderRadius: radius.sm,
+                      backgroundColor: tokens.surface1,
                       color: fg,
-                      fontFamily: typography.family.bold,
-                      borderColor: otpError ? colors.danger : otpCode.length === 6 ? red : 'transparent',
+                      fontFamily: fonts.monoB,
+                      borderColor: otpError ? tokens.accent : otpCode.length === 6 ? red : tokens.border,
                     }]}
                     accessibilityLabel={t('signIn.codeLabel')}
                   />
                   {otpError ? (
-                    <Text style={[styles.errorText, { color: colors.danger, fontFamily: typography.family.regular, fontSize: typography.size.xs }]}>
+                    <Text style={{ fontFamily: fonts.sans, fontSize: 11, color: tokens.accent, width: '100%', marginTop: -4 }}>
                       {otpError}
                     </Text>
                   ) : null}
@@ -405,22 +381,21 @@ export default function SignInScreen() {
                     onPress={handleVerifyOtp}
                     disabled={emailStep === 'verifying' || otpCode.length !== 6}
                     style={[styles.cta, {
-                      backgroundColor: otpCode.length === 6 ? red : colors.surface2,
-                      borderRadius: radius.sm,
+                      backgroundColor: otpCode.length === 6 ? red : tokens.surface2,
                     }]}
                     accessibilityLabel={t('signIn.verify')}
                     accessibilityRole="button"
                   >
                     {emailStep === 'verifying' ? (
-                      <ActivityIndicator color={tokenColors.white} />
+                      <ActivityIndicator color="#FFFFFF" />
                     ) : (
-                      <Text style={[styles.ctaText, { fontFamily: typography.family.bold, color: otpCode.length === 6 ? tokenColors.white : muted }]}>
-                        {t('signIn.verify')}
+                      <Text style={[styles.ctaText, { fontFamily: fonts.sansB, color: otpCode.length === 6 ? '#FFFFFF' : muted }]}>
+                        {t('signIn.verify').toUpperCase()}
                       </Text>
                     )}
                   </TouchableOpacity>
                   <TouchableOpacity onPress={handleResendCode} disabled={resendCountdown > 0} accessibilityRole="button">
-                    <Text style={[styles.linkText, { color: resendCountdown > 0 ? muted : red, fontFamily: typography.family.regular }]}>
+                    <Text style={{ textAlign: 'center', paddingVertical: 4, fontSize: 13, fontFamily: fonts.sans, color: resendCountdown > 0 ? muted : red }}>
                       {resendCountdown > 0 ? t('signIn.resendIn', { s: resendCountdown }) : t('signIn.resendCode')}
                     </Text>
                   </TouchableOpacity>
@@ -430,73 +405,71 @@ export default function SignInScreen() {
               <TouchableOpacity
                 onPress={resetEmailFlow}
                 accessibilityRole="button"
-                style={{ alignItems: 'center', marginTop: spacing.xs }}
+                style={{ alignItems: 'center', marginTop: 4 }}
               >
-                <Text style={[styles.linkText, { color: muted, fontFamily: typography.family.regular }]}>
+                <Text style={{ textAlign: 'center', paddingVertical: 4, fontSize: 13, fontFamily: fonts.sans, color: muted }}>
                   {t('signIn.useOtherMethod')}
                 </Text>
               </TouchableOpacity>
             </View>
 
           ) : (
-            /* ── Normal sign-in options ── */
             <>
-              {/* Apple — primary red */}
+              {/* Apple */}
               {Platform.OS === 'ios' && (
                 <TouchableOpacity
-                  style={[styles.cta, { backgroundColor: red, borderRadius: radius.sm }]}
+                  style={[styles.cta, { backgroundColor: red }]}
                   onPress={handleAppleSignIn}
                   accessibilityLabel={t('signIn.continueWithApple')}
                   accessibilityRole="button"
                 >
                   <AppleIcon />
-                  <Text style={[styles.ctaText, { color: tokenColors.white, fontFamily: typography.family.bold }]}>
-                    {t('signIn.continueWithApple')}
+                  <Text style={[styles.ctaText, { color: '#FFFFFF', fontFamily: fonts.sansB }]}>
+                    {t('signIn.continueWithApple').toUpperCase()}
                   </Text>
                 </TouchableOpacity>
               )}
 
-              {/* Google — secondary contrast */}
+              {/* Google */}
               {googleAvailable && (
                 <TouchableOpacity
-                  style={[styles.cta, { backgroundColor: secondaryBg, borderRadius: radius.sm }]}
+                  style={[styles.cta, { backgroundColor: secondaryBg }]}
                   onPress={handleGoogleSignIn}
                   accessibilityLabel={t('signIn.continueWithGoogle')}
                   accessibilityRole="button"
                 >
                   <GoogleIcon />
-                  <Text style={[styles.ctaText, { color: secondaryFg, fontFamily: typography.family.bold }]}>
-                    {t('signIn.continueWithGoogle')}
+                  <Text style={[styles.ctaText, { color: secondaryFg, fontFamily: fonts.sansB }]}>
+                    {t('signIn.continueWithGoogle').toUpperCase()}
                   </Text>
                 </TouchableOpacity>
               )}
 
-              {/* Email — tertiary outlined */}
+              {/* Email */}
               <TouchableOpacity
                 style={[styles.cta, {
                   backgroundColor: 'transparent',
                   borderWidth: 1,
-                  borderColor: borderColor,
-                  borderRadius: radius.sm,
+                  borderColor: tokens.border,
                 }]}
                 onPress={() => setEmailStep('emailInput')}
                 accessibilityLabel={t('signIn.continueWithEmail')}
                 accessibilityRole="button"
               >
                 <MailIcon color={fg} />
-                <Text style={[styles.ctaText, { color: fg, fontFamily: typography.family.bold }]}>
-                  {t('signIn.continueWithEmail')}
+                <Text style={[styles.ctaText, { color: fg, fontFamily: fonts.sansB }]}>
+                  {t('signIn.continueWithEmail').toUpperCase()}
                 </Text>
               </TouchableOpacity>
 
-              {/* Guest link */}
+              {/* Guest */}
               <TouchableOpacity
                 onPress={handleGuestSignIn}
                 style={styles.guestWrap}
                 accessibilityLabel={t('signIn.continueAsGuest')}
                 accessibilityRole="button"
               >
-                <Text style={[styles.guestText, { color: fg, fontFamily: typography.family.medium }]}>
+                <Text style={[styles.guestText, { color: fg, fontFamily: fonts.sansM }]}>
                   {t('signIn.continueAsGuest')}
                 </Text>
               </TouchableOpacity>
@@ -504,12 +477,12 @@ export default function SignInScreen() {
               {/* DEV bypass */}
               {__DEV__ && (
                 <TouchableOpacity
-                  style={[styles.devButton, { borderColor: isDark ? colors.surface2 : muted }]}
+                  style={[styles.devButton, { borderColor: tokens.border }]}
                   onPress={handleDevSignIn}
                   accessibilityLabel="Dev bypass sign-in"
                   accessibilityRole="button"
                 >
-                  <Text style={[styles.devText, { color: muted, fontFamily: typography.family.medium }]}>
+                  <Text style={[styles.devText, { color: muted, fontFamily: fonts.sansB }]}>
                     DEV — SKIP SIGN-IN
                   </Text>
                 </TouchableOpacity>
@@ -517,9 +490,9 @@ export default function SignInScreen() {
             </>
           )}
 
-          {/* Legal text with inline links */}
+          {/* Legal */}
           {!inEmailFlow && (
-            <Text style={[styles.legalText, { color: muted, fontFamily: typography.family.regular }]}>
+            <Text style={[styles.legalText, { color: muted, fontFamily: fonts.sans }]}>
               {t('signIn.legalPrefix')}
               <Text style={{ textDecorationLine: 'underline', color: fg }}>{t('signIn.legalTerms')}</Text>
               {t('signIn.legalAnd')}
@@ -594,18 +567,14 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   ctaText: {
-    fontSize: 17,
-    letterSpacing: 17 * 0.04,
-  },
-  formLabel: {
-    width: '100%',
-    fontSize: 14,
+    fontSize: 13,
+    letterSpacing: 13 * 0.08,
   },
   input: {
     width: '100%',
     height: 50,
     paddingHorizontal: 16,
-    borderWidth: 2,
+    borderWidth: 1,
   },
   otpInput: {
     width: '100%',
@@ -614,16 +583,7 @@ const styles = StyleSheet.create({
     fontSize: 32,
     letterSpacing: 10,
     textAlign: 'center',
-    borderWidth: 2,
-  },
-  errorText: {
-    width: '100%',
-    marginTop: -8,
-  },
-  linkText: {
-    textAlign: 'center',
-    paddingVertical: 4,
-    fontSize: 14,
+    borderWidth: 1,
   },
   guestWrap: {
     marginTop: 4,
@@ -639,15 +599,14 @@ const styles = StyleSheet.create({
   devButton: {
     width: '100%',
     height: 44,
-    borderRadius: 4,
     borderWidth: 1,
     borderStyle: 'dashed',
     alignItems: 'center',
     justifyContent: 'center',
   },
   devText: {
-    fontSize: 13,
-    letterSpacing: 13 * 0.16,
+    fontSize: 11,
+    letterSpacing: 11 * 0.16,
     textTransform: 'uppercase',
   },
   legalText: {

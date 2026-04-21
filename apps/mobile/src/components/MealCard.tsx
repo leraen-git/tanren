@@ -15,66 +15,25 @@ interface MealCardProps {
 }
 
 export function MealCard({
-  typeLabel,
-  name,
-  calories,
-  protein,
-  carbs,
-  fat,
-  onPress,
-  accessibilityLabel,
+  typeLabel, name, calories, protein, carbs, fat, onPress, accessibilityLabel,
 }: MealCardProps) {
-  const { tokens, typography, spacing } = useTheme()
+  const { tokens, fonts } = useTheme()
 
   const content = (
-    <View
-      style={{
-        borderWidth: 1,
-        borderColor: tokens.border,
-        borderLeftWidth: 3,
-        borderLeftColor: tokens.accent,
-        padding: 14,
-        paddingLeft: 16,
-      }}
-    >
+    <View style={{ borderWidth: 1, borderColor: tokens.border, borderLeftWidth: 3, borderLeftColor: tokens.accent, padding: 14, paddingLeft: 16 }}>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-        <Text
-          style={{
-            fontFamily: typography.family.sansM,
-            fontSize: 10,
-            letterSpacing: 1.6,
-            textTransform: 'uppercase',
-            color: tokens.accent,
-          }}
-        >
+        <Text style={{ fontFamily: fonts.sansM, fontSize: 10, letterSpacing: 1.6, textTransform: 'uppercase', color: tokens.accent }}>
           {typeLabel}
         </Text>
-        <Text
-          style={{
-            fontFamily: typography.family.sansX,
-            fontSize: 16,
-            color: tokens.text,
-          }}
-        >
+        <Text style={{ fontFamily: fonts.sansX, fontSize: 16, color: tokens.text }}>
           {calories}
-          <Text style={{ fontFamily: typography.family.sansM, fontSize: 10, color: tokens.textMute }}>
-            {' '}kcal
-          </Text>
+          <Text style={{ fontFamily: fonts.sansM, fontSize: 10, color: tokens.textMute }}> kcal</Text>
         </Text>
       </View>
-      <Text
-        style={{
-          fontFamily: typography.family.sansX,
-          fontSize: 17,
-          letterSpacing: 0.17,
-          textTransform: 'uppercase',
-          color: tokens.text,
-          marginTop: spacing.xs,
-        }}
-      >
+      <Text style={{ fontFamily: fonts.sansX, fontSize: 17, letterSpacing: 0.17, textTransform: 'uppercase', color: tokens.text, marginTop: 4 }}>
         {name}
       </Text>
-      <View style={{ marginTop: spacing.sm }}>
+      <View style={{ marginTop: 6 }}>
         <MacrosInline protein={protein} carbs={carbs} fat={fat} />
       </View>
     </View>

@@ -1,17 +1,15 @@
 import React from 'react'
-import { View, Text, ScrollView } from 'react-native'
+import { View, Text, ScrollView, ActivityIndicator } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams, router } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
 import { Button } from '@/components/Button'
-import { Card } from '@/components/Card'
-import { SkeletonCard } from '@/components/SkeletonCard'
-import { ProgressBar } from '@/components/ProgressBar'
 import { trpc } from '@/lib/trpc'
+import { TouchableOpacity } from 'react-native'
 
 export default function ProgramDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
-  const { colors, typography, spacing } = useTheme()
+  const { tokens, fonts } = useTheme()
 
   const { data: program, isLoading } = trpc.programs.byId.useQuery({ id })
   const enroll = trpc.programs.enroll.useMutation({
@@ -20,91 +18,95 @@ export default function ProgramDetailScreen() {
     },
   })
 
-  return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
-      <ScrollView contentContainerStyle={{ padding: spacing.base, gap: spacing.base }}>
-        <Button label="← Back" variant="ghost" onPress={() => router.back()} style={{ alignSelf: 'flex-start' }} />
+  if (isLoading) {
+    return (
+      <SafeAreaView style={{ flex: 1, backgroundColor: tokens.bg, alignItems: 'center', justifyContent: 'center' }}>
+        <ActivityIndicator color={tokens.accent} size="large" />
+      </SafeAreaView>
+    )
+  }
 
-        {isLoading && (
-          <>
-            <SkeletonCard height={40} />
-            <SkeletonCard height={120} />
-            <SkeletonCard height={80} />
-          </>
-        )}
+  return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: tokens.bg }}>
+      <ScrollView contentContainerStyle={{ padding: 16, gap: 20 }}>
+        <TouchableOpacity onPress={() => router.back()} accessibilityLabel="Go back" accessibilityRole="button">
+          <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.accent, textTransform: 'uppercase', letterSpacing: 2 }}>
+            {'< BACK'}
+          </Text>
+        </TouchableOpacity>
 
         {program && (
           <>
             <View>
-              <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size['2xl'], color: colors.textPrimary }}>
+              <Text style={{ fontFamily: fonts.sansX, fontSize: 24, color: tokens.text, textTransform: 'uppercase' }}>
                 {program.name}
               </Text>
-              <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.body, color: colors.textMuted, marginTop: spacing.xs }}>
+              <Text style={{ fontFamily: fonts.sans, fontSize: 14, color: tokens.textMute, marginTop: 4 }}>
                 {program.description}
               </Text>
             </View>
 
-            {/* Stats */}
-            <View style={{ flexDirection: 'row', gap: spacing.sm }}>
-              <Card style={{ flex: 1 }} accessibilityLabel="Program duration">
-                <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted }}>Duration</Text>
-                <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.xl, color: colors.textPrimary }}>
-                  {program.durationWeeks}wk
-                </Text>
-              </Card>
-              <Card style={{ flex: 1 }} accessibilityLabel="Sessions per week">
-                <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted }}>Days/week</Text>
-                <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.xl, color: colors.textPrimary }}>
-                  {program.sessionsPerWeek}d
-                </Text>
-              </Card>
-              <Card style={{ flex: 1 }} accessibilityLabel="Program level">
-                <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted }}>Level</Text>
-                <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.body, color: colors.textPrimary }}>
-                  {program.level.charAt(0) + program.level.slice(1).toLowerCase()}
-                </Text>
-              </Card>
+            {/* Stats strip */}
+            <View style={{ flexDirection: 'row', borderWidth: 1, borderColor: tokens.border }}>
+              {[
+                { label: 'DURATION', value: `${program.durationWeeks}wk` },
+                { label: 'DAYS/WK', value: `${program.sessionsPerWeek}d` },
+                { label: 'LEVEL', value: program.level.charAt(0) + program.level.slice(1).toLowerCase() },
+              ].map((stat, i) => (
+                <View key={stat.label} style={{
+                  flex: 1,
+                  padding: 12,
+                  alignItems: 'center',
+                  borderLeftWidth: i > 0 ? 1 : 0,
+                  borderLeftColor: tokens.border,
+                }}>
+                  <Text style={{ fontFamily: fonts.sansB, fontSize: 8, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
+                    {stat.label}
+                  </Text>
+                  <Text style={{ fontFamily: fonts.sansX, fontSize: 20, color: tokens.accent, marginTop: 2 }}>
+                    {stat.value}
+                  </Text>
+                </View>
+              ))}
             </View>
 
-            {/* Goal badge */}
-            <Card accessibilityLabel="Program goal">
-              <Text style={{ fontFamily: typography.family.semiBold, color: colors.textMuted, marginBottom: spacing.xs }}>
-                Goal
+            {/* Goal */}
+            <View style={{ borderWidth: 1, borderColor: tokens.border, padding: 12, gap: 6 }}>
+              <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
+                GOAL
               </Text>
-              <View
-                style={{
-                  alignSelf: 'flex-start',
-                  backgroundColor: colors.primary + '22',
-                  paddingHorizontal: spacing.md,
-                  paddingVertical: spacing.xs,
-                  borderRadius: 9999,
-                }}
-              >
-                <Text style={{ fontFamily: typography.family.bold, color: colors.primary }}>
+              <View style={{
+                alignSelf: 'flex-start',
+                borderWidth: 1,
+                borderColor: tokens.accent,
+                paddingHorizontal: 10,
+                paddingVertical: 4,
+              }}>
+                <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.accent, textTransform: 'uppercase', letterSpacing: 1 }}>
                   {program.goal.replace('_', ' ')}
                 </Text>
               </View>
-            </Card>
+            </View>
 
             {/* Week overview */}
-            <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.xl, color: colors.textPrimary }}>
-              Week overview
+            <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
+              WEEK OVERVIEW
             </Text>
             {Array.from({ length: Math.min(program.durationWeeks, 4) }).map((_, wi) => (
-              <Card key={wi} accessibilityLabel={`Week ${wi + 1}`}>
-                <Text style={{ fontFamily: typography.family.semiBold, color: colors.textPrimary }}>
+              <View key={wi} style={{ borderWidth: 1, borderColor: tokens.border, padding: 12, gap: 6 }}>
+                <Text style={{ fontFamily: fonts.sansB, fontSize: 13, color: tokens.text, textTransform: 'uppercase' }}>
                   Week {wi + 1}
                 </Text>
-                <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted }}>
+                <Text style={{ fontFamily: fonts.mono, fontSize: 11, color: tokens.textMute }}>
                   {program.sessionsPerWeek} sessions planned
                 </Text>
-                <View style={{ marginTop: spacing.sm }}>
-                  <ProgressBar start={0} current={0} target={program.sessionsPerWeek} unit="" />
+                <View style={{ height: 3, backgroundColor: tokens.surface2 }}>
+                  <View style={{ width: 0, height: 3, backgroundColor: tokens.accent }} />
                 </View>
-              </Card>
+              </View>
             ))}
             {program.durationWeeks > 4 && (
-              <Text style={{ fontFamily: typography.family.regular, color: colors.textMuted, textAlign: 'center' }}>
+              <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute, textAlign: 'center' }}>
                 + {program.durationWeeks - 4} more weeks after enrollment
               </Text>
             )}
@@ -113,7 +115,7 @@ export default function ProgramDetailScreen() {
               label="Start program"
               onPress={() => enroll.mutate({ programId: program.id })}
               loading={enroll.isPending}
-              style={{ marginTop: spacing.sm }}
+              style={{ marginTop: 4 }}
             />
           </>
         )}

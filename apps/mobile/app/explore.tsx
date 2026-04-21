@@ -5,10 +5,7 @@ import { router, type Href } from 'expo-router'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/theme/ThemeContext'
 import { trpc } from '@/lib/trpc'
-import { colors as tokenColors } from '@/theme/tokens'
 import { useNotificationSettingsStore } from '@/stores/notificationSettingsStore'
-
-// ─── Types ────────────────────────────────────────────────────────────────────
 
 interface FeatureItem {
   icon: string
@@ -25,10 +22,8 @@ interface FeatureGroup {
   items: FeatureItem[]
 }
 
-// ─── Feature row ──────────────────────────────────────────────────────────────
-
 function FeatureRow({ item }: { item: FeatureItem }) {
-  const { colors, typography, spacing, radius } = useTheme()
+  const { tokens, fonts } = useTheme()
   const { t } = useTranslation()
 
   return (
@@ -38,47 +33,45 @@ function FeatureRow({ item }: { item: FeatureItem }) {
       style={{
         flexDirection: 'row',
         alignItems: 'center',
-        paddingVertical: spacing.md,
-        paddingHorizontal: spacing.base,
+        paddingVertical: 12,
+        paddingHorizontal: 12,
         opacity: item.locked ? 0.4 : 1,
         borderBottomWidth: 1,
-        borderBottomColor: colors.surface2,
-        gap: spacing.md,
+        borderBottomColor: tokens.border,
+        gap: 12,
       }}
       accessibilityRole="button"
       accessibilityLabel={item.title}
     >
-      {/* Icon label */}
       <View style={{
-        width: 40, height: 40,
-        borderRadius: radius.md,
-        backgroundColor: colors.surface2,
+        width: 36, height: 36,
+        borderWidth: 1,
+        borderColor: tokens.border,
         alignItems: 'center', justifyContent: 'center',
       }}>
-        <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.xs, color: colors.textMuted, letterSpacing: 0.5 }}>{item.icon}</Text>
+        <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute, letterSpacing: 0.5 }}>{item.icon}</Text>
       </View>
 
-      {/* Text */}
       <View style={{ flex: 1, gap: 2 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
           <Text style={{
-            fontFamily: typography.family.semiBold,
-            fontSize: typography.size.body,
-            color: colors.textPrimary,
+            fontFamily: fonts.sansB,
+            fontSize: 13,
+            color: tokens.text,
+            textTransform: 'uppercase',
           }}>
             {item.title}
           </Text>
           {item.isNew && (
             <View style={{
-              backgroundColor: colors.primary,
-              borderRadius: radius.pill,
+              backgroundColor: tokens.accent,
               paddingHorizontal: 6, paddingVertical: 1,
             }}>
               <Text style={{
-                fontFamily: typography.family.bold,
-                fontSize: typography.size.xs,
-                color: tokenColors.white,
-                letterSpacing: 0.5,
+                fontFamily: fonts.sansB,
+                fontSize: 8,
+                color: '#FFFFFF',
+                letterSpacing: 1,
               }}>
                 {t('explore.new')}
               </Text>
@@ -86,57 +79,56 @@ function FeatureRow({ item }: { item: FeatureItem }) {
           )}
         </View>
         <Text style={{
-          fontFamily: typography.family.regular,
-          fontSize: typography.size.base,
-          color: colors.textMuted,
-          lineHeight: 18,
+          fontFamily: fonts.sans,
+          fontSize: 12,
+          color: tokens.textMute,
+          lineHeight: 16,
         }}>
           {item.desc}
         </Text>
       </View>
 
-      {/* Right side */}
       {!item.used ? (
         <View style={{
-          backgroundColor: `${colors.primary}15`,
-          borderRadius: radius.pill,
-          paddingHorizontal: spacing.sm,
-          paddingVertical: 3,
+          borderWidth: 1,
+          borderColor: tokens.accent,
+          paddingHorizontal: 8,
+          paddingVertical: 2,
         }}>
           <Text style={{
-            fontFamily: typography.family.semiBold,
-            fontSize: typography.size.xs,
-            color: colors.primary,
+            fontFamily: fonts.sansB,
+            fontSize: 8,
+            color: tokens.accent,
+            textTransform: 'uppercase',
+            letterSpacing: 1,
           }}>
             {t('explore.tryIt')}
           </Text>
         </View>
       ) : (
-        <Text style={{ color: colors.textMuted, fontSize: typography.size.body }}>›</Text>
+        <Text style={{ color: tokens.textMute, fontFamily: fonts.sansB, fontSize: 14 }}>-{'>'}</Text>
       )}
     </TouchableOpacity>
   )
 }
 
-// ─── Group block ──────────────────────────────────────────────────────────────
-
 function GroupBlock({ group }: { group: FeatureGroup }) {
-  const { colors, typography, spacing } = useTheme()
+  const { tokens, fonts } = useTheme()
   return (
     <View>
       <Text style={{
-        fontFamily: typography.family.semiBold,
-        fontSize: typography.size.xs,
-        color: colors.textMuted,
-        letterSpacing: 1.2,
+        fontFamily: fonts.sansB,
+        fontSize: 9,
+        color: tokens.textMute,
+        letterSpacing: 2,
         textTransform: 'uppercase',
-        paddingHorizontal: spacing.base,
-        paddingTop: spacing.lg,
-        paddingBottom: spacing.xs,
+        paddingHorizontal: 16,
+        paddingTop: 24,
+        paddingBottom: 8,
       }}>
         {group.label}
       </Text>
-      <View style={{ backgroundColor: colors.surface, borderRadius: 12, marginHorizontal: spacing.base, overflow: 'hidden' }}>
+      <View style={{ backgroundColor: tokens.surface1, borderWidth: 1, borderColor: tokens.border, marginHorizontal: 16, overflow: 'hidden' }}>
         {group.items.map((item) => (
           <FeatureRow key={item.title} item={item} />
         ))}
@@ -145,13 +137,10 @@ function GroupBlock({ group }: { group: FeatureGroup }) {
   )
 }
 
-// ─── Main screen ──────────────────────────────────────────────────────────────
-
 export default function ExploreScreen() {
-  const { colors, typography, spacing } = useTheme()
+  const { tokens, fonts } = useTheme()
   const { t } = useTranslation()
 
-  // Dynamic signals — lightweight queries
   const { data: user }       = trpc.users.me.useQuery()
   const isGuest = user?.authProvider === 'guest'
   const { data: sessions }   = trpc.sessions.history.useQuery({ limit: 5 })
@@ -172,146 +161,69 @@ export default function ExploreScreen() {
     {
       label: t('explore.groupWorkouts'),
       items: [
-        {
-          icon: 'WK',
-          title: t('explore.workoutBuilder'),
-          desc: t('explore.workoutBuilderDesc'),
-          route: '/(tabs)/workouts',
-          used: hasSessions,
-        },
-        {
-          icon: '▶',
-          title: t('explore.activeSession'),
-          desc: t('explore.activeSessionDesc'),
-          route: '/(tabs)/workouts',
-          used: hasSessions,
-        },
-        {
-          icon: 'T',
-          title: t('explore.restTimer'),
-          desc: t('explore.restTimerDesc'),
-          route: '/(tabs)/workouts',
-          used: hasSessions,
-        },
-        {
-          icon: 'PR',
-          title: t('explore.personalRecords'),
-          desc: t('explore.personalRecordsDesc'),
-          route: '/(tabs)/history',
-          used: hasRecords,
-        },
+        { icon: 'WK', title: t('explore.workoutBuilder'), desc: t('explore.workoutBuilderDesc'), route: '/(tabs)/workouts', used: hasSessions },
+        { icon: '>', title: t('explore.activeSession'), desc: t('explore.activeSessionDesc'), route: '/(tabs)/workouts', used: hasSessions },
+        { icon: 'T', title: t('explore.restTimer'), desc: t('explore.restTimerDesc'), route: '/(tabs)/workouts', used: hasSessions },
+        { icon: 'PR', title: t('explore.personalRecords'), desc: t('explore.personalRecordsDesc'), route: '/(tabs)/history', used: hasRecords },
       ],
     },
     {
       label: t('explore.groupProgress'),
       items: [
-        {
-          icon: '↗',
-          title: t('explore.progressCharts'),
-          desc: t('explore.progressChartsDesc'),
-          route: '/(tabs)/history',
-          used: hasSessions,
-        },
-        {
-          icon: 'ST',
-          title: t('explore.streakStats'),
-          desc: t('explore.streakStatsDesc'),
-          route: '/(tabs)/history',
-          used: hasSessions,
-        },
-        {
-          icon: 'RC',
-          title: t('explore.sessionRecap'),
-          desc: t('explore.sessionRecapDesc'),
-          route: '/(tabs)/workouts',
-          used: hasSessions,
-        },
+        { icon: '/\\', title: t('explore.progressCharts'), desc: t('explore.progressChartsDesc'), route: '/(tabs)/history', used: hasSessions },
+        { icon: 'ST', title: t('explore.streakStats'), desc: t('explore.streakStatsDesc'), route: '/(tabs)/history', used: hasSessions },
+        { icon: 'RC', title: t('explore.sessionRecap'), desc: t('explore.sessionRecapDesc'), route: '/(tabs)/workouts', used: hasSessions },
       ],
     },
     {
       label: t('explore.groupPlans'),
       items: [
-        {
-          icon: 'AI',
-          title: isGuest ? t('guest.aiLocked') : t('explore.aiWorkoutPlan'),
-          desc: isGuest ? t('guest.aiLockedDesc') : t('explore.aiWorkoutPlanDesc'),
-          route: '/plans/generate',
-          isNew: !isGuest,
-          used: hasWorkoutPlan,
-          locked: isGuest,
-        },
-        {
-          icon: 'PG',
-          title: t('explore.guidedPrograms'),
-          desc: t('explore.guidedProgramsDesc'),
-          route: '/(tabs)/workouts',
-          used: false,
-        },
+        { icon: 'AI', title: isGuest ? t('guest.aiLocked') : t('explore.aiWorkoutPlan'), desc: isGuest ? t('guest.aiLockedDesc') : t('explore.aiWorkoutPlanDesc'), route: '/plans/generate', isNew: !isGuest, used: hasWorkoutPlan, locked: isGuest },
+        { icon: 'PG', title: t('explore.guidedPrograms'), desc: t('explore.guidedProgramsDesc'), route: '/(tabs)/workouts', used: false },
       ],
     },
     {
       label: t('explore.groupDiet'),
       items: [
-        {
-          icon: 'AI',
-          title: isGuest ? t('guest.aiLocked') : t('explore.aiDietPlan'),
-          desc: isGuest ? t('guest.aiLockedDesc') : t('explore.aiDietPlanDesc'),
-          route: '/(tabs)/diet',
-          isNew: !isGuest,
-          used: hasDiet,
-          locked: isGuest,
-        },
-        {
-          icon: 'MR',
-          title: t('explore.mealRecipes'),
-          desc: t('explore.mealRecipesDesc'),
-          route: '/(tabs)/diet',
-          used: hasDiet,
-        },
+        { icon: 'AI', title: isGuest ? t('guest.aiLocked') : t('explore.aiDietPlan'), desc: isGuest ? t('guest.aiLockedDesc') : t('explore.aiDietPlanDesc'), route: '/(tabs)/diet', isNew: !isGuest, used: hasDiet, locked: isGuest },
+        { icon: 'MR', title: t('explore.mealRecipes'), desc: t('explore.mealRecipesDesc'), route: '/(tabs)/diet', used: hasDiet },
       ],
     },
     {
       label: t('explore.groupReminders'),
       items: [
-        {
-          icon: '—',
-          title: t('explore.reminders'),
-          desc: t('explore.remindersDesc'),
-          route: '/settings/reminders',
-          isNew: true,
-          used: hasReminders,
-        },
+        { icon: '--', title: t('explore.reminders'), desc: t('explore.remindersDesc'), route: '/settings/reminders', isNew: true, used: hasReminders },
       ],
     },
   ]
 
-  // Usage summary
   const totalFeatures = groups.reduce((n, g) => n + g.items.length, 0)
   const usedFeatures  = groups.reduce((n, g) => n + g.items.filter((i) => i.used).length, 0)
 
   return (
-    <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: colors.background }}>
-      {/* Header */}
-      <View style={{ flexDirection: 'row', alignItems: 'center', padding: spacing.base, gap: spacing.md }}>
+    <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: tokens.bg }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', padding: 16, gap: 12 }}>
         <TouchableOpacity
           onPress={() => router.back()}
           accessibilityLabel={t('common.back')}
           accessibilityRole="button"
         >
-          <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.title, color: colors.primary }}>←</Text>
+          <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.accent, textTransform: 'uppercase', letterSpacing: 2 }}>
+            {'< BACK'}
+          </Text>
         </TouchableOpacity>
         <View style={{ flex: 1 }}>
-          <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size.xl, color: colors.textPrimary }}>
+          <Text style={{ fontFamily: fonts.sansX, fontSize: 20, color: tokens.text, textTransform: 'uppercase' }}>
             {t('explore.title')}
           </Text>
-          <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted }}>
+          <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute }}>
             {t('explore.subtitle', { used: usedFeatures, total: totalFeatures })}
           </Text>
         </View>
       </View>
 
       <ScrollView
-        contentContainerStyle={{ paddingBottom: spacing.xl }}
+        contentContainerStyle={{ paddingBottom: 40 }}
         showsVerticalScrollIndicator={false}
       >
         {groups.map((group) => (

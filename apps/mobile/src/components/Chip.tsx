@@ -10,7 +10,7 @@ interface ChipProps {
 }
 
 export function Chip({ label, selected = false, onPress, accessibilityLabel }: ChipProps) {
-  const { tokens, typography } = useTheme()
+  const { tokens, fonts } = useTheme()
 
   return (
     <TouchableOpacity
@@ -28,7 +28,7 @@ export function Chip({ label, selected = false, onPress, accessibilityLabel }: C
     >
       <Text
         style={{
-          fontFamily: selected ? typography.family.sansB : typography.family.sans,
+          fontFamily: selected ? fonts.sansB : fonts.sans,
           fontSize: 10,
           letterSpacing: 1.4,
           textTransform: 'uppercase',

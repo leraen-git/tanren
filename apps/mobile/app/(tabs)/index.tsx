@@ -16,7 +16,7 @@ import { MealDetailModal, sortMeals, type DietMeal } from '@/components/MealDeta
 const DAY_NAMES_FULL = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 
 export default function HomeScreen() {
-  const { tokens, typography, spacing } = useTheme()
+  const { tokens, fonts } = useTheme()
   const { t } = useTranslation()
   const bannerVisible = useGuestBannerVisible()
 
@@ -97,13 +97,13 @@ export default function HomeScreen() {
     <Screen showKanji kanjiChar="鍛" edges={bannerVisible ? [] : ['top']}>
       <MealDetailModal meal={selectedMeal} onClose={() => setSelectedMeal(null)} />
       <ScrollView
-        contentContainerStyle={{ padding: spacing.base, gap: spacing.lg }}
+        contentContainerStyle={{ padding: 16, gap: 16 }}
         refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetchPlan} tintColor={tokens.accent} />}
       >
         {/* Greeting */}
         <View style={{ gap: 2 }}>
           <Text style={{
-            fontFamily: typography.family.sansM,
+            fontFamily: fonts.sansM,
             fontSize: 13,
             letterSpacing: 2,
             textTransform: 'uppercase',
@@ -114,7 +114,7 @@ export default function HomeScreen() {
           {userLoading ? (
             <SkeletonCard height={36} />
           ) : (
-            <Text style={{ fontFamily: typography.family.sansX, fontSize: 32, color: tokens.text }}>
+            <Text style={{ fontFamily: fonts.sansX, fontSize: 32, color: tokens.text }}>
               {user?.name.split(' ')[0] ?? 'Athlete'}
               <Text style={{ color: tokens.accent }}>.</Text>
             </Text>
@@ -144,19 +144,19 @@ export default function HomeScreen() {
 
         {/* Home tabs: Entraînement / Nutrition */}
         {showTodayTabs && (
-          <View style={{ flexDirection: 'row', gap: spacing.lg }}>
+          <View style={{ flexDirection: 'row', gap: 16 }}>
             {(['workout', 'diet'] as const).map((tab) => {
               const isActive = activeTab === tab
               return (
                 <TouchableOpacity
                   key={tab}
                   onPress={() => handleTabChange(tab)}
-                  style={{ paddingBottom: spacing.sm, borderBottomWidth: isActive ? 2 : 0, borderBottomColor: tokens.accent }}
+                  style={{ paddingBottom: 8, borderBottomWidth: isActive ? 2 : 0, borderBottomColor: tokens.accent }}
                   accessibilityLabel={tab === 'workout' ? t('home.workout') : t('home.diet')}
                   accessibilityRole="tab"
                 >
                   <Text style={{
-                    fontFamily: typography.family.sansB,
+                    fontFamily: fonts.sansB,
                     fontSize: 14,
                     letterSpacing: 1,
                     textTransform: 'uppercase',
@@ -172,26 +172,26 @@ export default function HomeScreen() {
 
         {/* === DIET TAB === */}
         {showTodayTabs && activeTab === 'diet' && (
-          <View style={{ gap: spacing.md }}>
+          <View style={{ gap: 12 }}>
             {todayDietDay ? (
               <>
                 {/* Day header with macro row */}
-                <View style={{ gap: spacing.md }}>
+                <View style={{ gap: 12 }}>
                   <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between' }}>
                     <View>
                       <Text style={{
-                        fontFamily: typography.family.sansM, fontSize: 10, letterSpacing: 1.6,
+                        fontFamily: fonts.sansM, fontSize: 10, letterSpacing: 1.6,
                         textTransform: 'uppercase', color: tokens.accent,
                       }}>
                         {t('diet.title')}
                       </Text>
-                      <Text style={{ fontFamily: typography.family.sansX, fontSize: 22, color: tokens.text }}>
+                      <Text style={{ fontFamily: fonts.sansX, fontSize: 22, color: tokens.text }}>
                         {todayDietDay.theme}
                       </Text>
                     </View>
-                    <Text style={{ fontFamily: typography.family.sansX, fontSize: 22, color: tokens.accent }}>
+                    <Text style={{ fontFamily: fonts.sansX, fontSize: 22, color: tokens.accent }}>
                       {todayCalories}
-                      <Text style={{ fontFamily: typography.family.sansM, fontSize: 11, color: tokens.textMute }}> kcal</Text>
+                      <Text style={{ fontFamily: fonts.sansM, fontSize: 11, color: tokens.textMute }}> kcal</Text>
                     </Text>
                   </View>
                   <MacroRow protein={todayProtein} carbs={todayCarbs} fat={todayFat} />
@@ -213,8 +213,8 @@ export default function HomeScreen() {
                 ))}
               </>
             ) : (
-              <View style={{ borderWidth: 1, borderColor: tokens.border, padding: spacing.xl, alignItems: 'center' }}>
-                <Text style={{ fontFamily: typography.family.sansB, fontSize: 14, color: tokens.textMute, textAlign: 'center', textTransform: 'uppercase', letterSpacing: 0.6 }}>
+              <View style={{ borderWidth: 1, borderColor: tokens.border, padding: 20, alignItems: 'center' }}>
+                <Text style={{ fontFamily: fonts.sansB, fontSize: 14, color: tokens.textMute, textAlign: 'center', textTransform: 'uppercase', letterSpacing: 0.6 }}>
                   {t('home.noMealPlanToday')}
                 </Text>
               </View>
@@ -228,24 +228,24 @@ export default function HomeScreen() {
             {/* Workout complete */}
             {isTodayWorkoutDone && (
               <View style={{ borderWidth: 1, borderColor: tokens.green }}>
-                <View style={{ padding: spacing.base, gap: spacing.xs }}>
+                <View style={{ padding: 16, gap: 4 }}>
                   <Text style={{
-                    fontFamily: typography.family.sansM, fontSize: 10, letterSpacing: 1.6,
+                    fontFamily: fonts.sansM, fontSize: 10, letterSpacing: 1.6,
                     textTransform: 'uppercase', color: tokens.green,
                   }}>
                     {t('home.today') ?? 'Today'}
                   </Text>
-                  <Text style={{ fontFamily: typography.family.sansX, fontSize: 22, color: tokens.text, textTransform: 'uppercase' }}>
+                  <Text style={{ fontFamily: fonts.sansX, fontSize: 22, color: tokens.text, textTransform: 'uppercase' }}>
                     {t('home.workoutComplete') ?? 'Workout complete'}
                   </Text>
                 </View>
                 {showTodayTabs && (
                   <TouchableOpacity
                     onPress={() => handleTabChange('diet')}
-                    style={{ backgroundColor: tokens.accent, margin: spacing.base, marginTop: 0, height: 48, alignItems: 'center', justifyContent: 'center', borderRadius: 4 }}
+                    style={{ backgroundColor: tokens.accent, margin: 16, marginTop: 0, height: 48, alignItems: 'center', justifyContent: 'center', borderRadius: 4 }}
                     accessibilityLabel="View today's diet" accessibilityRole="button"
                   >
-                    <Text style={{ fontFamily: typography.family.sansB, fontSize: 14, letterSpacing: 0.6, textTransform: 'uppercase', color: '#FFFFFF' }}>
+                    <Text style={{ fontFamily: fonts.sansB, fontSize: 14, letterSpacing: 0.6, textTransform: 'uppercase', color: '#FFFFFF' }}>
                       {t('home.viewMeals') ?? 'View meals'}
                     </Text>
                   </TouchableOpacity>
@@ -255,11 +255,11 @@ export default function HomeScreen() {
 
             {/* Rest day */}
             {isRestDay && (
-              <View style={{ borderWidth: 1, borderColor: tokens.border, padding: spacing.xl, alignItems: 'center', gap: spacing.xs }}>
-                <Text style={{ fontFamily: typography.family.sansX, fontSize: 24, color: tokens.text, textTransform: 'uppercase' }}>
+              <View style={{ borderWidth: 1, borderColor: tokens.border, padding: 20, alignItems: 'center', gap: 4 }}>
+                <Text style={{ fontFamily: fonts.sansX, fontSize: 24, color: tokens.text, textTransform: 'uppercase' }}>
                   {t('home.restDay')}
                 </Text>
-                <Text style={{ fontFamily: typography.family.sans, fontSize: 14, color: tokens.textMute, textAlign: 'center' }}>
+                <Text style={{ fontFamily: fonts.sans, fontSize: 14, color: tokens.textMute, textAlign: 'center' }}>
                   {t('home.restDayDesc')}
                 </Text>
               </View>
@@ -267,33 +267,33 @@ export default function HomeScreen() {
 
             {/* Today card with CornerAccent */}
             {nextWorkout && (
-              <View style={{ gap: spacing.md }}>
+              <View style={{ gap: 12 }}>
                 <View style={{ borderWidth: 1, borderColor: tokens.accent, overflow: 'hidden' }}>
                   <CornerAccent position="tl" size="md" />
-                  <View style={{ padding: spacing.base, gap: spacing.sm }}>
+                  <View style={{ padding: 16, gap: 8 }}>
                     <Text style={{
-                      fontFamily: typography.family.sansM, fontSize: 10, letterSpacing: 1.6,
+                      fontFamily: fonts.sansM, fontSize: 10, letterSpacing: 1.6,
                       textTransform: 'uppercase', color: tokens.accent,
                     }}>
                       {isTodayWorkout ? (t('home.today') ?? 'Today') : DAY_NAMES_FULL[nextWorkout.dayOfWeek]}
                     </Text>
-                    <Text style={{ fontFamily: typography.family.sansX, fontSize: 22, color: tokens.text, textTransform: 'uppercase' }}>
+                    <Text style={{ fontFamily: fonts.sansX, fontSize: 22, color: tokens.text, textTransform: 'uppercase' }}>
                       {nextWorkout.workoutName}
                     </Text>
-                    <Text style={{ fontFamily: typography.family.sans, fontSize: 14, color: tokens.textMute }}>
+                    <Text style={{ fontFamily: fonts.sans, fontSize: 14, color: tokens.textMute }}>
                       {t('home.estimatedDuration') ?? 'Durée estimée'} · {nextWorkout.estimatedDuration} min
                     </Text>
 
                     {/* Muscle tags */}
                     {nextWorkout.muscleGroups && nextWorkout.muscleGroups.length > 0 && (
-                      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs }}>
+                      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 4 }}>
                         {nextWorkout.muscleGroups.map((mg) => (
                           <View key={mg} style={{
                             backgroundColor: `${tokens.accent}18`,
-                            paddingHorizontal: spacing.sm,
+                            paddingHorizontal: 8,
                             paddingVertical: 3,
                           }}>
-                            <Text style={{ fontFamily: typography.family.sansM, fontSize: 10, letterSpacing: 1, textTransform: 'uppercase', color: tokens.accent }}>
+                            <Text style={{ fontFamily: fonts.sansM, fontSize: 10, letterSpacing: 1, textTransform: 'uppercase', color: tokens.accent }}>
                               {mg}
                             </Text>
                           </View>
@@ -302,22 +302,22 @@ export default function HomeScreen() {
                     )}
 
                     {/* Exercise preview with arabic numbers */}
-                    <View style={{ gap: spacing.xs, marginTop: spacing.sm, borderTopWidth: 1, borderTopColor: tokens.border, paddingTop: spacing.md }}>
+                    <View style={{ gap: 4, marginTop: 8, borderTopWidth: 1, borderTopColor: tokens.border, paddingTop: 12 }}>
                       {workoutDetail ? (
                         <>
                           {workoutDetail.exercises.slice(0, 3).map((ex, i) => (
-                            <View key={ex.id} style={{ flexDirection: 'row', gap: spacing.sm }}>
-                              <Text style={{ fontFamily: typography.family.sansX, fontSize: 14, color: tokens.accent, width: 20 }}>
+                            <View key={ex.id} style={{ flexDirection: 'row', gap: 8 }}>
+                              <Text style={{ fontFamily: fonts.sansX, fontSize: 14, color: tokens.accent, width: 20 }}>
                                 {i + 1}.
                               </Text>
-                              <Text style={{ fontFamily: typography.family.sans, fontSize: 14, color: tokens.text, flex: 1 }}>
+                              <Text style={{ fontFamily: fonts.sans, fontSize: 14, color: tokens.text, flex: 1 }}>
                                 {ex.exerciseName} · {ex.defaultSets}×{ex.defaultReps}
                                 {ex.defaultWeight > 0 ? ` · ${ex.defaultWeight} kg` : ''}
                               </Text>
                             </View>
                           ))}
                           {workoutDetail.exercises.length > 3 && (
-                            <Text style={{ fontFamily: typography.family.sans, fontSize: 14, color: tokens.textMute, fontStyle: 'italic', marginLeft: 20 }}>
+                            <Text style={{ fontFamily: fonts.sans, fontSize: 14, color: tokens.textMute, fontStyle: 'italic', marginLeft: 20 }}>
                               +{workoutDetail.exercises.length - 3} {t('home.moreExercises') ?? 'autres exercices'}
                             </Text>
                           )}
@@ -334,11 +334,11 @@ export default function HomeScreen() {
                     {/* CTA */}
                     <TouchableOpacity
                       onPress={() => router.push(`/workout/preview?templateId=${nextWorkout.workoutTemplateId}`)}
-                      style={{ backgroundColor: tokens.accent, height: 52, alignItems: 'center', justifyContent: 'center', borderRadius: 4, marginTop: spacing.sm }}
+                      style={{ backgroundColor: tokens.accent, height: 52, alignItems: 'center', justifyContent: 'center', borderRadius: 4, marginTop: 8 }}
                       accessibilityLabel={`Start ${nextWorkout.workoutName}`}
                       accessibilityRole="button"
                     >
-                      <Text style={{ fontFamily: typography.family.sansB, fontSize: 15, letterSpacing: 0.6, textTransform: 'uppercase', color: '#FFFFFF' }}>
+                      <Text style={{ fontFamily: fonts.sansB, fontSize: 15, letterSpacing: 0.6, textTransform: 'uppercase', color: '#FFFFFF' }}>
                         {isTodayWorkout ? t('home.startNow') : t('home.startWorkout')}
                       </Text>
                     </TouchableOpacity>
@@ -347,9 +347,9 @@ export default function HomeScreen() {
 
                 {/* This week */}
                 {remainingWorkouts.length > 0 && (
-                  <View style={{ gap: spacing.sm }}>
+                  <View style={{ gap: 8 }}>
                     <Text style={{
-                      fontFamily: typography.family.sansM, fontSize: 10, letterSpacing: 1.6,
+                      fontFamily: fonts.sansM, fontSize: 10, letterSpacing: 1.6,
                       textTransform: 'uppercase', color: tokens.textMute,
                     }}>
                       {t('home.alsoThisWeek')}
@@ -359,21 +359,21 @@ export default function HomeScreen() {
                         key={d.workoutTemplateId}
                         onPress={() => router.push(`/workout/preview?templateId=${d.workoutTemplateId}`)}
                         style={{
-                          borderWidth: 1, borderColor: tokens.border, padding: spacing.md,
+                          borderWidth: 1, borderColor: tokens.border, padding: 12,
                           flexDirection: 'row', alignItems: 'center',
                         }}
                         accessibilityLabel={`Start ${d.workoutName}`}
                         accessibilityRole="button"
                       >
                         <View style={{ flex: 1 }}>
-                          <Text style={{ fontFamily: typography.family.sansB, fontSize: 14, color: tokens.text, textTransform: 'uppercase' }}>
+                          <Text style={{ fontFamily: fonts.sansB, fontSize: 14, color: tokens.text, textTransform: 'uppercase' }}>
                             {d.workoutName}
                           </Text>
-                          <Text style={{ fontFamily: typography.family.sans, fontSize: 12, color: tokens.textMute }}>
+                          <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute }}>
                             {DAY_NAMES_FULL[d.dayOfWeek]} · {d.estimatedDuration} min
                           </Text>
                         </View>
-                        <Text style={{ fontFamily: typography.family.sansB, fontSize: 16, color: tokens.accent }}>›</Text>
+                        <Text style={{ fontFamily: fonts.sansB, fontSize: 16, color: tokens.accent }}>›</Text>
                       </TouchableOpacity>
                     ))}
                   </View>
@@ -383,32 +383,32 @@ export default function HomeScreen() {
 
             {/* No plan state */}
             {!activePlan && (
-              <View style={{ gap: spacing.md }}>
+              <View style={{ gap: 12 }}>
                 <TouchableOpacity
                   onPress={() => router.push('/plans/create')}
                   style={{
                     borderWidth: 2, borderColor: tokens.accent, borderStyle: 'dashed',
-                    padding: spacing.xl, alignItems: 'center', gap: spacing.md,
+                    padding: 20, alignItems: 'center', gap: 12,
                   }}
                   accessibilityLabel="Create a workout plan" accessibilityRole="button"
                 >
-                  <Text style={{ fontFamily: typography.family.sansX, fontSize: 20, color: tokens.text, textTransform: 'uppercase' }}>
+                  <Text style={{ fontFamily: fonts.sansX, fontSize: 20, color: tokens.text, textTransform: 'uppercase' }}>
                     {t('home.noActivePlan')}
                   </Text>
-                  <Text style={{ fontFamily: typography.family.sans, fontSize: 14, color: tokens.textMute, textAlign: 'center' }}>
+                  <Text style={{ fontFamily: fonts.sans, fontSize: 14, color: tokens.textMute, textAlign: 'center' }}>
                     {t('home.noActivePlanDesc')}
                   </Text>
                   <View style={{ backgroundColor: tokens.accent, height: 48, paddingHorizontal: 24, alignItems: 'center', justifyContent: 'center', borderRadius: 4 }}>
-                    <Text style={{ fontFamily: typography.family.sansB, fontSize: 14, letterSpacing: 0.6, textTransform: 'uppercase', color: '#FFFFFF' }}>
+                    <Text style={{ fontFamily: fonts.sansB, fontSize: 14, letterSpacing: 0.6, textTransform: 'uppercase', color: '#FFFFFF' }}>
                       {t('home.createPlan')}
                     </Text>
                   </View>
                 </TouchableOpacity>
 
                 {/* AI generate */}
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                   <View style={{ flex: 1, height: 1, backgroundColor: tokens.border }} />
-                  <Text style={{ fontFamily: typography.family.sans, fontSize: 12, color: tokens.textMute }}>{t('common.or')}</Text>
+                  <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute }}>{t('common.or')}</Text>
                   <View style={{ flex: 1, height: 1, backgroundColor: tokens.border }} />
                 </View>
 
@@ -416,8 +416,8 @@ export default function HomeScreen() {
                   onPress={isGuest ? undefined : () => router.push('/plans/generate')}
                   disabled={isGuest}
                   style={{
-                    borderWidth: 1, borderColor: tokens.border, padding: spacing.base,
-                    flexDirection: 'row', alignItems: 'center', gap: spacing.md,
+                    borderWidth: 1, borderColor: tokens.border, padding: 16,
+                    flexDirection: 'row', alignItems: 'center', gap: 12,
                     opacity: isGuest ? 0.4 : 1,
                   }}
                   accessibilityLabel={isGuest ? t('guest.aiLocked') : t('home.generatePlan')}
@@ -427,26 +427,26 @@ export default function HomeScreen() {
                     width: 44, height: 44, backgroundColor: isGuest ? tokens.surface2 : `${tokens.accent}18`,
                     alignItems: 'center', justifyContent: 'center',
                   }}>
-                    <Text style={{ fontFamily: typography.family.sansX, fontSize: 11, letterSpacing: 0.5, color: isGuest ? tokens.textMute : tokens.accent }}>AI</Text>
+                    <Text style={{ fontFamily: fonts.sansX, fontSize: 11, letterSpacing: 0.5, color: isGuest ? tokens.textMute : tokens.accent }}>AI</Text>
                   </View>
                   <View style={{ flex: 1 }}>
-                    <Text style={{ fontFamily: typography.family.sansB, fontSize: 14, color: isGuest ? tokens.textMute : tokens.text, textTransform: 'uppercase' }}>
+                    <Text style={{ fontFamily: fonts.sansB, fontSize: 14, color: isGuest ? tokens.textMute : tokens.text, textTransform: 'uppercase' }}>
                       {isGuest ? t('guest.aiLocked') : t('home.generatePlan')}
                     </Text>
-                    <Text style={{ fontFamily: typography.family.sans, fontSize: 12, color: tokens.textMute }}>
+                    <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute }}>
                       {isGuest ? t('guest.aiLockedDesc') : t('home.generatePlanDesc')}
                     </Text>
                   </View>
-                  <Text style={{ fontFamily: typography.family.sansB, fontSize: 16, color: isGuest ? tokens.textMute : tokens.accent }}>›</Text>
+                  <Text style={{ fontFamily: fonts.sansB, fontSize: 16, color: isGuest ? tokens.textMute : tokens.accent }}>›</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                   onPress={() => router.push('/exercise/quick')}
-                  style={{ alignItems: 'center', paddingVertical: spacing.sm }}
+                  style={{ alignItems: 'center', paddingVertical: 8 }}
                   accessibilityLabel="Just start an exercise" accessibilityRole="button"
                 >
-                  <Text style={{ fontFamily: typography.family.sans, fontSize: 12, color: tokens.textMute }}>
-                    {t('home.justStart')}<Text style={{ fontFamily: typography.family.sansM, color: tokens.accent }}>{t('home.justStartLink')}</Text>
+                  <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute }}>
+                    {t('home.justStart')}<Text style={{ fontFamily: fonts.sansM, color: tokens.accent }}>{t('home.justStartLink')}</Text>
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -454,12 +454,12 @@ export default function HomeScreen() {
 
             {/* All done this week */}
             {activePlan && !nextWorkout && (
-              <View style={{ gap: spacing.md }}>
-                <View style={{ borderWidth: 1, borderColor: tokens.border, padding: spacing.xl, alignItems: 'center', gap: spacing.sm }}>
-                  <Text style={{ fontFamily: typography.family.sansX, fontSize: 20, color: tokens.text, textTransform: 'uppercase' }}>
+              <View style={{ gap: 12 }}>
+                <View style={{ borderWidth: 1, borderColor: tokens.border, padding: 20, alignItems: 'center', gap: 8 }}>
+                  <Text style={{ fontFamily: fonts.sansX, fontSize: 20, color: tokens.text, textTransform: 'uppercase' }}>
                     {t('home.allDoneThisWeek')}
                   </Text>
-                  <Text style={{ fontFamily: typography.family.sans, fontSize: 14, color: tokens.textMute, textAlign: 'center' }}>
+                  <Text style={{ fontFamily: fonts.sans, fontSize: 14, color: tokens.textMute, textAlign: 'center' }}>
                     {t('home.allDoneDesc')}
                   </Text>
                 </View>

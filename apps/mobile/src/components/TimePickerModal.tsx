@@ -4,11 +4,10 @@ import {
   Dimensions, TouchableWithoutFeedback,
 } from 'react-native'
 import { useTheme } from '@/theme/ThemeContext'
-import { colors as tokenColors } from '@/theme/tokens'
 
 interface Props {
   visible: boolean
-  value: string  // 'HH:MM'
+  value: string
   onConfirm: (time: string) => void
   onClose: () => void
   label?: string
@@ -21,13 +20,12 @@ function pad(n: number): string {
 }
 
 export function TimePickerModal({ visible, value, onConfirm, onClose, label }: Props) {
-  const { colors, typography, spacing, radius } = useTheme()
+  const { tokens, fonts } = useTheme()
 
   const [hour, minute] = value.split(':').map(Number)
   const [h, setH] = useState(pad(hour ?? 0))
   const [m, setM] = useState(pad(minute ?? 0))
 
-  // Re-sync when `value` changes (e.g., external update)
   React.useEffect(() => {
     const [hh, mm] = value.split(':').map(Number)
     setH(pad(hh ?? 0))
@@ -54,18 +52,18 @@ export function TimePickerModal({ visible, value, onConfirm, onClose, label }: P
   }
 
   const spinnerStyle = {
-    backgroundColor: colors.surface,
-    borderRadius: radius.lg,
-    padding: spacing.base,
+    borderWidth: 1,
+    borderColor: tokens.border,
+    padding: 16,
     alignItems: 'center' as const,
     width: 90,
-    gap: spacing.sm,
+    gap: 8,
   }
 
   const numberStyle = {
-    fontFamily: typography.family.extraBold,
-    fontSize: typography.size['3xl'],
-    color: colors.textPrimary,
+    fontFamily: fonts.monoB,
+    fontSize: 32,
+    color: tokens.text,
     textAlign: 'center' as const,
     minWidth: 60,
   }
@@ -73,37 +71,33 @@ export function TimePickerModal({ visible, value, onConfirm, onClose, label }: P
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <TouchableWithoutFeedback onPress={onClose}>
-        <View style={{ flex: 1, backgroundColor: tokenColors.overlay.backdrop, justifyContent: 'flex-end' }}>
+        <View style={{ flex: 1, backgroundColor: tokens.overlay, justifyContent: 'flex-end' }}>
           <TouchableWithoutFeedback>
             <View style={{
-              backgroundColor: colors.background,
-              borderTopLeftRadius: radius.xl,
-              borderTopRightRadius: radius.xl,
-              padding: spacing.lg,
-              paddingBottom: spacing.xl,
+              backgroundColor: tokens.bg,
+              padding: 20,
+              paddingBottom: 24,
               height: SCREEN_HEIGHT * 0.38,
+              borderTopWidth: 1,
+              borderTopColor: tokens.border,
             }}>
               {label && (
                 <Text style={{
-                  fontFamily: typography.family.semiBold,
-                  fontSize: typography.size.base,
-                  color: colors.textMuted,
-                  textAlign: 'center',
-                  marginBottom: spacing.lg,
+                  fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute,
+                  textAlign: 'center', textTransform: 'uppercase', letterSpacing: 2, marginBottom: 20,
                 }}>
                   {label}
                 </Text>
               )}
 
-              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.md }}>
-                {/* Hour spinner */}
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
                 <View style={spinnerStyle}>
                   <TouchableOpacity
                     onPress={() => adjustHour(1)}
                     accessibilityLabel="Increase hour" accessibilityRole="button"
-                    style={{ padding: spacing.xs }}
+                    style={{ padding: 4 }}
                   >
-                    <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.xl, color: colors.primary }}>▲</Text>
+                    <Text style={{ fontFamily: fonts.sansB, fontSize: 14, color: tokens.accent }}>^</Text>
                   </TouchableOpacity>
                   <TextInput
                     value={h}
@@ -117,22 +111,21 @@ export function TimePickerModal({ visible, value, onConfirm, onClose, label }: P
                   <TouchableOpacity
                     onPress={() => adjustHour(-1)}
                     accessibilityLabel="Decrease hour" accessibilityRole="button"
-                    style={{ padding: spacing.xs }}
+                    style={{ padding: 4 }}
                   >
-                    <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.xl, color: colors.primary }}>▼</Text>
+                    <Text style={{ fontFamily: fonts.sansB, fontSize: 14, color: tokens.accent }}>v</Text>
                   </TouchableOpacity>
                 </View>
 
-                <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size['2xl'], color: colors.textPrimary }}>:</Text>
+                <Text style={{ fontFamily: fonts.monoB, fontSize: 24, color: tokens.text }}>:</Text>
 
-                {/* Minute spinner */}
                 <View style={spinnerStyle}>
                   <TouchableOpacity
                     onPress={() => adjustMinute(5)}
                     accessibilityLabel="Increase minute" accessibilityRole="button"
-                    style={{ padding: spacing.xs }}
+                    style={{ padding: 4 }}
                   >
-                    <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.xl, color: colors.primary }}>▲</Text>
+                    <Text style={{ fontFamily: fonts.sansB, fontSize: 14, color: tokens.accent }}>^</Text>
                   </TouchableOpacity>
                   <TextInput
                     value={m}
@@ -146,9 +139,9 @@ export function TimePickerModal({ visible, value, onConfirm, onClose, label }: P
                   <TouchableOpacity
                     onPress={() => adjustMinute(-5)}
                     accessibilityLabel="Decrease minute" accessibilityRole="button"
-                    style={{ padding: spacing.xs }}
+                    style={{ padding: 4 }}
                   >
-                    <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.xl, color: colors.primary }}>▼</Text>
+                    <Text style={{ fontFamily: fonts.sansB, fontSize: 14, color: tokens.accent }}>v</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -156,15 +149,12 @@ export function TimePickerModal({ visible, value, onConfirm, onClose, label }: P
               <TouchableOpacity
                 onPress={handleConfirm}
                 style={{
-                  marginTop: spacing.lg,
-                  backgroundColor: colors.primary,
-                  borderRadius: radius.lg,
-                  paddingVertical: spacing.md,
-                  alignItems: 'center',
+                  marginTop: 20, backgroundColor: tokens.accent,
+                  height: 44, alignItems: 'center', justifyContent: 'center',
                 }}
                 accessibilityLabel="Confirm time" accessibilityRole="button"
               >
-                <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.body, color: tokenColors.white }}>
+                <Text style={{ fontFamily: fonts.sansB, fontSize: 13, color: '#FFFFFF', textTransform: 'uppercase', letterSpacing: 1 }}>
                   OK
                 </Text>
               </TouchableOpacity>

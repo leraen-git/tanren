@@ -11,7 +11,7 @@ interface TimerRingProps {
 }
 
 export const TimerRing = React.memo(function TimerRing({ progress, secondsRemaining, totalSeconds, size = 240 }: TimerRingProps) {
-  const { tokens, typography } = useTheme()
+  const { tokens, fonts } = useTheme()
 
   const strokeWidth = 6
   const center = size / 2
@@ -47,34 +47,24 @@ export const TimerRing = React.memo(function TimerRing({ progress, secondsRemain
           color={tokens.surface2}
           style="stroke"
           strokeWidth={strokeWidth}
-          strokeCap="round"
+          strokeCap="butt"
         />
         <Path
           path={path}
           color={tokens.accent}
           style="stroke"
           strokeWidth={strokeWidth}
-          strokeCap="round"
+          strokeCap="butt"
         />
       </Canvas>
 
       <Text
-        style={{
-          fontFamily: typography.family.monoB,
-          fontSize: 56,
-          color: tokens.text,
-        }}
+        style={{ fontFamily: fonts.monoB, fontSize: 56, color: tokens.text }}
         accessibilityLabel={`Rest timer: ${timeLabel}`}
       >
         {timeLabel}
       </Text>
-      <Text
-        style={{
-          fontFamily: typography.family.mono,
-          fontSize: 14,
-          color: tokens.textMute,
-        }}
-      >
+      <Text style={{ fontFamily: fonts.mono, fontSize: 14, color: tokens.textMute }}>
         {totalLabel}
       </Text>
     </View>

@@ -5,44 +5,15 @@ import {
   darkTheme,
   lightTheme,
   fonts,
-  typography,
-  spacing,
-  radius,
   type ThemeTokens,
-  // Legacy imports for backward compat during migration
-  colors,
 } from './tokens'
 
 export type ThemePreference = 'light' | 'dark' | 'system'
 type ColorScheme = 'light' | 'dark'
 
-// Legacy color type (kept during migration)
-type LegacyColors = {
-  primary: string
-  background: string
-  surface: string
-  surface2: string
-  textPrimary: string
-  textMuted: string
-  border: string
-  grid: string
-  success: string
-  warning: string
-  danger: string
-  carbsAccent: string
-  fatAccent: string
-  youtubeRed: string
-}
-
 interface Theme {
-  // New charter tokens
   tokens: ThemeTokens
   fonts: typeof fonts
-  // Legacy API (kept during migration — screens use these)
-  colors: LegacyColors
-  typography: typeof typography
-  spacing: typeof spacing
-  radius: typeof radius
   scheme: ColorScheme
   isDark: boolean
   preference: ThemePreference
@@ -90,13 +61,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const theme: Theme = {
     tokens,
     fonts,
-    colors: {
-      ...(isDark ? colors.dark : colors.light),
-      ...colors.shared,
-    },
-    typography,
-    spacing,
-    radius,
     scheme,
     isDark,
     preference,

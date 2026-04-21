@@ -1,7 +1,6 @@
 import React from 'react'
 import { View, Text, TextInput, TouchableOpacity } from 'react-native'
 import { useTheme } from '@/theme/ThemeContext'
-import { colors as tokenColors } from '@/theme/tokens'
 
 interface SetRowProps {
   setNumber: number
@@ -26,46 +25,33 @@ export function SetRow({
   onWeightChange,
   onComplete,
 }: SetRowProps) {
-  const { colors, typography, spacing, radius } = useTheme()
+  const { tokens, fonts } = useTheme()
 
   return (
     <View
       style={{
         flexDirection: 'row',
         alignItems: 'center',
-        gap: spacing.sm,
-        backgroundColor: isCompleted ? colors.surface2 : colors.surface,
-        borderRadius: radius.md,
-        padding: spacing.md,
-        borderLeftWidth: 3,
-        borderLeftColor: isCompleted ? colors.success : colors.surface2,
+        gap: 6,
+        borderBottomWidth: 1,
+        borderBottomColor: tokens.border,
+        paddingVertical: 10,
+        borderLeftWidth: isCompleted ? 3 : 0,
+        borderLeftColor: tokens.green,
       }}
     >
       {/* Set number */}
-      <Text
-        style={{
-          fontFamily: typography.family.bold,
-          fontSize: typography.size.base,
-          color: colors.textMuted,
-          width: 24,
-        }}
-      >
-        {setNumber}
-      </Text>
+      <View style={{ width: 24, height: 24, borderWidth: 1, borderColor: tokens.accent, alignItems: 'center', justifyContent: 'center' }}>
+        <Text style={{ fontFamily: fonts.sansB, fontSize: 11, color: tokens.accent }}>
+          {setNumber}
+        </Text>
+      </View>
 
       {/* Previous ghost values */}
-      <Text
-        style={{
-          fontFamily: typography.family.regular,
-          fontSize: typography.size.xs,
-          color: colors.textMuted,
-          width: 60,
-          textAlign: 'center',
-        }}
-      >
+      <Text style={{ fontFamily: fonts.mono, fontSize: 10, color: tokens.textGhost, width: 60, textAlign: 'center' }}>
         {previousReps != null && previousWeight != null
-          ? `${previousReps}×${previousWeight}kg`
-          : '—'}
+          ? `${previousReps}x${previousWeight}kg`
+          : '--'}
       </Text>
 
       {/* Reps input */}
@@ -74,15 +60,15 @@ export function SetRow({
         onChangeText={(v) => onRepsChange(parseInt(v) || 0)}
         keyboardType="numeric"
         placeholder="Reps"
-        placeholderTextColor={colors.textMuted}
+        placeholderTextColor={tokens.textGhost}
         style={{
           flex: 1,
-          color: colors.textPrimary,
-          fontFamily: typography.family.semiBold,
-          fontSize: typography.size.body,
-          backgroundColor: colors.background,
-          borderRadius: radius.sm,
-          padding: spacing.xs,
+          color: tokens.text,
+          fontFamily: fonts.monoB,
+          fontSize: 14,
+          borderBottomWidth: 1,
+          borderBottomColor: tokens.border,
+          paddingVertical: 4,
           textAlign: 'center',
         }}
         accessibilityLabel={`Set ${setNumber} reps`}
@@ -96,15 +82,15 @@ export function SetRow({
         onChangeText={(v) => onWeightChange(parseFloat(v) || 0)}
         keyboardType="decimal-pad"
         placeholder="kg"
-        placeholderTextColor={colors.textMuted}
+        placeholderTextColor={tokens.textGhost}
         style={{
           flex: 1,
-          color: colors.textPrimary,
-          fontFamily: typography.family.semiBold,
-          fontSize: typography.size.body,
-          backgroundColor: colors.background,
-          borderRadius: radius.sm,
-          padding: spacing.xs,
+          color: tokens.text,
+          fontFamily: fonts.monoB,
+          fontSize: 14,
+          borderBottomWidth: 1,
+          borderBottomColor: tokens.border,
+          paddingVertical: 4,
           textAlign: 'center',
         }}
         accessibilityLabel={`Set ${setNumber} weight`}
@@ -117,18 +103,19 @@ export function SetRow({
         onPress={onComplete}
         disabled={isCompleted}
         style={{
-          width: 32,
-          height: 32,
-          borderRadius: 16,
-          backgroundColor: isCompleted ? colors.success : colors.surface2,
+          width: 28,
+          height: 28,
+          borderWidth: 1,
+          borderColor: isCompleted ? tokens.green : tokens.border,
+          backgroundColor: isCompleted ? tokens.green : 'transparent',
           alignItems: 'center',
           justifyContent: 'center',
         }}
         accessibilityLabel={isCompleted ? 'Set completed' : `Complete set ${setNumber}`}
         accessibilityRole="button"
       >
-        <Text style={{ color: isCompleted ? tokenColors.white : colors.textMuted, fontSize: 16 }}>
-          {isCompleted ? '✓' : '○'}
+        <Text style={{ color: isCompleted ? '#FFFFFF' : tokens.textMute, fontFamily: fonts.sansB, fontSize: 12 }}>
+          {isCompleted ? 'V' : 'O'}
         </Text>
       </TouchableOpacity>
     </View>

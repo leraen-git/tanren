@@ -4,15 +4,14 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/theme/ThemeContext'
-import { colors as tokenColors } from '@/theme/tokens'
 import { Button } from '@/components/Button'
 import { trpc } from '@/lib/trpc'
 import { useAIPlanStore } from '@/stores/aiPlanStore'
 
-const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+const DAY_NAMES = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
 
 export default function PreviewPlanScreen() {
-  const { colors, typography, spacing, radius } = useTheme()
+  const { tokens, fonts } = useTheme()
   const { t } = useTranslation()
   const { proposedPlan, reset } = useAIPlanStore()
   const utils = trpc.useUtils()
@@ -29,10 +28,10 @@ export default function PreviewPlanScreen() {
 
   if (!proposedPlan) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center' }}>
-        <Text style={{ fontFamily: typography.family.regular, color: colors.textMuted }}>{t('plans.noPlans')}</Text>
-        <TouchableOpacity onPress={() => router.back()} style={{ marginTop: spacing.base }} accessibilityLabel={t('common.back')} accessibilityRole="button">
-          <Text style={{ fontFamily: typography.family.semiBold, color: colors.primary }}>{t('common.back')}</Text>
+      <SafeAreaView style={{ flex: 1, backgroundColor: tokens.bg, alignItems: 'center', justifyContent: 'center' }}>
+        <Text style={{ fontFamily: fonts.sans, color: tokens.textMute }}>{t('plans.noPlans')}</Text>
+        <TouchableOpacity onPress={() => router.back()} style={{ marginTop: 16 }} accessibilityLabel={t('common.back')} accessibilityRole="button">
+          <Text style={{ fontFamily: fonts.sansB, color: tokens.accent, textTransform: 'uppercase', letterSpacing: 2, fontSize: 10 }}>{t('common.back')}</Text>
         </TouchableOpacity>
       </SafeAreaView>
     )
@@ -41,83 +40,84 @@ export default function PreviewPlanScreen() {
   const sortedDays = [...proposedPlan.days].sort((a, b) => ((a.dayOfWeek + 6) % 7) - ((b.dayOfWeek + 6) % 7))
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: tokens.bg }}>
       {/* Header */}
-      <View style={{ flexDirection: 'row', alignItems: 'center', padding: spacing.base, gap: spacing.md }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', padding: 16, gap: 12 }}>
         <TouchableOpacity onPress={() => router.back()} accessibilityLabel="Go back" accessibilityRole="button">
-          <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.title, color: colors.primary }}>←</Text>
+          <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.accent, textTransform: 'uppercase', letterSpacing: 2 }}>
+            {'< BACK'}
+          </Text>
         </TouchableOpacity>
-        <View style={{ flex: 1 }}>
-          <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size.xl, color: colors.textPrimary }}>
-            Your AI Plan
-          </Text>
-          <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted }}>
-            Review before activating
-          </Text>
+        <View style={{ flex: 1 }} />
+        <View style={{
+          borderWidth: 1,
+          borderColor: tokens.accent,
+          paddingHorizontal: 8,
+          paddingVertical: 3,
+        }}>
+          <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.accent, letterSpacing: 1.4 }}>AI</Text>
         </View>
-        <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.xs, color: colors.primary, letterSpacing: 1 }}>AI</Text>
       </View>
 
-      <ScrollView contentContainerStyle={{ padding: spacing.base, gap: spacing.base, paddingBottom: 120 }}>
-        {/* Plan name */}
+      <ScrollView contentContainerStyle={{ padding: 16, gap: 20, paddingBottom: 120 }}>
+        {/* Plan name block */}
         <View style={{
-          backgroundColor: colors.surface,
-          borderRadius: radius.lg,
-          padding: spacing.base,
+          backgroundColor: tokens.surface1,
+          padding: 16,
+          borderWidth: 1,
+          borderColor: tokens.border,
           borderLeftWidth: 3,
-          borderLeftColor: colors.primary,
+          borderLeftColor: tokens.accent,
         }}>
-          <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.xs, color: colors.textMuted, textTransform: 'uppercase', letterSpacing: 1 }}>
-            Plan name
+          <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
+            PLAN NAME
           </Text>
-          <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size['2xl'], color: colors.textPrimary, marginTop: 2 }}>
+          <Text style={{ fontFamily: fonts.sansX, fontSize: 24, color: tokens.text, textTransform: 'uppercase', marginTop: 4 }}>
             {proposedPlan.name}
           </Text>
-          <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted, marginTop: 4 }}>
-            {sortedDays.map((d) => DAY_NAMES[d.dayOfWeek]).join(' · ')} · {proposedPlan.days.length} sessions/week
+          <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute, marginTop: 4 }}>
+            {sortedDays.map((d) => DAY_NAMES[d.dayOfWeek]).join(' / ')} / {proposedPlan.days.length} sessions/week
           </Text>
         </View>
 
         {/* Day cards */}
         {sortedDays.map((day, idx) => (
           <View key={idx} style={{
-            backgroundColor: colors.surface,
-            borderRadius: radius.lg,
-            overflow: 'hidden',
+            borderWidth: 1,
+            borderColor: tokens.border,
           }}>
             {/* Day header */}
-            <View style={{ padding: spacing.base, gap: spacing.xs }}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
+            <View style={{ padding: 12, gap: 6 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                 <View style={{
-                  backgroundColor: colors.primary,
-                  borderRadius: radius.sm,
+                  backgroundColor: tokens.accent,
                   paddingVertical: 2,
-                  paddingHorizontal: spacing.sm,
+                  paddingHorizontal: 8,
                 }}>
-                  <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.xs, color: tokenColors.white }}>
+                  <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: '#FFFFFF', letterSpacing: 1.4 }}>
                     {DAY_NAMES[day.dayOfWeek]}
                   </Text>
                 </View>
-                <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size.xl, color: colors.textPrimary, flex: 1 }}>
+                <Text style={{ fontFamily: fonts.sansX, fontSize: 17, color: tokens.text, textTransform: 'uppercase', flex: 1 }}>
                   {day.workoutName}
                 </Text>
               </View>
 
-              <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted }}>
+              <Text style={{ fontFamily: fonts.mono, fontSize: 11, color: tokens.textMute }}>
                 ~{day.estimatedDuration} min
               </Text>
 
               {/* Muscle tags */}
               {day.muscleGroups.length > 0 && (
-                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs }}>
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 4 }}>
                   {day.muscleGroups.map((mg) => (
                     <View key={mg} style={{
-                      backgroundColor: `${colors.primary}18`,
-                      borderRadius: radius.pill,
-                      paddingHorizontal: spacing.sm,
+                      borderWidth: 1,
+                      borderColor: tokens.border,
+                      paddingHorizontal: 6,
                       paddingVertical: 2,
                     }}>
-                      <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.xs, color: colors.primary }}>
+                      <Text style={{ fontFamily: fonts.sansB, fontSize: 8, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 1 }}>
                         {mg}
                       </Text>
                     </View>
@@ -126,33 +126,40 @@ export default function PreviewPlanScreen() {
               )}
             </View>
 
-            {/* Divider */}
-            <View style={{ height: 1, backgroundColor: colors.surface2 }} />
-
             {/* Exercises */}
-            <View style={{ padding: spacing.base, gap: spacing.sm }}>
-              {day.exercises.map((ex, i) => (
-                <View key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
-                  <View style={{
-                    width: 26, height: 26, borderRadius: 13,
-                    backgroundColor: colors.surface2,
-                    alignItems: 'center', justifyContent: 'center',
-                  }}>
-                    <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.xs, color: colors.textMuted }}>
-                      {i + 1}
-                    </Text>
-                  </View>
-                  <View style={{ flex: 1 }}>
-                    <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.body, color: colors.textPrimary }}>
-                      {ex.exerciseName}
-                    </Text>
-                    <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted }}>
-                      {ex.defaultSets} sets · {ex.defaultReps} reps · {ex.defaultRestSeconds}s rest
-                    </Text>
-                  </View>
+            {day.exercises.map((ex, i) => (
+              <View
+                key={i}
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 10,
+                  paddingVertical: 10,
+                  paddingHorizontal: 12,
+                  borderTopWidth: 1,
+                  borderTopColor: tokens.border,
+                }}
+              >
+                <View style={{
+                  width: 24, height: 24,
+                  borderWidth: 1,
+                  borderColor: tokens.accent,
+                  alignItems: 'center', justifyContent: 'center',
+                }}>
+                  <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.accent }}>
+                    {i + 1}
+                  </Text>
                 </View>
-              ))}
-            </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={{ fontFamily: fonts.sansB, fontSize: 13, color: tokens.text, textTransform: 'uppercase' }}>
+                    {ex.exerciseName}
+                  </Text>
+                  <Text style={{ fontFamily: fonts.mono, fontSize: 11, color: tokens.textMute }}>
+                    {ex.defaultSets}s x {ex.defaultReps}r / {ex.defaultRestSeconds}s rest
+                  </Text>
+                </View>
+              </View>
+            ))}
           </View>
         ))}
       </ScrollView>
@@ -160,22 +167,33 @@ export default function PreviewPlanScreen() {
       {/* Bottom actions */}
       <View style={{
         position: 'absolute', bottom: 0, left: 0, right: 0,
-        backgroundColor: colors.background,
-        padding: spacing.base,
-        gap: spacing.sm,
+        backgroundColor: tokens.bg,
+        padding: 16,
+        gap: 8,
         borderTopWidth: 1,
-        borderTopColor: colors.surface2,
+        borderTopColor: tokens.border,
       }}>
         <Button
-          label="Activate this plan →"
+          label={t('plans.activatePlan') || 'Activate this plan'}
           onPress={() => acceptPlan.mutate(proposedPlan)}
           loading={acceptPlan.isPending}
         />
-        <Button
-          label="Ask for changes"
-          variant="secondary"
+        <TouchableOpacity
           onPress={() => router.back()}
-        />
+          style={{
+            height: 44,
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderWidth: 1,
+            borderColor: tokens.border,
+          }}
+          accessibilityLabel="Ask for changes"
+          accessibilityRole="button"
+        >
+          <Text style={{ fontFamily: fonts.sansB, fontSize: 13, color: tokens.textDim, textTransform: 'uppercase', letterSpacing: 1 }}>
+            ASK FOR CHANGES
+          </Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   )

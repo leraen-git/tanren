@@ -11,20 +11,18 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { router, useLocalSearchParams } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
 import { Button } from '@/components/Button'
-import { Card } from '@/components/Card'
 import { trpc } from '@/lib/trpc'
-import { colors as tokenColors } from '@/theme/tokens'
 import { usePendingWorkoutStore } from '@/stores/pendingWorkoutStore'
 import { useTranslation } from 'react-i18next'
 
 const DAYS = [
-  { label: 'Mon', value: 1 },
-  { label: 'Tue', value: 2 },
-  { label: 'Wed', value: 3 },
-  { label: 'Thu', value: 4 },
-  { label: 'Fri', value: 5 },
-  { label: 'Sat', value: 6 },
-  { label: 'Sun', value: 0 },
+  { label: 'MON', value: 1 },
+  { label: 'TUE', value: 2 },
+  { label: 'WED', value: 3 },
+  { label: 'THU', value: 4 },
+  { label: 'FRI', value: 5 },
+  { label: 'SAT', value: 6 },
+  { label: 'SUN', value: 0 },
 ]
 
 type PlanDay = {
@@ -33,7 +31,7 @@ type PlanDay = {
 }
 
 export default function CreatePlanScreen() {
-  const { colors, typography, spacing, radius } = useTheme()
+  const { tokens, fonts } = useTheme()
   const { t } = useTranslation()
   const { id } = useLocalSearchParams<{ id?: string }>()
   const isEditing = !!id
@@ -51,7 +49,7 @@ export default function CreatePlanScreen() {
   const pendingForDay = usePendingWorkoutStore((s) => s.pendingForDay)
   const pendingWorkoutId = usePendingWorkoutStore((s) => s.pendingWorkoutId)
   const clearPending = usePendingWorkoutStore((s) => s.clear)
-  // Auto-assign when returning from workout builder (only when both day and workout are set)
+
   useEffect(() => {
     if (pendingForDay === null || !pendingWorkoutId) return
     setPlanDays((prev) => {
@@ -62,7 +60,6 @@ export default function CreatePlanScreen() {
     clearPending()
   }, [pendingForDay, pendingWorkoutId])
 
-  // Pre-populate form when editing
   useEffect(() => {
     if (!id || !plans) return
     const existing = plans.find((p) => p.id === id)
@@ -152,70 +149,66 @@ export default function CreatePlanScreen() {
   const isPending = createPlan.isPending || updatePlan.isPending
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: tokens.bg }}>
       {/* Header */}
-      <View style={{ flexDirection: 'row', alignItems: 'center', padding: spacing.base, gap: spacing.md }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', padding: 16, gap: 12 }}>
         <TouchableOpacity onPress={() => router.back()} accessibilityLabel="Go back" accessibilityRole="button">
-          <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.title, color: colors.primary }}>←</Text>
+          <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.accent, textTransform: 'uppercase', letterSpacing: 2 }}>
+            {'< BACK'}
+          </Text>
         </TouchableOpacity>
         <View style={{ flex: 1 }} />
         {isEditing && (
           <TouchableOpacity
             onPress={handleDelete}
             style={{
-              paddingHorizontal: spacing.sm,
-              paddingVertical: spacing.xs,
-              borderRadius: radius.sm,
+              paddingHorizontal: 12,
+              paddingVertical: 6,
               borderWidth: 1,
-              borderColor: `${colors.danger}40`,
+              borderColor: tokens.accent,
             }}
             accessibilityLabel="Delete plan"
             accessibilityRole="button"
           >
-            <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.base, color: colors.danger }}>
-              Delete plan
+            <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.accent, textTransform: 'uppercase', letterSpacing: 1.4 }}>
+              DELETE
             </Text>
           </TouchableOpacity>
         )}
       </View>
 
-      <ScrollView contentContainerStyle={{ padding: spacing.base, gap: spacing.base }}>
-        {/* Plan name with pen icon */}
-        <TouchableOpacity
-          onPress={() => {/* TextInput handles focus */}}
-          style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}
-          accessibilityLabel="Edit plan name"
-          accessibilityRole="button"
-          activeOpacity={1}
-        >
+      <ScrollView contentContainerStyle={{ padding: 16, gap: 20 }}>
+        {/* Plan name — underline input */}
+        <View>
+          <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2, marginBottom: 8 }}>
+            PLAN NAME
+          </Text>
           <TextInput
             value={name}
             onChangeText={setName}
             placeholder="Plan name..."
-            placeholderTextColor={colors.textMuted}
+            placeholderTextColor={tokens.textGhost}
             style={{
-              flex: 1,
-              fontFamily: typography.family.extraBold,
-              fontSize: typography.size['2xl'],
-              color: colors.textPrimary,
-              borderBottomWidth: name ? 0 : 2,
-              borderBottomColor: colors.primary,
-              paddingVertical: 2,
+              fontFamily: fonts.sansX,
+              fontSize: 24,
+              color: tokens.text,
+              borderBottomWidth: 1,
+              borderBottomColor: tokens.border,
+              paddingVertical: 4,
             }}
             accessibilityLabel="Plan name"
           />
-          <Text style={{ fontSize: 18, color: colors.textMuted }}>✏️</Text>
-        </TouchableOpacity>
+        </View>
 
         {/* Day picker */}
-        <View style={{ gap: spacing.sm }}>
-          <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.body, color: colors.textPrimary }}>
-            Training days
+        <View style={{ gap: 8 }}>
+          <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
+            TRAINING DAYS
           </Text>
-          <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted }}>
-            Tap a day to assign a workout to it
+          <Text style={{ fontFamily: fonts.sans, fontSize: 13, color: tokens.textDim }}>
+            Tap a day to assign a workout
           </Text>
-          <View style={{ flexDirection: 'row', gap: spacing.sm, flexWrap: 'wrap' }}>
+          <View style={{ flexDirection: 'row', gap: 6, flexWrap: 'wrap', marginTop: 4 }}>
             {DAYS.map((day) => {
               const isSelected = planDays.some((d) => d.dayOfWeek === day.value)
               const isSelecting = selectingDayFor === day.value
@@ -226,22 +219,28 @@ export default function CreatePlanScreen() {
                   accessibilityLabel={`${day.label} ${isSelected ? 'selected' : 'not selected'}`}
                   accessibilityRole="button"
                   style={{
-                    paddingVertical: spacing.sm,
-                    paddingHorizontal: spacing.md,
-                    borderRadius: radius.pill,
-                    backgroundColor: isSelecting
-                      ? colors.warning
+                    paddingVertical: 8,
+                    paddingHorizontal: 14,
+                    borderWidth: 1,
+                    borderColor: isSelecting
+                      ? tokens.amber
                       : isSelected
-                      ? colors.primary
-                      : colors.surface2,
-                    minWidth: 52,
+                      ? tokens.accent
+                      : tokens.border,
+                    backgroundColor: isSelecting
+                      ? tokens.amber
+                      : isSelected
+                      ? tokens.accent
+                      : 'transparent',
+                    minWidth: 48,
                     alignItems: 'center',
                   }}
                 >
                   <Text style={{
-                    fontFamily: typography.family.bold,
-                    fontSize: typography.size.base,
-                    color: isSelected || isSelecting ? tokenColors.white : colors.textMuted,
+                    fontFamily: fonts.sansB,
+                    fontSize: 10,
+                    letterSpacing: 1.4,
+                    color: isSelected || isSelecting ? '#FFFFFF' : tokens.textMute,
                   }}>
                     {day.label}
                   </Text>
@@ -251,14 +250,14 @@ export default function CreatePlanScreen() {
           </View>
         </View>
 
-        {/* Workout picker (shows when a day is being assigned) */}
+        {/* Workout picker */}
         {selectingDayFor !== null && (
-          <View style={{ gap: spacing.sm }}>
-            <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.body, color: colors.warning }}>
+          <View style={{ gap: 12 }}>
+            <Text style={{ fontFamily: fonts.sansB, fontSize: 14, color: tokens.amber }}>
               Choose a workout for {DAYS.find((d) => d.value === selectingDayFor)?.label}
             </Text>
 
-            {/* Create new workout inline */}
+            {/* Create new workout */}
             <TouchableOpacity
               onPress={() => {
                 usePendingWorkoutStore.getState().setDay(selectingDayFor)
@@ -268,60 +267,89 @@ export default function CreatePlanScreen() {
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: spacing.sm,
-                paddingVertical: spacing.base,
-                borderRadius: radius.lg,
-                borderWidth: 2,
+                gap: 8,
+                paddingVertical: 16,
+                borderWidth: 1,
                 borderStyle: 'dashed',
-                borderColor: colors.primary,
+                borderColor: tokens.accent,
               }}
               accessibilityLabel="Create new workout"
               accessibilityRole="button"
             >
-              <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size.xl, color: colors.primary }}>+</Text>
-              <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.body, color: colors.primary }}>
+              <Text style={{ fontFamily: fonts.sansX, fontSize: 20, color: tokens.accent }}>+</Text>
+              <Text style={{ fontFamily: fonts.sansB, fontSize: 14, color: tokens.accent, textTransform: 'uppercase', letterSpacing: 1 }}>
                 Create new workout
               </Text>
             </TouchableOpacity>
 
             {workouts && workouts.length > 0 && (
-              <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.base, color: colors.textMuted }}>
-                Or pick an existing one
+              <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
+                OR PICK EXISTING
               </Text>
             )}
             {workouts?.map((w) => (
-              <Card key={w.id} onPress={() => assignWorkout(w.id)} accessibilityLabel={`Assign ${w.name}`}>
-                <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.body, color: colors.textPrimary }}>
+              <TouchableOpacity
+                key={w.id}
+                onPress={() => assignWorkout(w.id)}
+                accessibilityLabel={`Assign ${w.name}`}
+                accessibilityRole="button"
+                style={{
+                  borderBottomWidth: 1,
+                  borderBottomColor: tokens.border,
+                  paddingVertical: 12,
+                }}
+              >
+                <Text style={{ fontFamily: fonts.sansB, fontSize: 14, color: tokens.text, textTransform: 'uppercase' }}>
                   {w.name}
                 </Text>
-                <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted }}>
-                  {w.muscleGroups.join(' · ')}{w.muscleGroups.length > 0 ? ' · ' : ''}~{w.estimatedDuration} min
+                <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute, marginTop: 2 }}>
+                  {w.muscleGroups.join(' / ')}{w.muscleGroups.length > 0 ? ' / ' : ''}~{w.estimatedDuration} min
                 </Text>
-              </Card>
+              </TouchableOpacity>
             ))}
-            <Button label="Cancel" variant="ghost" onPress={() => setSelectingDayFor(null)} />
+            <TouchableOpacity
+              onPress={() => setSelectingDayFor(null)}
+              style={{ alignSelf: 'flex-start', paddingVertical: 8 }}
+              accessibilityLabel="Cancel"
+              accessibilityRole="button"
+            >
+              <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
+                CANCEL
+              </Text>
+            </TouchableOpacity>
           </View>
         )}
 
         {/* Schedule summary */}
         {planDays.length > 0 && selectingDayFor === null && (
-          <View style={{ gap: spacing.sm }}>
-            <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.xl, color: colors.textPrimary }}>
-              Schedule
+          <View style={{ gap: 8 }}>
+            <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
+              SCHEDULE
             </Text>
-            {[...planDays]
-              .sort((a, b) => ((a.dayOfWeek + 6) % 7) - ((b.dayOfWeek + 6) % 7))
-              .map((pd) => {
-                const workout = getDayWorkout(pd.dayOfWeek)
-                const dayLabel = DAYS.find((d) => d.value === pd.dayOfWeek)?.label
-                return (
-                  <Card key={pd.dayOfWeek} accessibilityLabel={`${dayLabel}: ${workout?.name}`}>
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <View>
-                        <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.base, color: colors.primary }}>
+            <View style={{ borderWidth: 1, borderColor: tokens.border }}>
+              {[...planDays]
+                .sort((a, b) => ((a.dayOfWeek + 6) % 7) - ((b.dayOfWeek + 6) % 7))
+                .map((pd, idx) => {
+                  const workout = getDayWorkout(pd.dayOfWeek)
+                  const dayLabel = DAYS.find((d) => d.value === pd.dayOfWeek)?.label
+                  return (
+                    <View
+                      key={pd.dayOfWeek}
+                      style={{
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        padding: 12,
+                        borderTopWidth: idx > 0 ? 1 : 0,
+                        borderTopColor: tokens.border,
+                      }}
+                      accessibilityLabel={`${dayLabel}: ${workout?.name}`}
+                    >
+                      <View style={{ flex: 1 }}>
+                        <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.accent, textTransform: 'uppercase', letterSpacing: 1.4 }}>
                           {dayLabel}
                         </Text>
-                        <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.body, color: colors.textPrimary }}>
+                        <Text style={{ fontFamily: fonts.sansB, fontSize: 14, color: tokens.text, textTransform: 'uppercase', marginTop: 2 }}>
                           {workout?.name}
                         </Text>
                       </View>
@@ -329,53 +357,54 @@ export default function CreatePlanScreen() {
                         onPress={() => setPlanDays((prev) => prev.filter((d) => d.dayOfWeek !== pd.dayOfWeek))}
                         accessibilityLabel={`Remove ${dayLabel}`}
                         accessibilityRole="button"
+                        style={{ padding: 4 }}
                       >
-                        <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.title, color: colors.textMuted }}>
-                          ×
+                        <Text style={{ fontFamily: fonts.sansB, fontSize: 20, color: tokens.textMute }}>
+                          x
                         </Text>
                       </TouchableOpacity>
                     </View>
-                  </Card>
-                )
-              })}
+                  )
+                })}
+            </View>
           </View>
         )}
 
-        {/* AI card — only shown when creating (not editing) */}
+        {/* AI card */}
         {!isEditing && selectingDayFor === null && (
           <TouchableOpacity
             onPress={isGuest ? undefined : () => router.push('/plans/generate')}
             disabled={isGuest}
             style={{
-              backgroundColor: colors.surface,
-              borderRadius: radius.lg,
-              padding: spacing.base,
+              backgroundColor: tokens.surface1,
+              padding: 16,
               flexDirection: 'row',
               alignItems: 'center',
-              gap: spacing.md,
+              gap: 12,
               borderWidth: 1,
-              borderColor: colors.surface2,
+              borderColor: tokens.border,
               opacity: isGuest ? 0.4 : 1,
             }}
             accessibilityLabel={isGuest ? t('guest.aiLocked') : t('home.generatePlan')}
             accessibilityRole="button"
           >
             <View style={{
-              width: 44, height: 44, borderRadius: radius.md,
-              backgroundColor: isGuest ? colors.surface2 : `${colors.primary}18`,
+              width: 40, height: 40,
+              borderWidth: 1,
+              borderColor: isGuest ? tokens.border : tokens.accent,
               alignItems: 'center', justifyContent: 'center',
             }}>
-              <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.xs, color: isGuest ? colors.textMuted : colors.primary, letterSpacing: 1 }}>AI</Text>
+              <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: isGuest ? tokens.textMute : tokens.accent, letterSpacing: 1 }}>AI</Text>
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.body, color: isGuest ? colors.textMuted : colors.textPrimary }}>
+              <Text style={{ fontFamily: fonts.sansB, fontSize: 14, color: isGuest ? tokens.textMute : tokens.text, textTransform: 'uppercase' }}>
                 {isGuest ? t('guest.aiLocked') : t('home.generatePlan')}
               </Text>
-              <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted }}>
+              <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute }}>
                 {isGuest ? t('guest.aiLockedDesc') : t('home.generatePlanDesc')}
               </Text>
             </View>
-            <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.title, color: isGuest ? colors.textMuted : colors.primary }}>→</Text>
+            <Text style={{ fontFamily: fonts.sansB, fontSize: 17, color: isGuest ? tokens.textMute : tokens.accent }}>-{'>'}</Text>
           </TouchableOpacity>
         )}
 
@@ -385,7 +414,7 @@ export default function CreatePlanScreen() {
             label={isEditing ? 'Save changes' : 'Save & activate plan'}
             onPress={handleSave}
             loading={isPending}
-            style={{ marginTop: spacing.sm }}
+            style={{ marginTop: 4 }}
           />
         )}
       </ScrollView>

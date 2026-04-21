@@ -18,7 +18,6 @@ import { TimerRing } from '@/components/TimerRing'
 import { useActiveSessionStore } from '@/stores/activeSessionStore'
 import { useTimerStore, timerStore } from '@/stores/timerStore'
 import { scheduleRestEndNotification, cancelRestNotification } from '@/services/timerService'
-import { colors as tokenColors } from '@/theme/tokens'
 import { MusicControlBar } from '@/components/MusicControlBar'
 import { useWorkletTimer } from '@/hooks/useWorkletTimer'
 import { useTranslation } from 'react-i18next'
@@ -29,7 +28,7 @@ const HEARTBEAT_INTERVAL_MS = 30_000
 const DEFAULT_REST_SECONDS = 90
 
 export default function ActiveWorkoutScreen() {
-  const { colors, tokens, typography, spacing, radius } = useTheme()
+  const { tokens, fonts } = useTheme()
   const { t } = useTranslation()
   const {
     currentWorkout,
@@ -50,35 +49,27 @@ export default function ActiveWorkoutScreen() {
   const skip = useTimerStore((s) => s.skip)
   const pauseTimer = useTimerStore((s) => s.pause)
   const addSeconds = useTimerStore((s) => s.addSeconds)
-  // UI-thread frame-based timer — replaces JS-thread setInterval
   useWorkletTimer()
 
   const currentExercise = exercises[currentExerciseIndex]
 
-  // Wake lock — keep screen on during active session, respect AppState
   useEffect(() => {
     let appStateSubscription: ReturnType<typeof AppState.addEventListener>
-
     const activate = () => activateKeepAwakeAsync(WAKE_LOCK_TAG)
     const deactivate = () => deactivateKeepAwake(WAKE_LOCK_TAG)
-
     activate()
-
     appStateSubscription = AppState.addEventListener('change', (state: AppStateStatus) => {
       if (state === 'active') activate()
       else deactivate()
     })
-
     return () => {
       deactivate()
       appStateSubscription.remove()
     }
   }, [])
 
-  // Session heartbeat — write to disk every 30s for crash recovery
   useEffect(() => {
     if (!currentWorkout || !startedAt) return
-
     const write = () => {
       FileSystem.writeAsStringAsync(
         HEARTBEAT_FILE,
@@ -89,26 +80,22 @@ export default function ActiveWorkoutScreen() {
           lastPulse: new Date().toISOString(),
         }),
         { encoding: FileSystem.EncodingType.UTF8 },
-      ).catch(() => null) // non-critical, never throw
+      ).catch(() => null)
     }
-
     write()
     const interval = setInterval(write, HEARTBEAT_INTERVAL_MS)
-
     return () => {
       clearInterval(interval)
-      // Clear heartbeat when session ends cleanly
       FileSystem.deleteAsync(HEARTBEAT_FILE, { idempotent: true }).catch(() => null)
     }
   }, [currentWorkout, startedAt])
 
-
   if (!currentWorkout || !currentExercise) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center', gap: spacing.base }}>
-        <Text style={{ color: colors.textMuted, fontFamily: typography.family.regular }}>No active workout</Text>
-        <TouchableOpacity onPress={() => router.back()} accessibilityLabel="Go back" accessibilityRole="button">
-          <Text style={{ color: colors.primary, fontFamily: typography.family.semiBold }}>Go back</Text>
+      <SafeAreaView style={{ flex: 1, backgroundColor: tokens.bg, alignItems: 'center', justifyContent: 'center', gap: 16 }}>
+        <Text style={{ color: tokens.textMute, fontFamily: fonts.sans }}>{t('workout.noActiveWorkout')}</Text>
+        <TouchableOpacity onPress={() => router.back()} accessibilityLabel={t('common.back')} accessibilityRole="button">
+          <Text style={{ color: tokens.accent, fontFamily: fonts.sansM }}>{t('common.back')}</Text>
         </TouchableOpacity>
       </SafeAreaView>
     )
@@ -126,7 +113,6 @@ export default function ActiveWorkoutScreen() {
   const handleSetFinish = async () => {
     if (isCurrentSetDone) return
     completeSet(currentExerciseIndex, currentSetIndex)
-
     const restSecs = currentSet?.restSeconds ?? DEFAULT_REST_SECONDS
     start(restSecs, currentExercise.exerciseName)
     await scheduleRestEndNotification(restSecs, currentExercise.exerciseName)
@@ -138,10 +124,10 @@ export default function ActiveWorkoutScreen() {
   }
 
   const handleFinish = () => {
-    Alert.alert('Finish workout?', 'This will end your current session.', [
-      { text: 'Cancel', style: 'cancel' },
+    Alert.alert(t('workout.finishTitle'), t('workout.finishMessage'), [
+      { text: t('common.cancel'), style: 'cancel' },
       {
-        text: 'Finish',
+        text: t('common.finish'),
         style: 'destructive',
         onPress: () => {
           timerStore.getState().reset()
@@ -154,85 +140,104 @@ export default function ActiveWorkoutScreen() {
 
   const progress = totalSeconds > 0 ? secondsRemaining / totalSeconds : 0
 
-  // Elapsed time
   const elapsed = startedAt ? Math.floor((Date.now() - startedAt.getTime()) / 1000) : 0
   const elapsedMins = Math.floor(elapsed / 60)
   const elapsedSecs = elapsed % 60
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: tokens.bg }}>
       {/* Header bar */}
       <View style={{
         flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-        paddingHorizontal: spacing.base, paddingVertical: spacing.sm,
-        borderBottomWidth: 1, borderBottomColor: colors.surface2,
+        paddingHorizontal: 16, paddingVertical: 8,
+        borderBottomWidth: 1, borderBottomColor: tokens.border,
       }}>
-        <TouchableOpacity onPress={() => router.back()} accessibilityLabel="Back" accessibilityRole="button">
-          <Text style={{ color: colors.primary, fontFamily: typography.family.semiBold, fontSize: typography.size.body }}>← Back</Text>
+        <TouchableOpacity onPress={() => router.back()} accessibilityLabel={t('common.back')} accessibilityRole="button">
+          <Text style={{
+            fontFamily: fonts.sansM,
+            fontSize: 12,
+            color: tokens.textMute,
+            textTransform: 'uppercase',
+            letterSpacing: 1,
+          }}>
+            {'‹ '}{t('common.back')}
+          </Text>
         </TouchableOpacity>
         <View style={{ alignItems: 'center' }}>
-          <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.base, color: colors.textPrimary }}>
+          <Text style={{ fontFamily: fonts.sansB, fontSize: 12, color: tokens.text, textTransform: 'uppercase', letterSpacing: 0.3 }}>
             {currentWorkout.name}
           </Text>
-          <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted }}>
-            {String(elapsedMins).padStart(2, '0')}:{String(elapsedSecs).padStart(2, '0')} · {completedTotal}/{totalSets} sets
+          <Text style={{ fontFamily: fonts.mono, fontSize: 10, color: tokens.textMute }}>
+            {String(elapsedMins).padStart(2, '0')}:{String(elapsedSecs).padStart(2, '0')} · {completedTotal}/{totalSets}
           </Text>
         </View>
-        <TouchableOpacity onPress={handleFinish} accessibilityLabel="Finish workout" accessibilityRole="button">
-          <Text style={{ color: colors.danger, fontFamily: typography.family.semiBold, fontSize: typography.size.body }}>Finish</Text>
+        <TouchableOpacity onPress={handleFinish} accessibilityLabel={t('workout.finishTitle')} accessibilityRole="button">
+          <Text style={{
+            fontFamily: fonts.sansB,
+            fontSize: 12,
+            color: tokens.accent,
+            textTransform: 'uppercase',
+            letterSpacing: 0.5,
+          }}>
+            {t('common.finish')}
+          </Text>
         </TouchableOpacity>
       </View>
 
-      {/* Rest timer — full screen overlay (charter layout: 2-row controls) */}
+      {/* Rest timer overlay */}
       {isRunning && (
         <View style={{
           position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-          backgroundColor: colors.background,
+          backgroundColor: tokens.bg,
           alignItems: 'center',
           justifyContent: 'center',
-          gap: spacing.xl,
+          gap: 20,
           zIndex: 10,
-          paddingHorizontal: spacing.xl,
+          paddingHorizontal: 20,
         }}>
-          <Text style={{ fontFamily: typography.family.sansM, fontSize: 10, letterSpacing: 1.6, textTransform: 'uppercase', color: colors.textMuted }}>
+          <Text style={{
+            fontFamily: fonts.sansM,
+            fontSize: 10,
+            letterSpacing: 1.6,
+            textTransform: 'uppercase',
+            color: tokens.textMute,
+          }}>
             {currentExercise.exerciseName}
           </Text>
 
           <TimerRing progress={progress} secondsRemaining={secondsRemaining} totalSeconds={totalSeconds} size={240} />
 
-          {/* Top row: −15s / +15s / ⏸ */}
-          <View style={{ flexDirection: 'row', gap: spacing.sm, width: '100%' }}>
+          <View style={{ flexDirection: 'row', gap: 8, width: '100%' }}>
             <TouchableOpacity
               onPress={() => addSeconds(-15)}
-              style={{ flex: 1, height: 52, borderWidth: 1, borderColor: colors.border, alignItems: 'center', justifyContent: 'center' }}
-              accessibilityLabel="Subtract 15 seconds" accessibilityRole="button"
+              style={{ flex: 1, height: 52, borderWidth: 1, borderColor: tokens.border, alignItems: 'center', justifyContent: 'center' }}
+              accessibilityLabel={t('workout.subtract15')} accessibilityRole="button"
             >
-              <Text style={{ fontFamily: typography.family.sansB, fontSize: 16, color: colors.textPrimary }}>−15s</Text>
+              <Text style={{ fontFamily: fonts.sansB, fontSize: 16, color: tokens.text }}>-15s</Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => addSeconds(15)}
-              style={{ flex: 1, height: 52, borderWidth: 1, borderColor: colors.border, alignItems: 'center', justifyContent: 'center' }}
-              accessibilityLabel="Add 15 seconds" accessibilityRole="button"
+              style={{ flex: 1, height: 52, borderWidth: 1, borderColor: tokens.border, alignItems: 'center', justifyContent: 'center' }}
+              accessibilityLabel={t('workout.add15')} accessibilityRole="button"
             >
-              <Text style={{ fontFamily: typography.family.sansB, fontSize: 16, color: colors.textPrimary }}>+15s</Text>
+              <Text style={{ fontFamily: fonts.sansB, fontSize: 16, color: tokens.text }}>+15s</Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={pauseTimer}
-              style={{ width: 48, height: 52, borderWidth: 1, borderColor: colors.border, alignItems: 'center', justifyContent: 'center' }}
-              accessibilityLabel="Pause timer" accessibilityRole="button"
+              style={{ width: 48, height: 52, borderWidth: 1, borderColor: tokens.border, alignItems: 'center', justifyContent: 'center' }}
+              accessibilityLabel={t('workout.pause')} accessibilityRole="button"
             >
-              <Text style={{ fontFamily: typography.family.sans, fontSize: 13, color: colors.textMuted }}>⏸</Text>
+              <Text style={{ fontFamily: fonts.sans, fontSize: 13, color: tokens.textMute }}>II</Text>
             </TouchableOpacity>
           </View>
 
-          {/* Bottom row: PASSER full width */}
           <TouchableOpacity
             onPress={handleSkipRest}
-            style={{ width: '100%', height: 52, backgroundColor: colors.primary, borderRadius: 4, alignItems: 'center', justifyContent: 'center' }}
-            accessibilityLabel="Skip rest" accessibilityRole="button"
+            style={{ width: '100%', height: 52, backgroundColor: tokens.accent, alignItems: 'center', justifyContent: 'center' }}
+            accessibilityLabel={t('workout.skip')} accessibilityRole="button"
           >
-            <Text style={{ fontFamily: typography.family.sansB, fontSize: 15, letterSpacing: 0.6, textTransform: 'uppercase', color: '#FFFFFF' }}>
-              {t('workout.skip') ?? 'Passer'}
+            <Text style={{ fontFamily: fonts.sansB, fontSize: 15, letterSpacing: 0.6, textTransform: 'uppercase', color: '#FFFFFF' }}>
+              {t('workout.skip')}
             </Text>
           </TouchableOpacity>
         </View>
@@ -241,57 +246,78 @@ export default function ActiveWorkoutScreen() {
       <MusicControlBar />
 
       {!isRunning && (
-        <ScrollView contentContainerStyle={{ padding: spacing.base, gap: spacing.base }}>
+        <ScrollView contentContainerStyle={{ padding: 16, gap: 16 }}>
           {/* Exercise navigation */}
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
             <TouchableOpacity
               onPress={prevExercise}
               disabled={currentExerciseIndex === 0}
-              style={{ padding: spacing.sm }}
-              accessibilityLabel="Previous exercise" accessibilityRole="button"
+              style={{ padding: 8 }}
+              accessibilityLabel={t('workout.prevExercise')} accessibilityRole="button"
             >
-              <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.xl, color: currentExerciseIndex === 0 ? colors.surface2 : colors.primary }}>‹</Text>
+              <Text style={{
+                fontFamily: fonts.sansB,
+                fontSize: 20,
+                color: currentExerciseIndex === 0 ? tokens.border : tokens.accent,
+              }}>‹</Text>
             </TouchableOpacity>
 
             <View style={{ flex: 1, alignItems: 'center' }}>
-              <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size['2xl'], color: colors.textPrimary, textAlign: 'center' }}>
+              <Text style={{
+                fontFamily: fonts.sansX,
+                fontSize: 24,
+                color: tokens.text,
+                textAlign: 'center',
+                textTransform: 'uppercase',
+                letterSpacing: 0.5,
+              }}>
                 {currentExercise.exerciseName}
               </Text>
-              <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted }}>
-                Exercise {currentExerciseIndex + 1} of {exercises.length}
+              <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute }}>
+                {currentExerciseIndex + 1} / {exercises.length}
               </Text>
             </View>
 
             <TouchableOpacity
               onPress={nextExercise}
               disabled={currentExerciseIndex === exercises.length - 1}
-              style={{ padding: spacing.sm }}
-              accessibilityLabel="Next exercise" accessibilityRole="button"
+              style={{ padding: 8 }}
+              accessibilityLabel={t('workout.nextExercise')} accessibilityRole="button"
             >
-              <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.xl, color: currentExerciseIndex === exercises.length - 1 ? colors.surface2 : colors.primary }}>›</Text>
+              <Text style={{
+                fontFamily: fonts.sansB,
+                fontSize: 20,
+                color: currentExerciseIndex === exercises.length - 1 ? tokens.border : tokens.accent,
+              }}>›</Text>
             </TouchableOpacity>
           </View>
 
           {/* Progress dots */}
-          <View style={{ flexDirection: 'row', justifyContent: 'center', gap: spacing.xs }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 4 }}>
             {exercises.map((_, i) => (
               <View
                 key={i}
                 style={{
                   width: i === currentExerciseIndex ? 20 : 8,
-                  height: 8,
-                  borderRadius: 4,
-                  backgroundColor: i === currentExerciseIndex ? colors.primary : colors.surface2,
+                  height: 3,
+                  backgroundColor: i === currentExerciseIndex ? tokens.accent : tokens.border,
                 }}
               />
             ))}
           </View>
 
-          {/* Sets */}
-          <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.title, color: colors.textPrimary }}>
-            Sets · {completedSets}/{sets.length} done
+          {/* Sets header */}
+          <Text style={{
+            fontFamily: fonts.sansB,
+            fontSize: 10,
+            letterSpacing: 3,
+            color: tokens.textMute,
+            textTransform: 'uppercase',
+          }}>
+            {t('common.sets')} · {completedSets}/{sets.length}
           </Text>
 
+          {/* Set rows */}
           {sets.map((s, idx) => {
             const isActive = idx === currentSetIndex && !s.isCompleted
             return (
@@ -304,70 +330,70 @@ export default function ActiveWorkoutScreen() {
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
-                  gap: spacing.sm,
-                  backgroundColor: s.isCompleted ? colors.surface2 : isActive ? colors.surface : colors.surface,
-                  borderRadius: radius.md,
-                  padding: spacing.md,
-                  borderLeftWidth: 4,
-                  borderLeftColor: s.isCompleted ? colors.success : isActive ? colors.primary : colors.surface2,
+                  gap: 8,
+                  padding: 12,
+                  borderWidth: 1,
+                  borderColor: s.isCompleted ? tokens.green : isActive ? tokens.accent : tokens.border,
+                  borderLeftWidth: 3,
+                  borderLeftColor: s.isCompleted ? tokens.green : isActive ? tokens.accent : tokens.border,
                 }}
               >
-                {/* Set number */}
-                <Text style={{ width: 24, fontFamily: typography.family.bold, fontSize: typography.size.base, color: s.isCompleted ? colors.success : isActive ? colors.primary : colors.textMuted, textAlign: 'center' }}>
+                <Text style={{
+                  width: 24,
+                  fontFamily: fonts.sansB,
+                  fontSize: 12,
+                  color: s.isCompleted ? tokens.green : isActive ? tokens.accent : tokens.textMute,
+                  textAlign: 'center',
+                }}>
                   {idx + 1}
                 </Text>
 
-                {/* Reps */}
                 <View style={{ flex: 1, gap: 2 }}>
-                  <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted }}>REPS</Text>
+                  <Text style={{ fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 1, color: tokens.textGhost, textTransform: 'uppercase' }}>REPS</Text>
                   <TextInput
                     value={s.reps > 0 ? String(s.reps) : ''}
                     onChangeText={(v) => updateSet(currentExerciseIndex, idx, { reps: parseInt(v) || 0 })}
                     keyboardType="number-pad"
                     placeholder={String(currentExercise.lastReps ?? currentExercise.defaultReps)}
-                    placeholderTextColor={colors.textMuted}
+                    placeholderTextColor={tokens.textGhost}
                     editable={!s.isCompleted}
                     style={{
-                      backgroundColor: colors.background,
-                      borderRadius: radius.sm,
-                      paddingVertical: spacing.xs,
-                      paddingHorizontal: spacing.sm,
-                      color: colors.textPrimary,
-                      fontFamily: typography.family.bold,
-                      fontSize: typography.size.title,
+                      borderBottomWidth: 1,
+                      borderBottomColor: tokens.border,
+                      paddingVertical: 4,
+                      color: tokens.text,
+                      fontFamily: fonts.monoB,
+                      fontSize: 32,
                       textAlign: 'center',
                     }}
                     accessibilityLabel={`Set ${idx + 1} reps`}
                   />
                 </View>
 
-                {/* Weight */}
                 <View style={{ flex: 1, gap: 2 }}>
-                  <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted }}>KG</Text>
+                  <Text style={{ fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 1, color: tokens.textGhost, textTransform: 'uppercase' }}>KG</Text>
                   <TextInput
                     value={s.weight > 0 ? String(s.weight) : ''}
                     onChangeText={(v) => updateSet(currentExerciseIndex, idx, { weight: parseFloat(v) || 0 })}
                     keyboardType="decimal-pad"
                     placeholder={String((currentExercise.lastWeight ?? currentExercise.defaultWeight) || '0')}
-                    placeholderTextColor={colors.textMuted}
+                    placeholderTextColor={tokens.textGhost}
                     editable={!s.isCompleted}
                     style={{
-                      backgroundColor: colors.background,
-                      borderRadius: radius.sm,
-                      paddingVertical: spacing.xs,
-                      paddingHorizontal: spacing.sm,
-                      color: colors.textPrimary,
-                      fontFamily: typography.family.bold,
-                      fontSize: typography.size.title,
+                      borderBottomWidth: 1,
+                      borderBottomColor: tokens.border,
+                      paddingVertical: 4,
+                      color: tokens.text,
+                      fontFamily: fonts.monoB,
+                      fontSize: 32,
                       textAlign: 'center',
                     }}
                     accessibilityLabel={`Set ${idx + 1} weight`}
                   />
                 </View>
 
-                {/* Rest */}
                 <View style={{ width: 52, gap: 2 }}>
-                  <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted }}>REST</Text>
+                  <Text style={{ fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 1, color: tokens.textGhost, textTransform: 'uppercase' }}>REST</Text>
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <TextInput
                       value={String(s.restSeconds)}
@@ -376,55 +402,54 @@ export default function ActiveWorkoutScreen() {
                       editable={!s.isCompleted}
                       style={{
                         flex: 1,
-                        backgroundColor: colors.background,
-                        borderRadius: radius.sm,
-                        paddingVertical: spacing.xs,
-                        color: colors.textPrimary,
-                        fontFamily: typography.family.semiBold,
-                        fontSize: typography.size.xs,
+                        borderBottomWidth: 1,
+                        borderBottomColor: tokens.border,
+                        paddingVertical: 4,
+                        color: tokens.text,
+                        fontFamily: fonts.mono,
+                        fontSize: 10,
                         textAlign: 'center',
                       }}
                       accessibilityLabel={`Set ${idx + 1} rest seconds`}
                     />
-                    <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted }}>s</Text>
+                    <Text style={{ fontFamily: fonts.sans, fontSize: 10, color: tokens.textGhost }}>s</Text>
                   </View>
                 </View>
 
-                {/* Status indicator */}
                 <View style={{
-                  width: 32, height: 32, borderRadius: 16,
-                  backgroundColor: s.isCompleted ? colors.success : colors.surface2,
+                  width: 28, height: 28,
+                  backgroundColor: s.isCompleted ? tokens.green : tokens.surface2,
                   alignItems: 'center', justifyContent: 'center',
                 }}>
-                  <Text style={{ fontFamily: typography.family.regular, color: s.isCompleted ? tokenColors.white : colors.textMuted, fontSize: typography.size.title }}>
-                    {s.isCompleted ? '✓' : '○'}
+                  <Text style={{
+                    fontFamily: fonts.sansB,
+                    color: s.isCompleted ? '#FFFFFF' : tokens.textMute,
+                    fontSize: 12,
+                  }}>
+                    {s.isCompleted ? '✓' : ''}
                   </Text>
                 </View>
               </TouchableOpacity>
             )
           })}
 
-          {/* SET FINISH button */}
+          {/* Validate set button */}
           {!allSetsCompleted && (
             <TouchableOpacity
               onPress={handleSetFinish}
               disabled={isCurrentSetDone}
               style={{
-                backgroundColor: isCurrentSetDone ? colors.surface2 : colors.primary,
-                borderRadius: radius.lg,
-                paddingVertical: spacing.lg,
+                backgroundColor: isCurrentSetDone ? tokens.surface2 : tokens.accent,
+                paddingVertical: 16,
                 alignItems: 'center',
-                marginTop: spacing.sm,
+                marginTop: 8,
                 opacity: isCurrentSetDone ? 0.5 : 1,
               }}
-              accessibilityLabel={`Complete set ${currentSetIndex + 1}`}
+              accessibilityLabel={`${t('workout.validateSet')} ${currentSetIndex + 1}`}
               accessibilityRole="button"
             >
-              <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size.xl, color: tokenColors.white }}>
-                Set {currentSetIndex + 1} — Done ✓
-              </Text>
-              <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: tokenColors.overlay.whiteMuted, marginTop: 2 }}>
-                Starts rest timer
+              <Text style={{ fontFamily: fonts.sansX, fontSize: 20, color: '#FFFFFF', textTransform: 'uppercase', letterSpacing: 1 }}>
+                {t('workout.validateSet')} {currentSetIndex + 1}
               </Text>
             </TouchableOpacity>
           )}
@@ -432,11 +457,11 @@ export default function ActiveWorkoutScreen() {
           {allSetsCompleted && currentExerciseIndex < exercises.length - 1 && (
             <TouchableOpacity
               onPress={nextExercise}
-              style={{ backgroundColor: colors.primary, borderRadius: radius.lg, paddingVertical: spacing.lg, alignItems: 'center', marginTop: spacing.sm }}
-              accessibilityLabel="Next exercise" accessibilityRole="button"
+              style={{ backgroundColor: tokens.accent, paddingVertical: 16, alignItems: 'center', marginTop: 8 }}
+              accessibilityLabel={t('workout.nextExercise')} accessibilityRole="button"
             >
-              <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size.xl, color: tokenColors.white }}>
-                Next exercise →
+              <Text style={{ fontFamily: fonts.sansX, fontSize: 20, color: '#FFFFFF', textTransform: 'uppercase', letterSpacing: 1 }}>
+                {t('workout.nextExercise')} →
               </Text>
             </TouchableOpacity>
           )}
@@ -444,11 +469,11 @@ export default function ActiveWorkoutScreen() {
           {allSetsCompleted && currentExerciseIndex === exercises.length - 1 && (
             <TouchableOpacity
               onPress={handleFinish}
-              style={{ backgroundColor: colors.success, borderRadius: radius.lg, paddingVertical: spacing.lg, alignItems: 'center', marginTop: spacing.sm }}
-              accessibilityLabel="Finish workout" accessibilityRole="button"
+              style={{ backgroundColor: tokens.green, paddingVertical: 16, alignItems: 'center', marginTop: 8 }}
+              accessibilityLabel={t('workout.finishTitle')} accessibilityRole="button"
             >
-              <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size.xl, color: tokenColors.white }}>
-                FINISH WORKOUT
+              <Text style={{ fontFamily: fonts.sansX, fontSize: 20, color: '#FFFFFF', textTransform: 'uppercase', letterSpacing: 1 }}>
+                {t('workout.finishTitle')}
               </Text>
             </TouchableOpacity>
           )}

@@ -15,7 +15,6 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { router, useLocalSearchParams } from 'expo-router'
 import ViewShot, { type CaptureOptions } from 'react-native-view-shot'
 
-// @types/react 19 class component JSX compat workaround
 const ViewShotCompat = ViewShot as unknown as React.ComponentType<
   { options?: CaptureOptions; style?: import('react-native').StyleProp<import('react-native').ViewStyle>; children?: React.ReactNode } & React.RefAttributes<ViewShot>
 >
@@ -23,14 +22,9 @@ import * as ImagePicker from 'expo-image-picker'
 import * as Sharing from 'expo-sharing'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/theme/ThemeContext'
-import { colors as tokenColors } from '@/theme/tokens'
 import { useActiveSessionStore } from '@/stores/activeSessionStore'
 
-// 9:16 ratio — standard portrait for Instagram / Stories / TikTok
 const CARD_RATIO = 9 / 16
-const RED = tokenColors.light.primary
-const BG = tokenColors.dark.surface
-const WHITE = tokenColors.white
 
 function makePanResponder(pan: Animated.ValueXY) {
   return PanResponder.create({
@@ -45,7 +39,7 @@ function makePanResponder(pan: Animated.ValueXY) {
 }
 
 export default function ShareScreen() {
-  const { colors, typography, spacing, radius } = useTheme()
+  const { tokens, fonts } = useTheme()
   const { t } = useTranslation()
   const { width: screenWidth, height: screenHeight } = useWindowDimensions()
   const finishSession = useActiveSessionStore((s) => s.finishSession)
@@ -64,17 +58,13 @@ export default function ShareScreen() {
     prCount: string
   }>()
 
-  // Card dimensions: fill width, height = width * (16/9), cap to screen
   const HORIZONTAL_PAD = 32
   const CARD_WIDTH = screenWidth - HORIZONTAL_PAD * 2
-  // Reserve ~180px for header + action row + safe area
-  const maxCardHeight = screenHeight - 180
-  const naturalCardHeight = CARD_WIDTH / CARD_RATIO  // width * 16/9
+  const maxCardHeight = screenHeight - 220
+  const naturalCardHeight = CARD_WIDTH / CARD_RATIO
   const CARD_HEIGHT = Math.min(naturalCardHeight, maxCardHeight)
-  // If height was capped, shrink width to maintain 9:16
   const FINAL_CARD_WIDTH = CARD_HEIGHT === maxCardHeight ? CARD_HEIGHT * CARD_RATIO : CARD_WIDTH
 
-  // Draggable block positions
   const titlePan = useRef(new Animated.ValueXY({ x: 0, y: 0 })).current
   const statsPan = useRef(new Animated.ValueXY({ x: 0, y: 0 })).current
   const titlePanResponder = useRef(makePanResponder(titlePan)).current
@@ -138,37 +128,114 @@ export default function ShareScreen() {
 
   const prs = parseInt(prCount ?? '0', 10)
   const volume = parseFloat(totalVolume ?? '0')
-  const volumeDisplay = volume >= 1000 ? `${(volume / 1000).toFixed(1)}t` : `${Math.round(volume)}kg`
+  const volumeDisplay = volume >= 1000
+    ? `${Math.round(volume).toLocaleString('fr-FR')}`
+    : `${Math.round(volume)}`
 
-  // Initial positions for draggable blocks (as % of card height)
-  const titleTop = CARD_HEIGHT * 0.42
-  const statsTop = CARD_HEIGHT * 0.68
+  const durationDisplay = `${durationMins ?? 0}min`
+  const dateDisplay = new Date().toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: tokens.bg }}>
       {/* Header */}
-      <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: spacing.base, paddingVertical: spacing.sm }}>
-        <TouchableOpacity onPress={() => router.back()} accessibilityLabel={t('common.back')} accessibilityRole="button">
-          <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.title, color: colors.primary }}>←</Text>
-        </TouchableOpacity>
-        <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size.xl, color: colors.textPrimary, flex: 1, marginLeft: spacing.md }}>
+      <View style={{ alignItems: 'center', paddingVertical: 12 }}>
+        <Text style={{
+          fontFamily: fonts.sansB,
+          fontSize: 10,
+          letterSpacing: 3,
+          color: tokens.textMute,
+          textTransform: 'uppercase',
+          marginBottom: 4,
+        }}>
+          {t('share.preview916')}
+        </Text>
+        <Text style={{
+          fontFamily: fonts.sansX,
+          fontSize: 16,
+          letterSpacing: 0.6,
+          color: tokens.text,
+          textTransform: 'uppercase',
+        }}>
           {t('share.title')}
         </Text>
+      </View>
+
+      {/* Toolbar */}
+      <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 6, marginBottom: 12, paddingHorizontal: 16 }}>
         <TouchableOpacity
-          onPress={finishAndNavigate}
+          onPress={pickPhoto}
           style={{
-            width: 36,
-            height: 36,
-            borderRadius: 18,
-            backgroundColor: colors.success,
+            paddingVertical: 8,
+            paddingHorizontal: 12,
+            backgroundColor: photoUri ? tokens.accent : tokens.surface1,
+            borderWidth: 1,
+            borderColor: photoUri ? tokens.accent : tokens.borderStrong,
+            flexDirection: 'row',
             alignItems: 'center',
-            justifyContent: 'center',
+            gap: 5,
           }}
-          accessibilityLabel={t('share.finishSession')}
+          accessibilityLabel={t('share.addPhoto')}
           accessibilityRole="button"
         >
-          <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.title, color: WHITE }}>✓</Text>
+          <Text style={{
+            fontFamily: fonts.sansB,
+            fontSize: 9,
+            letterSpacing: 1.4,
+            textTransform: 'uppercase',
+            color: photoUri ? '#FFFFFF' : tokens.text,
+          }}>
+            {t('share.photoTool')}
+          </Text>
         </TouchableOpacity>
+        <TouchableOpacity
+          onPress={takePhoto}
+          style={{
+            paddingVertical: 8,
+            paddingHorizontal: 12,
+            backgroundColor: tokens.surface1,
+            borderWidth: 1,
+            borderColor: tokens.borderStrong,
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 5,
+          }}
+          accessibilityLabel={t('share.camera')}
+          accessibilityRole="button"
+        >
+          <Text style={{
+            fontFamily: fonts.sansB,
+            fontSize: 9,
+            letterSpacing: 1.4,
+            textTransform: 'uppercase',
+            color: tokens.text,
+          }}>
+            {t('share.cameraTool')}
+          </Text>
+        </TouchableOpacity>
+        {photoUri && (
+          <TouchableOpacity
+            onPress={() => setPhotoUri(null)}
+            style={{
+              paddingVertical: 8,
+              paddingHorizontal: 12,
+              backgroundColor: tokens.surface1,
+              borderWidth: 1,
+              borderColor: tokens.borderStrong,
+            }}
+            accessibilityLabel={t('share.removePhoto')}
+            accessibilityRole="button"
+          >
+            <Text style={{
+              fontFamily: fonts.sansB,
+              fontSize: 9,
+              letterSpacing: 1.4,
+              textTransform: 'uppercase',
+              color: tokens.text,
+            }}>
+              {t('share.removeTool')}
+            </Text>
+          </TouchableOpacity>
+        )}
       </View>
 
       {/* Card preview */}
@@ -179,121 +246,220 @@ export default function ShareScreen() {
           style={{
             width: FINAL_CARD_WIDTH,
             height: CARD_HEIGHT,
-            borderRadius: radius.lg,
             overflow: 'hidden',
+            borderWidth: 1,
+            borderColor: tokens.borderStrong,
           }}
         >
-          {/* Background */}
-          <View style={[StyleSheet.absoluteFillObject, { backgroundColor: BG }]} />
+          {/* Background: dark default or photo with gradient */}
+          <View style={[StyleSheet.absoluteFillObject, { backgroundColor: '#111111' }]} />
           {photoUri && (
             <Image source={{ uri: photoUri }} style={StyleSheet.absoluteFillObject} resizeMode="cover" />
           )}
-          <View style={[StyleSheet.absoluteFillObject, { backgroundColor: photoUri ? 'rgba(0,0,0,0.5)' : 'transparent' }]} />
+          {/* Gradient overlay: transparent top → 55% black bottom */}
+          <View style={[StyleSheet.absoluteFillObject, {
+            // Simulated gradient with two layers
+          }]}>
+            <View style={{ flex: 1, backgroundColor: photoUri ? 'rgba(0,0,0,0.15)' : 'transparent' }} />
+            <View style={{ flex: 1, backgroundColor: photoUri ? 'rgba(0,0,0,0.55)' : 'transparent' }} />
+          </View>
 
-          {/* Red accent line */}
-          <View style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, backgroundColor: RED }} />
-
-          {/* Draggable: Workout name + date */}
+          {/* Draggable: TOP — kanji + workout name + date */}
           <Animated.View
             style={{
               position: 'absolute',
-              left: 20,
-              top: titleTop,
-              right: 20,
+              top: 16,
+              left: 16,
+              right: 16,
               transform: titlePan.getTranslateTransform(),
             }}
             {...titlePanResponder.panHandlers}
           >
-            <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: 'rgba(255,255,255,0.5)', letterSpacing: 2.5, textTransform: 'uppercase' }}>
-              {t('share.sessionComplete')}
+            <Text style={{
+              fontFamily: fonts.jpX,
+              fontSize: 11,
+              color: tokens.accent,
+              letterSpacing: 4,
+              lineHeight: 14,
+              marginBottom: 6,
+            }}>
+              鍛 錬
             </Text>
-            <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size['3xl'], color: WHITE, lineHeight: 36, marginTop: 4 }} numberOfLines={2}>
+            <Text
+              style={{
+                fontFamily: fonts.sansX,
+                fontSize: 22,
+                letterSpacing: 0.4,
+                textTransform: 'uppercase',
+                lineHeight: 22,
+                color: '#FFFFFF',
+                maxWidth: '90%',
+              }}
+              numberOfLines={2}
+            >
               {workoutName ?? 'Workout'}
             </Text>
-            <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.md, color: 'rgba(255,255,255,0.45)', marginTop: 4 }}>
-              {new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}
+            <Text style={{
+              fontFamily: fonts.sansM,
+              fontSize: 9,
+              letterSpacing: 2,
+              color: 'rgba(255,255,255,0.7)',
+              textTransform: 'uppercase',
+              marginTop: 4,
+            }}>
+              {dateDisplay} · {durationDisplay}
             </Text>
           </Animated.View>
 
-          {/* Draggable: Stats + PR badge + tagline */}
+          {/* Draggable: BOTTOM — stats line + brand */}
           <Animated.View
             style={{
               position: 'absolute',
-              left: 20,
-              top: statsTop,
-              right: 20,
+              bottom: 16,
+              left: 16,
+              right: 16,
               transform: statsPan.getTranslateTransform(),
             }}
             {...statsPanResponder.panHandlers}
           >
-            <View style={{ height: 1, backgroundColor: 'rgba(255,255,255,0.12)', marginBottom: 10 }} />
-            <View style={{ flexDirection: 'row' }}>
-              {[
-                { label: t('share.duration'), value: `${durationMins ?? 0}m` },
-                { label: t('share.volume'), value: volumeDisplay },
-                { label: t('share.sets'), value: completedSets ?? '0' },
-              ].map((stat, i) => (
-                <View key={stat.label} style={{ flex: 1, alignItems: i === 0 ? 'flex-start' : i === 2 ? 'flex-end' : 'center' }}>
-                  <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size['2xl'], color: WHITE }}>{stat.value}</Text>
-                  <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: 1 }}>{stat.label}</Text>
-                </View>
-              ))}
-            </View>
-            <View style={{ height: 1, backgroundColor: 'rgba(255,255,255,0.12)', marginTop: 10 }} />
-
-            {prs > 0 && (
-              <View style={{
-                flexDirection: 'row', alignItems: 'center', gap: 6,
-                backgroundColor: `${RED}22`, borderRadius: 6,
-                borderWidth: 1, borderColor: `${RED}60`,
-                paddingVertical: 6, paddingHorizontal: 10,
-                alignSelf: 'flex-start', marginTop: 10,
-              }}>
-                <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.xs, color: RED, letterSpacing: 1 }}>PR</Text>
-                <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.md, color: RED }}>
-                  {prs > 1 ? t('share.newPRs', { count: prs }) : t('share.newPR', { count: prs })}
+            {/* Stats row */}
+            <View style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'flex-end',
+              paddingBottom: 8,
+              borderBottomWidth: 1,
+              borderBottomColor: 'rgba(255,255,255,0.25)',
+            }}>
+              <View>
+                <Text style={{
+                  fontFamily: fonts.sansB,
+                  fontSize: 7,
+                  letterSpacing: 2.5,
+                  color: 'rgba(255,255,255,0.7)',
+                  textTransform: 'uppercase',
+                  marginBottom: 2,
+                }}>
+                  {t('share.volume')}
+                </Text>
+                <Text style={{ fontFamily: fonts.sansX, fontSize: 15, color: '#FFFFFF', lineHeight: 16 }}>
+                  {volumeDisplay}
+                  <Text style={{ fontFamily: fonts.sansM, fontSize: 9, color: 'rgba(255,255,255,0.7)' }}> kg</Text>
                 </Text>
               </View>
-            )}
+              <View>
+                <Text style={{
+                  fontFamily: fonts.sansB,
+                  fontSize: 7,
+                  letterSpacing: 2.5,
+                  color: 'rgba(255,255,255,0.7)',
+                  textTransform: 'uppercase',
+                  marginBottom: 2,
+                }}>
+                  {t('share.sets')}
+                </Text>
+                <Text style={{ fontFamily: fonts.sansX, fontSize: 15, color: '#FFFFFF', lineHeight: 16 }}>
+                  {completedSets ?? '0'}
+                </Text>
+              </View>
+              {prs > 0 && (
+                <View>
+                  <Text style={{
+                    fontFamily: fonts.sansB,
+                    fontSize: 7,
+                    letterSpacing: 2.5,
+                    color: 'rgba(255,255,255,0.7)',
+                    textTransform: 'uppercase',
+                    marginBottom: 2,
+                  }}>
+                    {t('share.records')}
+                  </Text>
+                  <Text style={{ fontFamily: fonts.sansX, fontSize: 15, color: tokens.accent, lineHeight: 16 }}>
+                    {prs}
+                  </Text>
+                </View>
+              )}
+            </View>
 
-            <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: 'rgba(255,255,255,0.2)', letterSpacing: 2, textTransform: 'uppercase', marginTop: 10 }}>
-              BUILT REP BY REP.
-            </Text>
+            {/* Brand line */}
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 }}>
+              <Text style={{
+                fontFamily: fonts.sansX,
+                fontSize: 10,
+                letterSpacing: 3,
+                color: '#FFFFFF',
+              }}>
+                TANREN
+              </Text>
+              <Text style={{
+                fontFamily: fonts.sansM,
+                fontSize: 8,
+                letterSpacing: 2,
+                color: 'rgba(255,255,255,0.5)',
+              }}>
+                tanren.app
+              </Text>
+            </View>
           </Animated.View>
         </ViewShotCompat>
 
         {/* Drag hint */}
-        <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted, marginTop: spacing.sm }}>
+        <Text style={{
+          fontFamily: fonts.sans,
+          fontSize: 10,
+          color: tokens.textGhost,
+          marginTop: 8,
+        }}>
           {t('share.dragHint')}
         </Text>
       </View>
 
-      {/* Photo + action row */}
-      <View style={{ flexDirection: 'row', gap: spacing.sm, paddingHorizontal: spacing.base, paddingBottom: spacing.base }}>
-        <TouchableOpacity
-          onPress={() => Alert.alert(t('share.addPhoto'), undefined, [
-            { text: t('share.camera'), onPress: takePhoto },
-            { text: t('share.library'), onPress: pickPhoto },
-            ...(photoUri ? [{ text: t('share.removePhoto'), style: 'destructive' as const, onPress: () => setPhotoUri(null) }] : []),
-            { text: t('common.cancel'), style: 'cancel' },
-          ])}
-          style={{ flex: 1, backgroundColor: colors.surface, borderRadius: radius.lg, paddingVertical: spacing.base, alignItems: 'center', borderWidth: 1, borderColor: photoUri ? colors.primary : colors.surface2 }}
-          accessibilityLabel={t('share.addPhoto')} accessibilityRole="button"
-        >
-          <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.body, color: photoUri ? colors.primary : colors.textMuted }}>
-            {photoUri ? t('share.changePhoto') : t('share.addPhoto')}
-          </Text>
-        </TouchableOpacity>
+      {/* Action buttons */}
+      <View style={{ paddingHorizontal: 16, paddingBottom: 16, gap: 6 }}>
         <TouchableOpacity
           onPress={handleShare}
           disabled={sharing}
-          style={{ flex: 2, backgroundColor: RED, borderRadius: radius.lg, paddingVertical: spacing.base, alignItems: 'center' }}
-          accessibilityLabel={t('share.share')} accessibilityRole="button"
+          style={{
+            height: 44,
+            backgroundColor: tokens.accent,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+          accessibilityLabel={t('share.share')}
+          accessibilityRole="button"
         >
           {sharing
-            ? <ActivityIndicator color={WHITE} />
-            : <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size.xl, color: WHITE }}>{t('share.share')} →</Text>
+            ? <ActivityIndicator color="#FFFFFF" />
+            : <Text style={{
+                fontFamily: fonts.sansB,
+                fontSize: 14,
+                letterSpacing: 0.6,
+                textTransform: 'uppercase',
+                color: '#FFFFFF',
+              }}>
+                {t('share.share')}
+              </Text>
           }
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={finishAndNavigate}
+          style={{
+            height: 44,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+          accessibilityLabel={t('share.finishWithoutSharing')}
+          accessibilityRole="button"
+        >
+          <Text style={{
+            fontFamily: fonts.sansB,
+            fontSize: 14,
+            letterSpacing: 0.6,
+            textTransform: 'uppercase',
+            color: tokens.textMute,
+          }}>
+            {t('share.finishWithoutSharing')}
+          </Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

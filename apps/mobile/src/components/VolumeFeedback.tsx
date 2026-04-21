@@ -8,7 +8,7 @@ interface VolumeFeedbackProps {
 }
 
 export function VolumeFeedback({ percent }: VolumeFeedbackProps) {
-  const { tokens, typography, spacing } = useTheme()
+  const { tokens, fonts } = useTheme()
   const { t } = useTranslation()
   const sign = percent >= 0 ? '+' : ''
   const formatted = `${sign}${percent.toFixed(1).replace('.', ',')}%`
@@ -22,38 +22,20 @@ export function VolumeFeedback({ percent }: VolumeFeedbackProps) {
         padding: 14,
         flexDirection: 'row',
         alignItems: 'center',
-        gap: spacing.md,
+        gap: 12,
       }}
     >
-      <Text
-        style={{
-          fontFamily: 'NotoSerifJP_900Black_subset',
-          fontSize: 18,
-          color: tokens.accent,
-        }}
-      >
+      <Text style={{ fontFamily: fonts.jp, fontSize: 18, color: tokens.accent }}>
         鍛
       </Text>
       <View style={{ flex: 1 }}>
-        <Text
-          style={{
-            fontFamily: typography.family.sansX,
-            fontSize: 14,
-            letterSpacing: 0.6,
-            textTransform: 'uppercase',
-            color: tokens.accent,
-          }}
-        >
+        <Text style={{
+          fontFamily: fonts.sansX, fontSize: 14,
+          letterSpacing: 0.6, textTransform: 'uppercase', color: tokens.accent,
+        }}>
           Volume {formatted}
         </Text>
-        <Text
-          style={{
-            fontFamily: typography.family.sans,
-            fontSize: 12,
-            color: tokens.textDim,
-            marginTop: 2,
-          }}
-        >
+        <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textDim, marginTop: 2 }}>
           {t('workout.vsPreviousSession') ?? 'vs ta dernière séance sur cet exo'}
         </Text>
       </View>

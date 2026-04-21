@@ -76,65 +76,11 @@ export const fonts = {
   jpX: 'NotoSerifJP_900Black_subset',
   mono: 'JetBrainsMono_400Regular',
   monoB: 'JetBrainsMono_700Bold',
-  // Legacy aliases
-  light: 'BarlowCondensed_300Light',
-  regular: 'BarlowCondensed_400Regular',
-  medium: 'BarlowCondensed_500Medium',
-  semiBold: 'BarlowCondensed_500Medium',
-  bold: 'BarlowCondensed_700Bold',
-  extraBold: 'BarlowCondensed_700Bold',
-  black: 'BarlowCondensed_900Black',
-  notoSerifBold: 'NotoSerifJP_700Bold_subset',
-  notoSerifBlack: 'NotoSerifJP_900Black_subset',
-} as const
-
-export const typography = {
-  family: fonts,
-  size: {
-    xs: 9,
-    sm: 10,
-    md: 11,
-    base: 14,
-    body: 16,
-    title: 17,
-    xl: 20,
-    '2xl': 22,
-    '3xl': 24,
-    '4xl': 32,
-    '5xl': 56,
-  },
-  letterSpacing: {
-    tight: -0.5,
-    normal: 0,
-    label: 2,
-    wide: 0.5,
-    wider: 1,
-  },
-} as const
-
-export const spacing = {
-  xs: 4,
-  sm: 8,
-  md: 12,
-  base: 16,
-  lg: 20,
-  xl: 24,
-  xxl: 32,
-} as const
-
-export const radius = {
-  none: 0,
-  sm: 2,
-  md: 4,
-  lg: 12,
-  // Legacy aliases — will be removed as screens migrate to radius 0
-  xl: 12,
-  pill: 9999,
 } as const
 
 export const heatmapColors = ['#141414', '#4A0A10', '#8A1520', '#C01E2E', '#E8192C'] as const
 
-// Legacy aliases for migration — remove after full refactor
+// Raw color constants for non-themed contexts (splash, error boundary, share cards)
 export const colors = {
   white: '#FFFFFF' as const,
   black: '#000000' as const,

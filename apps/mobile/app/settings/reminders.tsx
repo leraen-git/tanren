@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import {
-  View, Text, ScrollView, TouchableOpacity, Switch, Alert, Linking,
+  View, Text, ScrollView, TouchableOpacity, Switch, Alert,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/theme/ThemeContext'
-import { colors as tokenColors } from '@/theme/tokens'
 import { DayPicker } from '@/components/DayPicker'
 import { TimePickerModal } from '@/components/TimePickerModal'
 import { trpc } from '@/lib/trpc'
@@ -25,20 +24,18 @@ import {
   rescheduleHydrationNotifications,
 } from '@/services/notificationScheduler'
 
-// ─── Sub-components ───────────────────────────────────────────────────────────
-
 function SectionHeader({ label }: { label: string }) {
-  const { colors, typography, spacing } = useTheme()
+  const { tokens, fonts } = useTheme()
   return (
     <Text style={{
-      fontFamily: typography.family.bold,
-      fontSize: typography.size.base,
-      color: colors.textMuted,
+      fontFamily: fonts.sansB,
+      fontSize: 9,
+      color: tokens.textMute,
       textTransform: 'uppercase',
-      letterSpacing: 1,
-      paddingHorizontal: spacing.base,
-      paddingTop: spacing.lg,
-      paddingBottom: spacing.xs,
+      letterSpacing: 2,
+      paddingHorizontal: 16,
+      paddingTop: 24,
+      paddingBottom: 8,
     }}>
       {label}
     </Text>
@@ -48,26 +45,26 @@ function SectionHeader({ label }: { label: string }) {
 function SettingRow({
   label, sublabel, right, onPress,
 }: { label: string; sublabel?: string; right: React.ReactNode; onPress?: () => void }) {
-  const { colors, typography, spacing } = useTheme()
+  const { tokens, fonts } = useTheme()
   const Wrapper = onPress ? TouchableOpacity : View
   return (
     <Wrapper
       onPress={onPress}
       style={{
         flexDirection: 'row', alignItems: 'center',
-        paddingHorizontal: spacing.base,
-        paddingVertical: spacing.md,
+        paddingHorizontal: 16,
+        paddingVertical: 12,
         borderBottomWidth: 1,
-        borderBottomColor: colors.surface2,
+        borderBottomColor: tokens.border,
       }}
       {...(onPress ? { accessibilityRole: 'button' as const, accessibilityLabel: label } : {})}
     >
       <View style={{ flex: 1 }}>
-        <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.body, color: colors.textPrimary }}>
+        <Text style={{ fontFamily: fonts.sans, fontSize: 14, color: tokens.text }}>
           {label}
         </Text>
         {sublabel ? (
-          <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted, marginTop: 2 }}>
+          <Text style={{ fontFamily: fonts.sans, fontSize: 10, color: tokens.textMute, marginTop: 2 }}>
             {sublabel}
           </Text>
         ) : null}
@@ -78,20 +75,20 @@ function SettingRow({
 }
 
 function TimeBadge({ time, onPress }: { time: string; onPress: () => void }) {
-  const { colors, typography, spacing, radius } = useTheme()
+  const { tokens, fonts } = useTheme()
   return (
     <TouchableOpacity
       onPress={onPress}
       style={{
-        backgroundColor: colors.surface2,
-        borderRadius: radius.md,
-        paddingHorizontal: spacing.md,
-        paddingVertical: spacing.xs,
+        borderWidth: 1,
+        borderColor: tokens.border,
+        paddingHorizontal: 10,
+        paddingVertical: 4,
       }}
       accessibilityLabel={`Set time, currently ${time}`}
       accessibilityRole="button"
     >
-      <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.body, color: colors.textPrimary }}>
+      <Text style={{ fontFamily: fonts.monoB, fontSize: 14, color: tokens.text }}>
         {time}
       </Text>
     </TouchableOpacity>
@@ -99,48 +96,43 @@ function TimeBadge({ time, onPress }: { time: string; onPress: () => void }) {
 }
 
 function PermissionBanner({ onPress }: { onPress: () => void }) {
-  const { colors, typography, spacing, radius } = useTheme()
+  const { tokens, fonts } = useTheme()
   const { t } = useTranslation()
   return (
     <TouchableOpacity
       onPress={onPress}
       style={{
-        margin: spacing.base,
-        backgroundColor: `${colors.warning}18`,
-        borderRadius: radius.md,
-        padding: spacing.md,
+        margin: 16,
+        padding: 12,
         borderWidth: 1,
-        borderColor: `${colors.warning}40`,
+        borderColor: tokens.amber,
+        borderLeftWidth: 3,
+        borderLeftColor: tokens.amber,
         flexDirection: 'row',
         alignItems: 'center',
-        gap: spacing.sm,
+        gap: 8,
       }}
       accessibilityRole="button"
       accessibilityLabel={t('notifications.permBannerBlocked')}
     >
-      <View style={{ width: 18, height: 18, borderRadius: 9, borderWidth: 2, borderColor: colors.warning, alignItems: 'center', justifyContent: 'center' }}>
-        <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.xs, color: colors.warning }}>!</Text>
+      <View style={{ width: 18, height: 18, borderWidth: 1, borderColor: tokens.amber, alignItems: 'center', justifyContent: 'center' }}>
+        <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.amber }}>!</Text>
       </View>
-      <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textPrimary, flex: 1 }}>
+      <Text style={{ fontFamily: fonts.sans, fontSize: 13, color: tokens.text, flex: 1 }}>
         {t('notifications.permBannerBlocked')}
       </Text>
     </TouchableOpacity>
   )
 }
 
-// ─── Permission-aware toggle ──────────────────────────────────────────────────
-
 function usePermissionToggle() {
-  const [showPreModal, setShowPreModal] = useState(false)
   const [permDenied, setPermDenied] = useState(false)
-  const [pendingCallback, setPendingCallback] = useState<(() => void) | null>(null)
   const { t } = useTranslation()
 
   useEffect(() => {
     getPermissionStatus().then((s) => setPermDenied(s === 'denied'))
   }, [])
 
-  // Call this before enabling any toggle. Handles permission flow.
   const enableWithPermission = useCallback(
     async (onGranted: () => void) => {
       const status = await getPermissionStatus()
@@ -160,7 +152,6 @@ function usePermissionToggle() {
         )
         return
       }
-      // undetermined — show pre-permission modal via Alert for simplicity
       Alert.alert(
         t('notifications.permExplainTitle'),
         t('notifications.permExplainDesc'),
@@ -187,9 +178,7 @@ function usePermissionToggle() {
   return { enableWithPermission, permDenied }
 }
 
-// ─── Pill selector ────────────────────────────────────────────────────────────
-
-function PillSelector<T extends string | number>({
+function ChipSelector<T extends string | number>({
   options, value, onChange, labelMap,
 }: {
   options: T[]
@@ -197,9 +186,9 @@ function PillSelector<T extends string | number>({
   onChange: (v: T) => void
   labelMap?: Record<string, string>
 }) {
-  const { colors, typography, spacing, radius } = useTheme()
+  const { tokens, fonts } = useTheme()
   return (
-    <View style={{ flexDirection: 'row', gap: spacing.xs }}>
+    <View style={{ flexDirection: 'row', gap: 4 }}>
       {options.map((opt) => {
         const selected = opt === value
         const label = labelMap ? labelMap[String(opt)] : String(opt)
@@ -208,19 +197,22 @@ function PillSelector<T extends string | number>({
             key={String(opt)}
             onPress={() => onChange(opt)}
             style={{
-              paddingHorizontal: spacing.md,
-              paddingVertical: spacing.xs,
-              borderRadius: radius.pill,
-              backgroundColor: selected ? colors.primary : colors.surface2,
+              paddingHorizontal: 12,
+              paddingVertical: 6,
+              borderWidth: 1,
+              borderColor: selected ? tokens.accent : tokens.border,
+              backgroundColor: selected ? tokens.accent : 'transparent',
             }}
             accessibilityRole="radio"
             accessibilityState={{ checked: selected }}
             accessibilityLabel={label}
           >
             <Text style={{
-              fontFamily: selected ? typography.family.bold : typography.family.regular,
-              fontSize: typography.size.base,
-              color: selected ? tokenColors.white : colors.textMuted,
+              fontFamily: fonts.sansB,
+              fontSize: 10,
+              letterSpacing: 1,
+              color: selected ? '#FFFFFF' : tokens.textMute,
+              textTransform: 'uppercase',
             }}>
               {label}
             </Text>
@@ -231,29 +223,24 @@ function PillSelector<T extends string | number>({
   )
 }
 
-// ─── Main screen ──────────────────────────────────────────────────────────────
-
 export default function RemindersScreen() {
-  const { colors, typography, spacing, radius } = useTheme()
+  const { tokens, fonts } = useTheme()
   const { t, i18n } = useTranslation()
   const settings = useNotificationSettingsStore()
   const { enableWithPermission, permDenied } = usePermissionToggle()
   const lang = (i18n.language === 'fr' ? 'fr' : 'en') as 'en' | 'fr'
-  const utils = trpc.useUtils()
 
   const [timePicker, setTimePicker] = useState<{
     visible: boolean; value: string; label: string
     onConfirm: (t: string) => void
   }>({ visible: false, value: '00:00', label: '', onConfirm: () => {} })
 
-  // Sync to backend on every settings change (debounced via tRPC mutation)
   const syncPrefs = trpc.notifications.upsertPreferences.useMutation()
 
   const openTimePicker = (value: string, label: string, onConfirm: (t: string) => void) => {
     setTimePicker({ visible: true, value, label, onConfirm })
   }
 
-  // Push settings to API whenever they change
   useEffect(() => {
     const prefs = {
       workoutEnabled: settings.workoutEnabled,
@@ -286,9 +273,10 @@ export default function RemindersScreen() {
   ])
 
   const cardStyle = {
-    backgroundColor: colors.surface,
-    borderRadius: radius.lg,
-    marginHorizontal: spacing.base,
+    backgroundColor: tokens.surface1,
+    marginHorizontal: 16,
+    borderWidth: 1,
+    borderColor: tokens.border,
     overflow: 'hidden' as const,
   }
 
@@ -315,16 +303,18 @@ export default function RemindersScreen() {
   ]
 
   return (
-    <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: colors.background }}>
+    <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: tokens.bg }}>
       {/* Header */}
-      <View style={{ flexDirection: 'row', alignItems: 'center', padding: spacing.base, gap: spacing.md }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', padding: 16, gap: 12 }}>
         <TouchableOpacity
           onPress={() => router.back()}
           accessibilityLabel={t('common.back')} accessibilityRole="button"
         >
-          <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.title, color: colors.primary }}>←</Text>
+          <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.accent, textTransform: 'uppercase', letterSpacing: 2 }}>
+            {'< BACK'}
+          </Text>
         </TouchableOpacity>
-        <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size.xl, color: colors.textPrimary }}>
+        <Text style={{ fontFamily: fonts.sansX, fontSize: 20, color: tokens.text, textTransform: 'uppercase' }}>
           {t('notifications.title')}
         </Text>
       </View>
@@ -333,9 +323,9 @@ export default function RemindersScreen() {
         <PermissionBanner onPress={openNotificationSettings} />
       )}
 
-      <ScrollView contentContainerStyle={{ paddingBottom: spacing.xl }}>
+      <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
 
-        {/* ── Workout ── */}
+        {/* Workout */}
         <SectionHeader label={t('notifications.workout')} />
         <View style={cardStyle}>
           <SettingRow
@@ -354,8 +344,8 @@ export default function RemindersScreen() {
                     rescheduleWorkoutNotifications({ ...settings, workoutEnabled: false }, undefined, lang)
                   }
                 }}
-                trackColor={{ true: colors.primary, false: colors.surface2 }}
-                thumbColor={tokenColors.white}
+                trackColor={{ true: tokens.accent, false: tokens.surface2 }}
+                thumbColor="#FFFFFF"
                 accessibilityLabel={t('notifications.workoutEnable')}
               />
             }
@@ -378,11 +368,11 @@ export default function RemindersScreen() {
                 }
               />
 
-              <View style={{ paddingHorizontal: spacing.base, paddingVertical: spacing.md, borderBottomWidth: 1, borderBottomColor: colors.surface2, gap: spacing.sm }}>
-                <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.body, color: colors.textPrimary }}>
+              <View style={{ paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: tokens.border, gap: 8 }}>
+                <Text style={{ fontFamily: fonts.sans, fontSize: 14, color: tokens.text }}>
                   {t('notifications.remindMe')}
                 </Text>
-                <PillSelector
+                <ChipSelector
                   options={[0, 15, 30] as (0 | 15 | 30)[]}
                   value={settings.workoutOffset}
                   onChange={(v) => {
@@ -393,8 +383,8 @@ export default function RemindersScreen() {
                 />
               </View>
 
-              <View style={{ paddingHorizontal: spacing.base, paddingVertical: spacing.md, borderBottomWidth: 1, borderBottomColor: colors.surface2 }}>
-                <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.body, color: colors.textPrimary, marginBottom: spacing.sm }}>
+              <View style={{ paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: tokens.border }}>
+                <Text style={{ fontFamily: fonts.sans, fontSize: 14, color: tokens.text, marginBottom: 8 }}>
                   {t('notifications.activeDays')}
                 </Text>
                 <DayPicker
@@ -409,7 +399,7 @@ export default function RemindersScreen() {
           )}
         </View>
 
-        {/* ── Meals ── */}
+        {/* Meals */}
         <SectionHeader label={t('notifications.meals')} />
         <View style={cardStyle}>
           {mealSlots.map(({ key, label }) => (
@@ -417,7 +407,7 @@ export default function RemindersScreen() {
               key={key}
               label={label}
               right={
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                   {settings.meals[key].enabled && (
                     <TimeBadge
                       time={settings.meals[key].time}
@@ -451,8 +441,8 @@ export default function RemindersScreen() {
                         })
                       }
                     }}
-                    trackColor={{ true: colors.primary, false: colors.surface2 }}
-                    thumbColor={tokenColors.white}
+                    trackColor={{ true: tokens.accent, false: tokens.surface2 }}
+                    thumbColor="#FFFFFF"
                     accessibilityLabel={label}
                   />
                 </View>
@@ -461,7 +451,7 @@ export default function RemindersScreen() {
           ))}
         </View>
 
-        {/* ── Hydration ── */}
+        {/* Hydration */}
         <SectionHeader label={t('notifications.hydration')} />
         <View style={cardStyle}>
           <SettingRow
@@ -480,8 +470,8 @@ export default function RemindersScreen() {
                     rescheduleHydrationNotifications({ ...settings, hydrationEnabled: false })
                   }
                 }}
-                trackColor={{ true: colors.primary, false: colors.surface2 }}
-                thumbColor={tokenColors.white}
+                trackColor={{ true: tokens.accent, false: tokens.surface2 }}
+                thumbColor="#FFFFFF"
                 accessibilityLabel={t('notifications.hydrationEnable')}
               />
             }
@@ -489,11 +479,11 @@ export default function RemindersScreen() {
 
           {settings.hydrationEnabled && (
             <>
-              <View style={{ paddingHorizontal: spacing.base, paddingVertical: spacing.md, borderBottomWidth: 1, borderBottomColor: colors.surface2, gap: spacing.sm }}>
-                <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.body, color: colors.textPrimary }}>
+              <View style={{ paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: tokens.border, gap: 8 }}>
+                <Text style={{ fontFamily: fonts.sans, fontSize: 14, color: tokens.text }}>
                   {t('notifications.interval')}
                 </Text>
-                <PillSelector
+                <ChipSelector
                   options={[60, 90, 120] as (60 | 90 | 120)[]}
                   value={settings.hydrationInterval}
                   onChange={(v) => {
@@ -535,13 +525,13 @@ export default function RemindersScreen() {
           )}
         </View>
 
-        {/* ── OS notification settings link ── */}
+        {/* OS settings link */}
         <SectionHeader label="" />
         <View style={{ ...cardStyle }}>
           <SettingRow
             label={t('notifications.osSettings')}
             onPress={openNotificationSettings}
-            right={<Text style={{ color: colors.textMuted, fontSize: typography.size.body }}>→</Text>}
+            right={<Text style={{ color: tokens.textMute, fontFamily: fonts.sansB, fontSize: 14 }}>-{'>'}</Text>}
           />
         </View>
 

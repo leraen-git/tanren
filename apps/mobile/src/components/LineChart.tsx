@@ -11,12 +11,12 @@ interface LineChartProps {
 }
 
 export function LineChart({ data, height = 160, width = 320, target }: LineChartProps) {
-  const { colors, typography, spacing } = useTheme()
+  const { tokens, fonts } = useTheme()
 
   if (data.length === 0) {
     return (
       <View style={{ height, alignItems: 'center', justifyContent: 'center' }}>
-        <Text style={{ color: colors.textMuted, fontFamily: typography.family.regular }}>
+        <Text style={{ color: tokens.textMute, fontFamily: fonts.sans, fontSize: 12 }}>
           No data yet
         </Text>
       </View>
@@ -35,7 +35,6 @@ export function LineChart({ data, height = 160, width = 320, target }: LineChart
   const toX = (i: number) => padX + (i / (data.length - 1)) * chartW
   const toY = (v: number) => padY + chartH - ((v - minVal) / (maxVal - minVal)) * chartH
 
-  // Build line path
   const linePath = Skia.Path.Make()
   data.forEach((d, i) => {
     const x = toX(i)
@@ -44,7 +43,6 @@ export function LineChart({ data, height = 160, width = 320, target }: LineChart
     else linePath.lineTo(x, y)
   })
 
-  // Build fill path (area under line)
   const fillPath = Skia.Path.Make()
   data.forEach((d, i) => {
     const x = toX(i)
@@ -56,7 +54,6 @@ export function LineChart({ data, height = 160, width = 320, target }: LineChart
   fillPath.lineTo(padX, padY + chartH)
   fillPath.close()
 
-  // Target dotted line
   const targetPath = target != null ? Skia.Path.Make() : null
   if (targetPath && target != null) {
     const ty = toY(target)
@@ -70,22 +67,18 @@ export function LineChart({ data, height = 160, width = 320, target }: LineChart
   return (
     <View>
       <Canvas style={{ width, height }}>
-        {/* Fill area */}
-        <Path path={fillPath} color={colors.primary + '22'} style="fill" />
-        {/* Line */}
-        <Path path={linePath} color={colors.primary} style="stroke" strokeWidth={2} strokeCap="round" strokeJoin="round" />
-        {/* Target */}
+        <Path path={fillPath} color={tokens.accent + '22'} style="fill" />
+        <Path path={linePath} color={tokens.accent} style="stroke" strokeWidth={2} strokeCap="butt" strokeJoin="miter" />
         {targetPath && (
-          <Path path={targetPath} color={colors.textMuted} style="stroke" strokeWidth={1.5} />
+          <Path path={targetPath} color={tokens.textMute} style="stroke" strokeWidth={1.5} />
         )}
       </Canvas>
 
-      {/* X-axis labels */}
       <View style={{ flexDirection: 'row', paddingHorizontal: padX }}>
         {data.map((d, i) => (
           <View key={i} style={{ flex: 1, alignItems: 'center' }}>
             {(i === 0 || i === data.length - 1 || i % Math.ceil(data.length / 4) === 0) && (
-              <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted }}>
+              <Text style={{ fontFamily: fonts.mono, fontSize: 9, color: tokens.textMute }}>
                 {d.label}
               </Text>
             )}

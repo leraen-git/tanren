@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react'
-import { Animated, View } from 'react-native'
+import { Animated } from 'react-native'
 import { useTheme } from '@/theme/ThemeContext'
 
 interface SkeletonCardProps {
@@ -8,7 +8,7 @@ interface SkeletonCardProps {
 }
 
 export const SkeletonCard = React.memo(function SkeletonCard({ height = 80, width = '100%' }: SkeletonCardProps) {
-  const { colors, radius } = useTheme()
+  const { tokens } = useTheme()
   const opacity = useRef(new Animated.Value(0.3)).current
 
   useEffect(() => {
@@ -25,13 +25,7 @@ export const SkeletonCard = React.memo(function SkeletonCard({ height = 80, widt
   return (
     <Animated.View
       accessible={false}
-      style={{
-        height,
-        width: width as number,
-        borderRadius: radius.lg,
-        backgroundColor: colors.surface2,
-        opacity,
-      }}
+      style={{ height, width: width as number, backgroundColor: tokens.surface2, opacity }}
     />
   )
 })
