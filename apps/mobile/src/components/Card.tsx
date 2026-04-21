@@ -10,11 +10,13 @@ interface CardProps {
 }
 
 export const Card = React.memo(function Card({ children, onPress, style, accessibilityLabel }: CardProps) {
-  const { colors, radius, spacing } = useTheme()
+  const { tokens, spacing } = useTheme()
 
   const cardStyle: ViewStyle = {
-    backgroundColor: colors.surface,
-    borderRadius: radius.lg,
+    backgroundColor: tokens.surface1,
+    borderWidth: 1,
+    borderColor: tokens.border,
+    borderRadius: 0,
     padding: spacing.base,
     ...style,
   }

@@ -28,6 +28,7 @@ export const en = {
   tabs: {
     home: 'Home',
     workouts: 'Workouts',
+    training: 'Training',
     history: 'History',
     diet: 'Diet',
     profile: 'Profile',

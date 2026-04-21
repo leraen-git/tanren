@@ -7,56 +7,65 @@ import {
   type TextStyle,
 } from 'react-native'
 import { useTheme } from '@/theme/ThemeContext'
-import { colors as tokenColors } from '@/theme/tokens'
 
-type Variant = 'primary' | 'secondary' | 'ghost'
+type Variant = 'primary' | 'secondary' | 'ghost' | 'outline' | 'danger'
+type Size = 'sm' | 'md' | 'lg'
 
 interface ButtonProps {
   label: string
   onPress: () => void
   variant?: Variant
+  size?: Size
   loading?: boolean
   disabled?: boolean
   accessibilityLabel?: string
   style?: ViewStyle
 }
 
+const HEIGHT: Record<Size, number> = { sm: 36, md: 48, lg: 52 }
+
 export function Button({
   label,
   onPress,
   variant = 'primary',
+  size = 'md',
   loading = false,
   disabled = false,
   accessibilityLabel,
   style,
 }: ButtonProps) {
-  const { colors, typography, spacing, radius } = useTheme()
+  const { tokens, typography } = useTheme()
+
+  const isPrimary = variant === 'primary' || variant === 'danger'
 
   const containerStyle: ViewStyle = {
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.xl,
-    borderRadius: radius.md,
+    height: HEIGHT[size],
+    paddingHorizontal: 20,
+    borderRadius: 4,
     alignItems: 'center',
     justifyContent: 'center',
     opacity: disabled ? 0.5 : 1,
-    ...(variant === 'primary' && { backgroundColor: colors.primary }),
+    ...(variant === 'primary' && { backgroundColor: tokens.accent }),
+    ...(variant === 'danger' && { backgroundColor: tokens.accent }),
     ...(variant === 'secondary' && {
       backgroundColor: 'transparent',
       borderWidth: 1.5,
-      borderColor: colors.primary,
+      borderColor: tokens.accent,
+    }),
+    ...(variant === 'outline' && {
+      backgroundColor: 'transparent',
+      borderWidth: 1,
+      borderColor: tokens.text,
     }),
     ...(variant === 'ghost' && { backgroundColor: 'transparent' }),
   }
 
   const textStyle: TextStyle = {
-    fontFamily: typography.family.bold,
-    fontSize: typography.size.body,
-    color:
-      variant === 'primary'
-        ? tokenColors.white
-        : variant === 'secondary'
-          ? colors.primary
-          : colors.textPrimary,
+    fontFamily: typography.family.sansB,
+    fontSize: size === 'sm' ? 13 : 15,
+    letterSpacing: 0.6,
+    textTransform: 'uppercase',
+    color: isPrimary ? '#FFFFFF' : variant === 'secondary' ? tokens.accent : variant === 'outline' ? tokens.text : tokens.textMute,
   }
 
   return (
@@ -68,7 +77,7 @@ export function Button({
       accessibilityRole="button"
     >
       {loading ? (
-        <ActivityIndicator color={variant === 'primary' ? tokenColors.white : colors.primary} />
+        <ActivityIndicator color={isPrimary ? '#FFFFFF' : tokens.accent} />
       ) : (
         <Text style={textStyle}>{label}</Text>
       )}

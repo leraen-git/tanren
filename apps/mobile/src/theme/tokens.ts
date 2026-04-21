@@ -48,7 +48,23 @@ export const lightTheme = {
   kanjiOpacity: 0.05,
 } as const
 
-export type ThemeTokens = typeof darkTheme
+export type ThemeTokens = {
+  bg: string
+  text: string
+  textDim: string
+  textMute: string
+  textGhost: string
+  accent: string
+  border: string
+  borderStrong: string
+  surface1: string
+  surface2: string
+  ghostBg: string
+  green: string
+  amber: string
+  overlay: string
+  kanjiOpacity: number
+}
 
 export const fonts = {
   // Charter names

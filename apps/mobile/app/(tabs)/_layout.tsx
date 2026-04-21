@@ -10,12 +10,12 @@ type IoniconsName = React.ComponentProps<typeof Ionicons>['name']
 
 function tabIcon(active: string, inactive: string) {
   return ({ color, focused }: { color: string; focused: boolean }) => (
-    <Ionicons name={(focused ? active : inactive) as IoniconsName} size={24} color={color} />
+    <Ionicons name={(focused ? active : inactive) as IoniconsName} size={22} color={color} />
   )
 }
 
 export default function TabLayout() {
-  const { colors, typography } = useTheme()
+  const { tokens, typography } = useTheme()
   const { t } = useTranslation()
 
   return (
@@ -25,14 +25,17 @@ export default function TabLayout() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: colors.surface,
-          borderTopColor: colors.surface2,
+          backgroundColor: tokens.surface1,
+          borderTopWidth: 1,
+          borderTopColor: tokens.border,
         },
-        tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: colors.textMuted,
+        tabBarActiveTintColor: tokens.accent,
+        tabBarInactiveTintColor: tokens.textMute,
         tabBarLabelStyle: {
-          fontFamily: typography.family.semiBold,
-          fontSize: typography.size.xs,
+          fontFamily: typography.family.sansM,
+          fontSize: 9,
+          letterSpacing: 1,
+          textTransform: 'uppercase',
         },
       }}
     >
@@ -47,8 +50,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="workouts"
         options={{
-          title: t('tabs.workouts'),
-          tabBarLabel: t('tabs.workouts'),
+          title: t('tabs.training'),
+          tabBarLabel: t('tabs.training'),
           tabBarIcon: tabIcon('barbell', 'barbell-outline'),
         }}
       />
@@ -57,7 +60,7 @@ export default function TabLayout() {
         options={{
           title: t('tabs.history'),
           tabBarLabel: t('tabs.history'),
-          tabBarIcon: tabIcon('stats-chart', 'stats-chart-outline'),
+          tabBarIcon: tabIcon('time', 'time-outline'),
         }}
       />
       <Tabs.Screen
@@ -65,7 +68,7 @@ export default function TabLayout() {
         options={{
           title: t('tabs.diet'),
           tabBarLabel: t('tabs.diet'),
-          tabBarIcon: tabIcon('nutrition', 'nutrition-outline'),
+          tabBarIcon: tabIcon('shield-checkmark', 'shield-checkmark-outline'),
         }}
       />
       <Tabs.Screen
@@ -73,7 +76,7 @@ export default function TabLayout() {
         options={{
           title: t('tabs.profile'),
           tabBarLabel: t('tabs.profile'),
-          tabBarIcon: tabIcon('person-circle', 'person-circle-outline'),
+          tabBarIcon: tabIcon('person', 'person-outline'),
         }}
       />
     </Tabs>
