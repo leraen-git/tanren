@@ -17,10 +17,20 @@ import { rescheduleAll } from '@/services/notificationScheduler'
 import { useNotificationSettingsStore } from '@/stores/notificationSettingsStore'
 import { AuthProvider, useAuth } from '@/contexts/AuthContext'
 import { GuestBannerProvider } from '@/contexts/GuestBannerContext'
+import * as Sentry from '@sentry/react-native'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
+import { ToastHost } from '@/components/ToastHost'
 import { useActiveSessionStore } from '@/stores/activeSessionStore'
 import { useSyncWorker } from '@/hooks/useSyncWorker'
 import '@/i18n'
+
+const SENTRY_DSN = process.env['EXPO_PUBLIC_SENTRY_DSN']
+if (SENTRY_DSN) {
+  Sentry.init({
+    dsn: SENTRY_DSN,
+    tracesSampleRate: __DEV__ ? 1.0 : 0.2,
+  })
+}
 
 // Handle incoming notification taps — deep-link to the relevant screen
 Notifications.setNotificationHandler({
@@ -225,6 +235,7 @@ export default function RootLayout() {
                 {splashDone && <SessionResumeChecker />}
                 <SyncWorkerHost />
                 <NotificationWatcher />
+                <ToastHost />
               </AuthGate>
             </TRPCProvider>
           </AuthProvider>

@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/node'
 import Fastify from 'fastify'
 import cors from '@fastify/cors'
 import helmet from '@fastify/helmet'
@@ -8,6 +9,14 @@ import { db } from './db/index.js'
 import { validateSession } from './services/sessionService.js'
 
 const isDev = process.env['NODE_ENV'] === 'development'
+
+if (process.env['SENTRY_DSN']) {
+  Sentry.init({
+    dsn: process.env['SENTRY_DSN'],
+    environment: process.env['NODE_ENV'] ?? 'production',
+    tracesSampleRate: isDev ? 1.0 : 0.2,
+  })
+}
 const isDevAuthEnabled = process.env['ENABLE_DEV_AUTH'] === 'true'
 
 const server = Fastify({ logger: { level: isDev ? 'warn' : 'info' } })
@@ -72,6 +81,11 @@ await server.register(fastifyTRPCPlugin, {
 })
 
 server.get('/health', async () => ({ status: 'ok', timestamp: new Date().toISOString() }))
+
+server.setErrorHandler((error: Error & { statusCode?: number }, _req, reply) => {
+  Sentry.captureException(error)
+  reply.code(error.statusCode ?? 500).send({ error: error.message })
+})
 
 const port = Number(process.env['PORT'] ?? 3000)
 await server.listen({ port, host: '0.0.0.0' })
