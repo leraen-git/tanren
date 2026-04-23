@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, TouchableOpacity, Image, Animated, StyleSheet } from 'react-native'
+import { View, Text, TouchableOpacity, Animated, StyleSheet } from 'react-native'
+import { Image } from 'expo-image'
 import { useTheme } from '@/theme/ThemeContext'
 import { useActiveSessionStore } from '@/stores/activeSessionStore'
 import {

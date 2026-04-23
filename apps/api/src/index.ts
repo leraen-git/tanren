@@ -6,6 +6,7 @@ import rateLimit from '@fastify/rate-limit'
 import { fastifyTRPCPlugin } from '@trpc/server/adapters/fastify'
 import { appRouter } from './router.js'
 import { db } from './db/index.js'
+import { redis } from './redis.js'
 import { validateSession } from './services/sessionService.js'
 
 const isDev = process.env['NODE_ENV'] === 'development'
@@ -80,7 +81,16 @@ await server.register(fastifyTRPCPlugin, {
   },
 })
 
-server.get('/health', async () => ({ status: 'ok', timestamp: new Date().toISOString() }))
+server.get('/health', async (_req, reply) => {
+  try {
+    const { sql } = await import('drizzle-orm')
+    await db.execute(sql`SELECT 1`)
+    await redis.ping()
+    return { status: 'ok', timestamp: new Date().toISOString() }
+  } catch (err) {
+    reply.code(503).send({ status: 'error', error: String(err) })
+  }
+})
 
 server.setErrorHandler((error: Error & { statusCode?: number }, _req, reply) => {
   Sentry.captureException(error)

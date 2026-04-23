@@ -71,7 +71,8 @@
       "expo-audio",
       "expo-asset",
       "expo-localization",
-      "expo-sharing"
+      "expo-sharing",
+      "expo-image"
     ],
     "experiments": {
       "typedRoutes": true

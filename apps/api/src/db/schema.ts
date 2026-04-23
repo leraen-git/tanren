@@ -193,7 +193,9 @@ export const personalRecords = pgTable('personal_records', {
   volume: real('volume').notNull(),
   achievedAt: timestamp('achieved_at').notNull().defaultNow(),
   sessionId: text('session_id').notNull().references(() => workoutSessions.id, { onDelete: 'cascade' }),
-})
+}, (table) => [
+  index('pr_user_exercise_idx').on(table.userId, table.exerciseId),
+])
 
 // ─── Diet Profiles ────────────────────────────────────────────────────────────
 
