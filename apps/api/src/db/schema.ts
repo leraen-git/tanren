@@ -12,6 +12,7 @@ import {
 
 // ─── Enums ────────────────────────────────────────────────────────────────────
 
+export const authProviderEnum = pgEnum('auth_provider_enum', ['apple', 'google', 'email', 'guest'])
 export const userLevelEnum = pgEnum('user_level', ['BEGINNER', 'INTERMEDIATE', 'ADVANCED'])
 export const userGoalEnum = pgEnum('user_goal', ['WEIGHT_LOSS', 'MUSCLE_GAIN', 'MAINTENANCE'])
 export const difficultyEnum = pgEnum('difficulty', ['BEGINNER', 'INTERMEDIATE', 'ADVANCED'])
@@ -21,7 +22,7 @@ export const difficultyEnum = pgEnum('difficulty', ['BEGINNER', 'INTERMEDIATE', 
 export const users = pgTable('users', {
   id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
   authId: text('auth_id').notNull().unique(),
-  authProvider: text('auth_provider').notNull().default('apple'),
+  authProvider: authProviderEnum('auth_provider').notNull().default('apple'),
   name: text('name').notNull(),
   email: text('email').notNull(),
   emailHash: text('email_hash'),
