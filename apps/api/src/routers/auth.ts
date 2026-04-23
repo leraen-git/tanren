@@ -293,7 +293,7 @@ export const authRouter = router({
     .input(z.object({ userId: z.string() }))
     .mutation(async ({ ctx, input }) => {
       if (!isDev) {
-        throw new TRPCError({ code: 'FORBIDDEN', message: 'Dev sign-in is not available in production' })
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Procedure not available' })
       }
       const [user] = await ctx.db
         .select()
