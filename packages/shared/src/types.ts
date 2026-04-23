@@ -212,6 +212,38 @@ export interface HistoryStats {
   }>
 }
 
+// ─── Weight Tracking ────────────────────────────────────────────────────────
+
+export type WeightPeriod = '7d' | '30d' | '3m' | '1y'
+export type WeightSource = 'MANUAL' | 'HEALTH_SYNC'
+export type TrendDirection = 'UP' | 'DOWN' | 'FLAT'
+
+export interface WeightEntry {
+  id: string
+  weightKg: number
+  measuredAt: string
+  source: WeightSource
+  createdAt: string
+}
+
+export interface WeightStats {
+  current: number | null
+  currentMeasuredAt: string | null
+  min: number | null
+  avg: number | null
+  max: number | null
+  deltaKg: number | null
+  trendDirection: TrendDirection | null
+}
+
+export interface WeightHistoryResponse {
+  entries: WeightEntry[]
+  stats: WeightStats
+  period: WeightPeriod
+}
+
+// ─── Session Comparison ─────────────────────────────────────────────────────
+
 export interface ExerciseComparison {
   exerciseId: string
   exerciseName: string

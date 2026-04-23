@@ -231,6 +231,21 @@ export const dietPlans = pgTable('diet_plans', {
   createdAt: timestamp('created_at').notNull().defaultNow(),
 })
 
+// ─── Weight Entries ──────────────────────────────────────────────────────────
+
+export const weightSourceEnum = pgEnum('weight_source', ['MANUAL', 'HEALTH_SYNC'])
+
+export const weightEntries = pgTable('weight_entries', {
+  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  weightKg: real('weight_kg').notNull(),
+  measuredAt: timestamp('measured_at').notNull(),
+  source: weightSourceEnum('source').notNull().default('MANUAL'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+}, (table) => [
+  index('we_user_measured_idx').on(table.userId, table.measuredAt),
+])
+
 // ─── Notification Preferences ─────────────────────────────────────────────────
 
 export const notificationPreferences = pgTable('notification_preferences', {
