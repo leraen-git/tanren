@@ -10,7 +10,7 @@ import { SkeletonCard } from '@/components/SkeletonCard'
 import { trpc } from '@/lib/trpc'
 import { useTranslation } from 'react-i18next'
 import { useGuestBannerVisible } from '@/contexts/GuestBannerContext'
-import { MealDetailModal, sortMeals, type DietMeal } from '@/components/MealDetailModal'
+import { sortMeals } from '@/components/MealDetailModal'
 
 const DAY_NAMES_FULL = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 const DAY_NAMES_FR = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi']
@@ -63,7 +63,6 @@ export default function HomeScreen() {
   const isRestDay = !!activePlan && todayPlanDays.length === 0
 
   const [activeTab, setActiveTab] = useState<'workout' | 'diet'>('workout')
-  const [selectedMeal, setSelectedMeal] = useState<DietMeal | null>(null)
   const hasManuallySet = useRef(false)
 
   useEffect(() => {
@@ -87,7 +86,7 @@ export default function HomeScreen() {
   }
 
   const todayDietDay = dietToday?.todayDay ?? null
-  const todayMealsSorted = useMemo(() => sortMeals((todayDietDay?.meals ?? []) as DietMeal[]), [todayDietDay?.meals])
+  const todayMealsSorted = useMemo(() => sortMeals((todayDietDay?.meals ?? []) as { type: string; name: string; id?: string; calories?: number; protein?: number; carbs?: number; fat?: number }[]), [todayDietDay?.meals])
   const { todayCalories, todayProtein, todayCarbs, todayFat } = useMemo(() => {
     let calories = 0, protein = 0, carbs = 0, fat = 0
     for (const m of todayMealsSorted) {
@@ -101,7 +100,6 @@ export default function HomeScreen() {
 
   return (
     <Screen showKanji kanjiChar="鍛" edges={bannerVisible ? [] : ['top']}>
-      <MealDetailModal meal={selectedMeal} onClose={() => setSelectedMeal(null)} />
       <ScrollView
         contentContainerStyle={{ padding: 16, gap: 16 }}
         refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetchPlan} tintColor={tokens.accent} />}
@@ -247,7 +245,7 @@ export default function HomeScreen() {
                     protein={meal.protein ?? 0}
                     carbs={meal.carbs ?? 0}
                     fat={meal.fat ?? 0}
-                    onPress={() => setSelectedMeal(meal as DietMeal)}
+                    onPress={() => meal.id ? router.push(`/diet/meal/${meal.id}` as any) : undefined}
                     accessibilityLabel={`${meal.name}, tap for recipe`}
                   />
                 ))}

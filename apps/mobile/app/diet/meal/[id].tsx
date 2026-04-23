@@ -3,14 +3,9 @@ import { View, Text, ScrollView, TouchableOpacity, Linking } from 'react-native'
 import { router, useLocalSearchParams } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
 import { Screen } from '@/components/Screen'
+import { ScreenHeader } from '@/components/ScreenHeader'
 import { trpc } from '@/lib/trpc'
 import { useTranslation } from 'react-i18next'
-
-function formatDuration(sec: number): string {
-  const m = Math.floor(sec / 60)
-  const s = sec % 60
-  return s > 0 ? `${m}:${String(s).padStart(2, '0')}` : `${m}:00`
-}
 
 export default function MealDetailScreen() {
   const { tokens, fonts } = useTheme()
@@ -46,34 +41,24 @@ export default function MealDetailScreen() {
 
   return (
     <Screen showKanji kanjiChar="錬">
+      <ScreenHeader onBack={() => router.back()} />
       <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 40 }}>
-        {/* Drag handle */}
-        <View style={{ alignItems: 'center', marginBottom: 8 }}>
-          <View style={{ width: 40, height: 4, backgroundColor: tokens.borderStrong, borderRadius: 2 }} />
-        </View>
-
         {/* Header */}
-        <View style={{ flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 16 }}>
-          <View style={{ flex: 1 }}>
-            <Text style={{
-              fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 2.4,
-              color: tokens.accent, textTransform: 'uppercase', marginBottom: 4,
-            }}>
-              {t(`diet.mealType.${meal.mealType}`, { defaultValue: meal.mealType })}
-              {' · '}{meal.suggestedTime}
-            </Text>
-            <Text style={{
-              fontFamily: fonts.sansX, fontSize: 19, color: tokens.text,
-              textTransform: 'uppercase', letterSpacing: 0.4, lineHeight: 22,
-            }}>
-              {meal.name}
-            </Text>
-          </View>
-          <TouchableOpacity onPress={() => router.back()} accessibilityLabel={t('common.close')} accessibilityRole="button">
-            <Text style={{ fontFamily: fonts.sans, fontSize: 22, color: tokens.textMute, lineHeight: 24, paddingLeft: 8 }}>
-              {'✕'}
-            </Text>
-          </TouchableOpacity>
+        <View style={{ marginBottom: 16 }}>
+          <Text style={{
+            fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 2.4,
+            color: tokens.accent, textTransform: 'uppercase', marginBottom: 4,
+          }}>
+            {t(`diet.mealType.${meal.mealType}`, { defaultValue: meal.mealType })}
+            {' · '}{meal.suggestedTime}
+            {meal.prepTimeMin ? ` · ${meal.prepTimeMin} min` : ''}
+          </Text>
+          <Text style={{
+            fontFamily: fonts.sansX, fontSize: 22, color: tokens.text,
+            textTransform: 'uppercase', letterSpacing: 0.4, lineHeight: 26,
+          }}>
+            {meal.name}
+          </Text>
         </View>
 
         {/* Macros grid — 4 cells */}
@@ -131,7 +116,7 @@ export default function MealDetailScreen() {
               color: tokens.textMute, textTransform: 'uppercase',
               marginTop: 16, marginBottom: 8,
             }}>
-              {t('diet.mealPrep')} · {meal.prepTimeMin} min
+              {t('diet.mealPrep')}
             </Text>
             {steps.map((step) => (
               <View key={step.stepNumber} style={{
@@ -175,17 +160,9 @@ export default function MealDetailScreen() {
                   marginLeft: 2,
                 }} />
               </View>
-              <View>
-                <Text style={{ fontFamily: fonts.sansB, fontSize: 12, letterSpacing: 0.8, textTransform: 'uppercase', color: tokens.text }}>
-                  {t('diet.mealYoutube')}
-                </Text>
-                {meal.youtubeChannelName && (
-                  <Text style={{ fontFamily: fonts.sansM, fontSize: 10, color: tokens.textMute, letterSpacing: 0.6 }}>
-                    {meal.youtubeChannelName}
-                    {meal.youtubeDurationSec ? ` · ${formatDuration(meal.youtubeDurationSec)}` : ''}
-                  </Text>
-                )}
-              </View>
+              <Text style={{ fontFamily: fonts.sansB, fontSize: 12, letterSpacing: 0.8, textTransform: 'uppercase', color: tokens.text }}>
+                {t('diet.mealYoutube')}
+              </Text>
             </View>
             <Text style={{ fontFamily: fonts.sans, fontSize: 18, color: tokens.textMute }}>›</Text>
           </TouchableOpacity>
