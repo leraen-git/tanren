@@ -3,6 +3,7 @@ import {
   text,
   integer,
   real,
+  numeric,
   boolean,
   timestamp,
   pgEnum,
@@ -16,6 +17,7 @@ export const authProviderEnum = pgEnum('auth_provider_enum', ['apple', 'google',
 export const userLevelEnum = pgEnum('user_level', ['BEGINNER', 'INTERMEDIATE', 'ADVANCED'])
 export const userGoalEnum = pgEnum('user_goal', ['WEIGHT_LOSS', 'MUSCLE_GAIN', 'MAINTENANCE'])
 export const difficultyEnum = pgEnum('difficulty', ['BEGINNER', 'INTERMEDIATE', 'ADVANCED'])
+export const sessionStatusEnum = pgEnum('session_status_enum', ['IN_PROGRESS', 'DONE', 'ABANDONED'])
 
 // ─── Users ────────────────────────────────────────────────────────────────────
 
@@ -30,12 +32,13 @@ export const users = pgTable('users', {
   level: userLevelEnum('level').notNull().default('BEGINNER'),
   goal: userGoalEnum('goal').notNull().default('MUSCLE_GAIN'),
   weeklyTarget: integer('weekly_target').notNull().default(3),
-  heightCm: real('height_cm'),
-  weightKg: real('weight_kg'),
+  heightCm: numeric('height_cm', { precision: 5, scale: 1, mode: 'number' }),
+  weightKg: numeric('weight_kg', { precision: 5, scale: 1, mode: 'number' }),
   gender: text('gender'),
   onboardingDone: boolean('onboarding_done').notNull().default(false),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  deletedAt: timestamp('deleted_at'),
 })
 
 // ─── Exercises ────────────────────────────────────────────────────────────────
@@ -91,6 +94,7 @@ export const workoutSessions = pgTable('workout_sessions', {
   userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
   workoutTemplateId: text('workout_template_id').notNull().references(() => workoutTemplates.id),
   startedAt: timestamp('started_at').notNull().defaultNow(),
+  status: sessionStatusEnum('status').notNull().default('IN_PROGRESS'),
   completedAt: timestamp('completed_at'),
   durationSeconds: integer('duration_seconds').notNull().default(0),
   totalVolume: real('total_volume').notNull().default(0),
@@ -239,7 +243,7 @@ export const weightSourceEnum = pgEnum('weight_source', ['MANUAL', 'HEALTH_SYNC'
 export const weightEntries = pgTable('weight_entries', {
   id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
   userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
-  weightKg: real('weight_kg').notNull(),
+  weightKg: numeric('weight_kg', { precision: 5, scale: 1, mode: 'number' }).notNull(),
   measuredAt: timestamp('measured_at').notNull(),
   source: weightSourceEnum('source').notNull().default('MANUAL'),
   createdAt: timestamp('created_at').notNull().defaultNow(),

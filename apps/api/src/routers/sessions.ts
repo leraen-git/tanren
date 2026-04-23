@@ -47,7 +47,7 @@ export const sessionsRouter = router({
 
       const [updated] = await ctx.db
         .update(workoutSessions)
-        .set({ ...data, completedAt: new Date() })
+        .set({ ...data, completedAt: new Date(), status: 'DONE' })
         .where(and(eq(workoutSessions.id, id), eq(workoutSessions.userId, user.id)))
         .returning()
       return updated
@@ -123,6 +123,7 @@ export const sessionsRouter = router({
           workoutTemplateId: input.workoutTemplateId,
           startedAt: new Date(input.startedAt),
           completedAt: new Date(),
+          status: 'DONE',
           durationSeconds: input.durationSeconds,
           totalVolume,
           notes: input.notes,
@@ -314,6 +315,7 @@ export const sessionsRouter = router({
         workoutTemplateId: template!.id,
         startedAt: new Date(input.startedAt),
         completedAt: new Date(),
+        status: 'DONE',
         durationSeconds: input.durationSeconds,
         totalVolume,
       }).returning()
