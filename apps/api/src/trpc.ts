@@ -2,6 +2,7 @@ import { initTRPC, TRPCError } from '@trpc/server'
 import type { FastifyRequest } from 'fastify'
 import { ZodError } from 'zod'
 import type { DB } from './db/index.js'
+import { checkProcedureRateLimit } from './middleware/rateLimit.js'
 
 export interface Context {
   req: FastifyRequest
@@ -28,7 +29,7 @@ const t = initTRPC.context<Context>().create({
   },
 })
 
-const withRequestValidation = t.middleware(({ ctx, next, path, type }) => {
+const withRequestValidation = t.middleware(async ({ ctx, next, path, type }) => {
   const contentType = ctx.req.headers['content-type']
   if (type === 'mutation' && !contentType?.includes('application/json')) {
     throw new TRPCError({ code: 'BAD_REQUEST', message: 'Content-Type must be application/json' })
@@ -41,6 +42,9 @@ const withRequestValidation = t.middleware(({ ctx, next, path, type }) => {
       throw new TRPCError({ code: 'BAD_REQUEST', message: 'Request expired' })
     }
   }
+
+  const ip = ((ctx.req.headers['x-forwarded-for'] as string | undefined)?.split(',')[0]?.trim()) ?? ctx.req.ip
+  await checkProcedureRateLimit(path, ip)
 
   ctx.req.log.info({
     event: 'request',
