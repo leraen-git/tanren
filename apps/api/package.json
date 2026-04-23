@@ -35,7 +35,7 @@
   "devDependencies": {
     "@types/node": "^22.10.5",
     "@types/pg": "^8.11.10",
-    "drizzle-kit": "^0.18.1",
+    "drizzle-kit": "^0.31.10",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2",
     "vitest": "^4.1.4"
