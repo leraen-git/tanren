@@ -9,6 +9,7 @@ import { useGuestBannerVisible } from '@/contexts/GuestBannerContext'
 import { useHistoryStore } from '@/stores/historyStore'
 import { groupSessionsByTime } from '@/utils/historyGrouping'
 import { MUSCLE_GROUPS } from '@tanren/shared'
+import type { HeatmapCell, WeeklyVolume } from '@tanren/shared'
 import { formatVolume } from '@/utils/format'
 import { translateMuscleGroup } from '@/hooks/useExercises'
 import { Ionicons } from '@expo/vector-icons'
@@ -178,7 +179,7 @@ export default function HistoryScreen() {
         </>
       ) : (
         <StatsView
-          data={statsData}
+          data={statsData as StatsData | undefined}
           loading={statsLoading}
           onRefresh={onRefresh}
         />
@@ -187,8 +188,25 @@ export default function HistoryScreen() {
   )
 }
 
+interface StatsData {
+  period: string
+  totalVolume: number
+  previousPeriodVolume: number
+  trendPercent: number
+  heatmap: { cells: HeatmapCell[]; startDate: string; endDate: string; maxVolume: number }
+  weeklyVolume: WeeklyVolume[]
+  recentPRs: Array<{
+    sessionId: string
+    exerciseId: string
+    exerciseName: string
+    reps: number
+    weight: number
+    achievedAt: string
+  }>
+}
+
 function StatsView({ data, loading, onRefresh }: {
-  data: ReturnType<typeof trpc.history.stats.useQuery>['data']
+  data: StatsData | undefined
   loading: boolean
   onRefresh: () => void
 }) {

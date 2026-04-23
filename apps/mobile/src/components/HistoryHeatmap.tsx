@@ -57,7 +57,7 @@ export const HistoryHeatmap = React.memo(function HistoryHeatmap({ cells, startD
     const months: Array<{ label: string; weekIdx: number }> = []
     let lastMonth = -1
     for (let w = 0; w < weeks.length; w++) {
-      const firstCell = weeks[w][0]
+      const firstCell = weeks[w]?.[0]
       if (!firstCell) continue
       const d = new Date(firstCell.date + 'T00:00:00')
       const m = d.getMonth()

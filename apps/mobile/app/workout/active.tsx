@@ -12,7 +12,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
 import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake'
-import * as FileSystem from 'expo-file-system'
+import * as FileSystem from 'expo-file-system/legacy'
 import { useTheme } from '@/theme/ThemeContext'
 import { TimerRing } from '@/components/TimerRing'
 import { useActiveSessionStore } from '@/stores/activeSessionStore'

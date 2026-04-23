@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react'
 import { View, Text } from 'react-native'
-import Svg, { Polyline, Circle, Line, Rect } from 'react-native-svg'
+import Svg, { Path, Circle, Line } from 'react-native-svg'
 import { useTheme } from '@/theme/ThemeContext'
 import { formatVolume } from '@/utils/format'
 import type { WeeklyVolume } from '@tanren/shared'
@@ -35,7 +35,9 @@ export const WeeklyVolumeChart = React.memo(function WeeklyVolumeChart({ weeks }
     })
   }, [weeks, maxVolume, chartWidth])
 
-  const polylinePoints = points.map((p) => `${p.x},${p.y}`).join(' ')
+  const pathD = points.length > 0
+    ? 'M' + points.map((p) => `${p.x},${p.y}`).join('L')
+    : ''
 
   const labelInterval = weeks.length > 30 ? 8 : weeks.length > 15 ? 4 : 1
 
@@ -59,8 +61,8 @@ export const WeeklyVolumeChart = React.memo(function WeeklyVolumeChart({ weeks }
         })}
 
         {/* Line */}
-        <Polyline
-          points={polylinePoints}
+        <Path
+          d={pathD}
           fill="none"
           stroke={tokens.accent}
           strokeWidth={2}

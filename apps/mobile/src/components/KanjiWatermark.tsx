@@ -1,5 +1,5 @@
 import React from 'react'
-import { Text, type ViewStyle } from 'react-native'
+import { Text, type TextStyle } from 'react-native'
 import { useTheme } from '@/theme/ThemeContext'
 
 interface Props {
@@ -21,7 +21,7 @@ export function KanjiWatermark({ char = '鍛', color }: Props) {
         letterSpacing: -2.4,
         color: color ?? tokens.accent,
         opacity: tokens.kanjiOpacity,
-      } as ViewStyle}
+      } as TextStyle}
       pointerEvents="none"
       accessibilityElementsHidden
       importantForAccessibility="no-hide-descendants"
