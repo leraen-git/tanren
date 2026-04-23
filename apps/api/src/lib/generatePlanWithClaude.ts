@@ -70,12 +70,14 @@ export async function generatePlanWithClaude(intake: IntakeData): Promise<AiPlan
   const client = new Anthropic({ apiKey })
   const userMessage = formatIntakeAsUserMessage(intake)
 
-  const response = await client.messages.create({
+  const stream = client.messages.stream({
     model: 'claude-sonnet-4-6',
     max_tokens: 32000,
     system: DIET_SYSTEM_PROMPT,
     messages: [{ role: 'user', content: userMessage }],
   })
+
+  const response = await stream.finalMessage()
 
   if (response.stop_reason === 'max_tokens') {
     throw new Error('AI response was truncated (max_tokens). Please retry.')

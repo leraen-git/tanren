@@ -1,7 +1,7 @@
-import React from 'react'
+import React, { useRef, useCallback } from 'react'
 import {
   View, Text, TextInput, ScrollView, TouchableOpacity,
-  Alert, KeyboardAvoidingView, Platform,
+  Alert, KeyboardAvoidingView, Platform, PanResponder, LayoutChangeEvent,
 } from 'react-native'
 import { router } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
@@ -62,6 +62,69 @@ function RadioCard({
         {desc}
       </Text>
     </TouchableOpacity>
+  )
+}
+
+function AdventureSlider({
+  value, onChange, tokens, fonts, minLabel, maxLabel,
+}: {
+  value: number; onChange: (v: number) => void
+  tokens: any; fonts: any; minLabel: string; maxLabel: string
+}) {
+  const trackWidth = useRef(0)
+  const clamp = (v: number) => Math.max(1, Math.min(10, Math.round(v)))
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: () => true,
+      onPanResponderGrant: (evt) => {
+        if (trackWidth.current > 0) {
+          const x = evt.nativeEvent.locationX
+          onChange(clamp(1 + (x / trackWidth.current) * 9))
+        }
+      },
+      onPanResponderMove: (evt) => {
+        if (trackWidth.current > 0) {
+          const x = evt.nativeEvent.locationX
+          onChange(clamp(1 + (x / trackWidth.current) * 9))
+        }
+      },
+    }),
+  ).current
+
+  const onLayout = useCallback((e: LayoutChangeEvent) => {
+    trackWidth.current = e.nativeEvent.layout.width
+  }, [])
+
+  const pct = ((value - 1) / 9) * 100
+
+  return (
+    <View style={{ backgroundColor: tokens.surface2, padding: 14, gap: 12 }}>
+      <Text style={{ fontFamily: fonts.sansX, fontSize: 28, color: tokens.text }}>
+        {value}<Text style={{ fontFamily: fonts.sans, fontSize: 14, color: tokens.textMute }}>{'  / 10'}</Text>
+      </Text>
+      <View
+        onLayout={onLayout}
+        {...panResponder.panHandlers}
+        style={{ height: 32, justifyContent: 'center' }}
+      >
+        <View style={{ height: 4, backgroundColor: tokens.border, overflow: 'hidden' }}>
+          <View style={{ height: 4, width: `${pct}%`, backgroundColor: tokens.accent }} />
+        </View>
+        <View style={{
+          position: 'absolute', left: `${pct}%`, marginLeft: -12,
+          width: 24, height: 24, backgroundColor: tokens.accent,
+          alignItems: 'center', justifyContent: 'center',
+        }}>
+          <Text style={{ fontFamily: fonts.monoB, fontSize: 10, color: '#FFFFFF' }}>{value}</Text>
+        </View>
+      </View>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+        <Text style={{ fontFamily: fonts.sans, fontSize: 11, color: tokens.textMute }}>{minLabel}</Text>
+        <Text style={{ fontFamily: fonts.sans, fontSize: 11, color: tokens.textMute }}>{maxLabel}</Text>
+      </View>
+    </View>
   )
 }
 
@@ -195,46 +258,17 @@ export default function IntakeFoodPreferencesScreen() {
             />
           </View>
 
-          {/* Adventurousness */}
+          {/* Adventurousness slider */}
           <View style={{ gap: 8 }}>
             <MiniLabel>{t('intakeV2.adventureLabel')}</MiniLabel>
-            <View style={{ backgroundColor: tokens.surface2, padding: 14, gap: 10 }}>
-              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
-                {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => {
-                  const active = n === draft.adventurousness
-                  return (
-                    <TouchableOpacity
-                      key={n}
-                      onPress={() => update({ adventurousness: n })}
-                      style={{
-                        width: 36, height: 36,
-                        alignItems: 'center', justifyContent: 'center',
-                        backgroundColor: active ? tokens.accent : 'transparent',
-                        borderWidth: active ? 0 : 1,
-                        borderColor: tokens.borderStrong,
-                      }}
-                      accessibilityRole="radio"
-                      accessibilityState={{ selected: active }}
-                    >
-                      <Text style={{
-                        fontFamily: fonts.monoB, fontSize: 14,
-                        color: active ? '#FFFFFF' : tokens.textMute,
-                      }}>
-                        {n}
-                      </Text>
-                    </TouchableOpacity>
-                  )
-                })}
-              </View>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                <Text style={{ fontFamily: fonts.sans, fontSize: 11, color: tokens.textMute }}>
-                  {t('intakeV2.adventureMin')}
-                </Text>
-                <Text style={{ fontFamily: fonts.sans, fontSize: 11, color: tokens.textMute }}>
-                  {t('intakeV2.adventureMax')}
-                </Text>
-              </View>
-            </View>
+            <AdventureSlider
+              value={draft.adventurousness}
+              onChange={(v) => update({ adventurousness: v })}
+              tokens={tokens}
+              fonts={fonts}
+              minLabel={t('intakeV2.adventureMin')}
+              maxLabel={t('intakeV2.adventureMax')}
+            />
           </View>
 
           <Button

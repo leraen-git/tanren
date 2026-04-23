@@ -487,16 +487,16 @@ Now generate my complete diet plan as JSON.`
       ctx.req.log.info({ event: 'ai_generation', type: 'diet_plan', userId: user.id }, 'Diet plan generation started')
       const client = new Anthropic({ apiKey })
 
-      const response = await client.messages.create({
+      const stream = client.messages.stream({
         model: 'claude-sonnet-4-6',
         max_tokens: 32000,
         system: systemPrompt,
         messages: [{ role: 'user', content: userMessage }],
       })
+      const response = await stream.finalMessage()
 
       const isDev = process.env['NODE_ENV'] === 'development'
 
-      // Warn if the model hit the token limit — response will be truncated JSON
       if (response.stop_reason === 'max_tokens' && isDev) {
         console.error('[diet] Generation hit max_tokens — response was truncated')
       }
