@@ -6,82 +6,427 @@ import { router } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
 import { trpc } from '@/lib/trpc'
 import { SkeletonCard } from '@/components/SkeletonCard'
-import { MealDetailModal, MEAL_ICONS, sortMeals, type DietMeal } from '@/components/MealDetailModal'
+import { KanjiWatermark } from '@/components/KanjiWatermark'
 import { useTranslation } from 'react-i18next'
 
 const DOW_DB_KEY = ['', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const
 
-type DietDay = {
-  dayOfWeek: number
-  theme: string
-  totalCalories: number
-  totalProtein: number
-  totalCarbs: number
-  totalFat: number
-  meals: DietMeal[]
-}
-
-type DietPlanRaw = {
-  summary: {
-    targetCalories: number
-    targetProtein: number
-    targetCarbs: number
-    targetFat: number
-    hydrationLiters: number
-    calculationExplanation: string
-    macroExplanation: string
-  }
-  days: DietDay[]
-  snackSwaps: { original: string; swap: string; calories: number; note: string }[]
-  rules: string[]
-  timeline: string
-  hydrationTips: string[]
-  hydrationFatLossExplanation: string
-  supplements: { name: string; dose: string; timing: string; reason: string; budget: string }[]
-}
-
-function MacroBar({ label, value, target, color }: { label: string; value: number; target: number; color: string }) {
+function MacroCell({ label, value, color }: { label: string; value: number; color: string }) {
   const { tokens, fonts } = useTheme()
-  const pct = Math.min(1, value / Math.max(1, target))
   return (
-    <View style={{ flex: 1, gap: 4 }}>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-        <Text style={{ fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 1, color: tokens.textMute, textTransform: 'uppercase' }}>{label}</Text>
-        <Text style={{ fontFamily: fonts.mono, fontSize: 10, color: tokens.textMute }}>{target}g</Text>
-      </View>
-      <View style={{ height: 4, backgroundColor: tokens.surface2 }}>
-        <View style={{ width: `${pct * 100}%`, height: 4, backgroundColor: color }} />
-      </View>
+    <View style={{
+      flex: 1, paddingVertical: 8, alignItems: 'center',
+      borderWidth: 1, borderColor: color,
+    }}>
+      <Text style={{ fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 1, color: tokens.textMute, textTransform: 'uppercase' }}>
+        {label}
+      </Text>
+      <Text style={{ fontFamily: fonts.sansX, fontSize: 20, color }}>
+        {value}<Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute }}>g</Text>
+      </Text>
     </View>
   )
 }
 
-export default function DietScreen() {
+function V2MealCard({
+  meal, isDessert, onPress,
+}: {
+  meal: { name: string; mealType: string; suggestedTime: string; kcal: number; proteinG: number; carbsG: number; fatG: number; isBatchCookFriendly: boolean }
+  isDessert: boolean
+  onPress: () => void
+}) {
   const { tokens, fonts } = useTheme()
   const { t } = useTranslation()
-  const bannerVisible = useGuestBannerVisible()
-  const { data: plan, isLoading } = trpc.diet.activePlan.useQuery()
+  const borderColor = isDessert ? tokens.amber : tokens.accent
+  const typeColor = isDessert ? tokens.amber : tokens.textGhost
+
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      style={{
+        borderWidth: 1, borderColor: tokens.border,
+        borderLeftWidth: 3, borderLeftColor: borderColor,
+        padding: 14, gap: 8,
+      }}
+      accessibilityLabel={meal.name}
+      accessibilityRole="button"
+    >
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <View style={{ flex: 1 }}>
+          <Text style={{
+            fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 1.4,
+            color: typeColor, textTransform: 'uppercase',
+          }}>
+            {t(`diet.mealType.${meal.mealType}`, { defaultValue: meal.mealType })}
+            {' · '}{meal.suggestedTime}
+            {meal.isBatchCookFriendly ? ` · ${t('diet.v2Batch')}` : ''}
+            {isDessert ? ` · ${t('diet.v2Optionnel')}` : ''}
+          </Text>
+          <Text style={{ fontFamily: fonts.sansX, fontSize: 17, color: tokens.text, textTransform: 'uppercase', letterSpacing: 0.3 }}>
+            {meal.name}
+          </Text>
+        </View>
+        <Text style={{ fontFamily: fonts.monoB, fontSize: 14, color: tokens.accent }}>
+          {meal.kcal}
+        </Text>
+      </View>
+      <View style={{ flexDirection: 'row', gap: 6 }}>
+        {[
+          { label: 'P', value: meal.proteinG, color: tokens.accent },
+          { label: 'G', value: meal.carbsG, color: tokens.amber },
+          { label: 'L', value: meal.fatG, color: tokens.green },
+        ].map((m) => (
+          <View key={m.label} style={{
+            flex: 1, flexDirection: 'row',
+            borderWidth: 1, borderColor: m.color,
+            paddingVertical: 3, paddingHorizontal: 6,
+            alignItems: 'center', justifyContent: 'center', gap: 4,
+          }}>
+            <Text style={{ fontFamily: fonts.monoB, fontSize: 11, color: m.color }}>{m.value}g</Text>
+            <Text style={{ fontFamily: fonts.sansB, fontSize: 8, letterSpacing: 1, color: tokens.textGhost }}>{m.label}</Text>
+          </View>
+        ))}
+      </View>
+    </TouchableOpacity>
+  )
+}
+
+// ─── No plan state ──────────────────────────────────────────────────────────
+
+function NoPlanView({ isGuest }: { isGuest: boolean }) {
+  const { tokens, fonts } = useTheme()
+  const { t } = useTranslation()
   const { data: planCount } = trpc.diet.planCount.useQuery()
+  const utils = trpc.useUtils()
+  const restorePlan = trpc.diet.restoreLastPlan.useMutation({
+    onSuccess: () => utils.diet.getMyPlanV2.invalidate(),
+  })
+
+  const FEATURES = [
+    { title: t('diet.v2Feature1Title'), desc: t('diet.v2Feature1Desc') },
+    { title: t('diet.v2Feature2Title'), desc: t('diet.v2Feature2Desc') },
+    { title: t('diet.v2Feature3Title'), desc: t('diet.v2Feature3Desc') },
+    { title: t('diet.v2Feature4Title'), desc: t('diet.v2Feature4Desc') },
+  ]
+
+  return (
+    <ScrollView contentContainerStyle={{ padding: 16, gap: 16, flexGrow: 1, justifyContent: 'center' }}>
+      {/* Hero */}
+      <View style={{ alignItems: 'center', gap: 12 }}>
+        <Text style={{
+          fontFamily: 'NotoSerifJP_900Black_subset', fontSize: 28,
+          color: tokens.accent, letterSpacing: 4,
+        }}>
+          鍛 錬
+        </Text>
+        <Text style={{
+          fontFamily: fonts.sansX, fontSize: 28, color: tokens.text,
+          textAlign: 'center', textTransform: 'uppercase', letterSpacing: 0.5,
+        }}>
+          {t('diet.v2Hero')}
+        </Text>
+        <Text style={{ fontFamily: fonts.sans, fontSize: 13, color: tokens.textMute, textAlign: 'center', lineHeight: 20 }}>
+          {t('diet.v2HeroDesc')}
+        </Text>
+      </View>
+
+      {/* Features */}
+      <Text style={{
+        fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 3,
+        color: tokens.textMute, textTransform: 'uppercase',
+      }}>
+        {t('diet.v2Features')}
+      </Text>
+
+      {FEATURES.map((f, i) => (
+        <View key={i} style={{
+          flexDirection: 'row', gap: 12, alignItems: 'flex-start',
+          borderWidth: 1, borderColor: tokens.border, padding: 14,
+        }}>
+          <View style={{
+            width: 28, height: 28, backgroundColor: tokens.accent,
+            alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+          }}>
+            <Text style={{ fontFamily: fonts.sansB, fontSize: 12, color: '#FFFFFF' }}>
+              {String(i + 1).padStart(2, '0')}
+            </Text>
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={{ fontFamily: fonts.sansB, fontSize: 14, color: tokens.text }}>{f.title}</Text>
+            <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute, marginTop: 2 }}>{f.desc}</Text>
+          </View>
+        </View>
+      ))}
+
+      {/* CTA */}
+      <TouchableOpacity
+        onPress={isGuest ? undefined : () => router.push('/diet/intake-v2/stats')}
+        disabled={isGuest}
+        style={{
+          backgroundColor: isGuest ? tokens.surface2 : tokens.accent,
+          paddingVertical: 16, alignItems: 'center', gap: 4,
+          opacity: isGuest ? 0.4 : 1,
+        }}
+        accessibilityLabel={isGuest ? t('guest.aiLocked') : t('diet.v2BuildPlan')}
+        accessibilityRole="button"
+      >
+        <Text style={{
+          fontFamily: fonts.sansX, fontSize: 18,
+          color: isGuest ? tokens.textMute : '#FFFFFF',
+          textTransform: 'uppercase', letterSpacing: 1,
+        }}>
+          {isGuest ? t('guest.aiLocked') : t('diet.v2BuildPlan')}
+        </Text>
+        {isGuest && (
+          <Text style={{ fontFamily: fonts.sans, fontSize: 10, color: tokens.textMute }}>
+            {t('guest.aiLockedDesc')}
+          </Text>
+        )}
+      </TouchableOpacity>
+      <Text style={{ fontFamily: fonts.sans, fontSize: 11, color: tokens.textGhost, textAlign: 'center' }}>
+        {t('diet.v2BuildMeta')}
+      </Text>
+
+      {(planCount ?? 0) > 0 && (
+        <TouchableOpacity
+          onPress={() => restorePlan.mutate()}
+          disabled={restorePlan.isPending}
+          style={{ alignItems: 'center', paddingVertical: 8 }}
+          accessibilityLabel={t('diet.restorePlan')} accessibilityRole="button"
+        >
+          <Text style={{ fontFamily: fonts.sansM, fontSize: 12, color: tokens.textMute }}>
+            {restorePlan.isPending ? t('common.loading') : t('diet.restorePlan')}
+          </Text>
+        </TouchableOpacity>
+      )}
+    </ScrollView>
+  )
+}
+
+// ─── V2 active plan (normalized) ────────────────────────────────────────────
+
+interface V2Day {
+  id: string
+  dayNumber: number
+  dayLabel: string
+  theme: string
+  targetKcal: number
+  meals: V2Meal[]
+}
+
+interface V2Meal {
+  id: string
+  mealType: string
+  suggestedTime: string
+  name: string
+  kcal: number
+  proteinG: number
+  carbsG: number
+  fatG: number
+  prepTimeMin: number
+  isBatchCookFriendly: boolean
+  isLowCalTreat: boolean
+  ingredients: { name: string; quantity: string; unit: string; grocerySection: string }[]
+  recipeSteps: { stepNumber: number; instruction: string }[]
+  youtubeUrl: string | null
+}
+
+interface V2GroceryItem {
+  id: string
+  section: string
+  name: string
+  quantity: string
+  isChecked: boolean
+}
+
+interface V2PlanData {
+  id: string
+  targetKcal: number
+  targetProteinG: number
+  targetCarbsG: number
+  targetFatG: number
+  aiExplanation: string | null
+  aiPersonalRules: string[] | null
+  aiTimeline: string | null
+  aiSupplements: { name: string; dose: string; when: string; why: string; productHint: string }[] | null
+  aiSnackSwaps: { originalSnack: string; swap: string; kcal: number }[] | null
+  days: V2Day[]
+  groceryItems: V2GroceryItem[]
+}
+
+function V2ActivePlan({ plan }: { plan: V2PlanData }) {
+  const { tokens, fonts } = useTheme()
+  const { t } = useTranslation()
   const { data: user } = trpc.auth.me.useQuery()
   const isGuest = user?.authProvider === 'guest'
-  const utils = trpc.useUtils()
-  const [selectedMeal, setSelectedMeal] = useState<DietMeal | null>(null)
-
-  const restorePlan = trpc.diet.restoreLastPlan.useMutation({
-    onSuccess: () => Promise.all([
-      utils.diet.activePlan.invalidate(),
-      utils.diet.todayMeals.invalidate(),
-    ]),
-    onError: () => {},
-  })
 
   const todayJs = new Date().getDay()
   const todayDow = todayJs === 0 ? 7 : todayJs
   const [selectedDay, setSelectedDay] = useState(todayDow)
 
-  const handleDelete = () => {
-    router.push('/diet/intake')
-  }
+  const days = plan.days ?? []
+  const currentDay = days.find((d) => d.dayNumber === selectedDay) ?? days[0]
+  const meals = currentDay?.meals ?? []
+
+  const checkedCount = plan.groceryItems.filter((g) => g.isChecked).length
+  const totalGroceries = plan.groceryItems.length
+
+  return (
+    <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
+      {/* Header */}
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16, paddingBottom: 8 }}>
+        <Text style={{ fontFamily: fonts.sansX, fontSize: 24, color: tokens.text, textTransform: 'uppercase' }}>
+          Diet
+        </Text>
+        <TouchableOpacity
+          onPress={() => router.push('/diet/regenerate' as any)}
+          accessibilityRole="button"
+        >
+          <Text style={{ fontFamily: fonts.sansB, fontSize: 12, letterSpacing: 1, color: tokens.accent, textTransform: 'uppercase' }}>
+            {t('diet.v2PlanLink')} ›
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Day selector */}
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16, gap: 6, paddingBottom: 12 }}>
+        {days.map((d) => {
+          const isToday = d.dayNumber === todayDow
+          const isSelected = d.dayNumber === selectedDay
+          return (
+            <TouchableOpacity
+              key={d.dayNumber}
+              onPress={() => setSelectedDay(d.dayNumber)}
+              style={{
+                alignItems: 'center', gap: 2, paddingVertical: 8, paddingHorizontal: 10,
+                backgroundColor: isSelected ? tokens.accent : 'transparent',
+                borderWidth: 1,
+                borderColor: isSelected ? tokens.accent : isToday ? tokens.accent : tokens.borderStrong,
+                minWidth: 44,
+              }}
+              accessibilityRole="button"
+            >
+              <Text style={{ fontFamily: fonts.sansB, fontSize: 10, letterSpacing: 1, color: isSelected ? '#FFFFFF' : tokens.textMute, textTransform: 'uppercase' }}>
+                {d.dayLabel}
+              </Text>
+              <Text style={{ fontFamily: fonts.mono, fontSize: 10, color: isSelected ? 'rgba(255,255,255,0.7)' : tokens.textGhost }}>
+                {d.targetKcal}
+              </Text>
+            </TouchableOpacity>
+          )
+        })}
+      </ScrollView>
+
+      {currentDay && (
+        <View style={{ padding: 16, gap: 14 }}>
+          {/* Day theme block */}
+          <View style={{ borderLeftWidth: 3, borderLeftColor: tokens.accent, paddingLeft: 12, gap: 2 }}>
+            <Text style={{ fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 2, color: tokens.textMute, textTransform: 'uppercase' }}>
+              {currentDay.dayLabel} · {t('diet.v2DayTheme')}
+            </Text>
+            <Text style={{ fontFamily: fonts.sansX, fontSize: 18, color: tokens.text, textTransform: 'uppercase' }}>
+              {currentDay.theme}
+            </Text>
+          </View>
+
+          {/* Cal target */}
+          <View style={{ gap: 2 }}>
+            <Text style={{ fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 2, color: tokens.textMute, textTransform: 'uppercase' }}>
+              {t('diet.v2DayTarget')}
+            </Text>
+            <Text style={{ fontFamily: fonts.sansX, fontSize: 28, color: tokens.text }}>
+              {currentDay.targetKcal}<Text style={{ fontFamily: fonts.sans, fontSize: 14, color: tokens.textMute }}>kcal</Text>
+            </Text>
+          </View>
+
+          {/* Macro row */}
+          <View style={{ flexDirection: 'row', gap: 6 }}>
+            <MacroCell label="Prot." value={plan.targetProteinG} color={tokens.accent} />
+            <MacroCell label="Gluc." value={plan.targetCarbsG} color={tokens.amber} />
+            <MacroCell label="Lip." value={plan.targetFatG} color={tokens.green} />
+          </View>
+
+          {/* Meals label */}
+          <Text style={{
+            fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 3,
+            color: tokens.textMute, textTransform: 'uppercase', marginTop: 4,
+          }}>
+            {t('diet.v2Meals')}
+          </Text>
+
+          {/* Meal cards */}
+          {meals.map((meal) => (
+            <V2MealCard
+              key={meal.id}
+              meal={meal}
+              isDessert={meal.mealType === 'DESSERT'}
+              onPress={() => router.push(`/diet/meal/${meal.id}` as any)}
+            />
+          ))}
+
+          {/* Groceries preview */}
+          {totalGroceries > 0 && (
+            <TouchableOpacity
+              onPress={() => router.push('/diet/groceries' as any)}
+              style={{
+                borderWidth: 1, borderColor: tokens.border,
+                borderLeftWidth: 3, borderLeftColor: tokens.accent,
+                padding: 14, gap: 8, marginTop: 8,
+              }}
+              accessibilityRole="button"
+            >
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                  <Text style={{ fontFamily: 'NotoSerifJP_900Black_subset', fontSize: 20, color: tokens.accent }}>
+                    買
+                  </Text>
+                  <Text style={{ fontFamily: fonts.sansB, fontSize: 13, color: tokens.text, textTransform: 'uppercase', letterSpacing: 0.6 }}>
+                    {t('diet.v2Groceries')}
+                  </Text>
+                </View>
+                <Text style={{ fontFamily: fonts.sansB, fontSize: 16, color: tokens.accent }}>›</Text>
+              </View>
+              <Text style={{ fontFamily: fonts.mono, fontSize: 11, color: tokens.textMute }}>
+                {checkedCount}<Text style={{ color: tokens.textGhost }}> / {totalGroceries} {t('diet.v2GroceriesChecked')}</Text>
+              </Text>
+              <View style={{ height: 3, backgroundColor: tokens.surface2 }}>
+                <View style={{
+                  width: totalGroceries > 0 ? `${(checkedCount / totalGroceries) * 100}%` : '0%',
+                  height: 3, backgroundColor: tokens.accent,
+                }} />
+              </View>
+            </TouchableOpacity>
+          )}
+        </View>
+      )}
+
+      {/* Regenerate link */}
+      <TouchableOpacity
+        onPress={isGuest ? undefined : () => router.push('/diet/regenerate' as any)}
+        disabled={isGuest}
+        style={{ margin: 16, alignItems: 'center', paddingVertical: 12, opacity: isGuest ? 0.4 : 1 }}
+        accessibilityRole="button"
+      >
+        <Text style={{ fontFamily: fonts.sansM, fontSize: 12, color: tokens.textMute }}>
+          {isGuest
+            ? t('guest.aiLocked')
+            : <>{t('diet.regeneratePrompt')}{' '}<Text style={{ color: tokens.accent }}>{t('diet.regenerateLink')}</Text></>
+          }
+        </Text>
+      </TouchableOpacity>
+    </ScrollView>
+  )
+}
+
+// ─── Main screen ────────────────────────────────────────────────────────────
+
+export default function DietScreen() {
+  const { tokens } = useTheme()
+  const bannerVisible = useGuestBannerVisible()
+  const { data: user } = trpc.auth.me.useQuery()
+  const isGuest = user?.authProvider === 'guest'
+
+  const { data: v2Plan, isLoading } = trpc.diet.getMyPlanV2.useQuery()
 
   if (isLoading) {
     return (
@@ -95,364 +440,14 @@ export default function DietScreen() {
     )
   }
 
-  if (!plan || !plan.isActive) {
-    return (
-      <SafeAreaView edges={bannerVisible ? [] : ['top']} style={{ flex: 1, backgroundColor: tokens.bg }}>
-        <ScrollView contentContainerStyle={{ padding: 16, gap: 16, flexGrow: 1, justifyContent: 'center' }}>
-          <View style={{ alignItems: 'center', gap: 12 }}>
-            <Text style={{
-              fontFamily: fonts.sansX,
-              fontSize: 32,
-              color: tokens.text,
-              textAlign: 'center',
-              textTransform: 'uppercase',
-              letterSpacing: 0.5,
-            }}>
-              {t('diet.yourPlan')}
-            </Text>
-            <Text style={{ fontFamily: fonts.sans, fontSize: 14, color: tokens.textMute, textAlign: 'center' }}>
-              {t('diet.yourPlanDesc')}
-            </Text>
-          </View>
-
-          {[
-            { text: t('diet.feature1') },
-            { text: t('diet.feature2') },
-            { text: t('diet.feature3') },
-            { text: t('diet.feature4') },
-          ].map((f, i) => (
-            <View key={i} style={{
-              flexDirection: 'row', alignItems: 'center', gap: 12,
-              borderWidth: 1, borderColor: tokens.border,
-              padding: 12,
-            }}>
-              <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute, flex: 1 }}>{f.text}</Text>
-            </View>
-          ))}
-
-          <TouchableOpacity
-            onPress={isGuest ? undefined : () => router.push('/diet/intake')}
-            disabled={isGuest}
-            style={{
-              backgroundColor: isGuest ? tokens.surface2 : tokens.accent,
-              paddingVertical: 16,
-              alignItems: 'center',
-              gap: 4,
-              opacity: isGuest ? 0.4 : 1,
-            }}
-            accessibilityLabel={isGuest ? t('guest.aiLocked') : t('diet.buildPlan')}
-            accessibilityRole="button"
-          >
-            <Text style={{
-              fontFamily: fonts.sansX,
-              fontSize: 20,
-              color: isGuest ? tokens.textMute : '#FFFFFF',
-              textTransform: 'uppercase',
-              letterSpacing: 1,
-            }}>
-              {isGuest ? t('guest.aiLocked') : t('diet.buildPlan')}
-            </Text>
-            {isGuest && (
-              <Text style={{ fontFamily: fonts.sans, fontSize: 10, color: tokens.textMute }}>
-                {t('guest.aiLockedDesc')}
-              </Text>
-            )}
-          </TouchableOpacity>
-
-          {(planCount ?? 0) > 0 && (
-            <TouchableOpacity
-              onPress={() => restorePlan.mutate()}
-              disabled={restorePlan.isPending}
-              style={{ alignItems: 'center', paddingVertical: 8 }}
-              accessibilityLabel={t('diet.restorePlan')} accessibilityRole="button"
-            >
-              <Text style={{ fontFamily: fonts.sansM, fontSize: 12, color: tokens.textMute }}>
-                {restorePlan.isPending ? t('common.loading') : t('diet.restorePlan')}
-              </Text>
-            </TouchableOpacity>
-          )}
-        </ScrollView>
-      </SafeAreaView>
-    )
-  }
-
-  const rawPlan = plan.rawPlan as unknown as DietPlanRaw
-  const days = rawPlan.days ?? []
-  const currentDay = days.find((d) => d.dayOfWeek === selectedDay) ?? days[0]
-
-  const currentMeals = sortMeals(currentDay?.meals ?? [])
-  const dayCalories = currentMeals.reduce((s, m) => s + (m.calories ?? 0), 0)
-  const dayProtein  = currentMeals.reduce((s, m) => s + (m.protein  ?? 0), 0)
-  const dayCarbs    = currentMeals.reduce((s, m) => s + (m.carbs    ?? 0), 0)
-  const dayFat      = currentMeals.reduce((s, m) => s + (m.fat      ?? 0), 0)
-
   return (
     <SafeAreaView edges={bannerVisible ? [] : ['top']} style={{ flex: 1, backgroundColor: tokens.bg }}>
-      <MealDetailModal meal={selectedMeal} onClose={() => setSelectedMeal(null)} />
-
-      <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
-        {/* Header */}
-        <View style={{ padding: 16, gap: 12 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-            <View>
-              <Text style={{
-                fontFamily: fonts.sansB,
-                fontSize: 9,
-                letterSpacing: 3,
-                color: tokens.textMute,
-                textTransform: 'uppercase',
-              }}>
-                {t('diet.title')}
-              </Text>
-              <Text style={{ fontFamily: fonts.sansX, fontSize: 24, color: tokens.text }}>
-                {plan.targetCalories} {t('diet.kcalPerDay')}
-              </Text>
-            </View>
-            <TouchableOpacity
-              onPress={handleDelete}
-              style={{ paddingHorizontal: 8, paddingVertical: 4, borderWidth: 1, borderColor: tokens.accent }}
-              accessibilityLabel={t('diet.reset')} accessibilityRole="button"
-            >
-              <Text style={{
-                fontFamily: fonts.sansB,
-                fontSize: 10,
-                letterSpacing: 1,
-                color: tokens.accent,
-                textTransform: 'uppercase',
-              }}>
-                {t('diet.reset')}
-              </Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={{ flexDirection: 'row', gap: 8 }}>
-            <MacroBar label={t('diet.protein')} value={plan.targetProtein} target={plan.targetProtein} color={tokens.accent} />
-            <MacroBar label={t('diet.carbs')} value={plan.targetCarbs} target={plan.targetCarbs} color={tokens.amber} />
-            <MacroBar label={t('diet.fat')} value={plan.targetFat} target={plan.targetFat} color={tokens.green} />
-          </View>
-          <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute }}>
-            {rawPlan.summary.hydrationLiters}{t('diet.water')}
-          </Text>
-        </View>
-
-        {/* Day selector chips */}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16, gap: 8 }}>
-          {days.map((d) => {
-            const isToday = d.dayOfWeek === todayDow
-            const isSelected = d.dayOfWeek === selectedDay
-            return (
-              <TouchableOpacity
-                key={d.dayOfWeek}
-                onPress={() => setSelectedDay(d.dayOfWeek)}
-                style={{
-                  alignItems: 'center', gap: 4,
-                  paddingVertical: 8, paddingHorizontal: 12,
-                  backgroundColor: isSelected ? tokens.accent : 'transparent',
-                  borderWidth: isToday && !isSelected ? 1 : 1,
-                  borderColor: isSelected ? tokens.accent : isToday ? tokens.accent : tokens.borderStrong,
-                }}
-                accessibilityRole="button" accessibilityLabel={t(`days.${DOW_DB_KEY[d.dayOfWeek]}`)}
-              >
-                <Text style={{
-                  fontFamily: fonts.sansB,
-                  fontSize: 10,
-                  letterSpacing: 1,
-                  color: isSelected ? '#FFFFFF' : tokens.textMute,
-                  textTransform: 'uppercase',
-                }}>
-                  {t(`days.${DOW_DB_KEY[d.dayOfWeek]}`)}
-                </Text>
-                <Text style={{ fontFamily: fonts.mono, fontSize: 10, color: isSelected ? 'rgba(255,255,255,0.7)' : tokens.textGhost }}>
-                  {(d.meals ?? []).reduce((s: number, m: any) => s + (m.calories ?? 0), 0)}
-                </Text>
-              </TouchableOpacity>
-            )
-          })}
-        </ScrollView>
-
-        {/* Day detail */}
-        {currentDay && (
-          <View style={{ padding: 16, gap: 12 }}>
-            <View>
-              <Text style={{ fontFamily: fonts.sansX, fontSize: 20, color: tokens.text, textTransform: 'uppercase', letterSpacing: 0.5 }}>
-                {currentDay.theme}
-              </Text>
-              <Text style={{ fontFamily: fonts.mono, fontSize: 11, color: tokens.textDim }}>
-                {dayCalories} {t('diet.kcal')} · P {dayProtein}g · G {dayCarbs}g · L {dayFat}g
-              </Text>
-            </View>
-
-            {/* Meal cards */}
-            {currentMeals.map((meal, i) => (
-              <TouchableOpacity
-                key={i}
-                onPress={() => setSelectedMeal(meal)}
-                style={{
-                  borderWidth: 1,
-                  borderColor: tokens.border,
-                  borderLeftWidth: 3,
-                  borderLeftColor: tokens.accent,
-                  padding: 16,
-                  gap: 8,
-                }}
-                accessibilityLabel={`${meal.name}, tap for recipe`}
-                accessibilityRole="button"
-              >
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                  <View style={{ flex: 1 }}>
-                    <Text style={{
-                      fontFamily: fonts.sansB,
-                      fontSize: 9,
-                      letterSpacing: 1.4,
-                      color: tokens.textGhost,
-                      textTransform: 'uppercase',
-                    }}>
-                      {t(`diet.mealType.${meal.type}`, { defaultValue: meal.type })}
-                      {meal.batchCookable ? ' · batch' : ''}
-                      {meal.prepTime ? ` · ${meal.prepTime}min` : ''}
-                    </Text>
-                    <Text style={{ fontFamily: fonts.sansX, fontSize: 17, color: tokens.text, textTransform: 'uppercase', letterSpacing: 0.3 }}>
-                      {meal.name}
-                    </Text>
-                  </View>
-                  <Text style={{ fontFamily: fonts.monoB, fontSize: 14, color: tokens.accent }}>
-                    {meal.calories}
-                  </Text>
-                </View>
-                <View style={{ flexDirection: 'row', gap: 8 }}>
-                  {[
-                    { label: 'P', value: meal.protein, color: tokens.accent },
-                    { label: 'G', value: meal.carbs, color: tokens.amber },
-                    { label: 'L', value: meal.fat, color: tokens.green },
-                  ].map((m) => (
-                    <View key={m.label} style={{
-                      flex: 1, flexDirection: 'row',
-                      borderWidth: 1, borderColor: m.color,
-                      paddingVertical: 4, paddingHorizontal: 8,
-                      alignItems: 'center', justifyContent: 'center', gap: 4,
-                    }}>
-                      <Text style={{ fontFamily: fonts.monoB, fontSize: 12, color: m.color }}>{m.value}g</Text>
-                      <Text style={{ fontFamily: fonts.sansB, fontSize: 8, letterSpacing: 1, color: tokens.textGhost }}>{m.label}</Text>
-                    </View>
-                  ))}
-                </View>
-              </TouchableOpacity>
-            ))}
-          </View>
-        )}
-
-        {/* Snack swaps */}
-        {rawPlan.snackSwaps && rawPlan.snackSwaps.length > 0 && (
-          <View style={{ padding: 16, gap: 12 }}>
-            <Text style={{
-              fontFamily: fonts.sansB,
-              fontSize: 10,
-              letterSpacing: 3,
-              color: tokens.textMute,
-              textTransform: 'uppercase',
-            }}>
-              {t('diet.snackSwaps')}
-            </Text>
-            {rawPlan.snackSwaps.map((s, i) => (
-              <View key={i} style={{ borderWidth: 1, borderColor: tokens.border, padding: 16, gap: 4 }}>
-                <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute }}>
-                  {t('diet.insteadOf')} <Text style={{ color: tokens.accent, fontFamily: fonts.sansM }}>{s.original}</Text>
-                </Text>
-                <Text style={{ fontFamily: fonts.sansB, fontSize: 14, color: tokens.text }}>
-                  → {s.swap}
-                </Text>
-                <Text style={{ fontFamily: fonts.mono, fontSize: 11, color: tokens.textMute }}>
-                  {s.calories} kcal · {s.note}
-                </Text>
-              </View>
-            ))}
-          </View>
-        )}
-
-        {/* Rules */}
-        {rawPlan.rules && rawPlan.rules.length > 0 && (
-          <View style={{ padding: 16, gap: 12 }}>
-            <Text style={{
-              fontFamily: fonts.sansB,
-              fontSize: 10,
-              letterSpacing: 3,
-              color: tokens.textMute,
-              textTransform: 'uppercase',
-            }}>
-              {t('diet.rules')}
-            </Text>
-            {rawPlan.rules.map((r, i) => (
-              <View key={i} style={{
-                flexDirection: 'row', gap: 12,
-                borderWidth: 1, borderColor: tokens.border,
-                padding: 16, alignItems: 'flex-start',
-              }}>
-                <View style={{ width: 24, height: 24, backgroundColor: tokens.accent, alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <Text style={{ fontFamily: fonts.sansB, fontSize: 12, color: '#FFFFFF' }}>{i + 1}</Text>
-                </View>
-                <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.text, flex: 1 }}>{r}</Text>
-              </View>
-            ))}
-          </View>
-        )}
-
-        {/* Supplements */}
-        {rawPlan.supplements && rawPlan.supplements.length > 0 && (
-          <View style={{ padding: 16, gap: 12 }}>
-            <Text style={{
-              fontFamily: fonts.sansB,
-              fontSize: 10,
-              letterSpacing: 3,
-              color: tokens.textMute,
-              textTransform: 'uppercase',
-            }}>
-              {t('diet.supplements')}
-            </Text>
-            {rawPlan.supplements.map((s, i) => (
-              <View key={i} style={{ borderWidth: 1, borderColor: tokens.border, padding: 16, gap: 4 }}>
-                <Text style={{ fontFamily: fonts.sansB, fontSize: 14, color: tokens.text }}>{s.name}</Text>
-                <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute }}>{s.dose} · {s.timing}</Text>
-                <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute }}>{s.reason}</Text>
-                <Text style={{ fontFamily: fonts.sansM, fontSize: 12, color: tokens.accent }}>{s.budget}</Text>
-              </View>
-            ))}
-          </View>
-        )}
-
-        {/* Timeline */}
-        {rawPlan.timeline && (
-          <View style={{ margin: 16, borderWidth: 1, borderColor: tokens.border, padding: 16, gap: 8 }}>
-            <Text style={{
-              fontFamily: fonts.sansB,
-              fontSize: 10,
-              letterSpacing: 3,
-              color: tokens.textMute,
-              textTransform: 'uppercase',
-            }}>
-              {t('diet.timeline')}
-            </Text>
-            <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute, lineHeight: 22 }}>
-              {rawPlan.timeline}
-            </Text>
-          </View>
-        )}
-
-        {/* Regenerate */}
-        <TouchableOpacity
-          onPress={isGuest ? undefined : () => router.push('/diet/intake')}
-          disabled={isGuest}
-          style={{ margin: 16, alignItems: 'center', paddingVertical: 12, opacity: isGuest ? 0.4 : 1 }}
-          accessibilityLabel={isGuest ? t('guest.aiLocked') : t('diet.regenerateLink')}
-          accessibilityRole="button"
-        >
-          <Text style={{ fontFamily: fonts.sansM, fontSize: 12, color: tokens.textMute }}>
-            {isGuest
-              ? t('guest.aiLocked')
-              : <>{t('diet.regeneratePrompt')}{' '}<Text style={{ color: tokens.accent }}>{t('diet.regenerateLink')}</Text></>
-            }
-          </Text>
-        </TouchableOpacity>
-      </ScrollView>
+      <KanjiWatermark char="錬" />
+      {v2Plan ? (
+        <V2ActivePlan plan={v2Plan as unknown as V2PlanData} />
+      ) : (
+        <NoPlanView isGuest={isGuest ?? false} />
+      )}
     </SafeAreaView>
   )
 }

@@ -9,7 +9,9 @@ import {
   pgEnum,
   jsonb,
   index,
+  uniqueIndex,
 } from 'drizzle-orm/pg-core'
+import { sql } from 'drizzle-orm'
 
 // ─── Enums ────────────────────────────────────────────────────────────────────
 
@@ -18,6 +20,19 @@ export const userLevelEnum = pgEnum('user_level', ['BEGINNER', 'INTERMEDIATE', '
 export const userGoalEnum = pgEnum('user_goal', ['WEIGHT_LOSS', 'MUSCLE_GAIN', 'MAINTENANCE'])
 export const difficultyEnum = pgEnum('difficulty', ['BEGINNER', 'INTERMEDIATE', 'ADVANCED'])
 export const sessionStatusEnum = pgEnum('session_status_enum', ['IN_PROGRESS', 'DONE', 'ABANDONED'])
+
+// ─── Diet v2 Enums ───────────────────────────────────────────────────────────
+
+export const dietGoalEnum = pgEnum('diet_goal_enum', ['FAT_LOSS', 'MUSCLE_GAIN', 'RECOMPOSITION', 'PERFORMANCE'])
+export const paceEnum = pgEnum('pace_enum', ['STEADY', 'FAST'])
+export const jobTypeEnum = pgEnum('job_type_enum', ['DESK', 'STANDING', 'MANUAL'])
+export const stressEnum = pgEnum('stress_enum', ['LOW', 'MODERATE', 'HIGH'])
+export const snackMotivationEnum = pgEnum('snack_motivation_enum', ['HUNGER', 'BOREDOM', 'HABIT'])
+export const snackPreferenceEnum = pgEnum('snack_preference_enum', ['SWEET', 'SAVOURY', 'BOTH'])
+export const nightSnackEnum = pgEnum('night_snack_enum', ['NEVER', 'SOMETIMES', 'OFTEN'])
+export const cookingStyleEnum = pgEnum('cooking_style_enum', ['HOME_COOKING', 'QUICK_SIMPLE', 'MEAL_PREP'])
+export const mealTypeEnum = pgEnum('meal_type_enum', ['BREAKFAST', 'LUNCH', 'DINNER', 'SNACK', 'DESSERT'])
+export const planStatusEnum = pgEnum('plan_status_enum', ['ACTIVE', 'REPLACED', 'DELETED'])
 
 // ─── Users ────────────────────────────────────────────────────────────────────
 
@@ -237,6 +252,145 @@ export const dietPlans = pgTable('diet_plans', {
   rawPlan: jsonb('raw_plan').notNull(),
   createdAt: timestamp('created_at').notNull().defaultNow(),
 })
+
+// ─── Diet v2 · Intakes ───────────────────────────────────────────────────────
+
+export const dietIntakes = pgTable('diet_intakes', {
+  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+
+  // Section 1 — Stats
+  age: integer('age').notNull(),
+  biologicalSex: text('biological_sex').notNull(),
+  heightCm: numeric('height_cm', { precision: 5, scale: 1, mode: 'number' }).notNull(),
+  currentWeightKg: numeric('current_weight_kg', { precision: 5, scale: 2, mode: 'number' }).notNull(),
+  goalWeightKg: numeric('goal_weight_kg', { precision: 5, scale: 2, mode: 'number' }),
+  goalFeel: text('goal_feel'),
+  pace: paceEnum('pace').notNull(),
+
+  // Section 2 — Lifestyle
+  jobType: jobTypeEnum('job_type').notNull(),
+  exerciseFrequencyPerWeek: integer('exercise_frequency_per_week').notNull(),
+  exerciseType: text('exercise_type').notNull(),
+  sleepHours: numeric('sleep_hours', { precision: 3, scale: 1, mode: 'number' }).notNull(),
+  stressLevel: stressEnum('stress_level').notNull(),
+  alcoholDrinksPerWeek: integer('alcohol_drinks_per_week').notNull().default(0),
+
+  // Section 3 — Food Preferences
+  top5Meals: text('top_5_meals').notNull(),
+  hatedFoods: text('hated_foods'),
+  restrictions: text('restrictions').array().notNull().default(sql`'{}'::text[]`),
+  cookingStyle: cookingStyleEnum('cooking_style').notNull(),
+  adventurousness: integer('adventurousness').notNull(),
+
+  // Section 4 — Snack Habits
+  currentSnacks: text('current_snacks').notNull(),
+  snackMotivation: snackMotivationEnum('snack_motivation').notNull(),
+  snackPreference: snackPreferenceEnum('snack_preference').notNull(),
+  nightSnacking: nightSnackEnum('night_snacking').notNull(),
+
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+}, (table) => [
+  index('idx_diet_intakes_user').on(table.userId),
+])
+
+// ─── Diet v2 · Plans ─────────────────────────────────────────────────────────
+
+export const dietPlansV2 = pgTable('diet_plans_v2', {
+  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  intakeId: text('intake_id').notNull().references(() => dietIntakes.id),
+
+  goal: dietGoalEnum('goal').notNull(),
+  bmrKcal: integer('bmr_kcal').notNull(),
+  tdeeKcal: integer('tdee_kcal').notNull(),
+  targetKcal: integer('target_kcal').notNull(),
+  targetProteinG: integer('target_protein_g').notNull(),
+  targetCarbsG: integer('target_carbs_g').notNull(),
+  targetFatG: integer('target_fat_g').notNull(),
+
+  aiExplanation: text('ai_explanation'),
+  aiPersonalRules: jsonb('ai_personal_rules'),
+  aiTimeline: text('ai_timeline'),
+  aiSupplements: jsonb('ai_supplements'),
+  aiSnackSwaps: jsonb('ai_snack_swaps'),
+
+  status: planStatusEnum('status').notNull().default('ACTIVE'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  replacedAt: timestamp('replaced_at'),
+  deletedAt: timestamp('deleted_at'),
+}, (table) => [
+  index('idx_diet_plans_v2_user_active').on(table.userId),
+])
+
+// ─── Diet v2 · Plan Days ─────────────────────────────────────────────────────
+
+export const dietPlanDays = pgTable('diet_plan_days', {
+  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  planId: text('plan_id').notNull().references(() => dietPlansV2.id, { onDelete: 'cascade' }),
+  dayNumber: integer('day_number').notNull(),
+  dayLabel: text('day_label').notNull(),
+  theme: text('theme').notNull(),
+  targetKcal: integer('target_kcal').notNull(),
+}, (table) => [
+  uniqueIndex('ux_diet_plan_days').on(table.planId, table.dayNumber),
+])
+
+// ─── Diet v2 · Meals ─────────────────────────────────────────────────────────
+
+export const dietMeals = pgTable('diet_meals', {
+  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  planDayId: text('plan_day_id').notNull().references(() => dietPlanDays.id, { onDelete: 'cascade' }),
+  mealType: mealTypeEnum('meal_type').notNull(),
+  suggestedTime: text('suggested_time').notNull(),
+  orderIndex: integer('order_index').notNull(),
+
+  name: text('name').notNull(),
+  kcal: integer('kcal').notNull(),
+  proteinG: integer('protein_g').notNull(),
+  carbsG: integer('carbs_g').notNull(),
+  fatG: integer('fat_g').notNull(),
+
+  prepTimeMin: integer('prep_time_min').notNull(),
+  difficulty: text('difficulty'),
+  isBatchCookFriendly: boolean('is_batch_cook_friendly').notNull().default(false),
+  isLowCalTreat: boolean('is_low_cal_treat').notNull().default(false),
+
+  ingredients: jsonb('ingredients').notNull(),
+  recipeSteps: jsonb('recipe_steps').notNull(),
+
+  youtubeUrl: text('youtube_url'),
+  youtubeChannelName: text('youtube_channel_name'),
+  youtubeDurationSec: integer('youtube_duration_sec'),
+}, (table) => [
+  index('idx_diet_meals_plan_day').on(table.planDayId),
+])
+
+// ─── Diet v2 · Grocery Items ─────────────────────────────────────────────────
+
+export const dietGroceryItems = pgTable('diet_grocery_items', {
+  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  planId: text('plan_id').notNull().references(() => dietPlansV2.id, { onDelete: 'cascade' }),
+  section: text('section').notNull(),
+  name: text('name').notNull(),
+  quantity: text('quantity').notNull(),
+  orderIndex: integer('order_index').notNull(),
+  isChecked: boolean('is_checked').notNull().default(false),
+  checkedAt: timestamp('checked_at'),
+}, (table) => [
+  index('idx_diet_grocery_plan_section').on(table.planId, table.section),
+])
+
+// ─── Diet v2 · Regen Credits ─────────────────────────────────────────────────
+
+export const dietRegenCredits = pgTable('diet_regen_credits', {
+  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  usedAt: timestamp('used_at').notNull().defaultNow(),
+  isoWeek: text('iso_week').notNull(),
+}, (table) => [
+  index('idx_diet_regen_user_week').on(table.userId, table.isoWeek),
+])
 
 // ─── Weight Entries ──────────────────────────────────────────────────────────
 
