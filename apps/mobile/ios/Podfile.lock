@@ -2268,7 +2268,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - RNSentry (8.8.0):
+  - RNSentry (7.11.0):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2290,7 +2290,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
-    - Sentry (= 9.10.0)
+    - Sentry/HybridSDK (= 8.58.0)
     - Yoga
   - RNSVG (15.15.3):
     - hermes-engine
@@ -2419,9 +2419,7 @@ PODS:
   - SDWebImageWebPCoder (0.14.6):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.17)
-  - Sentry (9.10.0):
-    - Sentry/Core (= 9.10.0)
-  - Sentry/Core (9.10.0)
+  - Sentry/HybridSDK (8.58.0)
   - UMAppLoader (55.0.5)
   - Yoga (0.0.0)
 
@@ -2540,7 +2538,7 @@ DEPENDENCIES:
   - RNGestureHandler (from `../../../node_modules/react-native-gesture-handler`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../../../node_modules/react-native-screens`)
-  - "RNSentry (from `../../../node_modules/@sentry/react-native`)"
+  - "RNSentry (from `../node_modules/@sentry/react-native`)"
   - RNSVG (from `../../../node_modules/react-native-svg`)
   - RNWorklets (from `../../../node_modules/react-native-worklets`)
   - UMAppLoader (from `../../../node_modules/unimodules-app-loader/ios`)
@@ -2787,7 +2785,7 @@ EXTERNAL SOURCES:
   RNScreens:
     :path: "../../../node_modules/react-native-screens"
   RNSentry:
-    :path: "../../../node_modules/@sentry/react-native"
+    :path: "../node_modules/@sentry/react-native"
   RNSVG:
     :path: "../../../node_modules/react-native-svg"
   RNWorklets:
@@ -2915,14 +2913,14 @@ SPEC CHECKSUMS:
   RNGestureHandler: 0ea8153746a92b3744d4eaadade647debedf646e
   RNReanimated: 1d43c7c7dcbb9935a52c6ab19a5e427018065fc9
   RNScreens: 02e62f995ceb94ea465864b3bf4d4767b87f0362
-  RNSentry: e4b28df64e5212f36dfa160064e2234656ca4035
+  RNSentry: fbdf0705a341b40f9c78cce0cb3adf7fdcc895cf
   RNSVG: 0bd149b873018bc6e0e3321e2f6435bdba294460
   RNWorklets: 7a182b959563d4307562463f0618464bba735947
   SDWebImage: e9fc87c1aab89a8ab1bbd74eba378c6f53be8abf
   SDWebImageAVIFCoder: afe194a084e851f70228e4be35ef651df0fc5c57
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
   SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
-  Sentry: 4e85b40e4b0235853f40f959d315a6b28e3148d8
+  Sentry: d587a8fe91ca13503ecd69a1905f3e8a0fcf61be
   UMAppLoader: 045699ef1cc6afda399a5c78bde728f23bcce213
   Yoga: e41d64347f52d634dd8c2f6bac33f95081959fd3
 
