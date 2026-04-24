@@ -3,7 +3,7 @@ import {
   View, Text, TextInput, ScrollView, TouchableOpacity, Modal,
   Alert,
 } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/theme/ThemeContext'
@@ -35,6 +35,7 @@ function ConfigModal({
 }) {
   const { tokens, fonts } = useTheme()
   const { t } = useTranslation()
+  const insets = useSafeAreaInsets()
   const [numSets, setNumSets] = useState(3)
   const [sets, setSets] = useState<SetConfig[]>([
     { reps: '10', weight: '0', rest: '90' },
@@ -59,9 +60,8 @@ function ConfigModal({
 
   return (
     <Modal visible animationType="slide" statusBarTranslucent onRequestClose={onClose}>
-      <View style={{ flex: 1, backgroundColor: tokens.bg }}>
-      <SafeAreaView edges={['top', 'bottom']} style={{ flex: 1 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'flex-start', paddingHorizontal: 16, paddingTop: 8, paddingBottom: 16, gap: 12, borderBottomWidth: 1, borderBottomColor: tokens.border }}>
+      <View style={{ flex: 1, backgroundColor: tokens.bg, paddingTop: insets.top, paddingBottom: insets.bottom }}>
+        <View style={{ flexDirection: 'row', alignItems: 'flex-start', paddingHorizontal: 16, paddingTop: 12, paddingBottom: 16, gap: 12, borderBottomWidth: 1, borderBottomColor: tokens.border }}>
           <TouchableOpacity onPress={onClose} accessibilityLabel={t('quick.close')} accessibilityRole="button" style={{ paddingTop: 2 }}>
             <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.accent, textTransform: 'uppercase', letterSpacing: 2 }}>
               {t('quick.close').toUpperCase()}
@@ -160,7 +160,6 @@ function ConfigModal({
             </Text>
           </TouchableOpacity>
         </View>
-      </SafeAreaView>
       </View>
     </Modal>
   )
