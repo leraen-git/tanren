@@ -263,21 +263,43 @@ export default function HomeScreen() {
                 ))}
               </>
             ) : (
-              <TouchableOpacity
-                onPress={() => router.push('/(tabs)/diet')}
-                style={{
-                  borderWidth: 1, borderColor: tokens.borderStrong, borderStyle: 'dashed',
-                  padding: 20, alignItems: 'center', gap: 8,
-                }}
-                accessibilityRole="button"
-              >
-                <Text style={{ fontFamily: fonts.sansB, fontSize: 14, color: tokens.text, textTransform: 'uppercase', letterSpacing: 0.6 }}>
-                  {t('home.noMealPlanToday')}
-                </Text>
-                <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute, textAlign: 'center' }}>
-                  {t('home.noActivePlanDesc')}
-                </Text>
-              </TouchableOpacity>
+              <View style={{ gap: 20 }}>
+                {/* Hero text */}
+                <View style={{ gap: 8, alignItems: 'center', paddingVertical: 8 }}>
+                  <Text style={{
+                    fontFamily: fonts.sansX, fontSize: 24, color: tokens.text,
+                    textTransform: 'uppercase', textAlign: 'center', lineHeight: 30,
+                  }}>
+                    {t('home.noNutritionPlan')}
+                  </Text>
+                  <Text style={{
+                    fontFamily: fonts.sans, fontSize: 14, color: tokens.textMute,
+                    textAlign: 'center', lineHeight: 20,
+                  }}>
+                    {t('home.noNutritionPlanDesc')}
+                  </Text>
+                </View>
+
+                {/* Build plan CTA — navigates to Diet tab intake */}
+                <TouchableOpacity
+                  onPress={isGuest ? undefined : () => router.push('/diet/intake-v2/stats')}
+                  disabled={isGuest}
+                  style={{
+                    backgroundColor: tokens.accent, height: 52,
+                    alignItems: 'center', justifyContent: 'center',
+                    opacity: isGuest ? 0.4 : 1,
+                  }}
+                  accessibilityLabel={t('home.buildNutritionPlan')}
+                  accessibilityRole="button"
+                >
+                  <Text style={{
+                    fontFamily: fonts.sansB, fontSize: 14, letterSpacing: 1,
+                    textTransform: 'uppercase', color: '#FFFFFF',
+                  }}>
+                    {isGuest ? t('guest.aiLocked') : t('home.buildNutritionPlan')}
+                  </Text>
+                </TouchableOpacity>
+              </View>
             )}
           </View>
         )}
@@ -444,70 +466,73 @@ export default function HomeScreen() {
 
             {/* No plan state */}
             {!activePlan && (
-              <View style={{ gap: 12 }}>
+              <View style={{ gap: 20 }}>
+                {/* Hero text */}
+                <View style={{ gap: 8, alignItems: 'center', paddingVertical: 8 }}>
+                  <Text style={{
+                    fontFamily: fonts.sansX, fontSize: 24, color: tokens.text,
+                    textTransform: 'uppercase', textAlign: 'center', lineHeight: 30,
+                  }}>
+                    {t('home.noActivePlan')}
+                  </Text>
+                  <Text style={{
+                    fontFamily: fonts.sans, fontSize: 14, color: tokens.textMute,
+                    textAlign: 'center', lineHeight: 20,
+                  }}>
+                    {t('home.noActivePlanDesc')}
+                  </Text>
+                </View>
+
+                {/* Create plan CTA */}
                 <TouchableOpacity
                   onPress={() => router.push('/plans/create')}
                   style={{
-                    borderWidth: 2, borderColor: tokens.accent, borderStyle: 'dashed',
-                    padding: 20, alignItems: 'center', gap: 12,
+                    backgroundColor: tokens.accent, height: 52,
+                    alignItems: 'center', justifyContent: 'center',
                   }}
-                  accessibilityLabel="Create a workout plan" accessibilityRole="button"
+                  accessibilityLabel={t('home.createPlan')}
+                  accessibilityRole="button"
                 >
-                  <Text style={{ fontFamily: fonts.sansX, fontSize: 20, color: tokens.text, textTransform: 'uppercase' }}>
-                    {t('home.noActivePlan')}
+                  <Text style={{
+                    fontFamily: fonts.sansB, fontSize: 14, letterSpacing: 1,
+                    textTransform: 'uppercase', color: '#FFFFFF',
+                  }}>
+                    {t('home.createPlan')}
                   </Text>
-                  <Text style={{ fontFamily: fonts.sans, fontSize: 14, color: tokens.textMute, textAlign: 'center' }}>
-                    {t('home.noActivePlanDesc')}
-                  </Text>
-                  <View style={{ backgroundColor: tokens.accent, height: 48, paddingHorizontal: 24, alignItems: 'center', justifyContent: 'center', borderRadius: 4 }}>
-                    <Text style={{ fontFamily: fonts.sansB, fontSize: 14, letterSpacing: 0.6, textTransform: 'uppercase', color: '#FFFFFF' }}>
-                      {t('home.createPlan')}
-                    </Text>
-                  </View>
                 </TouchableOpacity>
 
-                {/* AI generate */}
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                  <View style={{ flex: 1, height: 1, backgroundColor: tokens.border }} />
-                  <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute }}>{t('common.or')}</Text>
-                  <View style={{ flex: 1, height: 1, backgroundColor: tokens.border }} />
-                </View>
-
+                {/* AI generate CTA */}
                 <TouchableOpacity
                   onPress={isGuest ? undefined : () => router.push('/plans/generate')}
                   disabled={isGuest}
                   style={{
-                    borderWidth: 1, borderColor: tokens.border, padding: 16,
-                    flexDirection: 'row', alignItems: 'center', gap: 12,
+                    borderWidth: 1, borderColor: tokens.border, height: 52,
+                    alignItems: 'center', justifyContent: 'center',
                     opacity: isGuest ? 0.4 : 1,
                   }}
                   accessibilityLabel={isGuest ? t('guest.aiLocked') : t('home.generatePlan')}
                   accessibilityRole="button"
                 >
-                  <View style={{
-                    width: 44, height: 44, backgroundColor: isGuest ? tokens.surface2 : `${tokens.accent}18`,
-                    alignItems: 'center', justifyContent: 'center',
+                  <Text style={{
+                    fontFamily: fonts.sansB, fontSize: 14, letterSpacing: 1,
+                    textTransform: 'uppercase', color: isGuest ? tokens.textMute : tokens.text,
                   }}>
-                    <Text style={{ fontFamily: fonts.sansX, fontSize: 11, letterSpacing: 0.5, color: isGuest ? tokens.textMute : tokens.accent }}>AI</Text>
-                  </View>
-                  <View style={{ flex: 1 }}>
-                    <Text style={{ fontFamily: fonts.sansB, fontSize: 14, color: isGuest ? tokens.textMute : tokens.text, textTransform: 'uppercase' }}>
-                      {isGuest ? t('guest.aiLocked') : t('home.generatePlan')}
-                    </Text>
-                    <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute }}>
-                      {isGuest ? t('guest.aiLockedDesc') : t('home.generatePlanDesc')}
-                    </Text>
-                  </View>
-                  <Text style={{ fontFamily: fonts.sansB, fontSize: 16, color: isGuest ? tokens.textMute : tokens.accent }}>›</Text>
+                    {isGuest ? t('guest.aiLocked') : t('home.generatePlan')}
+                  </Text>
                 </TouchableOpacity>
 
+                {/* Quick start link */}
                 <TouchableOpacity
                   onPress={() => router.push('/exercise/quick')}
-                  style={{ alignItems: 'center', paddingVertical: 8 }}
-                  accessibilityLabel="Just start an exercise" accessibilityRole="button"
+                  style={{ alignItems: 'center', paddingVertical: 4 }}
+                  accessibilityLabel={t('home.justStart')}
+                  accessibilityRole="button"
                 >
-                  <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute }}>
-                    {t('home.justStart')}<Text style={{ fontFamily: fonts.sansM, color: tokens.accent }}>{t('home.justStartLink')}</Text>
+                  <Text style={{
+                    fontFamily: fonts.sans, fontSize: 13, color: tokens.accent,
+                    textDecorationLine: 'underline',
+                  }}>
+                    {t('home.justStart')}
                   </Text>
                 </TouchableOpacity>
               </View>
