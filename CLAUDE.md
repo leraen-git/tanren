@@ -1160,4 +1160,45 @@ If any of these are not clear, ask the user before writing code :
 
 ---
 
+## 14 · Data layer
+
+### Current: tRPC + React Query + MMKV persist
+
+All data flows through tRPC procedures. React Query caches responses.
+MMKV persister (`apps/mobile/src/lib/queryPersister.ts`) persists the cache
+across app kills for instant cold-launch UI.
+
+### Screens consume via `src/data/*` hooks
+
+Screens MUST use the domain hooks (`useProfile`, `useActivePlan`, etc.),
+not `trpc.X.useQuery` directly. This is an abstraction barrier that allows
+swapping the data layer without touching screens.
+
+See: `apps/mobile/src/data/useProfile.ts` (and siblings)
+
+### Mutations MUST use invalidation helpers
+
+Every mutation's `onSuccess` calls a `useInvalidateX` helper from
+`src/lib/invalidation.ts`. Adding a new consumer of a shared query =
+update the helper once, all mutations benefit.
+
+### Scale path
+
+Up to ~100k users: current stack works without changes.
+
+Beyond that, or if offline-first becomes critical:
+1. Introduce WatermelonDB for local DB
+2. Implement a sync engine (bidirectional, last-write-wins)
+3. Modify `src/data/*` hooks to observe WatermelonDB collections
+4. Screens unchanged
+
+### Branch & deploy policy
+
+- Single branch: `main`. Railway auto-deploys on push.
+- No feature branches unless risky migration.
+- After every push: `railway logs --tail` for 60s.
+- See `DEPLOY.md` for full runbook.
+
+---
+
 *Tanren . Built rep by rep.*
