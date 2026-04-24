@@ -13,6 +13,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist'
 import { useTheme } from '@/theme/ThemeContext'
 import { trpc } from '@/lib/trpc'
+import { useInvalidateWorkouts } from '@/lib/invalidation'
 import { useTranslation } from 'react-i18next'
 import { translateMuscleGroup } from '@/hooks/useExercises'
 import { useWorkoutDraftStore, type ExerciseEntry } from '@/stores/workoutDraftStore'
@@ -31,7 +32,7 @@ export default function WorkoutBuildScreen() {
 
   const draft = useWorkoutDraftStore()
   const setPending = usePendingWorkoutStore((s) => s.setPending)
-  const utils = trpc.useUtils()
+  const invalidateWorkouts = useInvalidateWorkouts()
 
   const [pickerVisible, setPickerVisible] = useState(false)
   const [showDraftToast, setShowDraftToast] = useState(false)
@@ -76,8 +77,7 @@ export default function WorkoutBuildScreen() {
 
   const createMutation = trpc.workouts.create.useMutation({
     onSuccess: (created) => {
-      utils.workouts.list.invalidate()
-      utils.plans.active.invalidate()
+      invalidateWorkouts()
       if (forPlanDay && created) {
         setPending(parseInt(forPlanDay, 10), created.id)
       }
@@ -89,8 +89,7 @@ export default function WorkoutBuildScreen() {
 
   const updateMutation = trpc.workouts.update.useMutation({
     onSuccess: () => {
-      utils.workouts.list.invalidate()
-      utils.plans.active.invalidate()
+      invalidateWorkouts()
       draft.reset()
       router.back()
     },
@@ -99,7 +98,7 @@ export default function WorkoutBuildScreen() {
 
   const deleteMutation = trpc.workouts.delete.useMutation({
     onSuccess: () => {
-      utils.workouts.list.invalidate()
+      invalidateWorkouts()
       draft.reset()
       router.back()
     },

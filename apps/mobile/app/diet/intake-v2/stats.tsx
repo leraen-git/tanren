@@ -11,7 +11,7 @@ import { Button } from '@/components/Button'
 import { useIntakeDraftV2Store } from '@/stores/intakeDraftV2Store'
 import type { BiologicalSex, GoalMode, Pace } from '@/stores/intakeDraftV2Store'
 import { useTranslation } from 'react-i18next'
-import { trpc } from '@/lib/trpc'
+import { useProfile } from '@/data/useProfile'
 
 function ProgressPills({ step }: { step: number }) {
   const { tokens } = useTheme()
@@ -122,7 +122,7 @@ export default function IntakeStatsScreen() {
   const { tokens, fonts } = useTheme()
   const { t } = useTranslation()
   const { draft, update } = useIntakeDraftV2Store()
-  const { data: user } = trpc.auth.me.useQuery()
+  const { data: user } = useProfile()
 
   React.useEffect(() => {
     if (!user) return

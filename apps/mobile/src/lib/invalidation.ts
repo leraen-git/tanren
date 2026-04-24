@@ -13,7 +13,6 @@ export function useInvalidateWeight() {
   return () => {
     utils.auth.me.invalidate()
     utils.weight.list.invalidate()
-    utils.weight.stats.invalidate()
   }
 }
 

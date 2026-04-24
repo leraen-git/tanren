@@ -7,6 +7,7 @@ import { Button } from '@/components/Button'
 import { useActiveSessionStore } from '@/stores/activeSessionStore'
 import { calcSessionVolume } from '@tanren/shared'
 import { trpc } from '@/lib/trpc'
+import { useInvalidateSessions } from '@/lib/invalidation'
 import { useTranslation } from 'react-i18next'
 import { useExercises, translateMuscleGroup, translateDifficulty } from '@/hooks/useExercises'
 
@@ -72,7 +73,7 @@ export default function RecapScreen() {
 
   const saveSession = trpc.sessions.save.useMutation()
   const saveQuick = trpc.sessions.saveQuick.useMutation()
-  const utils = trpc.useUtils()
+  const invalidateSessions = useInvalidateSessions()
 
   useEffect(() => {
     if (savedRef.current || !currentWorkout || !startedAt) return
@@ -80,8 +81,7 @@ export default function RecapScreen() {
 
     const onError = (err: { message: string }) => Alert.alert('Save failed', err.message)
     const invalidate = () => {
-      utils.sessions.history.invalidate()
-      utils.plans.active.invalidate()
+      invalidateSessions()
     }
 
     if (isQuickSession && exercises[0]) {
@@ -147,7 +147,7 @@ export default function RecapScreen() {
         }, 50)
       })
     }
-    await utils.plans.active.invalidate()
+    invalidateSessions()
     finishSession()
     router.replace('/')
   }

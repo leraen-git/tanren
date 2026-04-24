@@ -25,6 +25,9 @@ export const fr = {
     retry: 'Réessayer',
     errorOccurred: 'UNE ERREUR EST SURVENUE',
     exercises: 'exercices',
+    loadError: 'Impossible de charger {{label}}',
+    checkConnection: 'Vérifie ta connexion',
+    tryAgainLater: 'Réessaie dans un instant',
   },
   tabs: {
     home: 'Home',

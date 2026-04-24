@@ -5,6 +5,7 @@ import { useTheme } from '@/theme/ThemeContext'
 import { Screen } from '@/components/Screen'
 import { ScreenHeader } from '@/components/ScreenHeader'
 import { trpc } from '@/lib/trpc'
+import { useInvalidateDiet } from '@/lib/invalidation'
 import { useTranslation } from 'react-i18next'
 
 interface GroceryItem {
@@ -49,6 +50,7 @@ export default function GroceriesScreen() {
   const { t } = useTranslation()
   const { data: plan } = trpc.diet.getMyPlanV2.useQuery()
   const utils = trpc.useUtils()
+  const invalidateDiet = useInvalidateDiet()
 
   const toggle = trpc.diet.toggleGroceryItem.useMutation({
     onMutate: async ({ itemId }) => {
@@ -69,7 +71,7 @@ export default function GroceriesScreen() {
       if (context?.prev) utils.diet.getMyPlanV2.setData(undefined, context.prev)
     },
     onSettled: () => {
-      utils.diet.getMyPlanV2.invalidate()
+      invalidateDiet()
     },
   })
 

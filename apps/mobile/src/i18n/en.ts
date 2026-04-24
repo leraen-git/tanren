@@ -25,6 +25,9 @@ export const en = {
     retry: 'Retry',
     errorOccurred: 'AN ERROR OCCURRED',
     exercises: 'exercises',
+    loadError: 'Failed to load {{label}}',
+    checkConnection: 'Check your connection',
+    tryAgainLater: 'Try again in a moment',
   },
   tabs: {
     home: 'Home',

@@ -5,6 +5,7 @@ import { router } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
 import { Screen } from '@/components/Screen'
 import { trpc } from '@/lib/trpc'
+import { useInvalidateDiet } from '@/lib/invalidation'
 import { useIntakeDraftV2Store } from '@/stores/intakeDraftV2Store'
 import { useTranslation } from 'react-i18next'
 
@@ -26,7 +27,7 @@ export default function GeneratingV2Screen() {
   const { t } = useTranslation()
   const { draft, reset } = useIntakeDraftV2Store()
   const triggered = useRef(false)
-  const utils = trpc.useUtils()
+  const invalidateDiet = useInvalidateDiet()
   const [progress, setProgress] = useState(0)
 
   const pulseScale = useSharedValue(1)
@@ -59,7 +60,7 @@ export default function GeneratingV2Screen() {
     onSuccess: async () => {
       setProgress(100)
       reset()
-      await utils.diet.getMyPlanV2.invalidate()
+      invalidateDiet()
       router.replace('/diet')
     },
     onError: (err) => {

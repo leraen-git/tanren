@@ -4,12 +4,13 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
 import { trpc } from '@/lib/trpc'
+import { useProfile } from '@/data/useProfile'
 import { useTranslation } from 'react-i18next'
 
 export default function OnboardingStep1() {
   const { tokens, fonts } = useTheme()
   const { t } = useTranslation()
-  const { data: me } = trpc.auth.me.useQuery()
+  const { data: me } = useProfile()
   const providerName = me?.name && me.name !== 'Athlete' ? me.name : ''
   const isGoogle = me?.authProvider === 'google'
   const [name, setName] = useState(providerName)

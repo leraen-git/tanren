@@ -5,6 +5,7 @@ import { router } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
 import { Button } from '@/components/Button'
 import { trpc } from '@/lib/trpc'
+import { useProfile } from '@/data/useProfile'
 import { useAIPlanStore } from '@/stores/aiPlanStore'
 import { useTranslation } from 'react-i18next'
 
@@ -17,7 +18,7 @@ const SUGGESTIONS = [
 export default function GeneratePlanScreen() {
   const { tokens, fonts } = useTheme()
   const { t } = useTranslation()
-  const { data: user } = trpc.auth.me.useQuery()
+  const { data: user } = useProfile()
   const { conversationHistory, lastPrompt, setPendingPrompt, reset } = useAIPlanStore()
   const [prompt, setPrompt] = useState(lastPrompt)
 

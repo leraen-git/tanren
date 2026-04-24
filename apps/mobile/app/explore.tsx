@@ -5,6 +5,7 @@ import { router, type Href } from 'expo-router'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/theme/ThemeContext'
 import { trpc } from '@/lib/trpc'
+import { useProfile } from '@/data/useProfile'
 import { useNotificationSettingsStore } from '@/stores/notificationSettingsStore'
 
 interface FeatureItem {
@@ -141,7 +142,7 @@ export default function ExploreScreen() {
   const { tokens, fonts } = useTheme()
   const { t } = useTranslation()
 
-  const { data: user }       = trpc.auth.me.useQuery()
+  const { data: user }       = useProfile()
   const isGuest = user?.authProvider === 'guest'
   const { data: sessions }   = trpc.sessions.history.useQuery({ limit: 5 })
   const { data: records }    = trpc.progress.records.useQuery()

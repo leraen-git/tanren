@@ -4,12 +4,12 @@ import { router } from 'expo-router'
 import { useTranslation } from 'react-i18next'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useTheme } from '@/theme/ThemeContext'
-import { trpc } from '@/lib/trpc'
+import { useProfile } from '@/data/useProfile'
 
 export function GuestBanner() {
   const { tokens, fonts } = useTheme()
   const { t } = useTranslation()
-  const { data: user } = trpc.auth.me.useQuery()
+  const { data: user } = useProfile()
   const insets = useSafeAreaInsets()
 
   if (user?.authProvider !== 'guest') return null

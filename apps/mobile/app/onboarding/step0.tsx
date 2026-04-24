@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, ScrollView } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
-import { trpc } from '@/lib/trpc'
+import { useProfile } from '@/data/useProfile'
 import { useTranslation } from 'react-i18next'
 
 function DataRow({
@@ -35,7 +35,7 @@ function DataRow({
 export default function OnboardingStep0() {
   const { tokens, fonts } = useTheme()
   const { t } = useTranslation()
-  const { data: user } = trpc.auth.me.useQuery()
+  const { data: user } = useProfile()
 
   const isGoogle = user?.authProvider === 'google'
   const isPrivateRelay = user?.email?.endsWith('@privaterelay.appleid.com') ?? false

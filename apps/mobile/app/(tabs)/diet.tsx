@@ -5,6 +5,7 @@ import { useGuestBannerVisible } from '@/contexts/GuestBannerContext'
 import { router } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
 import { trpc } from '@/lib/trpc'
+import { useProfile } from '@/data/useProfile'
 import { useInvalidateDiet } from '@/lib/invalidation'
 import { SkeletonCard } from '@/components/SkeletonCard'
 import { KanjiWatermark } from '@/components/KanjiWatermark'
@@ -255,7 +256,7 @@ interface V2PlanData {
 function V2ActivePlan({ plan }: { plan: V2PlanData }) {
   const { tokens, fonts } = useTheme()
   const { t } = useTranslation()
-  const { data: user } = trpc.auth.me.useQuery()
+  const { data: user } = useProfile()
   const isGuest = user?.authProvider === 'guest'
 
   const todayJs = new Date().getDay()
@@ -435,7 +436,7 @@ function V2ActivePlan({ plan }: { plan: V2PlanData }) {
 export default function DietScreen() {
   const { tokens } = useTheme()
   const bannerVisible = useGuestBannerVisible()
-  const { data: user } = trpc.auth.me.useQuery()
+  const { data: user } = useProfile()
   const isGuest = user?.authProvider === 'guest'
 
   const { data: v2Plan, isLoading } = trpc.diet.getMyPlanV2.useQuery()

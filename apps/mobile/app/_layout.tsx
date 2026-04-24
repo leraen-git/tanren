@@ -24,6 +24,7 @@ import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { ToastHost } from '@/components/ToastHost'
 import { useActiveSessionStore } from '@/stores/activeSessionStore'
 import { useSyncWorker } from '@/hooks/useSyncWorker'
+import { useProfile } from '@/data/useProfile'
 import '@/i18n'
 
 const SENTRY_DSN = process.env['EXPO_PUBLIC_SENTRY_DSN']
@@ -50,7 +51,19 @@ function TRPCProvider({ children }: { children: React.ReactNode }) {
   const { token } = useAuth()
 
   const [queryClient] = useState(() => new QueryClient({
-    defaultOptions: { queries: { retry: 1, staleTime: 30_000, gcTime: 24 * 60 * 60 * 1000 } },
+    defaultOptions: {
+      queries: {
+        staleTime: 30_000,
+        gcTime: 24 * 60 * 60 * 1000,
+        retry: (failureCount, error: any) => {
+          const status = error?.data?.httpStatus
+          if (status && status >= 400 && status < 500) return false
+          return failureCount < 2
+        },
+        retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10000),
+      },
+      mutations: { retry: 0 },
+    },
   }))
 
   const tokenRef = useRef<string | null>(token)
@@ -108,7 +121,7 @@ function TRPCProvider({ children }: { children: React.ReactNode }) {
 }
 
 function OnboardingGate() {
-  const me = trpc.auth.me.useQuery()
+  const me = useProfile()
   const redirected = useRef(false)
 
   useEffect(() => {
@@ -219,7 +232,7 @@ function ThemedStatusBar() {
 
 function AuthGate({ children }: { children: React.ReactNode }) {
   const { status } = useAuth()
-  const { data: user } = trpc.auth.me.useQuery()
+  const { data: user } = useProfile()
   const isGuest = user?.authProvider === 'guest'
 
   useEffect(() => {

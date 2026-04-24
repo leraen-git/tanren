@@ -12,7 +12,11 @@ import { router } from 'expo-router'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/theme/ThemeContext'
 import { trpc } from '@/lib/trpc'
+import { useProfile } from '@/data/useProfile'
+import { useSessions } from '@/data/useSessions'
 import { useAuth } from '@/contexts/AuthContext'
+import { SectionStatus } from '@/components/SectionStatus'
+import { SkeletonCard } from '@/components/SkeletonCard'
 import { formatVolume } from '@/utils/format'
 import { SyncStatusBanner } from '@/components/profile/SyncStatusBanner'
 import { useProfileStore } from '@/stores/profileStore'
@@ -129,6 +133,56 @@ function Row({
   )
 }
 
+function ProfileStatsStrip({ sessionsQuery, recordsQuery }: {
+  sessionsQuery: ReturnType<typeof useSessions>
+  recordsQuery: ReturnType<typeof trpc.progress.records.useQuery>
+}) {
+  const { tokens, fonts } = useTheme()
+  const { t } = useTranslation()
+  const sessions = sessionsQuery.data
+  const records = recordsQuery.data
+  const isLoading = sessionsQuery.isPending || recordsQuery.isPending
+  const isError = sessionsQuery.isError || recordsQuery.isError
+
+  if (isLoading) return <SkeletonCard height={60} />
+
+  if (isError && !sessions && !records) {
+    return (
+      <SectionStatus
+        query={sessionsQuery}
+        errorLabel={t('profile.statSessions')}
+        loadingHeight={60}
+      >
+        {() => null}
+      </SectionStatus>
+    )
+  }
+
+  const totalVolume = sessions?.reduce((sum, s) => sum + s.totalVolume, 0) ?? 0
+
+  return (
+    <View style={{ flexDirection: 'row', borderWidth: 1, borderColor: tokens.border, marginBottom: 8 }}>
+      {[
+        { label: t('profile.statSessions'), value: String(sessions?.length ?? 0), highlight: false },
+        { label: t('profile.statVolume'), value: formatVolume(totalVolume), highlight: true },
+        { label: t('profile.statPRs'), value: String(new Set((records as any[])?.map((r: any) => r.exerciseId) ?? []).size), highlight: false },
+      ].map(({ label, value, highlight }, i) => (
+        <View key={label} style={{
+          flex: 1, paddingVertical: 14, paddingHorizontal: 8, alignItems: 'center',
+          borderLeftWidth: i > 0 ? 1 : 0, borderLeftColor: tokens.border,
+        }}>
+          <Text style={{ fontFamily: fonts.sansX, fontSize: 20, color: highlight ? tokens.accent : tokens.text, lineHeight: 22, marginBottom: 4 }}>
+            {value}
+          </Text>
+          <Text style={{ fontFamily: fonts.sansM, fontSize: 9, letterSpacing: 2, color: tokens.textMute, textTransform: 'uppercase' }}>
+            {label}
+          </Text>
+        </View>
+      ))}
+    </View>
+  )
+}
+
 type ThemeValue = 'light' | 'dark' | 'system'
 
 function ThemeRow({ label }: { label: string }) {
@@ -189,9 +243,10 @@ export default function ProfileScreen() {
   const { signOut } = useAuth()
   const { activeModal, openModal, closeModal } = useProfileStore()
 
-  const { data: user, refetch, isLoading, error } = trpc.auth.me.useQuery()
-  const { data: sessions } = trpc.sessions.history.useQuery({ limit: 100 })
-  const { data: records } = trpc.progress.records.useQuery()
+  const profileQuery = useProfile()
+  const { data: user, refetch } = profileQuery
+  const sessionsQuery = useSessions({ limit: 100 })
+  const recordsQuery = trpc.progress.records.useQuery()
   const utils = trpc.useUtils()
 
   const updateMe = trpc.users.updateMe.useMutation({ onSuccess: () => refetch() })
@@ -241,8 +296,6 @@ export default function ProfileScreen() {
     router.replace('/sign-in')
   }
 
-  const totalVolume = sessions?.reduce((sum, s) => sum + s.totalVolume, 0) ?? 0
-
   const goalLabels: Record<string, string> = {
     WEIGHT_LOSS: t('profile.goalWeightLoss'),
     MUSCLE_GAIN: t('profile.goalMuscleGain'),
@@ -257,42 +310,6 @@ export default function ProfileScreen() {
 
   const isGuest = user?.authProvider === 'guest'
   const bannerVisible = useGuestBannerVisible()
-
-  if (isLoading) return (
-    <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: tokens.bg, alignItems: 'center', justifyContent: 'center' }}>
-      <Text style={{ fontFamily: fonts.sans, fontSize: 14, color: tokens.textMute }}>
-        {t('common.loading')}
-      </Text>
-    </SafeAreaView>
-  )
-
-  if (error || !user) return (
-    <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: tokens.bg, alignItems: 'center', justifyContent: 'center', padding: 16, gap: 12 }}>
-      <Text style={{ fontFamily: fonts.sansB, fontSize: 14, color: tokens.accent, textAlign: 'center' }}>
-        {error?.message ?? t('common.error')}
-      </Text>
-      <TouchableOpacity onPress={() => refetch()} accessibilityRole="button" accessibilityLabel={t('common.retry')}>
-        <Text style={{ fontFamily: fonts.sansM, fontSize: 14, color: tokens.accent }}>
-          {t('common.retry')}
-        </Text>
-      </TouchableOpacity>
-    </SafeAreaView>
-  )
-
-  const providerLabel = (() => {
-    if (isGuest) return t('guest.connectedWith')
-    if (user.authProvider === 'google') return 'Connecte via Google'
-    if (user.authProvider === 'email') return 'Connecte via Email'
-    return 'Connecte via Apple'
-  })()
-
-  const weightDisplay = user.weightKg != null
-    ? `${user.weightKg.toFixed(1).replace('.', ',')} kg`
-    : undefined
-
-  const heightDisplay = user.heightCm != null
-    ? `${user.heightCm} cm`
-    : undefined
 
   return (
     <SafeAreaView edges={bannerVisible ? [] : ['top']} style={{ flex: 1, backgroundColor: tokens.bg }}>
@@ -310,224 +327,93 @@ export default function ProfileScreen() {
           {t('profile.title')}
         </Text>
 
-        {/* Header: avatar + info horizontal */}
-        <View style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          gap: 14,
-          paddingVertical: 16,
-        }}>
-          {/* Avatar with red corner accent */}
-          <View style={{ width: 56, height: 56, position: 'relative' }}>
-            <View style={{
-              width: 56,
-              height: 56,
-              borderWidth: 2,
-              borderColor: tokens.text,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
-              <Text style={{ fontFamily: fonts.sansX, fontSize: 22, color: tokens.text, letterSpacing: 1 }}>
-                {user.name.charAt(0).toUpperCase()}
-              </Text>
-            </View>
-            <View style={{
-              position: 'absolute',
-              top: -2,
-              left: -2,
-              width: 10,
-              height: 10,
-              backgroundColor: tokens.accent,
-            }} />
-          </View>
+        {/* Identity section — required */}
+        <SectionStatus query={profileQuery} errorLabel={t('profile.title')} loadingHeight={100}>
+          {(u) => {
+            const providerLabel = (() => {
+              if (u.authProvider === 'guest') return t('guest.connectedWith')
+              if (u.authProvider === 'google') return 'Connecte via Google'
+              if (u.authProvider === 'email') return 'Connecte via Email'
+              return 'Connecte via Apple'
+            })()
+            const weightDisplay = u.weightKg != null
+              ? `${u.weightKg.toFixed(1).replace('.', ',')} kg`
+              : undefined
+            const heightDisplay = u.heightCm != null
+              ? `${u.heightCm} cm`
+              : undefined
 
-          {/* Name + email + provider */}
-          <View style={{ flex: 1 }}>
-            <Text style={{
-              fontFamily: fonts.sansX,
-              fontSize: 20,
-              letterSpacing: 0.2,
-              color: tokens.text,
-              lineHeight: 22,
-              marginBottom: 4,
-            }}>
-              {user.name}
-            </Text>
-            <Text style={{
-              fontFamily: fonts.sans,
-              fontSize: 11,
-              letterSpacing: 0.5,
-              color: tokens.textMute,
-            }}>
-              {isGuest ? '' : user.email}
-            </Text>
-            <Text style={{
-              fontFamily: fonts.sansB,
-              fontSize: 9,
-              letterSpacing: 2,
-              textTransform: 'uppercase',
-              color: tokens.accent,
-              marginTop: 4,
-            }}>
-              {providerLabel}
-            </Text>
-          </View>
-        </View>
+            return (
+              <>
+                {/* Header: avatar + info */}
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 16 }}>
+                  <View style={{ width: 56, height: 56, position: 'relative' }}>
+                    <View style={{
+                      width: 56, height: 56, borderWidth: 2, borderColor: tokens.text,
+                      alignItems: 'center', justifyContent: 'center',
+                    }}>
+                      <Text style={{ fontFamily: fonts.sansX, fontSize: 22, color: tokens.text, letterSpacing: 1 }}>
+                        {u.name.charAt(0).toUpperCase()}
+                      </Text>
+                    </View>
+                    <View style={{ position: 'absolute', top: -2, left: -2, width: 10, height: 10, backgroundColor: tokens.accent }} />
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ fontFamily: fonts.sansX, fontSize: 20, letterSpacing: 0.2, color: tokens.text, lineHeight: 22, marginBottom: 4 }}>
+                      {u.name}
+                    </Text>
+                    <Text style={{ fontFamily: fonts.sans, fontSize: 11, letterSpacing: 0.5, color: tokens.textMute }}>
+                      {u.authProvider === 'guest' ? '' : u.email}
+                    </Text>
+                    <Text style={{ fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 2, textTransform: 'uppercase', color: tokens.accent, marginTop: 4 }}>
+                      {providerLabel}
+                    </Text>
+                  </View>
+                </View>
 
-        {/* Stats strip */}
-        <View style={{
-          flexDirection: 'row',
-          borderWidth: 1,
-          borderColor: tokens.border,
-          marginBottom: 8,
-        }}>
-          {[
-            { label: t('profile.statSessions'), value: String(sessions?.length ?? 0), highlight: false },
-            { label: t('profile.statVolume'), value: formatVolume(totalVolume), highlight: true },
-            { label: t('profile.statPRs'), value: String(new Set(records?.map((r) => r.exerciseId) ?? []).size), highlight: false },
-          ].map(({ label, value, highlight }, i) => (
-            <View key={label} style={{
-              flex: 1,
-              paddingVertical: 14,
-              paddingHorizontal: 8,
-              alignItems: 'center',
-              borderLeftWidth: i > 0 ? 1 : 0,
-              borderLeftColor: tokens.border,
-            }}>
-              <Text style={{
-                fontFamily: fonts.sansX,
-                fontSize: 20,
-                color: highlight ? tokens.accent : tokens.text,
-                lineHeight: 22,
-                marginBottom: 4,
-              }}>
-                {value}
-              </Text>
-              <Text style={{
-                fontFamily: fonts.sansM,
-                fontSize: 9,
-                letterSpacing: 2,
-                color: tokens.textMute,
-                textTransform: 'uppercase',
-              }}>
-                {label}
-              </Text>
-            </View>
-          ))}
-        </View>
+                {/* Personnel */}
+                <SectionLabel label={t('profile.sectionPersonal')} />
+                <Row label={t('profile.fieldName')} value={u.name} onPress={() => openModal('editFirstName')} />
+                <Row label={t('profile.fieldHeight')} value={heightDisplay} onPress={() => openModal('editHeight')} />
+                <Row label={t('profile.fieldWeight')} value={weightDisplay} onPress={() => router.push('/profile/weight')} />
+
+                {/* Entraînement */}
+                <SectionLabel label={t('profile.sectionTraining')} />
+                <Row label={t('profile.fieldLevel')} value={levelLabels[u.level] ?? u.level} onPress={() => openModal('editLevel')} />
+                <Row label={t('profile.fieldGoal')} value={goalLabels[u.goal] ?? u.goal} onPress={() => openModal('editGoal')} />
+                <Row label={t('profile.sessionsPerWeekLabel')} value={String(u.weeklyTarget)} onPress={() => openModal('editSessions')} />
+
+                {/* Modals */}
+                <EditFirstNameModal open={activeModal === 'editFirstName'} onClose={closeModal} currentValue={u.name} onSave={(v) => save({ name: v })} />
+                <EditHeightModal open={activeModal === 'editHeight'} onClose={closeModal} currentValue={u.heightCm} onSave={(v) => save({ heightCm: v })} />
+                <EditTrainingLevelModal open={activeModal === 'editLevel'} onClose={closeModal} currentValue={u.level} onSave={(v) => save({ level: v })} />
+                <EditTrainingGoalModal open={activeModal === 'editGoal'} onClose={closeModal} currentValue={u.goal} onSave={(v) => save({ goal: v })} />
+                <EditSessionsPerWeekModal open={activeModal === 'editSessions'} onClose={closeModal} currentValue={u.weeklyTarget} onSave={(v) => save({ weeklyTarget: v })} />
+              </>
+            )
+          }}
+        </SectionStatus>
+
+        {/* Stats strip — optional, fails independently */}
+        <ProfileStatsStrip sessionsQuery={sessionsQuery} recordsQuery={recordsQuery} />
 
         <SyncStatusBanner />
 
-        {/* Personnel */}
-        <SectionLabel label={t('profile.sectionPersonal')} />
-        <Row
-          label={t('profile.fieldName')}
-          value={user.name}
-          onPress={() => openModal('editFirstName')}
-        />
-        <Row
-          label={t('profile.fieldHeight')}
-          value={heightDisplay}
-          onPress={() => openModal('editHeight')}
-        />
-        <Row
-          label={t('profile.fieldWeight')}
-          value={weightDisplay}
-          onPress={() => router.push('/profile/weight')}
-        />
-
-        {/* Entraînement */}
-        <SectionLabel label={t('profile.sectionTraining')} />
-        <Row
-          label={t('profile.fieldLevel')}
-          value={levelLabels[user.level] ?? user.level}
-          onPress={() => openModal('editLevel')}
-        />
-        <Row
-          label={t('profile.fieldGoal')}
-          value={goalLabels[user.goal] ?? user.goal}
-          onPress={() => openModal('editGoal')}
-        />
-        <Row
-          label={t('profile.sessionsPerWeekLabel')}
-          value={String(user.weeklyTarget)}
-          onPress={() => openModal('editSessions')}
-        />
-
-        {/* Réglages */}
+        {/* Réglages — always visible, no query dependency */}
         <SectionLabel label={t('profile.sectionReglages')} />
-        <Row
-          label={t('explore.title')}
-          onPress={() => router.push('/explore')}
-          muted
-        />
-        <Row
-          label={t('profile.reminders')}
-          onPress={() => router.push('/settings/reminders')}
-          muted
-        />
-        <Row
-          label={t('profile.healthTitle')}
-          disabled
-          badge={t('profile.healthSoonBadge')}
-        />
+        <Row label={t('explore.title')} onPress={() => router.push('/explore')} muted />
+        <Row label={t('profile.reminders')} onPress={() => router.push('/settings/reminders')} muted />
+        <Row label={t('profile.healthTitle')} disabled badge={t('profile.healthSoonBadge')} />
         <ThemeRow label={t('profile.appearance')} />
 
-        {/* Compte & confidentialité */}
+        {/* Compte & confidentialité — always visible */}
         <SectionLabel label={t('profile.sectionAccount')} />
-        <Row
-          label={t('profile.dataUsage')}
-          onPress={() => router.push('/privacy')}
-          muted
-        />
-        <Row
-          label={t('profile.signOut')}
-          onPress={() => openModal('logoutConfirm')}
-          muted
-        />
-        <Row
-          label={t('profile.deleteAccount')}
-          onPress={handleDeleteAccount}
-          danger
-        />
+        <Row label={t('profile.dataUsage')} onPress={() => router.push('/privacy')} muted />
+        <Row label={t('profile.signOut')} onPress={() => openModal('logoutConfirm')} muted />
+        <Row label={t('profile.deleteAccount')} onPress={handleDeleteAccount} danger />
       </ScrollView>
 
-      {/* Modals */}
-      <EditFirstNameModal
-        open={activeModal === 'editFirstName'}
-        onClose={closeModal}
-        currentValue={user.name}
-        onSave={(v) => save({ name: v })}
-      />
-      <EditHeightModal
-        open={activeModal === 'editHeight'}
-        onClose={closeModal}
-        currentValue={user.heightCm}
-        onSave={(v) => save({ heightCm: v })}
-      />
-      <EditTrainingLevelModal
-        open={activeModal === 'editLevel'}
-        onClose={closeModal}
-        currentValue={user.level}
-        onSave={(v) => save({ level: v })}
-      />
-      <EditTrainingGoalModal
-        open={activeModal === 'editGoal'}
-        onClose={closeModal}
-        currentValue={user.goal}
-        onSave={(v) => save({ goal: v })}
-      />
-      <EditSessionsPerWeekModal
-        open={activeModal === 'editSessions'}
-        onClose={closeModal}
-        currentValue={user.weeklyTarget}
-        onSave={(v) => save({ weeklyTarget: v })}
-      />
-      <LogoutConfirmModal
-        open={activeModal === 'logoutConfirm'}
-        onClose={closeModal}
-        onConfirm={handleLogout}
-      />
+      <LogoutConfirmModal open={activeModal === 'logoutConfirm'} onClose={closeModal} onConfirm={handleLogout} />
     </SafeAreaView>
   )
 }
