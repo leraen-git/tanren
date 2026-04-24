@@ -76,6 +76,11 @@ export function translateDifficulty(difficulty: string, t: (key: string) => stri
   return t(`difficulty.${difficulty}`)
 }
 
+export function translateEquipment(equipment: string, t: (key: string) => string): string {
+  const translated = t(`equipmentType.${equipment}`)
+  return translated.startsWith('equipmentType.') ? equipment : translated
+}
+
 export function useExercises() {
   const { i18n } = useTranslation()
   const isFr = i18n.language === 'fr'

@@ -1,19 +1,26 @@
 import React, { useState, useMemo } from 'react'
 import {
   View, Text, TextInput, ScrollView, TouchableOpacity, Modal,
-  Alert, ActivityIndicator,
+  Alert,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/theme/ThemeContext'
+import { Screen } from '@/components/Screen'
 import { useActiveSessionStore } from '@/stores/activeSessionStore'
-import { useExercises, translateMuscleGroup, translateDifficulty, type Exercise } from '@/hooks/useExercises'
+import { useExercises, translateMuscleGroup, translateDifficulty, translateEquipment, type Exercise } from '@/hooks/useExercises'
 
 const MUSCLE_GROUPS = [
   'All', 'Chest', 'Back', 'Shoulders', 'Biceps', 'Triceps',
   'Quadriceps', 'Hamstrings', 'Glutes', 'Calves', 'Core', 'Full Body',
 ]
+
+const DIFF_COLORS: Record<string, { bg: string; text: string }> = {
+  BEGINNER: { bg: '#1A7F2C20', text: '#2BAE43' },
+  INTERMEDIATE: { bg: '#D98E0020', text: '#E8A900' },
+  ADVANCED: { bg: '#E8192C20', text: '#FF2D3F' },
+}
 
 type SetConfig = { reps: string; weight: string; rest: string }
 
@@ -53,10 +60,11 @@ function ConfigModal({
   return (
     <Modal visible animationType="slide" onRequestClose={onClose}>
       <SafeAreaView edges={['top', 'bottom']} style={{ flex: 1, backgroundColor: tokens.bg }}>
-        {/* Header */}
         <View style={{ flexDirection: 'row', alignItems: 'flex-start', paddingHorizontal: 16, paddingTop: 12, paddingBottom: 16, gap: 12, borderBottomWidth: 1, borderBottomColor: tokens.border }}>
-          <TouchableOpacity onPress={onClose} accessibilityLabel="Close" accessibilityRole="button" style={{ paddingTop: 2 }}>
-            <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.accent, textTransform: 'uppercase', letterSpacing: 2 }}>CLOSE</Text>
+          <TouchableOpacity onPress={onClose} accessibilityLabel={t('quick.close')} accessibilityRole="button" style={{ paddingTop: 2 }}>
+            <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.accent, textTransform: 'uppercase', letterSpacing: 2 }}>
+              {t('quick.close').toUpperCase()}
+            </Text>
           </TouchableOpacity>
           <View style={{ flex: 1 }}>
             <Text style={{ fontFamily: fonts.sansX, fontSize: 17, color: tokens.text, textTransform: 'uppercase' }} numberOfLines={2}>
@@ -69,10 +77,9 @@ function ConfigModal({
         </View>
 
         <ScrollView contentContainerStyle={{ padding: 16, gap: 16 }} keyboardShouldPersistTaps="handled">
-          {/* Number of sets */}
           <View style={{ gap: 6 }}>
             <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
-              NUMBER OF SETS
+              {t('quick.numSets').toUpperCase()}
             </Text>
             <View style={{ flexDirection: 'row', gap: 4 }}>
               {[1, 2, 3, 4, 5, 6].map((n) => (
@@ -98,15 +105,21 @@ function ConfigModal({
             </View>
           </View>
 
-          {/* Column headers */}
           <View style={{ flexDirection: 'row', gap: 6, paddingHorizontal: 4 }}>
-            <Text style={{ width: 32, fontFamily: fonts.sansB, fontSize: 8, color: tokens.textMute, textAlign: 'center', textTransform: 'uppercase', letterSpacing: 1 }}>SET</Text>
-            <Text style={{ flex: 1, fontFamily: fonts.sansB, fontSize: 8, color: tokens.textMute, textAlign: 'center', textTransform: 'uppercase', letterSpacing: 1 }}>REPS</Text>
-            <Text style={{ flex: 1, fontFamily: fonts.sansB, fontSize: 8, color: tokens.textMute, textAlign: 'center', textTransform: 'uppercase', letterSpacing: 1 }}>KG</Text>
-            <Text style={{ flex: 1, fontFamily: fonts.sansB, fontSize: 8, color: tokens.textMute, textAlign: 'center', textTransform: 'uppercase', letterSpacing: 1 }}>REST (s)</Text>
+            <Text style={{ width: 32, fontFamily: fonts.sansB, fontSize: 8, color: tokens.textMute, textAlign: 'center', textTransform: 'uppercase', letterSpacing: 1 }}>
+              {t('quick.set').toUpperCase()}
+            </Text>
+            <Text style={{ flex: 1, fontFamily: fonts.sansB, fontSize: 8, color: tokens.textMute, textAlign: 'center', textTransform: 'uppercase', letterSpacing: 1 }}>
+              {t('quick.reps').toUpperCase()}
+            </Text>
+            <Text style={{ flex: 1, fontFamily: fonts.sansB, fontSize: 8, color: tokens.textMute, textAlign: 'center', textTransform: 'uppercase', letterSpacing: 1 }}>
+              {t('quick.kg').toUpperCase()}
+            </Text>
+            <Text style={{ flex: 1, fontFamily: fonts.sansB, fontSize: 8, color: tokens.textMute, textAlign: 'center', textTransform: 'uppercase', letterSpacing: 1 }}>
+              {t('quick.restSec').toUpperCase()}
+            </Text>
           </View>
 
-          {/* Sets */}
           {sets.map((s, i) => (
             <View key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
               <View style={{ width: 28, height: 28, borderWidth: 1, borderColor: tokens.accent, alignItems: 'center', justifyContent: 'center' }}>
@@ -128,7 +141,7 @@ function ConfigModal({
                     fontSize: 14,
                     textAlign: 'center',
                   }}
-                  accessibilityLabel={`Set ${i + 1} ${field}`}
+                  accessibilityLabel={`${t('quick.set')} ${i + 1} ${field}`}
                 />
               ))}
             </View>
@@ -139,10 +152,10 @@ function ConfigModal({
           <TouchableOpacity
             onPress={() => onStart(sets)}
             style={{ backgroundColor: tokens.accent, height: 48, alignItems: 'center', justifyContent: 'center' }}
-            accessibilityLabel="Start exercise" accessibilityRole="button"
+            accessibilityLabel={t('quick.startExercise')} accessibilityRole="button"
           >
             <Text style={{ fontFamily: fonts.sansX, fontSize: 14, color: '#FFFFFF', textTransform: 'uppercase', letterSpacing: 1 }}>
-              START EXERCISE
+              {t('quick.startExercise').toUpperCase()}
             </Text>
           </TouchableOpacity>
         </View>
@@ -195,16 +208,16 @@ export default function QuickExerciseScreen() {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: tokens.bg }}>
+    <Screen showKanji kanjiChar="鍛">
       {/* Header */}
       <View style={{ flexDirection: 'row', alignItems: 'center', padding: 16, gap: 12 }}>
-        <TouchableOpacity onPress={() => router.back()} accessibilityLabel="Go back" accessibilityRole="button">
+        <TouchableOpacity onPress={() => router.back()} accessibilityLabel={t('common.back')} accessibilityRole="button">
           <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.accent, textTransform: 'uppercase', letterSpacing: 2 }}>
-            {'< BACK'}
+            {t('common.back').toUpperCase()}
           </Text>
         </TouchableOpacity>
         <Text style={{ fontFamily: fonts.sansX, fontSize: 17, color: tokens.text, textTransform: 'uppercase', flex: 1 }}>
-          Pick an exercise
+          {t('quick.title')}
         </Text>
       </View>
 
@@ -213,7 +226,7 @@ export default function QuickExerciseScreen() {
         <TextInput
           value={search}
           onChangeText={setSearch}
-          placeholder="Search exercises..."
+          placeholder={t('quick.search')}
           placeholderTextColor={tokens.textGhost}
           style={{
             fontFamily: fonts.sans,
@@ -223,13 +236,12 @@ export default function QuickExerciseScreen() {
             borderBottomColor: tokens.border,
             paddingVertical: 8,
           }}
-          accessibilityLabel="Search exercises"
-          autoFocus
+          accessibilityLabel={t('quick.search')}
         />
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <View style={{ flexDirection: 'row', gap: 4 }}>
             {MUSCLE_GROUPS.map((mg) => {
-              const label = translateMuscleGroup(mg, t)
+              const label = mg === 'All' ? t('muscleGroups.all') : translateMuscleGroup(mg, t)
               const active = muscle === mg
               return (
                 <TouchableOpacity
@@ -255,38 +267,63 @@ export default function QuickExerciseScreen() {
             })}
           </View>
         </ScrollView>
+
+        {/* Exercise count */}
+        <Text style={{
+          fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute,
+          marginTop: 4,
+        }}>
+          {t('quick.count', { count: filtered.length })}
+        </Text>
       </View>
 
       {/* List */}
       <ScrollView contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 40 }}>
         {isLoading && [1,2,3,4,5].map((i) => (
-          <View key={i} style={{ height: 56, borderBottomWidth: 1, borderBottomColor: tokens.border }} />
+          <View key={i} style={{ height: 64, borderBottomWidth: 1, borderBottomColor: tokens.border }} />
         ))}
-        {filtered.map((ex) => (
-          <TouchableOpacity
-            key={ex.id}
-            onPress={() => setSelected(ex)}
-            style={{
-              paddingVertical: 10,
-              borderBottomWidth: 1,
-              borderBottomColor: tokens.border,
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-            }}
-            accessibilityLabel={`Select ${ex.name}`} accessibilityRole="button"
-          >
-            <View style={{ flex: 1 }}>
-              <Text style={{ fontFamily: fonts.sansB, fontSize: 13, color: tokens.text, textTransform: 'uppercase' }}>
-                {ex.name}
+        {filtered.map((ex) => {
+          const diffColor = (DIFF_COLORS[ex.difficulty] ?? DIFF_COLORS.INTERMEDIATE)!
+          return (
+            <TouchableOpacity
+              key={ex.id}
+              onPress={() => setSelected(ex)}
+              style={{
+                paddingVertical: 12,
+                borderBottomWidth: 1,
+                borderBottomColor: tokens.border,
+                gap: 4,
+              }}
+              accessibilityLabel={ex.name} accessibilityRole="button"
+            >
+              {/* Top row: name + difficulty badge */}
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+                <Text style={{
+                  fontFamily: fonts.sansB, fontSize: 14, color: tokens.text,
+                  textTransform: 'uppercase', flex: 1,
+                }} numberOfLines={2}>
+                  {ex.name}
+                </Text>
+                <View style={{
+                  backgroundColor: diffColor.bg,
+                  paddingHorizontal: 8, paddingVertical: 3,
+                }}>
+                  <Text style={{
+                    fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 1,
+                    color: diffColor.text, textTransform: 'uppercase',
+                  }}>
+                    {translateDifficulty(ex.difficulty, t)}
+                  </Text>
+                </View>
+              </View>
+              {/* Meta row: primary muscle (bold) + equipment */}
+              <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute }}>
+                <Text style={{ fontFamily: fonts.sansB }}>{translateMuscleGroup(ex.muscleGroups[0] ?? '', t)}</Text>
+                {ex.equipment.length > 0 ? ` · ${ex.equipment.map((eq) => translateEquipment(eq, t)).join(', ')}` : ''}
               </Text>
-              <Text style={{ fontFamily: fonts.sans, fontSize: 11, color: tokens.textMute }}>
-                {ex.muscleGroups.map((mg) => translateMuscleGroup(mg, t)).join(' / ')} / {translateDifficulty(ex.difficulty, t)}
-              </Text>
-            </View>
-            <Text style={{ fontFamily: fonts.sansB, fontSize: 14, color: tokens.accent }}>-{'>'}</Text>
-          </TouchableOpacity>
-        ))}
+            </TouchableOpacity>
+          )
+        })}
       </ScrollView>
 
       {selected && (
@@ -296,6 +333,6 @@ export default function QuickExerciseScreen() {
           onClose={() => setSelected(null)}
         />
       )}
-    </SafeAreaView>
+    </Screen>
   )
 }
