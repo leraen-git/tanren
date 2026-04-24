@@ -24,7 +24,7 @@ import Svg, { Path, Rect, Circle, Defs, RadialGradient, Stop } from 'react-nativ
 import { useAuth } from '@/contexts/AuthContext'
 import { useTheme } from '@/theme/ThemeContext'
 import { useTranslation } from 'react-i18next'
-import { router, useLocalSearchParams } from 'expo-router'
+import { useLocalSearchParams } from 'expo-router'
 import { KanjiWatermark } from '@/components/KanjiWatermark'
 import { ForgeMark } from '@/components/ForgeMark'
 
@@ -121,12 +121,6 @@ export default function SignInScreen() {
   }))
 
   useEffect(() => {
-    if (status === 'authenticated' && !isUpgrade) {
-      router.replace('/')
-    }
-  }, [status, isUpgrade])
-
-  useEffect(() => {
     if (resendCountdown <= 0) return
     const timer = setTimeout(() => setResendCountdown((c) => c - 1), 1000)
     return () => clearTimeout(timer)
@@ -141,7 +135,6 @@ export default function SignInScreen() {
     setSocialLoading(true)
     try {
       await signInWithApple()
-      router.replace('/')
     } catch (err: any) {
       if (err?.code !== 'ERR_CANCELED') {
         Alert.alert(t('signIn.errorTitle'), t('signIn.errorApple'))
@@ -155,7 +148,6 @@ export default function SignInScreen() {
     setSocialLoading(true)
     try {
       await signInWithGoogle()
-      router.replace('/')
     } catch (err: any) {
       Alert.alert(t('signIn.errorTitle'), err?.message ?? t('signIn.errorGoogle'))
     } finally {
@@ -186,7 +178,6 @@ export default function SignInScreen() {
     setOtpError('')
     try {
       await verifyOtp(emailValue.trim(), otpCode)
-      router.replace('/')
     } catch (err: any) {
       setEmailStep('otpInput')
       setOtpCode('')
@@ -215,14 +206,10 @@ export default function SignInScreen() {
   }
 
   async function handleGuestSignIn() {
-    if (status === 'authenticated') {
-      router.replace('/')
-      return
-    }
+    if (status === 'authenticated') return
     setSocialLoading(true)
     try {
       await signInAsGuest()
-      router.replace('/')
     } catch (err: any) {
       Alert.alert(t('signIn.errorTitle'), err?.message ?? t('signIn.errorGuest'))
     } finally {

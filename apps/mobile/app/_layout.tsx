@@ -118,26 +118,6 @@ function TRPCProvider({ children }: { children: React.ReactNode }) {
   )
 }
 
-function OnboardingGate() {
-  const { status } = useAuth()
-  const me = useProfile()
-  const redirected = useRef(false)
-
-  useEffect(() => {
-    if (status !== 'authenticated') {
-      redirected.current = false
-      return
-    }
-    if (redirected.current) return
-    if (me.data && !me.data.onboardingDone) {
-      redirected.current = true
-      const skipConsent = me.data.authProvider === 'guest' || me.data.authProvider === 'email'
-      router.replace(skipConsent ? '/onboarding/step1' : '/onboarding/step0')
-    }
-  }, [me.data, status])
-
-  return null
-}
 
 function NotificationWatcher() {
   const settingsRef = useRef(useNotificationSettingsStore.getState())
@@ -251,10 +231,21 @@ function AuthRedirect() {
   }, [status, profileQuery.isPending, user, signOut])
 
   const inAuthGroup = segments[0] === '(auth)'
+  const inOnboarding = segments[0] === 'onboarding'
 
   if (status === 'loading') return null
   if (status === 'unauthenticated' && !inAuthGroup) return <Redirect href="/sign-in" />
-  if (status === 'authenticated' && inAuthGroup) return <Redirect href="/" />
+
+  if (status === 'authenticated' && user) {
+    if (!user.onboardingDone) {
+      if (!inOnboarding) {
+        const skipConsent = user.authProvider === 'guest' || user.authProvider === 'email'
+        return <Redirect href={skipConsent ? '/onboarding/step1' : '/onboarding/step0'} />
+      }
+      return null
+    }
+    if (inAuthGroup || inOnboarding) return <Redirect href="/" />
+  }
 
   return null
 }
@@ -307,7 +298,6 @@ export default function RootLayout() {
               <AuthGateProvider>
                 <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: 'transparent' } }} />
                 <AuthRedirect />
-                {splashDone && <OnboardingGate />}
                 {splashDone && <SessionResumeChecker />}
                 <SyncWorkerHost />
                 <NotificationWatcher />
