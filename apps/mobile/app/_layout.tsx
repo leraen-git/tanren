@@ -1,5 +1,5 @@
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
-import { Stack, router } from 'expo-router'
+import { Stack, router, Redirect, useSegments } from 'expo-router'
 import { ThemeProvider, useTheme } from '@/theme/ThemeContext'
 import { QueryClient } from '@tanstack/react-query'
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client'
@@ -234,28 +234,41 @@ function ThemedStatusBar() {
   return <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
 }
 
-function AuthGate({ children }: { children: React.ReactNode }) {
+function AuthRedirect() {
   const { status, signOut } = useAuth()
+  const segments = useSegments()
   const profileQuery = useProfile()
   const user = profileQuery.data
-  const isGuest = user?.authProvider === 'guest'
+  const hasSignedOut = useRef(false)
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.replace('/sign-in')
-    }
+    if (status === 'authenticated') hasSignedOut.current = false
   }, [status])
 
   useEffect(() => {
-    if (status === 'authenticated' && !profileQuery.isPending && user === null) {
+    if (status === 'authenticated' && !profileQuery.isPending && user === null && !hasSignedOut.current) {
+      hasSignedOut.current = true
       signOut()
     }
   }, [status, profileQuery.isPending, user, signOut])
 
-  if (status === 'loading' || status === 'unauthenticated') return null
+  const inAuthGroup = segments[0] === '(auth)'
+
+  if (status === 'loading') return null
+  if (status === 'unauthenticated' && !inAuthGroup) return <Redirect href="/sign-in" />
+  if (status === 'authenticated' && inAuthGroup) return <Redirect href="/" />
+
+  return null
+}
+
+function AuthGateProvider({ children }: { children: React.ReactNode }) {
+  const { status } = useAuth()
+  const profileQuery = useProfile()
+  const user = profileQuery.data
+  const isGuest = user?.authProvider === 'guest'
 
   return (
-    <GuestBannerProvider value={isGuest ?? false}>
+    <GuestBannerProvider value={status === 'authenticated' ? (isGuest ?? false) : false}>
       {children}
     </GuestBannerProvider>
   )
@@ -293,14 +306,15 @@ export default function RootLayout() {
           <ThemedStatusBar />
           <AuthProvider>
             <TRPCProvider>
-              <AuthGate>
+              <AuthGateProvider>
                 <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: 'transparent' } }} />
+                <AuthRedirect />
                 {splashDone && <OnboardingGate />}
                 {splashDone && <SessionResumeChecker />}
                 <SyncWorkerHost />
                 <NotificationWatcher />
                 <ToastHost />
-              </AuthGate>
+              </AuthGateProvider>
             </TRPCProvider>
           </AuthProvider>
         </ThemeProvider>
