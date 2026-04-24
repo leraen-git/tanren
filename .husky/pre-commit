@@ -1,0 +1,1 @@
+cd apps/api && npx tsc --noEmit && cd ../mobile && npx tsc --noEmit

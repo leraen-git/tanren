@@ -15,10 +15,12 @@
     "db:migrate": "turbo run db:migrate",
     "db:seed": "turbo run db:seed",
     "android": "expo run:android",
-    "ios": "expo run:ios"
+    "ios": "expo run:ios",
+    "prepare": "husky"
   },
   "devDependencies": {
     "eslint": "^9.17.0",
+    "husky": "^9.1.7",
     "patch-package": "^8.0.1",
     "prettier": "^3.4.2",
     "turbo": "^2.3.3",
