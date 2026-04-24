@@ -1,72 +1,21 @@
-import React, { useState, useRef } from 'react'
-import { View, Text, ScrollView, TouchableOpacity, TextInput, Alert, ActivityIndicator } from 'react-native'
+import React from 'react'
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams, router } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
+import { useTranslation } from 'react-i18next'
 import { trpc } from '@/lib/trpc'
+import { translateMuscleGroup } from '@/hooks/useExercises'
 
 export default function WorkoutDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
   const { tokens, fonts } = useTheme()
+  const { t } = useTranslation()
 
-  const utils = trpc.useUtils()
   const { data: workout, isLoading } = trpc.workouts.detail.useQuery(
     { id: id ?? '' },
     { enabled: !!id },
   )
-
-  const [editingName, setEditingName] = useState(false)
-  const [nameValue, setNameValue] = useState('')
-  const nameRef = useRef<TextInput>(null)
-
-  const updateWorkout = trpc.workouts.update.useMutation({
-    onSuccess: () => utils.workouts.detail.invalidate({ id: id ?? '' }),
-  })
-  const reorderExercises = trpc.workouts.reorderExercises.useMutation({
-    onSuccess: () => utils.workouts.detail.invalidate({ id: id ?? '' }),
-  })
-
-  type WorkoutExercise = NonNullable<typeof workout>['exercises'][number]
-  const moveExercise = (exercises: WorkoutExercise[], idx: number, direction: 'up' | 'down') => {
-    const next = [...exercises]
-    const swapIdx = direction === 'up' ? idx - 1 : idx + 1
-    if (swapIdx < 0 || swapIdx >= next.length) return
-    ;[next[idx], next[swapIdx]] = [next[swapIdx]!, next[idx]!]
-    reorderExercises.mutate({
-      workoutTemplateId: id ?? '',
-      orderedIds: next.map((e) => e.id),
-    })
-  }
-  const deleteWorkout = trpc.workouts.delete.useMutation({
-    onSuccess: () => {
-      utils.workouts.list.invalidate()
-      router.back()
-    },
-    onError: (err) => Alert.alert('Error', err.message),
-  })
-
-  const startEditName = () => {
-    setNameValue(workout?.name ?? '')
-    setEditingName(true)
-    setTimeout(() => nameRef.current?.focus(), 50)
-  }
-
-  const saveName = () => {
-    setEditingName(false)
-    if (!nameValue.trim() || nameValue.trim() === workout?.name) return
-    updateWorkout.mutate({ id: id ?? '', name: nameValue.trim() })
-  }
-
-  const handleDelete = () => {
-    Alert.alert(
-      'Delete workout',
-      `Delete "${workout?.name}"? This cannot be undone.`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Delete', style: 'destructive', onPress: () => deleteWorkout.mutate({ id: id ?? '' }) },
-      ],
-    )
-  }
 
   if (isLoading || !workout) {
     return (
@@ -80,154 +29,121 @@ export default function WorkoutDetailScreen() {
     <SafeAreaView style={{ flex: 1, backgroundColor: tokens.bg }}>
       {/* Header */}
       <View style={{ flexDirection: 'row', alignItems: 'center', padding: 16, gap: 12 }}>
-        <TouchableOpacity onPress={() => router.back()} accessibilityLabel="Go back" accessibilityRole="button">
+        <TouchableOpacity onPress={() => router.back()} accessibilityLabel={t('common.back')} accessibilityRole="button">
           <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.accent, textTransform: 'uppercase', letterSpacing: 2 }}>
-            {'< BACK'}
+            {'< ' + t('common.back').toUpperCase()}
           </Text>
         </TouchableOpacity>
         <View style={{ flex: 1 }} />
         <TouchableOpacity
-          onPress={handleDelete}
-          style={{
-            paddingHorizontal: 12,
-            paddingVertical: 6,
-            borderWidth: 1,
-            borderColor: tokens.accent,
-          }}
-          accessibilityLabel="Delete workout"
+          onPress={() => router.push(`/workout/build?editId=${id}`)}
+          accessibilityLabel={t('workout.modify')}
           accessibilityRole="button"
         >
-          <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.accent, textTransform: 'uppercase', letterSpacing: 1.4 }}>
-            DELETE
+          <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.accent, textTransform: 'uppercase', letterSpacing: 2 }}>
+            {t('workout.modify').toUpperCase()}
           </Text>
         </TouchableOpacity>
       </View>
 
-      <ScrollView contentContainerStyle={{ padding: 16, gap: 16, paddingBottom: 8 }}>
-        {/* Name */}
+      <ScrollView contentContainerStyle={{ padding: 16, gap: 16, paddingBottom: 100 }}>
+        {/* Name + meta */}
         <View style={{ gap: 4 }}>
-          <TouchableOpacity
-            onPress={startEditName}
-            style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}
-            accessibilityLabel="Edit workout name"
-            accessibilityRole="button"
-          >
-            {editingName ? (
-              <TextInput
-                ref={nameRef}
-                value={nameValue}
-                onChangeText={setNameValue}
-                onBlur={saveName}
-                onSubmitEditing={saveName}
-                style={{
-                  flex: 1,
-                  fontFamily: fonts.sansX,
-                  fontSize: 22,
-                  color: tokens.text,
-                  borderBottomWidth: 1,
-                  borderBottomColor: tokens.accent,
-                  paddingVertical: 2,
-                  textTransform: 'uppercase',
-                }}
-                accessibilityLabel="Workout name input"
-              />
-            ) : (
-              <Text style={{ fontFamily: fonts.sansX, fontSize: 22, color: tokens.text, textTransform: 'uppercase', flex: 1 }}>
-                {workout.name}
-              </Text>
-            )}
-          </TouchableOpacity>
-
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
+            {t('workout.session').toUpperCase()}
+          </Text>
+          <Text style={{ fontFamily: fonts.sansX, fontSize: 22, color: tokens.text, textTransform: 'uppercase' }}>
+            {workout.name}
+          </Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 4 }}>
             <Text style={{ fontFamily: fonts.mono, fontSize: 11, color: tokens.textMute }}>
-              {workout.exercises.length} exercise{workout.exercises.length !== 1 ? 's' : ''} / ~{workout.estimatedDuration} min
+              {t('workout.exerciseCount', { count: workout.exercises.length })} / ~{workout.estimatedDuration} {t('common.min')}
             </Text>
-            {workout.muscleGroups && workout.muscleGroups.length > 0 && (
-              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 4 }}>
-                {workout.muscleGroups.map((mg) => (
-                  <View key={mg} style={{
-                    borderWidth: 1,
-                    borderColor: tokens.border,
-                    paddingHorizontal: 5,
-                    paddingVertical: 1,
-                  }}>
-                    <Text style={{ fontFamily: fonts.sansB, fontSize: 8, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 1 }}>
-                      {mg}
-                    </Text>
-                  </View>
-                ))}
-              </View>
-            )}
           </View>
+          {workout.muscleGroups && workout.muscleGroups.length > 0 && (
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 4, marginTop: 6 }}>
+              {workout.muscleGroups.map((mg) => (
+                <View key={mg} style={{
+                  borderWidth: 1,
+                  borderColor: tokens.border,
+                  paddingHorizontal: 6,
+                  paddingVertical: 2,
+                }}>
+                  <Text style={{ fontFamily: fonts.sansB, fontSize: 8, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 1 }}>
+                    {translateMuscleGroup(mg, t)}
+                  </Text>
+                </View>
+              ))}
+            </View>
+          )}
         </View>
 
-        {/* Divider */}
         <View style={{ height: 1, backgroundColor: tokens.border }} />
 
         {/* Exercises */}
         <View>
           <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2, marginBottom: 8 }}>
-            EXERCISES
+            {t('workout.exercises').toUpperCase()}
           </Text>
           {workout.exercises.map((ex, i) => (
             <View key={ex.id} style={{
               flexDirection: 'row',
               alignItems: 'center',
-              gap: 8,
-              paddingVertical: 6,
+              gap: 10,
+              paddingVertical: 10,
+              paddingHorizontal: 4,
               borderTopWidth: i > 0 ? 1 : 0,
               borderTopColor: tokens.border,
             }}>
-              <View style={{ flexDirection: 'row', gap: 2 }}>
-                <TouchableOpacity
-                  onPress={() => moveExercise(workout.exercises, i, 'up')}
-                  disabled={i === 0}
-                  style={{ opacity: i === 0 ? 0.2 : 1, padding: 4 }}
-                  accessibilityLabel={`Move ${ex.exerciseName} up`}
-                  accessibilityRole="button"
-                >
-                  <Text style={{ fontFamily: fonts.sansB, fontSize: 16, color: tokens.textMute, lineHeight: 16 }}>▲</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => moveExercise(workout.exercises, i, 'down')}
-                  disabled={i === workout.exercises.length - 1}
-                  style={{ opacity: i === workout.exercises.length - 1 ? 0.2 : 1, padding: 4 }}
-                  accessibilityLabel={`Move ${ex.exerciseName} down`}
-                  accessibilityRole="button"
-                >
-                  <Text style={{ fontFamily: fonts.sansB, fontSize: 16, color: tokens.textMute, lineHeight: 16 }}>▼</Text>
-                </TouchableOpacity>
-              </View>
               <View style={{
-                width: 24, height: 24,
+                width: 28, height: 28,
                 borderWidth: 1,
                 borderColor: tokens.accent,
                 alignItems: 'center', justifyContent: 'center',
               }}>
-                <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.accent }}>
-                  {i + 1}
+                <Text style={{ fontFamily: fonts.sansB, fontSize: 11, color: tokens.accent }}>
+                  {String(i + 1).padStart(2, '0')}
                 </Text>
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={{ fontFamily: fonts.sansB, fontSize: 12, color: tokens.text, textTransform: 'uppercase' }}>
+                <Text style={{ fontFamily: fonts.sansB, fontSize: 13, color: tokens.text, textTransform: 'uppercase' }}>
                   {ex.exerciseName}
                 </Text>
-                <Text style={{ fontFamily: fonts.mono, fontSize: 10, color: tokens.textMute }}>
-                  {ex.defaultSets}s x {ex.defaultReps}r{ex.defaultWeight > 0 ? ` / ${ex.defaultWeight}kg` : ''}
+                <Text style={{ fontFamily: fonts.mono, fontSize: 11, color: tokens.textMute }}>
+                  {ex.defaultSets}s x {ex.defaultReps}r{ex.defaultWeight > 0 ? ` / ${ex.defaultWeight} kg` : ''} / {ex.defaultRestSeconds}s
                 </Text>
+                {ex.previousSets.length > 0 && (
+                  <Text style={{ fontFamily: fonts.sans, fontSize: 10, color: tokens.textGhost, marginTop: 2 }}>
+                    {t('workout.lastSession')}: {ex.previousSets.map((s: any) => `${s.weight}kg x${s.reps}`).join(', ')}
+                  </Text>
+                )}
               </View>
+              {ex.prWeight != null && (
+                <View style={{ alignItems: 'center' }}>
+                  <Text style={{ fontFamily: fonts.sansB, fontSize: 8, color: tokens.accent, textTransform: 'uppercase', letterSpacing: 1 }}>PR</Text>
+                  <Text style={{ fontFamily: fonts.monoB, fontSize: 12, color: tokens.accent }}>
+                    {ex.prWeight} kg
+                  </Text>
+                </View>
+              )}
             </View>
           ))}
           {workout.exercises.length === 0 && (
             <Text style={{ fontFamily: fonts.sans, fontSize: 13, color: tokens.textMute }}>
-              No exercises yet.
+              {t('workout.noExercises')}
             </Text>
           )}
         </View>
       </ScrollView>
 
-      {/* Start button — pinned to bottom */}
-      <View style={{ paddingHorizontal: 16, paddingTop: 12, paddingBottom: 16, borderTopWidth: 1, borderTopColor: tokens.border }}>
+      {/* Start session CTA */}
+      <View style={{
+        position: 'absolute', bottom: 0, left: 0, right: 0,
+        padding: 16,
+        backgroundColor: tokens.bg,
+        borderTopWidth: 1,
+        borderTopColor: tokens.border,
+      }}>
         <TouchableOpacity
           onPress={() => router.push(`/workout/preview?templateId=${id}`)}
           style={{
@@ -236,11 +152,11 @@ export default function WorkoutDetailScreen() {
             alignItems: 'center',
             justifyContent: 'center',
           }}
-          accessibilityLabel="Start this workout"
+          accessibilityLabel={t('workout.startSession')}
           accessibilityRole="button"
         >
           <Text style={{ fontFamily: fonts.sansX, fontSize: 14, color: '#FFFFFF', textTransform: 'uppercase', letterSpacing: 1 }}>
-            START WORKOUT
+            {t('workout.startSession')}
           </Text>
         </TouchableOpacity>
       </View>

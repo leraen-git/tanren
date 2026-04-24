@@ -6,16 +6,17 @@ import {
   TextInput,
   TouchableOpacity,
   ActivityIndicator,
-  Modal,
-  Image,
 } from 'react-native'
-import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context'
+import { SafeAreaView } from 'react-native-safe-area-context'
 import { router, useLocalSearchParams } from 'expo-router'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/theme/ThemeContext'
 import { trpc } from '@/lib/trpc'
 import { useActiveSessionStore } from '@/stores/activeSessionStore'
-import { useExercises, translateMuscleGroup, translateDifficulty } from '@/hooks/useExercises'
+import { translateMuscleGroup } from '@/hooks/useExercises'
+import { ExercisePicker } from '@/components/ExercisePicker'
+import { TapValueCell } from '@/components/TapValueCell'
+import { TapTimerCell } from '@/components/TapTimerCell'
 
 type SetConfig = { reps: number; weight: number; restSeconds: number }
 
@@ -25,7 +26,6 @@ type ExtraExercise = {
   muscleGroups: string[]
 }
 
-const MUSCLE_GROUPS = ['All', 'Chest', 'Back', 'Shoulders', 'Biceps', 'Triceps', 'Quadriceps', 'Hamstrings', 'Glutes', 'Calves', 'Core', 'Full Body']
 const DEFAULT_SETS = 3
 const DEFAULT_REPS = 10
 const DEFAULT_REST = 90
@@ -35,162 +35,6 @@ function recommendedWeight(previousSets: { reps: number; weight: number }[], def
     return previousSets.reduce((sum, s) => sum + s.weight, 0) / previousSets.length
   }
   return defaultWeight
-}
-
-function ExercisePicker({
-  visible,
-  onClose,
-  onPick,
-  alreadyAdded,
-}: {
-  visible: boolean
-  onClose: () => void
-  onPick: (ex: { id: string; name: string; muscleGroups: string[] }) => void
-  alreadyAdded: string[]
-}) {
-  const { tokens, fonts } = useTheme()
-  const { t } = useTranslation()
-  const [search, setSearch] = useState('')
-  const [muscle, setMuscle] = useState('All')
-  const { data: allExercises } = useExercises()
-
-  const filtered = useMemo(() => {
-    if (!allExercises) return []
-    return allExercises.filter((ex) => {
-      const matchSearch = ex.name.toLowerCase().includes(search.toLowerCase())
-      const matchMuscle = muscle === 'All' || ex.muscleGroups.includes(muscle)
-      return matchSearch && matchMuscle
-    })
-  }, [allExercises, search, muscle])
-
-  return (
-    <Modal visible={visible} animationType="slide" presentationStyle="fullScreen" onRequestClose={onClose}>
-      <SafeAreaProvider>
-      <SafeAreaView edges={['top', 'bottom']} style={{ flex: 1, backgroundColor: tokens.bg }}>
-        <View style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          padding: 16,
-          gap: 12,
-          borderBottomWidth: 1,
-          borderBottomColor: tokens.border,
-        }}>
-          <TouchableOpacity onPress={onClose} accessibilityLabel={t('common.close')} accessibilityRole="button">
-            <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.accent, textTransform: 'uppercase', letterSpacing: 2 }}>CLOSE</Text>
-          </TouchableOpacity>
-          <Text numberOfLines={1} style={{
-            fontFamily: fonts.sansX,
-            fontSize: 17,
-            color: tokens.text,
-            flex: 1,
-            textTransform: 'uppercase',
-            letterSpacing: 0.5,
-          }}>
-            {t('workout.addExercise')}
-          </Text>
-        </View>
-
-        <View style={{ padding: 16, paddingBottom: 8, gap: 8 }}>
-          <TextInput
-            value={search}
-            onChangeText={setSearch}
-            placeholder={t('workout.searchExercises')}
-            placeholderTextColor={tokens.textGhost}
-            style={{
-              borderBottomWidth: 1,
-              borderBottomColor: tokens.border,
-              paddingVertical: 12,
-              color: tokens.text,
-              fontFamily: fonts.sans,
-              fontSize: 14,
-            }}
-            accessibilityLabel={t('workout.searchExercises')}
-            autoFocus
-          />
-
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            <View style={{ flexDirection: 'row', gap: 8 }}>
-              {MUSCLE_GROUPS.map((mg) => {
-                const label = translateMuscleGroup(mg, t)
-                const active = muscle === mg
-                return (
-                  <TouchableOpacity
-                    key={mg}
-                    onPress={() => setMuscle(mg)}
-                    style={{
-                      paddingVertical: 4,
-                      paddingHorizontal: 12,
-                      backgroundColor: active ? tokens.accent : 'transparent',
-                      borderWidth: 1,
-                      borderColor: active ? tokens.accent : tokens.borderStrong,
-                    }}
-                    accessibilityLabel={label}
-                    accessibilityRole="button"
-                  >
-                    <Text style={{
-                      fontFamily: fonts.sansB,
-                      fontSize: 10,
-                      letterSpacing: 1.4,
-                      textTransform: 'uppercase',
-                      color: active ? '#FFFFFF' : tokens.textMute,
-                    }}>
-                      {label}
-                    </Text>
-                  </TouchableOpacity>
-                )
-              })}
-            </View>
-          </ScrollView>
-        </View>
-
-        <ScrollView contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 20 }}>
-          {filtered.map((ex) => {
-            const added = alreadyAdded.includes(ex.id)
-            return (
-              <TouchableOpacity
-                key={ex.id}
-                onPress={() => {
-                  if (!added) onPick({ id: ex.id, name: ex.name, muscleGroups: ex.muscleGroups })
-                }}
-                disabled={added}
-                style={{
-                  paddingVertical: 12,
-                  borderBottomWidth: 1,
-                  borderBottomColor: tokens.border,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  opacity: added ? 0.4 : 1,
-                }}
-                accessibilityLabel={`${added ? 'Already added' : 'Add'} ${ex.name}`}
-                accessibilityRole="button"
-              >
-                {ex.imageUrl && (
-                  <Image
-                    source={{ uri: ex.imageUrl }}
-                    style={{ width: 48, height: 48, marginRight: 12 }}
-                    resizeMode="cover"
-                  />
-                )}
-                <View style={{ flex: 1 }}>
-                  <Text style={{ fontFamily: fonts.sansM, fontSize: 14, color: tokens.text }}>
-                    {ex.name}
-                  </Text>
-                  <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute }}>
-                    {ex.muscleGroups.map((mg) => translateMuscleGroup(mg, t)).join(' · ')} · {translateDifficulty(ex.difficulty, t)}
-                  </Text>
-                </View>
-                <Text style={{ fontFamily: fonts.sansB, fontSize: 20, color: added ? tokens.textMute : tokens.accent }}>
-                  {added ? '✓' : '+'}
-                </Text>
-              </TouchableOpacity>
-            )
-          })}
-        </ScrollView>
-      </SafeAreaView>
-      </SafeAreaProvider>
-    </Modal>
-  )
 }
 
 export default function WorkoutPreviewScreen() {
@@ -229,12 +73,16 @@ export default function WorkoutPreviewScreen() {
     return [...fromTemplate, ...fromExtra]
   }, [workout, extraExercises])
 
-  const handlePickExercise = (ex: { id: string; name: string; muscleGroups: string[] }) => {
-    setExtraExercises((prev) => [...prev, { exerciseId: ex.id, exerciseName: ex.name, muscleGroups: ex.muscleGroups }])
-    setSetsConfig((prev) => ({
-      ...prev,
-      [ex.id]: Array.from({ length: DEFAULT_SETS }, () => ({ reps: DEFAULT_REPS, weight: 0, restSeconds: DEFAULT_REST })),
-    }))
+  const handlePickExercises = (picked: { id: string; name: string; muscleGroups: string[] }[]) => {
+    for (const ex of picked) {
+      if (!allExerciseIds.includes(ex.id)) {
+        setExtraExercises((prev) => [...prev, { exerciseId: ex.id, exerciseName: ex.name, muscleGroups: ex.muscleGroups }])
+        setSetsConfig((prev) => ({
+          ...prev,
+          [ex.id]: Array.from({ length: DEFAULT_SETS }, () => ({ reps: DEFAULT_REPS, weight: 0, restSeconds: DEFAULT_REST })),
+        }))
+      }
+    }
     setPickerVisible(false)
   }
 
@@ -486,7 +334,7 @@ export default function WorkoutPreviewScreen() {
       <View style={{ padding: 16, paddingBottom: 0, flexDirection: 'row', alignItems: 'center', gap: 12 }}>
         <TouchableOpacity onPress={() => router.back()} accessibilityLabel={t('common.back')} accessibilityRole="button">
           <Text style={{ fontFamily: fonts.sansM, fontSize: 12, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 1 }}>
-            {'‹ '}{t('common.back')}
+            {'< '}{t('common.back').toUpperCase()}
           </Text>
         </TouchableOpacity>
       </View>
@@ -501,7 +349,7 @@ export default function WorkoutPreviewScreen() {
           {workout.name}
         </Text>
         <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute, marginTop: 2 }}>
-          {totalExercises} {t('common.exercises')} · ~{workout.estimatedDuration} min
+          {totalExercises} {t('common.exercises')} · ~{workout.estimatedDuration} {t('common.min')}
         </Text>
       </View>
 
@@ -575,9 +423,10 @@ export default function WorkoutPreviewScreen() {
 
       <ExercisePicker
         visible={pickerVisible}
+        mode="single"
         onClose={() => setPickerVisible(false)}
-        onPick={handlePickExercise}
-        alreadyAdded={allExerciseIds}
+        onConfirm={handlePickExercises}
+        excludeIds={allExerciseIds}
       />
     </SafeAreaView>
   )

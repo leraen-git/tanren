@@ -1,3 +1,16 @@
+// ─── Day of Week (UI/API convention: 1=Monday, 7=Sunday) ─────────────────────
+
+export type DayOfWeek = 1 | 2 | 3 | 4 | 5 | 6 | 7
+
+export type PlanDay = {
+  dayOfWeek: DayOfWeek
+  workoutTemplateId: string
+  workoutName?: string
+  workoutMuscleGroups?: string[]
+  workoutDurationMin?: number | null
+  workoutExerciseCount?: number
+}
+
 // ─── User ────────────────────────────────────────────────────────────────────
 
 export type AuthProvider = 'apple' | 'google' | 'email' | 'guest'

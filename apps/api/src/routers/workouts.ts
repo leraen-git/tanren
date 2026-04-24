@@ -78,17 +78,42 @@ export const workoutsRouter = router({
         description: z.string().optional(),
         muscleGroups: z.array(z.string()).optional(),
         estimatedDuration: z.number().int().optional(),
+        exercises: z.array(z.object({
+          exerciseId: z.string(),
+          order: z.number().int().default(0),
+          defaultSets: z.number().int().default(3),
+          defaultReps: z.number().int().default(10),
+          defaultWeight: z.number().default(0),
+          defaultRestSeconds: z.number().int().default(90),
+        })).optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       const [user] = await ctx.db.select().from(users).where(eq(users.id, ctx.userId)).limit(1)
       if (!user) throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' })
-      const { id, ...data } = input
+      const { id, exercises: exInput, ...data } = input
       const [updated] = await ctx.db
         .update(workoutTemplates)
         .set(data)
         .where(and(eq(workoutTemplates.id, id), eq(workoutTemplates.userId, user.id)))
         .returning()
+      if (!updated) throw new TRPCError({ code: 'NOT_FOUND', message: 'Workout not found' })
+      if (exInput) {
+        await ctx.db.delete(workoutExercises).where(eq(workoutExercises.workoutTemplateId, id))
+        if (exInput.length > 0) {
+          await ctx.db.insert(workoutExercises).values(
+            exInput.map((ex, i) => ({
+              workoutTemplateId: id,
+              exerciseId: ex.exerciseId,
+              order: ex.order ?? i,
+              defaultSets: ex.defaultSets,
+              defaultReps: ex.defaultReps,
+              defaultWeight: ex.defaultWeight,
+              defaultRestSeconds: ex.defaultRestSeconds,
+            })),
+          )
+        }
+      }
       return updated
     }),
 

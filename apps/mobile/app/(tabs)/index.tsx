@@ -12,8 +12,16 @@ import { useTranslation } from 'react-i18next'
 import { useGuestBannerVisible } from '@/contexts/GuestBannerContext'
 import { sortMeals } from '@/components/MealDetailModal'
 
-const DAY_NAMES_FULL = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-const DAY_NAMES_FR = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi']
+// JS getDay() (0=Sun) → UI convention (1=Mon, 7=Sun)
+function jsDowToUi(jsDow: number): number { return jsDow === 0 ? 7 : jsDow }
+
+// Indexed by JS getDay() (0-6) — used only for greeting
+const DAY_NAMES_FULL_JS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+const DAY_NAMES_FR_JS = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi']
+
+// Indexed by UI convention (1-7) — used for plan day display
+const DAY_NAMES_UI: Record<number, string> = { 1: 'Lundi', 2: 'Mardi', 3: 'Mercredi', 4: 'Jeudi', 5: 'Vendredi', 6: 'Samedi', 7: 'Dimanche' }
+const DAY_NAMES_UI_EN: Record<number, string> = { 1: 'Monday', 2: 'Tuesday', 3: 'Wednesday', 4: 'Thursday', 5: 'Friday', 6: 'Saturday', 7: 'Sunday' }
 
 export default function HomeScreen() {
   const { tokens, fonts } = useTheme()
@@ -25,7 +33,7 @@ export default function HomeScreen() {
     const hour = now.getHours()
     const dayIdx = now.getDay()
     const isFr = i18n.language === 'fr'
-    const dayName = isFr ? DAY_NAMES_FR[dayIdx] : DAY_NAMES_FULL[dayIdx]
+    const dayName = isFr ? DAY_NAMES_FR_JS[dayIdx] : DAY_NAMES_FULL_JS[dayIdx]
     let timeOfDay: string
     if (hour < 12) timeOfDay = t('home.greeting_morning')
     else if (hour < 17) timeOfDay = t('home.greeting_afternoon')
@@ -51,15 +59,15 @@ export default function HomeScreen() {
   const remainingWorkouts = (activePlan?.days ?? [])
     .filter((d) => !doneTemplateIds.has(d.workoutTemplateId) && d.workoutTemplateId !== nextWorkout?.workoutTemplateId)
     .sort((a, b) => {
-      const todayDow = new Date().getDay()
+      const todayDow = jsDowToUi(new Date().getDay())
       return ((a.dayOfWeek - todayDow + 7) % 7) - ((b.dayOfWeek - todayDow + 7) % 7)
     })
 
   const showTodayTabs = !!activePlan && !!dietToday
-  const todayJsDow = new Date().getDay()
-  const todayPlanDays = (activePlan?.days ?? []).filter((d) => d.dayOfWeek === todayJsDow)
+  const todayUiDow = jsDowToUi(new Date().getDay())
+  const todayPlanDays = (activePlan?.days ?? []).filter((d) => d.dayOfWeek === todayUiDow)
   const isTodayWorkoutDone = todayPlanDays.length > 0 && todayPlanDays.every((d) => doneTemplateIds.has(d.workoutTemplateId))
-  const isTodayWorkout = nextWorkout?.dayOfWeek === todayJsDow && !isTodayWorkoutDone
+  const isTodayWorkout = nextWorkout?.dayOfWeek === todayUiDow && !isTodayWorkoutDone
   const isRestDay = !!activePlan && todayPlanDays.length === 0
 
   const [activeTab, setActiveTab] = useState<'workout' | 'diet'>('workout')
@@ -326,7 +334,7 @@ export default function HomeScreen() {
                       {nextWorkout.workoutName}
                     </Text>
                     <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute }}>
-                      {isTodayWorkout ? t('home.today') : (i18n.language === 'fr' ? DAY_NAMES_FR : DAY_NAMES_FULL)[nextWorkout.dayOfWeek]} · {nextWorkout.estimatedDuration} min
+                      {isTodayWorkout ? t('home.today') : (i18n.language === 'fr' ? DAY_NAMES_UI : DAY_NAMES_UI_EN)[nextWorkout.dayOfWeek]} · {nextWorkout.estimatedDuration} min
                     </Text>
                   </View>
                   <Text style={{ fontFamily: fonts.sansB, fontSize: 16, color: tokens.accent }}>›</Text>
@@ -359,7 +367,7 @@ export default function HomeScreen() {
                             {d.workoutName}
                           </Text>
                           <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute }}>
-                            {(i18n.language === 'fr' ? DAY_NAMES_FR : DAY_NAMES_FULL)[d.dayOfWeek]} · {d.estimatedDuration} min
+                            {(i18n.language === 'fr' ? DAY_NAMES_UI : DAY_NAMES_UI_EN)[d.dayOfWeek]} · {d.estimatedDuration} min
                           </Text>
                         </View>
                         <Text style={{ fontFamily: fonts.sansB, fontSize: 16, color: tokens.accent }}>›</Text>

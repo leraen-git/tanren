@@ -7,24 +7,48 @@ import { useTheme } from '@/theme/ThemeContext'
 import { Button } from '@/components/Button'
 import { trpc } from '@/lib/trpc'
 import { useAIPlanStore } from '@/stores/aiPlanStore'
+import { translateMuscleGroup } from '@/hooks/useExercises'
 
-const DAY_NAMES = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
+const DAY_NAMES: Record<number, string> = { 1: 'Lun', 2: 'Mar', 3: 'Mer', 4: 'Jeu', 5: 'Ven', 6: 'Sam', 7: 'Dim' }
 
 export default function PreviewPlanScreen() {
   const { tokens, fonts } = useTheme()
   const { t } = useTranslation()
   const { proposedPlan, reset } = useAIPlanStore()
   const utils = trpc.useUtils()
+  const { data: plans } = trpc.plans.list.useQuery()
+  const currentActivePlan = plans?.find((p) => p.isActive)
 
   const acceptPlan = trpc.plans.acceptGenerated.useMutation({
     onSuccess: async () => {
       await utils.plans.active.invalidate()
       await utils.plans.list.invalidate()
+      await utils.workouts.list.invalidate()
       reset()
       router.replace('/')
     },
-    onError: (err) => Alert.alert('Failed to save plan', err.message),
+    onError: (err) => Alert.alert(t('common.error'), err.message),
   })
+
+  const handleActivate = () => {
+    if (!proposedPlan) return
+
+    const warningParts: string[] = []
+    const sessionCount = proposedPlan.days.length
+    warningParts.push(t('ai.previewActivateWarning', {
+      count: sessionCount,
+      name: currentActivePlan?.name ?? '',
+    }))
+
+    Alert.alert(
+      t('planBuilder.activationWarningTitle'),
+      warningParts.join(''),
+      [
+        { text: t('common.cancel'), style: 'cancel' },
+        { text: t('ai.previewActivate'), onPress: () => acceptPlan.mutate(proposedPlan) },
+      ]
+    )
+  }
 
   if (!proposedPlan) {
     return (
@@ -37,29 +61,30 @@ export default function PreviewPlanScreen() {
     )
   }
 
-  const sortedDays = [...proposedPlan.days].sort((a, b) => ((a.dayOfWeek + 6) % 7) - ((b.dayOfWeek + 6) % 7))
+  const sortedDays = [...proposedPlan.days].sort((a, b) => a.dayOfWeek - b.dayOfWeek)
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: tokens.bg }}>
       {/* Header */}
       <View style={{ flexDirection: 'row', alignItems: 'center', padding: 16, gap: 12 }}>
-        <TouchableOpacity onPress={() => router.back()} accessibilityLabel="Go back" accessibilityRole="button">
+        <TouchableOpacity onPress={() => router.back()} accessibilityLabel={t('common.back')} accessibilityRole="button">
           <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.accent, textTransform: 'uppercase', letterSpacing: 2 }}>
-            {'< BACK'}
+            {'< '}{t('common.back').toUpperCase()}
           </Text>
         </TouchableOpacity>
         <View style={{ flex: 1 }} />
         <View style={{
-          borderWidth: 1,
-          borderColor: tokens.accent,
+          backgroundColor: tokens.accent,
           paddingHorizontal: 8,
           paddingVertical: 3,
         }}>
-          <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.accent, letterSpacing: 1.4 }}>AI</Text>
+          <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: '#FFFFFF', letterSpacing: 1.4, textTransform: 'uppercase' }}>
+            {t('ai.previewBadge')}
+          </Text>
         </View>
       </View>
 
-      <ScrollView contentContainerStyle={{ padding: 16, gap: 20, paddingBottom: 120 }}>
+      <ScrollView contentContainerStyle={{ padding: 16, gap: 20, paddingBottom: 140 }}>
         {/* Plan name block */}
         <View style={{
           backgroundColor: tokens.surface1,
@@ -70,15 +95,20 @@ export default function PreviewPlanScreen() {
           borderLeftColor: tokens.accent,
         }}>
           <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
-            PLAN NAME
+            {t('ai.previewTitle').toUpperCase()}
           </Text>
           <Text style={{ fontFamily: fonts.sansX, fontSize: 24, color: tokens.text, textTransform: 'uppercase', marginTop: 4 }}>
             {proposedPlan.name}
           </Text>
           <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute, marginTop: 4 }}>
-            {sortedDays.map((d) => DAY_NAMES[d.dayOfWeek]).join(' / ')} / {proposedPlan.days.length} sessions/week
+            {sortedDays.map((d) => DAY_NAMES[d.dayOfWeek]).join(' · ')} · {proposedPlan.days.length} {t('ai.exos')}/{t('ai.perWeek').replace('/ ', '')}
           </Text>
         </View>
+
+        {/* Schedule header */}
+        <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
+          {t('ai.previewSchedule').toUpperCase()}
+        </Text>
 
         {/* Day cards */}
         {sortedDays.map((day, idx) => (
@@ -94,7 +124,7 @@ export default function PreviewPlanScreen() {
                   paddingVertical: 2,
                   paddingHorizontal: 8,
                 }}>
-                  <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: '#FFFFFF', letterSpacing: 1.4 }}>
+                  <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: '#FFFFFF', letterSpacing: 1.4, textTransform: 'uppercase' }}>
                     {DAY_NAMES[day.dayOfWeek]}
                   </Text>
                 </View>
@@ -104,10 +134,9 @@ export default function PreviewPlanScreen() {
               </View>
 
               <Text style={{ fontFamily: fonts.mono, fontSize: 11, color: tokens.textMute }}>
-                ~{day.estimatedDuration} min
+                ~{day.estimatedDuration} {t('common.min')}
               </Text>
 
-              {/* Muscle tags */}
               {day.muscleGroups.length > 0 && (
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 4 }}>
                   {day.muscleGroups.map((mg) => (
@@ -118,7 +147,7 @@ export default function PreviewPlanScreen() {
                       paddingVertical: 2,
                     }}>
                       <Text style={{ fontFamily: fonts.sansB, fontSize: 8, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 1 }}>
-                        {mg}
+                        {translateMuscleGroup(mg, t)}
                       </Text>
                     </View>
                   ))}
@@ -155,7 +184,7 @@ export default function PreviewPlanScreen() {
                     {ex.exerciseName}
                   </Text>
                   <Text style={{ fontFamily: fonts.mono, fontSize: 11, color: tokens.textMute }}>
-                    {ex.defaultSets}s x {ex.defaultReps}r / {ex.defaultRestSeconds}s rest
+                    {ex.defaultSets} {t('common.sets')} x {ex.defaultReps} {t('common.reps')} · {ex.defaultRestSeconds}s repos
                   </Text>
                 </View>
               </View>
@@ -164,7 +193,7 @@ export default function PreviewPlanScreen() {
         ))}
       </ScrollView>
 
-      {/* Bottom actions */}
+      {/* Bottom actions — two CTAs */}
       <View style={{
         position: 'absolute', bottom: 0, left: 0, right: 0,
         backgroundColor: tokens.bg,
@@ -174,8 +203,8 @@ export default function PreviewPlanScreen() {
         borderTopColor: tokens.border,
       }}>
         <Button
-          label={t('plans.activatePlan') || 'Activate this plan'}
-          onPress={() => acceptPlan.mutate(proposedPlan)}
+          label={t('ai.previewActivate')}
+          onPress={handleActivate}
           loading={acceptPlan.isPending}
         />
         <TouchableOpacity
@@ -187,11 +216,11 @@ export default function PreviewPlanScreen() {
             borderWidth: 1,
             borderColor: tokens.border,
           }}
-          accessibilityLabel="Ask for changes"
+          accessibilityLabel={t('ai.previewEdit')}
           accessibilityRole="button"
         >
           <Text style={{ fontFamily: fonts.sansB, fontSize: 13, color: tokens.textDim, textTransform: 'uppercase', letterSpacing: 1 }}>
-            ASK FOR CHANGES
+            {t('ai.previewEdit')}
           </Text>
         </TouchableOpacity>
       </View>

@@ -182,6 +182,7 @@ export const workoutPlans = pgTable('workout_plans', {
   userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
   name: text('name').notNull(),
   isActive: boolean('is_active').notNull().default(false),
+  generatedByAi: boolean('generated_by_ai').notNull().default(false),
   startDate: timestamp('start_date').notNull().defaultNow(),
   endDate: timestamp('end_date'),
   createdAt: timestamp('created_at').notNull().defaultNow(),

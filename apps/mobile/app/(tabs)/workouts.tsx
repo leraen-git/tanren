@@ -7,13 +7,17 @@ import { useTheme } from '@/theme/ThemeContext'
 import { SkeletonCard } from '@/components/SkeletonCard'
 import { trpc } from '@/lib/trpc'
 import { useTranslation } from 'react-i18next'
+import { translateMuscleGroup } from '@/hooks/useExercises'
 
-const DOW_KEY = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'] as const
+const DOW_SHORT: Record<number, string> = { 1: 'Lun', 2: 'Mar', 3: 'Mer', 4: 'Jeu', 5: 'Ven', 6: 'Sam', 7: 'Dim' }
+const DOW_KEY: Record<number, string> = { 1: 'mon', 2: 'tue', 3: 'wed', 4: 'thu', 5: 'fri', 6: 'sat', 7: 'sun' }
 
-function SectionHeader({ title, onAdd, addLabel }: { title: string; onAdd: () => void; addLabel: string }) {
+function jsDowToUi(jsDow: number): number { return jsDow === 0 ? 7 : jsDow }
+
+function SectionLabel({ title, count, onAdd, addLabel }: { title: string; count?: number; onAdd?: () => void; addLabel?: string }) {
   const { tokens, fonts } = useTheme()
   return (
-    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
       <Text style={{
         fontFamily: fonts.sansB,
         fontSize: 10,
@@ -21,201 +25,197 @@ function SectionHeader({ title, onAdd, addLabel }: { title: string; onAdd: () =>
         color: tokens.textMute,
         textTransform: 'uppercase',
       }}>
-        {title}
+        {title}{count != null ? ` (${count})` : ''}
       </Text>
-      <TouchableOpacity onPress={onAdd} accessibilityLabel={addLabel} accessibilityRole="button">
-        <Text style={{
-          fontFamily: fonts.sansB,
-          fontSize: 10,
-          letterSpacing: 1,
-          color: tokens.accent,
-          textTransform: 'uppercase',
-        }}>
-          + {addLabel}
-        </Text>
-      </TouchableOpacity>
+      {onAdd && addLabel && (
+        <TouchableOpacity onPress={onAdd} accessibilityLabel={addLabel} accessibilityRole="button">
+          <Text style={{
+            fontFamily: fonts.sansB,
+            fontSize: 10,
+            letterSpacing: 1,
+            color: tokens.accent,
+            textTransform: 'uppercase',
+          }}>
+            {addLabel}
+          </Text>
+        </TouchableOpacity>
+      )}
     </View>
   )
 }
 
-export default function WorkoutsScreen() {
+export default function TrainingScreen() {
   const { tokens, fonts } = useTheme()
   const { t } = useTranslation()
   const bannerVisible = useGuestBannerVisible()
 
   const utils = trpc.useUtils()
-  const { data: plans, isLoading: plansLoading, refetch: refetchPlans, isRefetching } = trpc.plans.list.useQuery()
+  const { data: activePlan, isLoading: planLoading, isRefetching } = trpc.plans.active.useQuery()
   const { data: workouts, isLoading: workoutsLoading, refetch: refetchWorkouts } = trpc.workouts.list.useQuery()
+  const { data: plans } = trpc.plans.list.useQuery()
+  const { data: user } = trpc.auth.me.useQuery()
+  const isGuest = user?.authProvider === 'guest'
 
-  const activatePlan = trpc.plans.activate.useMutation({
-    onSuccess: () => { utils.plans.list.invalidate(); utils.plans.active.invalidate() },
-  })
+  const todayUiDow = jsDowToUi(new Date().getDay())
 
-  const activePlan = plans?.find((p) => p.isActive)
+  const refetch = () => {
+    utils.plans.active.invalidate()
+    utils.plans.list.invalidate()
+    refetchWorkouts()
+  }
+
+  const nextWorkout = activePlan?.stats?.nextWorkout
   const inactivePlans = plans?.filter((p) => !p.isActive) ?? []
-
-  const refetch = () => { refetchPlans(); refetchWorkouts() }
-
-  type PlanDay = { id: string; dayOfWeek: number; workoutName: string; workoutTemplateId: string; muscleGroups?: string[] }
-  const sortedDays = (days: PlanDay[]) =>
-    [...days].sort((a, b) => ((a.dayOfWeek + 6) % 7) - ((b.dayOfWeek + 6) % 7))
 
   return (
     <SafeAreaView edges={bannerVisible ? [] : ['top']} style={{ flex: 1, backgroundColor: tokens.bg }}>
       <ScrollView
-        contentContainerStyle={{ padding: 16, gap: 20 }}
+        contentContainerStyle={{ padding: 16, gap: 24, paddingBottom: 100 }}
         refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor={tokens.accent} />}
       >
-        {/* Plans section */}
-        <View>
-          <SectionHeader
-            title={t('workout.myPlan')}
-            onAdd={() => router.push('/plans/create')}
-            addLabel={t('workout.addNew')}
-          />
+        {/* Screen title */}
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Text style={{ fontFamily: fonts.sansX, fontSize: 24, color: tokens.text, textTransform: 'uppercase' }}>
+            {t('training.title')}
+          </Text>
+          <TouchableOpacity onPress={() => router.push('/workout/build')} accessibilityLabel={t('training.newWorkout')} accessibilityRole="button">
+            <Text style={{ fontFamily: fonts.sansB, fontSize: 10, letterSpacing: 1, color: tokens.accent, textTransform: 'uppercase' }}>
+              {t('training.newWorkout')}
+            </Text>
+          </TouchableOpacity>
+        </View>
 
-          {plansLoading && <SkeletonCard height={120} />}
+        {/* Today block */}
+        {nextWorkout && (
+          <TouchableOpacity
+            onPress={() => router.push(`/workout/preview?templateId=${nextWorkout.workoutTemplateId}`)}
+            style={{
+              backgroundColor: tokens.surface1,
+              borderWidth: 1,
+              borderColor: tokens.accent,
+              padding: 16,
+              gap: 8,
+            }}
+            accessibilityLabel={t('training.startSession')}
+            accessibilityRole="button"
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
+                {t('training.todayLabel')} · {DOW_SHORT[todayUiDow]}
+              </Text>
+              <View style={{ backgroundColor: tokens.accent, paddingHorizontal: 8, paddingVertical: 2 }}>
+                <Text style={{ fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 2, color: '#FFFFFF', textTransform: 'uppercase' }}>
+                  {t('training.todayLabel').toUpperCase()}
+                </Text>
+              </View>
+            </View>
+            <Text style={{ fontFamily: fonts.sansX, fontSize: 22, color: tokens.text, textTransform: 'uppercase' }}>
+              {nextWorkout.workoutName}
+            </Text>
+            <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute }}>
+              {nextWorkout.muscleGroups?.slice(0, 3).map((mg: string) => translateMuscleGroup(mg, t)).join(' · ')}
+              {nextWorkout.estimatedDuration ? ` · ~${nextWorkout.estimatedDuration} ${t('common.min')}` : ''}
+            </Text>
+            <TouchableOpacity
+              onPress={() => router.push(`/workout/preview?templateId=${nextWorkout.workoutTemplateId}`)}
+              style={{
+                backgroundColor: tokens.accent,
+                height: 44,
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginTop: 4,
+              }}
+              accessibilityLabel={t('training.startSession')}
+              accessibilityRole="button"
+            >
+              <Text style={{ fontFamily: fonts.sansX, fontSize: 14, color: '#FFFFFF', textTransform: 'uppercase', letterSpacing: 1 }}>
+                {t('training.startSession')}
+              </Text>
+            </TouchableOpacity>
+          </TouchableOpacity>
+        )}
 
-          {activePlan && (
+        {/* Active plan */}
+        {planLoading && <SkeletonCard height={140} />}
+        {activePlan && (
+          <View>
+            <SectionLabel title={t('training.myActivePlan')} />
             <TouchableOpacity
               onPress={() => router.push(`/plans/create?id=${activePlan.id}`)}
               style={{
                 backgroundColor: tokens.surface1,
                 borderWidth: 1,
-                borderColor: tokens.accent,
-                overflow: 'hidden',
+                borderColor: tokens.border,
               }}
-              accessibilityLabel={`${t('workout.myPlan')}: ${activePlan.name}`}
+              accessibilityLabel={activePlan.name}
               accessibilityRole="button"
             >
-              <View style={{ padding: 16, gap: 4 }}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <View style={{
-                    backgroundColor: tokens.accent,
-                    paddingHorizontal: 8,
-                    paddingVertical: 2,
-                  }}>
-                    <Text style={{
-                      fontFamily: fonts.sansB,
-                      fontSize: 9,
-                      letterSpacing: 2,
-                      color: '#FFFFFF',
-                      textTransform: 'uppercase',
-                    }}>
-                      {t('workout.activeBadge')}
-                    </Text>
-                  </View>
-                  <Text style={{ fontFamily: fonts.sans, fontSize: 20, color: tokens.textMute }}>›</Text>
+              <View style={{ padding: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                <View style={{ gap: 2 }}>
+                  <Text style={{ fontFamily: fonts.sansX, fontSize: 18, color: tokens.text, textTransform: 'uppercase' }}>
+                    {activePlan.name}
+                  </Text>
+                  <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute }}>
+                    {activePlan.days.length} {t('common.exercises')} / {t('common.sets').toLowerCase()}
+                  </Text>
                 </View>
-                <Text style={{
-                  fontFamily: fonts.sansX,
-                  fontSize: 20,
-                  color: tokens.text,
-                  textTransform: 'uppercase',
-                  letterSpacing: 0.5,
-                }}>
-                  {activePlan.name}
-                </Text>
-                <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute }}>
-                  {t('workout.daysPerWeek', { count: activePlan.days.length })}
-                </Text>
+                <View style={{ backgroundColor: tokens.accent, paddingHorizontal: 8, paddingVertical: 2 }}>
+                  <Text style={{ fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 2, color: '#FFFFFF', textTransform: 'uppercase' }}>
+                    {t('training.active')}
+                  </Text>
+                </View>
               </View>
-
-              <View style={{ height: 1, backgroundColor: tokens.border }} />
-
-              <View style={{ padding: 16, gap: 8 }}>
-                {sortedDays(activePlan.days).map((d) => (
-                  <View key={d.id} style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-                    <View style={{
-                      width: 40,
-                      height: 40,
-                      backgroundColor: tokens.surface2,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}>
-                      <Text style={{ fontFamily: fonts.sansB, fontSize: 12, color: tokens.accent }}>
-                        {t(`days.${DOW_KEY[d.dayOfWeek]}`)}
+              {/* 7-day schedule grid */}
+              <View style={{ flexDirection: 'row', borderTopWidth: 1, borderTopColor: tokens.border }}>
+                {[1, 2, 3, 4, 5, 6, 7].map((dow) => {
+                  const assigned = activePlan.days.find((d) => d.dayOfWeek === dow)
+                  const isToday = dow === todayUiDow
+                  const isDone = activePlan.stats?.doneTemplateIds?.includes(assigned?.workoutTemplateId ?? '')
+                  return (
+                    <View
+                      key={dow}
+                      style={{
+                        flex: 1,
+                        paddingVertical: 8,
+                        alignItems: 'center',
+                        gap: 2,
+                        borderRightWidth: dow < 7 ? 1 : 0,
+                        borderRightColor: tokens.border,
+                        backgroundColor: assigned ? (isDone ? tokens.green + '18' : tokens.accent + '12') : 'transparent',
+                        borderBottomWidth: isToday ? 2 : 0,
+                        borderBottomColor: tokens.accent,
+                      }}
+                    >
+                      <Text style={{
+                        fontFamily: fonts.sansB,
+                        fontSize: 9,
+                        letterSpacing: 1,
+                        color: isToday ? tokens.accent : tokens.textMute,
+                        textTransform: 'uppercase',
+                      }}>
+                        {DOW_SHORT[dow]?.charAt(0)}
                       </Text>
-                    </View>
-                    <View style={{ flex: 1 }}>
-                      <Text style={{ fontFamily: fonts.sansM, fontSize: 14, color: tokens.text }}>
-                        {d.workoutName}
-                      </Text>
-                      {d.muscleGroups && d.muscleGroups.length > 0 && (
-                        <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute }}>
-                          {d.muscleGroups.slice(0, 3).join(' · ')}
-                        </Text>
+                      {assigned ? (
+                        <View style={{
+                          width: 6,
+                          height: 6,
+                          backgroundColor: isDone ? tokens.green : tokens.accent,
+                        }} />
+                      ) : (
+                        <Text style={{ fontFamily: fonts.mono, fontSize: 7, color: tokens.textGhost }}>—</Text>
                       )}
                     </View>
-                  </View>
-                ))}
+                  )
+                })}
               </View>
             </TouchableOpacity>
-          )}
+          </View>
+        )}
 
-          {inactivePlans.length > 0 && (
-            <View style={{ marginTop: 12, gap: 8 }}>
-              <Text style={{
-                fontFamily: fonts.sansB,
-                fontSize: 9,
-                letterSpacing: 2,
-                color: tokens.textGhost,
-                textTransform: 'uppercase',
-              }}>
-                {t('workout.otherPlans')}
-              </Text>
-              {inactivePlans.map((plan) => (
-                <TouchableOpacity
-                  key={plan.id}
-                  onPress={() => router.push(`/plans/create?id=${plan.id}`)}
-                  style={{
-                    backgroundColor: tokens.surface1,
-                    borderWidth: 1,
-                    borderColor: tokens.border,
-                    padding: 16,
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                  }}
-                  accessibilityLabel={plan.name}
-                  accessibilityRole="button"
-                >
-                  <View style={{ flex: 1, gap: 2 }}>
-                    <Text style={{ fontFamily: fonts.sansB, fontSize: 14, color: tokens.text }}>
-                      {plan.name}
-                    </Text>
-                    <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute }}>
-                      {t('workout.daysPerWeek', { count: plan.days.length })}
-                    </Text>
-                  </View>
-                  <TouchableOpacity
-                    onPress={(e) => { e.stopPropagation?.(); activatePlan.mutate({ id: plan.id }) }}
-                    style={{
-                      borderWidth: 1,
-                      borderColor: tokens.accent,
-                      paddingHorizontal: 8,
-                      paddingVertical: 4,
-                      marginRight: 8,
-                    }}
-                    accessibilityLabel={t('workout.activate')}
-                    accessibilityRole="button"
-                  >
-                    <Text style={{
-                      fontFamily: fonts.sansB,
-                      fontSize: 10,
-                      letterSpacing: 1,
-                      textTransform: 'uppercase',
-                      color: tokens.accent,
-                    }}>
-                      {t('workout.activate')}
-                    </Text>
-                  </TouchableOpacity>
-                  <Text style={{ fontFamily: fonts.sans, fontSize: 20, color: tokens.textMute }}>›</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          )}
-
-          {!plansLoading && !plans?.length && (
+        {/* No plan state */}
+        {!planLoading && !activePlan && (
+          <View>
+            <SectionLabel title={t('home.plan')} />
             <TouchableOpacity
               onPress={() => router.push('/plans/create')}
               style={{
@@ -226,61 +226,92 @@ export default function WorkoutsScreen() {
                 alignItems: 'center',
                 gap: 8,
               }}
-              accessibilityLabel={t('workout.noPlanYet')}
+              accessibilityLabel={t('training.createPlan')}
               accessibilityRole="button"
             >
-              <Text style={{
-                fontFamily: fonts.sansM,
-                fontSize: 14,
-                color: tokens.text,
-              }}>
-                {t('workout.noPlanYet')}
+              <Text style={{ fontFamily: fonts.sansM, fontSize: 14, color: tokens.text }}>
+                {t('training.noPlan')}
               </Text>
-              <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute }}>
-                {t('workout.noPlanYetDesc')}
+              <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute, textAlign: 'center' }}>
+                {t('training.noPlanDesc')}
               </Text>
             </TouchableOpacity>
-          )}
-        </View>
+          </View>
+        )}
 
-        {/* Workout templates */}
-        <View>
-          <SectionHeader
-            title={t('tabs.workouts')}
-            onAdd={() => router.push('/workout/build')}
-            addLabel={t('workout.addNew')}
-          />
-
-          {workoutsLoading && [1, 2, 3].map((i) => <SkeletonCard key={i} height={72} />)}
-
-          <View style={{ gap: 1, borderWidth: 1, borderColor: tokens.border }}>
-            {workouts?.map((w, idx) => (
+        {/* Other plans */}
+        {inactivePlans.length > 0 && (
+          <View>
+            <SectionLabel title={t('workout.otherPlans')} />
+            {inactivePlans.map((plan) => (
               <TouchableOpacity
-                key={w.id}
-                onPress={() => router.push(`/workout/${w.id}`)}
+                key={plan.id}
+                onPress={() => router.push(`/plans/create?id=${plan.id}`)}
                 style={{
                   backgroundColor: tokens.surface1,
-                  padding: 16,
+                  borderWidth: 1,
+                  borderColor: tokens.border,
+                  padding: 12,
                   flexDirection: 'row',
                   alignItems: 'center',
-                  borderTopWidth: idx > 0 ? 1 : 0,
-                  borderTopColor: tokens.border,
+                  marginBottom: 6,
                 }}
-                accessibilityLabel={w.name}
+                accessibilityLabel={plan.name}
                 accessibilityRole="button"
               >
                 <View style={{ flex: 1, gap: 2 }}>
-                  <Text style={{ fontFamily: fonts.sansB, fontSize: 14, color: tokens.text }}>
-                    {w.name}
-                  </Text>
+                  <Text style={{ fontFamily: fonts.sansB, fontSize: 14, color: tokens.text }}>{plan.name}</Text>
                   <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute }}>
-                    {w.muscleGroups.length > 0 ? `${w.muscleGroups.slice(0, 3).join(' · ')} · ` : ''}{w.estimatedDuration} {t('common.min')}
+                    {plan.days.length} j/sem
                   </Text>
                 </View>
                 <Text style={{ fontFamily: fonts.sans, fontSize: 20, color: tokens.textMute }}>›</Text>
               </TouchableOpacity>
             ))}
           </View>
+        )}
+
+        {/* Workouts list */}
+        <View>
+          <SectionLabel
+            title={t('training.mySeances')}
+            count={workouts?.length}
+            onAdd={() => router.push('/workout/build')}
+            addLabel={t('training.newWorkout')}
+          />
+
+          {workoutsLoading && [1, 2, 3].map((i) => <SkeletonCard key={i} height={64} />)}
+
+          {workouts && workouts.length > 0 && (
+            <View style={{ borderWidth: 1, borderColor: tokens.border }}>
+              {workouts.map((w, idx) => (
+                <TouchableOpacity
+                  key={w.id}
+                  onPress={() => router.push(`/workout/${w.id}`)}
+                  style={{
+                    backgroundColor: tokens.surface1,
+                    padding: 12,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    borderTopWidth: idx > 0 ? 1 : 0,
+                    borderTopColor: tokens.border,
+                  }}
+                  accessibilityLabel={w.name}
+                  accessibilityRole="button"
+                >
+                  <View style={{ flex: 1, gap: 2 }}>
+                    <Text style={{ fontFamily: fonts.sansB, fontSize: 14, color: tokens.text }}>
+                      {w.name}
+                    </Text>
+                    <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute }}>
+                      {w.muscleGroups.length > 0 ? `${w.muscleGroups.slice(0, 3).map((mg) => translateMuscleGroup(mg, t)).join(' · ')} · ` : ''}{w.estimatedDuration} {t('common.min')}
+                    </Text>
+                  </View>
+                  <Text style={{ fontFamily: fonts.sans, fontSize: 20, color: tokens.textMute }}>›</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
 
           {!workoutsLoading && workouts?.length === 0 && (
             <TouchableOpacity
@@ -293,17 +324,47 @@ export default function WorkoutsScreen() {
                 alignItems: 'center',
                 gap: 8,
               }}
-              accessibilityLabel={t('workout.noWorkoutsYet')}
               accessibilityRole="button"
             >
-              <Text style={{ fontFamily: fonts.sansM, fontSize: 14, color: tokens.text }}>
-                {t('workout.noWorkoutsYet')}
-              </Text>
-              <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute }}>
-                {t('workout.noWorkoutsYetDesc')}
-              </Text>
+              <Text style={{ fontFamily: fonts.sansM, fontSize: 14, color: tokens.text }}>{t('training.noWorkouts')}</Text>
+              <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute }}>{t('training.noWorkoutsDesc')}</Text>
             </TouchableOpacity>
           )}
+        </View>
+
+        {/* AI Plan card */}
+        <View>
+          <SectionLabel title={t('training.aiPlan')} />
+          <TouchableOpacity
+            onPress={isGuest ? undefined : () => router.push('/plans/generate')}
+            disabled={isGuest}
+            style={{
+              backgroundColor: tokens.surface1,
+              padding: 16,
+              borderWidth: 1,
+              borderStyle: 'dashed',
+              borderColor: isGuest ? tokens.border : tokens.accent,
+              gap: 8,
+              opacity: isGuest ? 0.4 : 1,
+            }}
+            accessibilityLabel={t('training.aiCardTitle')}
+            accessibilityRole="button"
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+              <Text style={{ fontFamily: fonts.jp, fontSize: 24, color: tokens.accent, opacity: 0.6 }}>鍛</Text>
+              <View style={{ flex: 1 }}>
+                <Text style={{ fontFamily: fonts.sansB, fontSize: 14, color: tokens.text, textTransform: 'uppercase' }}>
+                  {t('training.aiCardTitle')}
+                </Text>
+                <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute }}>
+                  {t('training.aiCardDesc')}
+                </Text>
+              </View>
+            </View>
+            <Text style={{ fontFamily: fonts.sansB, fontSize: 12, color: tokens.accent, textAlign: 'right' }}>
+              {t('training.aiCardCta')}
+            </Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>

@@ -8,6 +8,12 @@ import { trpc } from '@/lib/trpc'
 import { useAIPlanStore } from '@/stores/aiPlanStore'
 import { useTranslation } from 'react-i18next'
 
+const SUGGESTIONS = [
+  { titleKey: 'ai.suggestionPpl', descKey: 'ai.suggestionPplDesc', promptKey: 'ai.suggestionPplPrompt' },
+  { titleKey: 'ai.suggestionUpperLower', descKey: 'ai.suggestionUpperLowerDesc', promptKey: 'ai.suggestionUpperLowerPrompt' },
+  { titleKey: 'ai.suggestionFullBody', descKey: 'ai.suggestionFullBodyDesc', promptKey: 'ai.suggestionFullBodyPrompt' },
+] as const
+
 export default function GeneratePlanScreen() {
   const { tokens, fonts } = useTheme()
   const { t } = useTranslation()
@@ -26,13 +32,6 @@ export default function GeneratePlanScreen() {
     INTERMEDIATE: t('profile.levelIntermediate'),
     ADVANCED: t('profile.levelAdvanced'),
   }
-
-  const PROMPT_SUGGESTIONS = [
-    t('generate.suggestion1'),
-    t('generate.suggestion2'),
-    t('generate.suggestion3'),
-    t('generate.suggestion4'),
-  ]
 
   const handleGenerate = () => {
     const trimmed = prompt.trim()
@@ -57,7 +56,7 @@ export default function GeneratePlanScreen() {
             accessibilityRole="button"
           >
             <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.accent, textTransform: 'uppercase', letterSpacing: 2 }}>
-              {'< BACK'}
+              {'< '}{t('common.back').toUpperCase()}
             </Text>
           </TouchableOpacity>
           <View style={{ flex: 1 }} />
@@ -71,33 +70,33 @@ export default function GeneratePlanScreen() {
           </View>
         </View>
 
-        {/* Title */}
-        <View style={{ paddingHorizontal: 16, marginBottom: 16 }}>
-          <Text style={{ fontFamily: fonts.sansX, fontSize: 24, color: tokens.text, textTransform: 'uppercase' }}>
-            {isRefinement ? t('generate.titleRefine') : t('generate.title')}
-          </Text>
-          <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute, marginTop: 4 }}>
-            {t('generate.poweredBy')}
-          </Text>
-        </View>
-
         <ScrollView
           contentContainerStyle={{ padding: 16, gap: 20, paddingBottom: 40 }}
           keyboardShouldPersistTaps="handled"
         >
+          {/* Hero */}
+          <View style={{ gap: 4 }}>
+            <Text style={{ fontFamily: fonts.sansX, fontSize: 24, color: tokens.text, textTransform: 'uppercase' }}>
+              {isRefinement ? t('ai.heroTitleRefine') : t('ai.heroTitleInitial')}
+            </Text>
+            <Text style={{ fontFamily: fonts.sans, fontSize: 13, color: tokens.textMute }}>
+              {isRefinement ? t('ai.heroDescRefine') : t('ai.heroDescInitial')}
+            </Text>
+          </View>
+
           {/* Profile chips */}
           {user && (
             <View style={{ gap: 8 }}>
               <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
-                YOUR PROFILE
+                {t('ai.profile').toUpperCase()}
               </Text>
               <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
                 {[
                   LEVEL_LABELS[user.level] ?? user.level,
                   GOAL_LABELS[user.goal] ?? user.goal,
-                  t('generate.xPerWeek', { n: user.weeklyTarget }),
-                  ...(user.weightKg ? [`${user.weightKg}kg`] : []),
-                  ...(user.heightCm ? [`${user.heightCm}cm`] : []),
+                  `${user.weeklyTarget}× ${t('ai.perWeek')}`,
+                  ...(user.weightKg ? [`${user.weightKg} kg`] : []),
+                  ...(user.heightCm ? [`${user.heightCm} cm`] : []),
                 ].map((chip) => (
                   <View
                     key={chip}
@@ -117,15 +116,31 @@ export default function GeneratePlanScreen() {
             </View>
           )}
 
+          {/* Conversation history */}
+          {isRefinement && conversationHistory.length > 0 && (
+            <View style={{ gap: 8 }}>
+              {conversationHistory.map((msg, i) => (
+                <View key={i} style={{ gap: 2 }}>
+                  <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: msg.role === 'user' ? tokens.accent : tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
+                    {msg.role === 'user' ? t('ai.conversationToi') : t('ai.conversationIa')}
+                  </Text>
+                  <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textDim }} numberOfLines={3}>
+                    {msg.content}
+                  </Text>
+                </View>
+              ))}
+            </View>
+          )}
+
           {/* Prompt input */}
           <View style={{ gap: 8 }}>
             <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
-              {isRefinement ? t('generate.refinementLabel').toUpperCase() : t('generate.describeLabel').toUpperCase()}
+              {isRefinement ? t('ai.adjustments').toUpperCase() : t('ai.request').toUpperCase()}
             </Text>
             <TextInput
               value={prompt}
               onChangeText={setPrompt}
-              placeholder={isRefinement ? t('generate.refinementPlaceholder') : t('generate.placeholder')}
+              placeholder={isRefinement ? t('ai.promptPlaceholderRefine') : t('ai.promptPlaceholderInitial')}
               placeholderTextColor={tokens.textGhost}
               multiline
               numberOfLines={5}
@@ -140,39 +155,39 @@ export default function GeneratePlanScreen() {
                 borderWidth: 1,
                 borderColor: tokens.border,
               }}
-              accessibilityLabel={t('generate.describeLabel')}
+              accessibilityLabel={t('ai.request')}
             />
           </View>
 
-          {/* Quick suggestions */}
+          {/* Suggestions */}
           {!isRefinement && (
             <View style={{ gap: 8 }}>
               <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
-                QUICK START
+                {t('ai.suggestions').toUpperCase()}
               </Text>
               <View style={{ gap: 0 }}>
-                {PROMPT_SUGGESTIONS.map((s, i) => (
+                {SUGGESTIONS.map((s, i) => (
                   <TouchableOpacity
-                    key={s}
-                    onPress={() => setPrompt(s)}
+                    key={s.titleKey}
+                    onPress={() => setPrompt(t(s.promptKey))}
                     style={{
                       paddingVertical: 12,
                       paddingHorizontal: 12,
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      gap: 8,
                       borderBottomWidth: 1,
                       borderBottomColor: tokens.border,
                       borderTopWidth: i === 0 ? 1 : 0,
                       borderTopColor: tokens.border,
+                      gap: 2,
                     }}
-                    accessibilityLabel={s}
+                    accessibilityLabel={t(s.titleKey)}
                     accessibilityRole="button"
                   >
-                    <Text style={{ fontFamily: fonts.sans, fontSize: 13, color: tokens.textDim, flex: 1 }}>
-                      {s}
+                    <Text style={{ fontFamily: fonts.sansB, fontSize: 13, color: tokens.text, textTransform: 'uppercase' }}>
+                      {t(s.titleKey)}
                     </Text>
-                    <Text style={{ color: tokens.accent, fontFamily: fonts.sansB, fontSize: 12 }}>-{'>'}</Text>
+                    <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute }}>
+                      {t(s.descKey)}
+                    </Text>
                   </TouchableOpacity>
                 ))}
               </View>
@@ -180,7 +195,7 @@ export default function GeneratePlanScreen() {
           )}
 
           <Button
-            label={isRefinement ? t('generate.regenerateBtn') : t('generate.generateBtn')}
+            label={isRefinement ? t('ai.refine') : t('ai.generate')}
             onPress={handleGenerate}
           />
         </ScrollView>
