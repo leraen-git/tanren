@@ -20,6 +20,7 @@
     "@tanren/api": "*",
     "@tanren/shared": "*",
     "@tanstack/react-query": "^5.64.1",
+    "@tanstack/react-query-persist-client": "^5.100.1",
     "@trpc/client": "^11.0.0",
     "@trpc/react-query": "^11.0.0",
     "expo": "^55.0.17",

@@ -1,7 +1,9 @@
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { Stack, router } from 'expo-router'
 import { ThemeProvider, useTheme } from '@/theme/ThemeContext'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { QueryClient } from '@tanstack/react-query'
+import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client'
+import { mmkvPersister } from '@/lib/queryPersister'
 import { trpc } from '@/lib/trpc'
 import { httpBatchLink } from '@trpc/client'
 import React, { useState, useEffect, useRef } from 'react'
@@ -48,7 +50,7 @@ function TRPCProvider({ children }: { children: React.ReactNode }) {
   const { token } = useAuth()
 
   const [queryClient] = useState(() => new QueryClient({
-    defaultOptions: { queries: { retry: 1, staleTime: 30_000 } },
+    defaultOptions: { queries: { retry: 1, staleTime: 30_000, gcTime: 24 * 60 * 60 * 1000 } },
   }))
 
   const tokenRef = useRef<string | null>(token)
@@ -89,7 +91,18 @@ function TRPCProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <trpc.Provider client={trpcClient} queryClient={queryClient}>
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+      <PersistQueryClientProvider
+        client={queryClient}
+        persistOptions={{
+          persister: mmkvPersister,
+          maxAge: 24 * 60 * 60 * 1000,
+        }}
+        onSuccess={() => {
+          queryClient.resumePausedMutations()
+        }}
+      >
+        {children}
+      </PersistQueryClientProvider>
     </trpc.Provider>
   )
 }
