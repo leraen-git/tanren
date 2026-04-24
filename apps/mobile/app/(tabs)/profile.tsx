@@ -252,9 +252,8 @@ export default function ProfileScreen() {
   const updateMe = trpc.users.updateMe.useMutation({ onSuccess: () => refetch() })
   const deleteMe = trpc.users.deleteMe.useMutation({
     onSuccess: async () => {
-      await utils.invalidate()
       await signOut()
-      router.replace('/sign-in')
+      utils.invalidate()
     },
     onError: (err) => Alert.alert(t('common.error'), err.message),
   })
@@ -291,9 +290,8 @@ export default function ProfileScreen() {
 
   const handleLogout = async () => {
     closeModal()
-    await utils.invalidate()
     await signOut()
-    router.replace('/sign-in')
+    utils.invalidate()
   }
 
   const goalLabels: Record<string, string> = {

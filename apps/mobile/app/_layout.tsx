@@ -121,18 +121,22 @@ function TRPCProvider({ children }: { children: React.ReactNode }) {
 }
 
 function OnboardingGate() {
+  const { status } = useAuth()
   const me = useProfile()
   const redirected = useRef(false)
 
   useEffect(() => {
+    if (status !== 'authenticated') {
+      redirected.current = false
+      return
+    }
     if (redirected.current) return
     if (me.data && !me.data.onboardingDone) {
       redirected.current = true
-      // Guests and email users skip the consent screen (no provider data to display)
       const skipConsent = me.data.authProvider === 'guest' || me.data.authProvider === 'email'
       router.replace(skipConsent ? '/onboarding/step1' : '/onboarding/step0')
     }
-  }, [me.data])
+  }, [me.data, status])
 
   return null
 }
@@ -241,8 +245,7 @@ function AuthGate({ children }: { children: React.ReactNode }) {
     }
   }, [status])
 
-  // While loading the stored token, render nothing (splash is already shown)
-  if (status === 'loading') return null
+  if (status === 'loading' || status === 'unauthenticated') return null
 
   return (
     <GuestBannerProvider value={isGuest ?? false}>
