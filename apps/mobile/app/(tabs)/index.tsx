@@ -38,9 +38,10 @@ export default function HomeScreen() {
     const isFr = i18n.language === 'fr'
     const dayName = isFr ? DAY_NAMES_FR_JS[dayIdx] : DAY_NAMES_FULL_JS[dayIdx]
     let timeOfDay: string
-    if (hour < 12) timeOfDay = t('home.greeting_morning')
-    else if (hour < 17) timeOfDay = t('home.greeting_afternoon')
-    else timeOfDay = t('home.greeting_evening')
+    if (hour >= 5 && hour < 12) timeOfDay = t('home.greeting_morning')
+    else if (hour >= 12 && hour < 17) timeOfDay = t('home.greeting_afternoon')
+    else if (hour >= 17 && hour < 22) timeOfDay = t('home.greeting_evening')
+    else timeOfDay = t('home.greeting_night')
     return `${dayName} ${timeOfDay}`
   }
 

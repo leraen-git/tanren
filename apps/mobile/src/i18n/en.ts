@@ -42,6 +42,7 @@ export const en = {
     greeting_morning: 'morning',
     greeting_afternoon: 'afternoon',
     greeting_evening: 'evening',
+    greeting_night: 'night',
     today: 'Today',
     workout: 'Training',
     diet: 'Nutrition',

@@ -83,7 +83,9 @@ export const plansRouter = router({
     return plansWithDays
   }),
 
-  active: protectedProcedure.query(async ({ ctx }) => {
+  active: protectedProcedure
+    .input(z.object({ tzOffset: z.number().int().min(-840).max(840).optional() }).optional())
+    .query(async ({ ctx, input }) => {
     const user = await resolveUser(ctx.db, ctx.userId)
     const [plan] = await ctx.db
       .select()
@@ -109,14 +111,16 @@ export const plansRouter = router({
     // Map to UI convention
     const uiDays = days.map(d => ({ ...d, dayOfWeek: dowDbToUi(d.dayOfWeek) }))
 
-    // Sessions this week (Mon–Sun)
+    // Sessions this week (Mon–Sun), using client timezone
     const now = new Date()
-    const dayOfWeek = now.getDay()
-    const monday = new Date(now)
-    monday.setDate(now.getDate() - ((dayOfWeek + 6) % 7))
-    monday.setHours(0, 0, 0, 0)
+    const tzOffsetMin = input?.tzOffset ?? 0
+    const clientNow = new Date(now.getTime() - tzOffsetMin * 60_000)
+    const dayOfWeek = clientNow.getUTCDay()
+    const monday = new Date(clientNow)
+    monday.setUTCDate(clientNow.getUTCDate() - ((dayOfWeek + 6) % 7))
+    monday.setUTCHours(0, 0, 0, 0)
     const sunday = new Date(monday)
-    sunday.setDate(monday.getDate() + 7)
+    sunday.setUTCDate(monday.getUTCDate() + 7)
 
     const thisWeekSessions = await ctx.db
       .select({ id: workoutSessions.id, startedAt: workoutSessions.startedAt, workoutTemplateId: workoutSessions.workoutTemplateId })
@@ -164,7 +168,7 @@ export const plansRouter = router({
       }
     }
 
-    const todayDow = now.getDay()
+    const todayDow = dayOfWeek
     const doneTemplateIdsThisWeek = new Set(thisWeekSessions.map((s) => s.workoutTemplateId))
 
     // Sort using DB day values for proximity calculation
