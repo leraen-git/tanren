@@ -161,9 +161,9 @@ export default function ExploreScreen() {
     {
       label: t('explore.groupWorkouts'),
       items: [
-        { icon: 'WK', title: t('explore.workoutBuilder'), desc: t('explore.workoutBuilderDesc'), route: '/(tabs)/workouts', used: hasSessions },
-        { icon: '>', title: t('explore.activeSession'), desc: t('explore.activeSessionDesc'), route: '/(tabs)/workouts', used: hasSessions },
-        { icon: 'T', title: t('explore.restTimer'), desc: t('explore.restTimerDesc'), route: '/(tabs)/workouts', used: hasSessions },
+        { icon: 'WK', title: t('explore.workoutBuilder'), desc: t('explore.workoutBuilderDesc'), route: '/(tabs)/training', used: hasSessions },
+        { icon: '>', title: t('explore.activeSession'), desc: t('explore.activeSessionDesc'), route: '/(tabs)/training', used: hasSessions },
+        { icon: 'T', title: t('explore.restTimer'), desc: t('explore.restTimerDesc'), route: '/(tabs)/training', used: hasSessions },
         { icon: 'PR', title: t('explore.personalRecords'), desc: t('explore.personalRecordsDesc'), route: '/(tabs)/history', used: hasRecords },
       ],
     },
@@ -172,14 +172,14 @@ export default function ExploreScreen() {
       items: [
         { icon: '/\\', title: t('explore.progressCharts'), desc: t('explore.progressChartsDesc'), route: '/(tabs)/history', used: hasSessions },
         { icon: 'ST', title: t('explore.streakStats'), desc: t('explore.streakStatsDesc'), route: '/(tabs)/history', used: hasSessions },
-        { icon: 'RC', title: t('explore.sessionRecap'), desc: t('explore.sessionRecapDesc'), route: '/(tabs)/workouts', used: hasSessions },
+        { icon: 'RC', title: t('explore.sessionRecap'), desc: t('explore.sessionRecapDesc'), route: '/(tabs)/training', used: hasSessions },
       ],
     },
     {
       label: t('explore.groupPlans'),
       items: [
         { icon: 'AI', title: isGuest ? t('guest.aiLocked') : t('explore.aiWorkoutPlan'), desc: isGuest ? t('guest.aiLockedDesc') : t('explore.aiWorkoutPlanDesc'), route: '/plans/generate', isNew: !isGuest, used: hasWorkoutPlan, locked: isGuest },
-        { icon: 'PG', title: t('explore.guidedPrograms'), desc: t('explore.guidedProgramsDesc'), route: '/(tabs)/workouts', used: false },
+        { icon: 'PG', title: t('explore.guidedPrograms'), desc: t('explore.guidedProgramsDesc'), route: '/(tabs)/training', used: false },
       ],
     },
     {

@@ -43,7 +43,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="workouts"
+        name="training"
         options={{
           title: t('tabs.training'),
           tabBarIcon: tabIcon('barbell', 'barbell-outline'),

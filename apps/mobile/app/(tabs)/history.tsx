@@ -83,7 +83,7 @@ export default function HistoryScreen() {
             {t('history.screenTitle')}
           </Text>
         </View>
-        <EmptyStateGlobal onStartSession={() => router.push('/(tabs)/workouts')} />
+        <EmptyStateGlobal onStartSession={() => router.push('/(tabs)/training')} />
       </SafeAreaView>
     )
   }
