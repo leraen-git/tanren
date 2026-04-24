@@ -5,6 +5,7 @@ import { useGuestBannerVisible } from '@/contexts/GuestBannerContext'
 import { router } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
 import { trpc } from '@/lib/trpc'
+import { useInvalidateDiet } from '@/lib/invalidation'
 import { SkeletonCard } from '@/components/SkeletonCard'
 import { KanjiWatermark } from '@/components/KanjiWatermark'
 import { useTranslation } from 'react-i18next'
@@ -94,9 +95,9 @@ function NoPlanView({ isGuest }: { isGuest: boolean }) {
   const { tokens, fonts } = useTheme()
   const { t } = useTranslation()
   const { data: planCount } = trpc.diet.planCount.useQuery()
-  const utils = trpc.useUtils()
+  const invalidateDiet = useInvalidateDiet()
   const restorePlan = trpc.diet.restoreLastPlan.useMutation({
-    onSuccess: () => utils.diet.getMyPlanV2.invalidate(),
+    onSuccess: invalidateDiet,
   })
 
   const FEATURES = [

@@ -6,6 +6,7 @@ import { Screen } from '@/components/Screen'
 import { ScreenHeader } from '@/components/ScreenHeader'
 import { Button } from '@/components/Button'
 import { trpc } from '@/lib/trpc'
+import { useInvalidateDiet } from '@/lib/invalidation'
 import { useTranslation } from 'react-i18next'
 
 type RegenMode = 'same' | 'edit'
@@ -14,7 +15,7 @@ export default function RegeneratePlanScreen() {
   const { tokens, fonts } = useTheme()
   const { t } = useTranslation()
   const [mode, setMode] = useState<RegenMode>('same')
-  const utils = trpc.useUtils()
+  const invalidateDiet = useInvalidateDiet()
 
   const { data: plan } = trpc.diet.getMyPlanV2.useQuery()
   const { data: credits } = trpc.diet.getRegenCredits.useQuery()
@@ -25,14 +26,14 @@ export default function RegeneratePlanScreen() {
 
   const deletePlan = trpc.diet.deletePlanV2.useMutation({
     onSuccess: () => {
-      utils.diet.getMyPlanV2.invalidate()
+      invalidateDiet()
       router.replace('/diet')
     },
   })
 
   const regenerate = trpc.diet.regeneratePlanV2.useMutation({
     onSuccess: () => {
-      utils.diet.getMyPlanV2.invalidate()
+      invalidateDiet()
       router.replace('/diet')
     },
     onError: (err) => {

@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/theme/ThemeContext'
 import { Button } from '@/components/Button'
 import { trpc } from '@/lib/trpc'
+import { useInvalidateActivePlan, useInvalidateWorkouts } from '@/lib/invalidation'
 import { useAIPlanStore } from '@/stores/aiPlanStore'
 import { translateMuscleGroup } from '@/hooks/useExercises'
 
@@ -15,15 +16,15 @@ export default function PreviewPlanScreen() {
   const { tokens, fonts } = useTheme()
   const { t } = useTranslation()
   const { proposedPlan, reset } = useAIPlanStore()
-  const utils = trpc.useUtils()
   const { data: plans } = trpc.plans.list.useQuery()
   const currentActivePlan = plans?.find((p) => p.isActive)
+  const invalidatePlans = useInvalidateActivePlan()
+  const invalidateWorkouts = useInvalidateWorkouts()
 
   const acceptPlan = trpc.plans.acceptGenerated.useMutation({
     onSuccess: async () => {
-      await utils.plans.active.invalidate()
-      await utils.plans.list.invalidate()
-      await utils.workouts.list.invalidate()
+      invalidatePlans()
+      invalidateWorkouts()
       reset()
       router.replace('/')
     },

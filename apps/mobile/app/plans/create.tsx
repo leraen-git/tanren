@@ -12,6 +12,7 @@ import { router, useLocalSearchParams } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
 import { Button } from '@/components/Button'
 import { trpc } from '@/lib/trpc'
+import { useInvalidateActivePlan } from '@/lib/invalidation'
 import { usePendingWorkoutStore } from '@/stores/pendingWorkoutStore'
 import { useTranslation } from 'react-i18next'
 import { translateMuscleGroup } from '@/hooks/useExercises'
@@ -45,7 +46,7 @@ export default function CreatePlanScreen() {
 
   const { data: workouts } = trpc.workouts.list.useQuery()
   const { data: plans } = trpc.plans.list.useQuery()
-  const utils = trpc.useUtils()
+  const invalidatePlans = useInvalidateActivePlan()
 
   const pendingForDay = usePendingWorkoutStore((s) => s.pendingForDay)
   const pendingWorkoutId = usePendingWorkoutStore((s) => s.pendingWorkoutId)
@@ -76,8 +77,7 @@ export default function CreatePlanScreen() {
 
   const createPlan = trpc.plans.create.useMutation({
     onSuccess: () => {
-      utils.plans.list.invalidate()
-      utils.plans.active.invalidate()
+      invalidatePlans()
       router.back()
     },
     onError: (err) => Alert.alert(t('common.error'), err.message),
@@ -85,8 +85,7 @@ export default function CreatePlanScreen() {
 
   const deletePlan = trpc.plans.delete.useMutation({
     onSuccess: () => {
-      utils.plans.list.invalidate()
-      utils.plans.active.invalidate()
+      invalidatePlans()
       router.back()
     },
     onError: (err) => Alert.alert(t('common.error'), err.message),
@@ -106,8 +105,7 @@ export default function CreatePlanScreen() {
 
   const updatePlan = trpc.plans.update.useMutation({
     onSuccess: () => {
-      utils.plans.list.invalidate()
-      utils.plans.active.invalidate()
+      invalidatePlans()
       router.back()
     },
     onError: (err) => Alert.alert(t('common.error'), err.message),

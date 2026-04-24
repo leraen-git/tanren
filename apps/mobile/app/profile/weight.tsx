@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/theme/ThemeContext'
 import { trpc } from '@/lib/trpc'
+import { useInvalidateWeight } from '@/lib/invalidation'
 import { ScreenHeader } from '@/components/ScreenHeader'
 import { WeightHero } from '@/components/profile/WeightHero'
 import { PeriodTabs } from '@/components/profile/PeriodTabs'
@@ -19,14 +20,10 @@ export default function WeightScreen() {
   const [period, setPeriod] = useState<WeightPeriod>('30d')
   const [addModalOpen, setAddModalOpen] = useState(false)
 
-  const utils = trpc.useUtils()
   const { data, isLoading } = trpc.weight.list.useQuery({ period })
-  const invalidateAll = () => {
-    utils.weight.list.invalidate()
-    utils.auth.me.invalidate()
-  }
-  const addMutation = trpc.weight.add.useMutation({ onSuccess: invalidateAll })
-  const deleteMutation = trpc.weight.delete.useMutation({ onSuccess: invalidateAll })
+  const invalidateWeight = useInvalidateWeight()
+  const addMutation = trpc.weight.add.useMutation({ onSuccess: invalidateWeight })
+  const deleteMutation = trpc.weight.delete.useMutation({ onSuccess: invalidateWeight })
 
   const entries = data?.entries ?? []
   const stats = data?.stats ?? null
