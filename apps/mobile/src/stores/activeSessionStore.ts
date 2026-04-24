@@ -134,7 +134,7 @@ export const useActiveSessionStore = create<ActiveSessionState>()(
       startedAt: null,
     }),
 }), {
-    name: 'active-session-v1',
+    name: 'active-session-v2',
     storage: createJSONStorage(() => mmkvStateStorage),
     partialize: (state) => ({
       currentWorkout: state.currentWorkout,

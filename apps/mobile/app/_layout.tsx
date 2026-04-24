@@ -159,16 +159,38 @@ function SessionResumeChecker() {
   useEffect(() => {
     if (checked.current) return
     checked.current = true
-    const { currentWorkout, startedAt, finishSession } = useActiveSessionStore.getState()
-    if (currentWorkout && startedAt) {
-      const ageHours = (Date.now() - new Date(startedAt).getTime()) / 3600000
-      if (ageHours < 6) {
-        router.push('/workout/active')
-      } else {
-        finishSession()
-      }
+
+    const { currentWorkout, startedAt, exercises, finishSession } =
+      useActiveSessionStore.getState()
+
+    if (!currentWorkout) return
+
+    if (!startedAt) {
+      finishSession()
+      return
+    }
+
+    const ts = startedAt instanceof Date
+      ? startedAt.getTime()
+      : new Date(startedAt as any).getTime()
+
+    if (isNaN(ts)) {
+      finishSession()
+      return
+    }
+
+    const ageHours = (Date.now() - ts) / 3600000
+    const hasIncompleteSets = exercises.some(ex =>
+      ex.sets.some(s => !s.isCompleted)
+    )
+
+    if (ageHours < 3 && hasIncompleteSets) {
+      router.push('/workout/active')
+    } else {
+      finishSession()
     }
   }, [])
+
   return null
 }
 
