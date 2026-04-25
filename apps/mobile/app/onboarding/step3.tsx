@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { View, Text, TextInput, TouchableOpacity } from 'react-native'
+import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useTheme } from '@/theme/ThemeContext'
 import { trpc } from '@/lib/trpc'
@@ -14,7 +14,9 @@ export default function OnboardingStep3() {
   const [weight, setWeight] = useState(ob.weightKg)
 
   React.useEffect(() => { ob.setStep(3) }, [])
-  const updateMe = trpc.users.updateMe.useMutation()
+  const updateMe = trpc.users.updateMe.useMutation({
+    onError: (err) => Alert.alert(t('common.error'), err.message),
+  })
   const utils = trpc.useUtils()
 
   const handleFinish = async () => {

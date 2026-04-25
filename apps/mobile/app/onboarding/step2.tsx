@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { View, Text, TouchableOpacity, ScrollView } from 'react-native'
+import { View, Text, TouchableOpacity, ScrollView, Alert } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
@@ -14,7 +14,9 @@ export default function OnboardingStep2() {
   const [level, setLevel] = useState<'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED' | null>(ob.level)
   const [days, setDays] = useState<number | null>(ob.weeklyTarget)
   const [goal, setGoal] = useState<'WEIGHT_LOSS' | 'MUSCLE_GAIN' | 'MAINTENANCE' | null>(ob.goal)
-  const updateMe = trpc.users.updateMe.useMutation()
+  const updateMe = trpc.users.updateMe.useMutation({
+    onError: (err) => Alert.alert(t('common.error'), err.message),
+  })
 
   React.useEffect(() => { ob.setStep(2) }, [])
 

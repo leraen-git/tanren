@@ -17,7 +17,9 @@ export default function OnboardingStep1() {
   const ob = useOnboardingStore()
   const [name, setName] = useState(ob.name ?? providerName)
   const [gender, setGender] = useState<'male' | 'female' | null>(ob.gender)
-  const updateMe = trpc.users.updateMe.useMutation()
+  const updateMe = trpc.users.updateMe.useMutation({
+    onError: (err) => Alert.alert(t('common.error'), err.message),
+  })
 
   useEffect(() => { ob.setStep(1) }, [])
   useEffect(() => {

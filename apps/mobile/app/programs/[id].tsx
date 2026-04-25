@@ -1,21 +1,24 @@
 import React from 'react'
-import { View, Text, ScrollView, ActivityIndicator } from 'react-native'
+import { View, Text, ScrollView, ActivityIndicator, Alert } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams, router } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
 import { Button } from '@/components/Button'
 import { trpc } from '@/lib/trpc'
+import { useTranslation } from 'react-i18next'
 import { TouchableOpacity } from 'react-native'
 
 export default function ProgramDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
   const { tokens, fonts } = useTheme()
+  const { t } = useTranslation()
 
   const { data: program, isLoading } = trpc.programs.byId.useQuery({ id })
   const enroll = trpc.programs.enroll.useMutation({
     onSuccess: () => {
       router.push('/')
     },
+    onError: (err) => Alert.alert(t('common.error'), err.message),
   })
 
   if (isLoading) {

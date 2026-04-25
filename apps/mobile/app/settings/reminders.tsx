@@ -235,7 +235,9 @@ export default function RemindersScreen() {
     onConfirm: (t: string) => void
   }>({ visible: false, value: '00:00', label: '', onConfirm: () => {} })
 
-  const syncPrefs = trpc.notifications.upsertPreferences.useMutation()
+  const syncPrefs = trpc.notifications.upsertPreferences.useMutation({
+    onError: (err) => console.warn('syncPrefs failed:', err.message),
+  })
 
   const openTimePicker = (value: string, label: string, onConfirm: (t: string) => void) => {
     setTimePicker({ visible: true, value, label, onConfirm })
