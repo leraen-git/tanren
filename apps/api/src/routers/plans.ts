@@ -508,11 +508,11 @@ Retourne cette structure JSON exacte :
 
   acceptGenerated: protectedProcedure
     .input(z.object({
-      name: z.string().min(1),
+      name: z.string().min(1).max(100),
       days: z.array(z.object({
         dayOfWeek: z.number().int().min(1).max(7),
-        workoutName: z.string().min(1),
-        muscleGroups: z.array(z.string()),
+        workoutName: z.string().min(1).max(100),
+        muscleGroups: z.array(z.string().max(50)).max(20),
         estimatedDuration: z.number().int().min(1),
         exercises: z.array(z.object({
           exerciseId: z.string(),

@@ -1,6 +1,11 @@
 import { encrypt, decrypt, deterministicHash } from '../services/cryptoService.js'
 
+const isProd = process.env['NODE_ENV'] === 'production'
 const ENCRYPTION_ENABLED = !!process.env['ENCRYPTION_KEY']
+
+if (isProd && !ENCRYPTION_ENABLED) {
+  throw new Error('ENCRYPTION_KEY is required in production. Generate with: openssl rand -base64 32')
+}
 
 // ─── User fields ─────────────────────────────────────────────────────────────
 

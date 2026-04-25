@@ -287,7 +287,7 @@ export const sessionsRouter = router({
     .input(z.object({
       exerciseId: z.string(),
       exerciseName: z.string(),
-      muscleGroups: z.array(z.string()),
+      muscleGroups: z.array(z.string().max(50)).max(20),
       startedAt: z.string(),
       durationSeconds: z.number().int().min(0),
       sets: z.array(z.object({

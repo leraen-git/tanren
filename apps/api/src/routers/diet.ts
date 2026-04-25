@@ -43,7 +43,7 @@ const intakeInputV2 = z.object({
   alcoholDrinksPerWeek: z.number().int().min(0).max(100),
   top5Meals: z.string().min(1).max(1000),
   hatedFoods: z.string().max(500).optional(),
-  restrictions: z.array(z.string()).max(20),
+  restrictions: z.array(z.string().max(100)).max(20),
   cookingStyle: z.enum(['HOME_COOKING', 'QUICK_SIMPLE', 'MEAL_PREP']),
   adventurousness: z.number().int().min(1).max(10),
   currentSnacks: z.string().min(1).max(500),
@@ -235,8 +235,7 @@ export const dietRouter = router({
     return { success: true }
   }),
 
-  getMyPlanV2: publicProcedure.query(async ({ ctx }) => {
-    if (!ctx.userId) return null
+  getMyPlanV2: protectedProcedure.query(async ({ ctx }) => {
 
     const [plan] = await ctx.db
       .select()

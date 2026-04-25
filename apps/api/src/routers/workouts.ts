@@ -14,9 +14,9 @@ export const workoutsRouter = router({
   create: protectedProcedure
     .input(
       z.object({
-        name: z.string().min(1),
+        name: z.string().min(1).max(100),
         description: z.string().optional(),
-        muscleGroups: z.array(z.string()).default([]),
+        muscleGroups: z.array(z.string().max(50)).max(20).default([]),
         estimatedDuration: z.number().int().default(60),
         exercises: z.array(z.object({
           exerciseId: z.string(),
@@ -76,7 +76,7 @@ export const workoutsRouter = router({
         id: z.string(),
         name: z.string().min(1).optional(),
         description: z.string().optional(),
-        muscleGroups: z.array(z.string()).optional(),
+        muscleGroups: z.array(z.string().max(50)).max(20).optional(),
         estimatedDuration: z.number().int().optional(),
         exercises: z.array(z.object({
           exerciseId: z.string(),
@@ -132,7 +132,7 @@ export const workoutsRouter = router({
     .input(
       z.object({
         workoutTemplateId: z.string(),
-        orderedIds: z.array(z.string()),
+        orderedIds: z.array(z.string().max(50)).max(20),
       }),
     )
     .mutation(async ({ ctx, input }) => {

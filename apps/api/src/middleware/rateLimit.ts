@@ -11,6 +11,8 @@ const LIMITS: Record<string, LimitConfig> = {
   'auth.signInWithGoogle': { max: 10, windowSec: 60 },
   'auth.guestSignIn':     { max: 5, windowSec: 60 },
   'auth.devSignIn':       { max: 5, windowSec: 60 },
+  'auth.requestOtp':      { max: 10, windowSec: 60 },
+  'auth.verifyOtp':       { max: 30, windowSec: 60 },
 }
 
 export async function checkProcedureRateLimit(

@@ -10,7 +10,7 @@ export const exercisesRouter = router({
   }),
 
   byId: protectedProcedure
-    .input(z.object({ id: z.string() }))
+    .input(z.object({ id: z.string().max(200) }))
     .query(async ({ ctx, input }) => {
       const [exercise] = await ctx.db
         .select()
@@ -24,10 +24,10 @@ export const exercisesRouter = router({
   create: protectedProcedure
     .input(
       z.object({
-        name: z.string().min(1),
-        muscleGroups: z.array(z.string()).default([]),
-        equipment: z.array(z.string()).default([]),
-        description: z.string().default(''),
+        name: z.string().min(1).max(100),
+        muscleGroups: z.array(z.string().max(50)).max(20).default([]),
+        equipment: z.array(z.string().max(50)).max(20).default([]),
+        description: z.string().max(2000).default(''),
         difficulty: z.enum(['BEGINNER', 'INTERMEDIATE', 'ADVANCED']).default('BEGINNER'),
       }),
     )

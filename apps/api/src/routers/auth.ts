@@ -182,11 +182,13 @@ export const authRouter = router({
       try {
         await sendOtpEmail(email, code)
       } catch (err) {
-        ctx.req.log.error({ event: 'otp_email_failed', email, err }, 'Failed to send OTP email')
+        const maskedErr = email.split('@')[0]!.slice(0, 2) + '***@' + (email.split('@')[1] ?? '')
+        ctx.req.log.error({ event: 'otp_email_failed', emailMasked: maskedErr, err }, 'Failed to send OTP email')
         throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Could not send email. Please try again.' })
       }
 
-      ctx.req.log.info({ event: 'otp_sent', email }, 'OTP sent')
+      const masked = email.split('@')[0]!.slice(0, 2) + '***@' + (email.split('@')[1] ?? '')
+      ctx.req.log.info({ event: 'otp_sent', emailMasked: masked }, 'OTP sent')
       return { sent: true }
     }),
 
