@@ -67,20 +67,33 @@ export const sessionsRouter = router({
 
       if (!session) throw new TRPCError({ code: 'NOT_FOUND', message: 'Session not found' })
 
-      const exercises = await ctx.db
+      const sessExercises = await ctx.db
         .select()
         .from(sessionExercises)
         .where(eq(sessionExercises.workoutSessionId, input.id))
 
-      const sets =
-        exercises.length > 0
-          ? await ctx.db
-              .select()
-              .from(exerciseSets)
-              .where(eq(exerciseSets.sessionExerciseId, exercises[0]!.id))
-          : []
+      const sessExIds = sessExercises.map(se => se.id)
+      const allSets = sessExIds.length > 0
+        ? await ctx.db
+            .select()
+            .from(exerciseSets)
+            .where(inArray(exerciseSets.sessionExerciseId, sessExIds))
+        : []
 
-      return { ...session, exercises, sets }
+      const setsByExercise = new Map<string, typeof allSets>()
+      for (const set of allSets) {
+        const arr = setsByExercise.get(set.sessionExerciseId) ?? []
+        arr.push(set)
+        setsByExercise.set(set.sessionExerciseId, arr)
+      }
+
+      return {
+        ...session,
+        exercises: sessExercises.map(se => ({
+          ...se,
+          sets: setsByExercise.get(se.id) ?? [],
+        })),
+      }
     }),
 
   // Save a full session with all exercise sets in one call

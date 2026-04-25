@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { eq, and, desc } from 'drizzle-orm'
+import { eq, and, desc, inArray, sql } from 'drizzle-orm'
 import { TRPCError } from '@trpc/server'
 import { router, protectedProcedure } from '../trpc.js'
 import { workoutTemplates, workoutExercises, exercises, users, workoutSessions, sessionExercises, exerciseSets, personalRecords } from '../db/schema.js'
@@ -191,46 +191,85 @@ export const workoutsRouter = router({
         .where(eq(workoutExercises.workoutTemplateId, input.id))
         .orderBy(workoutExercises.order)
 
-      // For each exercise, find the last sets performed — across any session,
-      // so weights carry over even when the user switches templates.
+      // Batch: find previous sets for all exercises in 2 queries (not N×2)
+      const exerciseIds = workoutExs.map(ex => ex.exerciseId)
       const previousSets: Record<string, { reps: number; weight: number }[]> = {}
-      for (const ex of workoutExs) {
-        const [lastSessionEx] = await ctx.db
-          .select({ id: sessionExercises.id })
+      const prMap: Record<string, { weight: number; reps: number }> = {}
+
+      if (exerciseIds.length > 0) {
+        // 1) For each exerciseId, find the most recent sessionExercise row
+        const latestSessionExs = await ctx.db
+          .select({
+            id: sessionExercises.id,
+            exerciseId: sessionExercises.exerciseId,
+            startedAt: workoutSessions.startedAt,
+          })
           .from(sessionExercises)
           .innerJoin(workoutSessions, eq(sessionExercises.workoutSessionId, workoutSessions.id))
           .where(and(
-            eq(sessionExercises.exerciseId, ex.exerciseId),
+            inArray(sessionExercises.exerciseId, exerciseIds),
             eq(workoutSessions.userId, user.id),
           ))
           .orderBy(desc(workoutSessions.startedAt))
-          .limit(1)
 
-        if (lastSessionEx) {
-          const sets = await ctx.db
-            .select()
+        // Keep only the latest per exerciseId
+        const latestByExercise = new Map<string, string>()
+        for (const row of latestSessionExs) {
+          if (!latestByExercise.has(row.exerciseId)) {
+            latestByExercise.set(row.exerciseId, row.id)
+          }
+        }
+
+        const sessExIds = [...latestByExercise.values()]
+        if (sessExIds.length > 0) {
+          const allPrevSets = await ctx.db
+            .select({
+              sessionExerciseId: exerciseSets.sessionExerciseId,
+              reps: exerciseSets.reps,
+              weight: exerciseSets.weight,
+              setNumber: exerciseSets.setNumber,
+            })
             .from(exerciseSets)
             .where(and(
-              eq(exerciseSets.sessionExerciseId, lastSessionEx.id),
+              inArray(exerciseSets.sessionExerciseId, sessExIds),
               eq(exerciseSets.isCompleted, true),
             ))
             .orderBy(exerciseSets.setNumber)
-          if (sets.length > 0) {
-            previousSets[ex.exerciseId] = sets.map((s) => ({ reps: s.reps, weight: s.weight }))
+
+          // Reverse lookup: sessionExerciseId → exerciseId
+          const sessExToExercise = new Map<string, string>()
+          for (const [exId, seId] of latestByExercise) {
+            sessExToExercise.set(seId, exId)
+          }
+
+          for (const set of allPrevSets) {
+            const exId = sessExToExercise.get(set.sessionExerciseId)
+            if (!exId) continue
+            const arr = previousSets[exId] ?? []
+            arr.push({ reps: set.reps, weight: set.weight })
+            previousSets[exId] = arr
           }
         }
-      }
 
-      // Fetch current PR for each exercise
-      const prMap: Record<string, { weight: number; reps: number }> = {}
-      for (const ex of workoutExs) {
-        const [pr] = await ctx.db
-          .select({ weight: personalRecords.weight, reps: personalRecords.reps })
+        // 2) Batch PR lookup: best PR per exercise
+        const allPRs = await ctx.db
+          .select({
+            exerciseId: personalRecords.exerciseId,
+            weight: personalRecords.weight,
+            reps: personalRecords.reps,
+          })
           .from(personalRecords)
-          .where(and(eq(personalRecords.userId, user.id), eq(personalRecords.exerciseId, ex.exerciseId)))
+          .where(and(
+            eq(personalRecords.userId, user.id),
+            inArray(personalRecords.exerciseId, exerciseIds),
+          ))
           .orderBy(desc(personalRecords.weight))
-          .limit(1)
-        if (pr) prMap[ex.exerciseId] = pr
+
+        for (const pr of allPRs) {
+          if (!prMap[pr.exerciseId]) {
+            prMap[pr.exerciseId] = { weight: pr.weight, reps: pr.reps }
+          }
+        }
       }
 
       return {

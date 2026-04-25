@@ -60,11 +60,12 @@ export const plansRouter = router({
       .from(workoutPlans)
       .where(eq(workoutPlans.userId, user.id))
 
-    const plansWithDays = await Promise.all(
-      plans.map(async (plan) => {
-        const days = await ctx.db
+    const planIds = plans.map(p => p.id)
+    const allDays = planIds.length > 0
+      ? await ctx.db
           .select({
             id: workoutPlanDays.id,
+            planId: workoutPlanDays.planId,
             dayOfWeek: workoutPlanDays.dayOfWeek,
             workoutTemplateId: workoutPlanDays.workoutTemplateId,
             workoutName: workoutTemplates.name,
@@ -72,15 +73,20 @@ export const plansRouter = router({
           })
           .from(workoutPlanDays)
           .innerJoin(workoutTemplates, eq(workoutPlanDays.workoutTemplateId, workoutTemplates.id))
-          .where(eq(workoutPlanDays.planId, plan.id))
-        return {
-          ...plan,
-          days: days.map(d => ({ ...d, dayOfWeek: dowDbToUi(d.dayOfWeek) })),
-        }
-      }),
-    )
+          .where(inArray(workoutPlanDays.planId, planIds))
+      : []
 
-    return plansWithDays
+    const daysByPlan = new Map<string, typeof allDays>()
+    for (const day of allDays) {
+      const arr = daysByPlan.get(day.planId) ?? []
+      arr.push(day)
+      daysByPlan.set(day.planId, arr)
+    }
+
+    return plans.map(plan => ({
+      ...plan,
+      days: (daysByPlan.get(plan.id) ?? []).map(d => ({ ...d, dayOfWeek: dowDbToUi(d.dayOfWeek) })),
+    }))
   }),
 
   active: protectedProcedure
