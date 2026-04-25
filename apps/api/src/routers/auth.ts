@@ -95,23 +95,42 @@ export const authRouter = router({
    * Sign in / sign up with a Google OAuth access token.
    */
   signInWithGoogle: publicProcedure
-    .input(z.object({ accessToken: z.string() }))
+    .input(z.object({
+      accessToken: z.string().optional(),
+      idToken: z.string().optional(),
+    }).refine(d => d.accessToken || d.idToken, { message: 'accessToken or idToken required' }))
     .mutation(async ({ ctx, input }) => {
-      const googleRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-        headers: { Authorization: `Bearer ${input.accessToken}` },
-      })
-
-      if (!googleRes.ok) {
-        ctx.req.log.warn({ event: 'auth_failure', provider: 'google' }, 'Google token invalid')
-        throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Invalid Google access token' })
-      }
-
-      const googleUser = await googleRes.json() as {
+      let googleUser: {
         sub: string
         email: string
         name?: string
         picture?: string
         email_verified?: boolean
+      }
+
+      if (input.idToken) {
+        const tokenInfoRes = await fetch(
+          `https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(input.idToken)}`,
+        )
+        if (!tokenInfoRes.ok) {
+          ctx.req.log.warn({ event: 'auth_failure', provider: 'google' }, 'Google ID token invalid')
+          throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Invalid Google ID token' })
+        }
+        const tokenInfo = await tokenInfoRes.json() as {
+          sub: string; email: string; name?: string; picture?: string
+        }
+        googleUser = tokenInfo
+      } else {
+        const googleRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+          headers: { Authorization: `Bearer ${input.accessToken}` },
+        })
+        if (!googleRes.ok) {
+          ctx.req.log.warn({ event: 'auth_failure', provider: 'google' }, 'Google access token invalid')
+          throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Invalid Google access token' })
+        }
+        googleUser = await googleRes.json() as {
+          sub: string; email: string; name?: string; picture?: string; email_verified?: boolean
+        }
       }
 
       if (!googleUser.sub) {

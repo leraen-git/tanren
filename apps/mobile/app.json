@@ -72,6 +72,7 @@
           "color": "#E8192C"
         }
       ],
+      "@react-native-google-signin/google-signin",
       "expo-web-browser",
       "expo-secure-store",
       "expo-audio",

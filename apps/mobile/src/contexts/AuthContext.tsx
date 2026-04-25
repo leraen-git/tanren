@@ -1,11 +1,7 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react'
 import * as AppleAuthentication from 'expo-apple-authentication'
-import * as Google from 'expo-auth-session/providers/google'
-import * as WebBrowser from 'expo-web-browser'
+import { GoogleSignin } from '@react-native-google-signin/google-signin'
 import { getToken, setToken, clearToken } from '@/services/authTokenService'
-
-// Required for expo-auth-session redirect handling on iOS/Android
-WebBrowser.maybeCompleteAuthSession()
 
 const API_URL = process.env['EXPO_PUBLIC_API_URL'] ?? 'http://localhost:3000'
 
@@ -75,17 +71,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [status, setStatus] = useState<AuthStatus>('loading')
   const [token, setTokenState] = useState<string | null>(null)
 
-  // Google OAuth — hooks must always be called
-  const [_req, _res, promptAsync] = Google.useAuthRequest({
-    iosClientId: process.env['EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID'] ?? '',
-    androidClientId: process.env['EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID'] ?? '',
-    webClientId: process.env['EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID'] ?? '',
-  })
-
-  const googleAvailable = __DEV__ || !!(
-    process.env['EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID'] &&
-    process.env['EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID']
+  const googleAvailable = !!(
+    process.env['EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID'] ||
+    process.env['EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID']
   )
+
+  useEffect(() => {
+    if (!googleAvailable) return
+    GoogleSignin.configure({
+      iosClientId: process.env['EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID'] ?? undefined,
+      webClientId: process.env['EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID'] ?? undefined,
+    })
+  }, [googleAvailable])
 
   // On mount: restore token from SecureStore
   useEffect(() => {
@@ -131,16 +128,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signInWithGoogle = useCallback(async () => {
     if (!googleAvailable) throw new Error('Google Sign-In is not configured')
 
-    const result = await promptAsync()
-    if (result.type === 'cancel' || result.type === 'dismiss') return
-    if (result.type !== 'success') throw new Error('Google Sign-In failed')
+    await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true })
+    const response = await GoogleSignin.signIn()
 
-    const accessToken = result.authentication?.accessToken
-    if (!accessToken) throw new Error('No access token received from Google')
-
-    const { token } = await authFetch('auth.signInWithGoogle', { accessToken })
-    await saveAndAuthenticate(token)
-  }, [googleAvailable, promptAsync, saveAndAuthenticate])
+    if ('data' in response && response.data?.idToken) {
+      const { token } = await authFetch('auth.signInWithGoogle', {
+        idToken: response.data.idToken,
+      })
+      await saveAndAuthenticate(token)
+    } else {
+      throw new Error('No ID token received from Google')
+    }
+  }, [googleAvailable, saveAndAuthenticate])
 
   const requestOtp = useCallback(async (email: string) => {
     const res = await fetch(`${API_URL}/trpc/auth.requestOtp`, {
