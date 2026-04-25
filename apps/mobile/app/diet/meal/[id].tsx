@@ -14,10 +14,9 @@ export default function MealDetailScreen() {
   const { data: plan } = trpc.diet.getMyPlanV2.useQuery()
 
   const meal = React.useMemo(() => {
-    if (!plan) return null
-    const p = plan as any
-    for (const day of p.days ?? []) {
-      for (const m of day.meals ?? []) {
+    if (!plan?.days) return null
+    for (const day of plan.days) {
+      for (const m of day.meals) {
         if (m.id === id) return m
       }
     }

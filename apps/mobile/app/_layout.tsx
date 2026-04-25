@@ -181,7 +181,7 @@ function SessionResumeChecker() {
 
     const ts = startedAt instanceof Date
       ? startedAt.getTime()
-      : new Date(startedAt as any).getTime()
+      : new Date(String(startedAt)).getTime()
 
     if (isNaN(ts)) {
       finishSession()

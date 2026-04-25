@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useGuestBannerVisible } from '@/contexts/GuestBannerContext'
-import { router } from 'expo-router'
+import { router, type Href } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
 import { useProfile } from '@/data/useProfile'
 import { useDietPlan, useDietPlanCount, useRestorePlan } from '@/data/useDietPlan'
@@ -279,7 +279,7 @@ function V2ActivePlan({ plan }: { plan: V2PlanData }) {
           Nutrition
         </Text>
         <TouchableOpacity
-          onPress={() => router.push('/diet/regenerate' as any)}
+          onPress={() => router.push('/diet/regenerate' as Href)}
           accessibilityRole="button"
         >
           <Text style={{ fontFamily: fonts.sansB, fontSize: 12, letterSpacing: 1, color: tokens.accent, textTransform: 'uppercase' }}>
@@ -374,14 +374,14 @@ function V2ActivePlan({ plan }: { plan: V2PlanData }) {
               key={meal.id}
               meal={meal}
               isDessert={meal.mealType === 'DESSERT'}
-              onPress={() => router.push(`/diet/meal/${meal.id}` as any)}
+              onPress={() => router.push(`/diet/meal/${meal.id}` as Href)}
             />
           ))}
 
           {/* Groceries preview */}
           {totalGroceries > 0 && (
             <TouchableOpacity
-              onPress={() => router.push('/diet/groceries' as any)}
+              onPress={() => router.push('/diet/groceries' as Href)}
               style={{
                 borderWidth: 1, borderColor: tokens.border,
                 borderLeftWidth: 3, borderLeftColor: tokens.accent,
@@ -416,7 +416,7 @@ function V2ActivePlan({ plan }: { plan: V2PlanData }) {
 
       {/* Regenerate link */}
       <TouchableOpacity
-        onPress={isGuest ? undefined : () => router.push('/diet/regenerate' as any)}
+        onPress={isGuest ? undefined : () => router.push('/diet/regenerate' as Href)}
         disabled={isGuest}
         style={{ margin: 16, alignItems: 'center', paddingVertical: 12, opacity: isGuest ? 0.4 : 1 }}
         accessibilityRole="button"

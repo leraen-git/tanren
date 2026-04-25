@@ -166,7 +166,7 @@ function ProfileStatsStrip({ sessionsQuery, recordsQuery }: {
       {[
         { label: t('profile.statSessions'), value: String(sessions?.length ?? 0), highlight: false },
         { label: t('profile.statVolume'), value: formatVolume(totalVolume), highlight: true },
-        { label: t('profile.statPRs'), value: String(new Set((records as any[])?.map((r: any) => r.exerciseId) ?? []).size), highlight: false },
+        { label: t('profile.statPRs'), value: String(new Set((records ?? []).map((r: { exerciseId: string }) => r.exerciseId)).size), highlight: false },
       ].map(({ label, value, highlight }, i) => (
         <View key={label} style={{
           flex: 1, paddingVertical: 14, paddingHorizontal: 8, alignItems: 'center',

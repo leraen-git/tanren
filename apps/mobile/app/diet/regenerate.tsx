@@ -42,13 +42,11 @@ export default function RegeneratePlanScreen() {
     },
   }
 
-  const planData = plan as any
-
-  const createdDate = planData?.createdAt
-    ? new Date(planData.createdAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })
+  const createdDate = plan?.createdAt
+    ? new Date(plan.createdAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })
     : ''
-  const daysActive = planData?.createdAt
-    ? Math.max(1, Math.floor((Date.now() - new Date(planData.createdAt).getTime()) / 86400000))
+  const daysActive = plan?.createdAt
+    ? Math.max(1, Math.floor((Date.now() - new Date(plan.createdAt).getTime()) / 86400000))
     : 0
 
   function handleRegenerate() {
@@ -84,10 +82,10 @@ export default function RegeneratePlanScreen() {
             {t('diet.regenCurrent')}
           </Text>
           <Text style={{ fontFamily: fonts.sansX, fontSize: 20, color: tokens.text, textTransform: 'uppercase', letterSpacing: 0.4, marginBottom: 4 }}>
-            {planData?.goal === 'FAT_LOSS' ? 'Perte de gras' :
-             planData?.goal === 'MUSCLE_GAIN' ? 'Prise de muscle' :
-             planData?.goal === 'RECOMPOSITION' ? 'Recomposition' : 'Performance'}
-            {planData?.targetKcal ? ` · ${planData.targetKcal} kcal` : ''}
+            {plan?.goal === 'FAT_LOSS' ? 'Perte de gras' :
+             plan?.goal === 'MUSCLE_GAIN' ? 'Prise de muscle' :
+             plan?.goal === 'RECOMPOSITION' ? 'Recomposition' : 'Performance'}
+            {plan?.targetKcal ? ` · ${plan.targetKcal} kcal` : ''}
           </Text>
           <Text style={{ fontFamily: fonts.sans, fontSize: 11, color: tokens.textMute, letterSpacing: 0.8 }}>
             {t('diet.regenGeneratedOn')} {createdDate} · {daysActive} {t('diet.regenDaysActive')}

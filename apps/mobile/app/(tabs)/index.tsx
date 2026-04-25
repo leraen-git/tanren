@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { View, Text, ScrollView, TouchableOpacity, RefreshControl } from 'react-native'
-import { router, useFocusEffect } from 'expo-router'
+import { router, useFocusEffect, type Href } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
 import { Screen } from '@/components/Screen'
 import { StatsStrip } from '@/components/StatsStrip'
@@ -100,14 +100,17 @@ export default function HomeScreen() {
     setActiveTab(tab)
   }
 
+  type DietMealEntry = { id: string; mealType: string; name: string; kcal: number; proteinG: number; carbsG: number; fatG: number }
+  type DietDayEntry = { dayNumber: number; theme: string; meals: DietMealEntry[] }
+
   const todayDow = jsDowToUi(new Date().getDay())
   const todayDietDay = useMemo(() => {
     if (!v2Plan?.days) return null
-    return (v2Plan.days as any[]).find((d: any) => d.dayNumber === todayDow) ?? null
+    return ((v2Plan.days ?? []) as DietDayEntry[]).find((d) => d.dayNumber === todayDow) ?? null
   }, [v2Plan?.days, todayDow])
   const todayMealsSorted = useMemo(() => {
     if (!todayDietDay?.meals) return []
-    const meals = (todayDietDay.meals as any[]).map((m: any) => ({
+    const meals = todayDietDay.meals.map((m) => ({
       id: m.id,
       type: (m.mealType ?? '').toLowerCase(),
       name: m.name,
@@ -277,7 +280,7 @@ export default function HomeScreen() {
                     protein={meal.protein ?? 0}
                     carbs={meal.carbs ?? 0}
                     fat={meal.fat ?? 0}
-                    onPress={() => meal.id ? router.push(`/diet/meal/${meal.id}` as any) : undefined}
+                    onPress={() => meal.id ? router.push(`/diet/meal/${meal.id}` as Href) : undefined}
                     accessibilityLabel={`${meal.name}, tap for recipe`}
                   />
                 ))}
