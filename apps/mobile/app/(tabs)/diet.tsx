@@ -268,6 +268,11 @@ function V2ActivePlan({ plan }: { plan: V2PlanData }) {
   const currentDay = days.find((d) => d.dayNumber === selectedDay) ?? days[0]
   const meals = currentDay?.meals ?? []
 
+  const dayTotalKcal = meals.reduce((s, m) => s + (m.kcal ?? 0), 0)
+  const dayTotalProtein = meals.reduce((s, m) => s + (m.proteinG ?? 0), 0)
+  const dayTotalCarbs = meals.reduce((s, m) => s + (m.carbsG ?? 0), 0)
+  const dayTotalFat = meals.reduce((s, m) => s + (m.fatG ?? 0), 0)
+
   const checkedCount = plan.groceryItems.filter((g) => g.isChecked).length
   const totalGroceries = plan.groceryItems.length
 
@@ -316,7 +321,7 @@ function V2ActivePlan({ plan }: { plan: V2PlanData }) {
                 {dateNum}
               </Text>
               <Text style={{ fontFamily: fonts.mono, fontSize: 8, letterSpacing: 0.3, color: isSelected ? 'rgba(255,255,255,0.7)' : tokens.textMute, marginTop: 5 }}>
-                {d.targetKcal}
+                {(d.meals ?? []).reduce((s: number, m: V2Meal) => s + (m.kcal ?? 0), 0)}
               </Text>
             </TouchableOpacity>
           )
@@ -349,15 +354,15 @@ function V2ActivePlan({ plan }: { plan: V2PlanData }) {
               {t('diet.v2DayTarget')}
             </Text>
             <Text style={{ fontFamily: fonts.monoB, fontSize: 22, lineHeight: 22, color: tokens.text }}>
-              {currentDay.targetKcal}<Text style={{ fontFamily: fonts.mono, fontSize: 11, color: tokens.textMute }}> kcal</Text>
+              {dayTotalKcal.toLocaleString('fr-FR')}<Text style={{ fontFamily: fonts.mono, fontSize: 11, color: tokens.textMute }}> kcal</Text>
             </Text>
           </View>
 
           {/* Macro row */}
           <View style={{ flexDirection: 'row', gap: 6 }}>
-            <MacroCell label="Prot." value={plan.targetProteinG} color={tokens.accent} />
-            <MacroCell label="Gluc." value={plan.targetCarbsG} color={tokens.amber} />
-            <MacroCell label="Lip." value={plan.targetFatG} color={tokens.green} />
+            <MacroCell label="Prot." value={dayTotalProtein} color={tokens.accent} />
+            <MacroCell label="Gluc." value={dayTotalCarbs} color={tokens.amber} />
+            <MacroCell label="Lip." value={dayTotalFat} color={tokens.green} />
           </View>
 
           {/* Meals label */}

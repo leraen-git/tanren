@@ -1,6 +1,13 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react'
 import * as AppleAuthentication from 'expo-apple-authentication'
-import { GoogleSignin } from '@react-native-google-signin/google-signin'
+import { Platform } from 'react-native'
+
+let GoogleSignin: typeof import('@react-native-google-signin/google-signin').GoogleSignin | null = null
+try {
+  GoogleSignin = require('@react-native-google-signin/google-signin').GoogleSignin
+} catch {
+  // Native module not available — Google Sign-In will be disabled
+}
 import { getToken, setToken, clearToken } from '@/services/authTokenService'
 
 const API_URL = process.env['EXPO_PUBLIC_API_URL'] ?? 'http://localhost:3000'
@@ -71,13 +78,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [status, setStatus] = useState<AuthStatus>('loading')
   const [token, setTokenState] = useState<string | null>(null)
 
-  const googleAvailable = !!(
+  const googleAvailable = !!GoogleSignin && !!(
     process.env['EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID'] ||
     process.env['EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID']
   )
 
   useEffect(() => {
-    if (!googleAvailable) return
+    if (!googleAvailable || !GoogleSignin) return
     GoogleSignin.configure({
       iosClientId: process.env['EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID'] ?? undefined,
       webClientId: process.env['EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID'] ?? undefined,
@@ -126,9 +133,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [saveAndAuthenticate])
 
   const signInWithGoogle = useCallback(async () => {
-    if (!googleAvailable) throw new Error('Google Sign-In is not configured')
+    if (!googleAvailable || !GoogleSignin) throw new Error('Google Sign-In is not configured')
 
-    await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true })
+    if (Platform.OS === 'android') {
+      await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true })
+    }
     const response = await GoogleSignin.signIn()
 
     if ('data' in response && response.data?.idToken) {
