@@ -50,6 +50,7 @@
     "plugins": [
       "./plugins/withFixSpacesInPath",
       "./plugins/withFmtCpp17Fix",
+      "./plugins/withSingleTaskLaunchMode",
       "expo-router",
       [
         "expo-font",
