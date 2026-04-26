@@ -509,7 +509,7 @@ No "quit app" notification hint. No pause-as-main-action. The timer running in b
 │ Volume  Séries  Records     │   ← stats in ONE horizontal line
 │ 12 450  18      2           │     at bottom, semi-transparent bar
 │ ─────────────────────────── │
-│ TANREN            tanren.app│
+│ TANREN            tanren.fr│
 └─────────────────────────────┘
 ```
 
@@ -848,7 +848,7 @@ export const fr = {
     share:        'Partager',
     finish:       'Terminer sans partager',
     brand:        'TANREN',
-    url:          'tanren.app',
+    url:          'tanren.fr',
   },
   deleteAccount: {
     step:           'Étape 2 / 2',

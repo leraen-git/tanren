@@ -2,7 +2,8 @@ import { Resend } from 'resend'
 
 const apiKey = process.env['RESEND_API_KEY']
 const resend = apiKey ? new Resend(apiKey) : null
-const FROM_EMAIL = process.env['FROM_EMAIL'] ?? 'Tanren <noreply@tanren.fr>'
+const FROM_EMAIL = process.env['FROM_EMAIL'] ?? 'Tanren <noreply@send.tanren.fr>'
+const REPLY_TO = process.env['REPLY_TO_EMAIL'] ?? 'support@tanren.fr'
 const isDev = process.env['NODE_ENV'] === 'development'
 
 function emailTemplate(code: string): string {
@@ -38,6 +39,7 @@ export async function sendOtpEmail(to: string, code: string): Promise<void> {
 
   const { error } = await resend.emails.send({
     from: FROM_EMAIL,
+    replyTo: REPLY_TO,
     to: [to],
     subject: `Your Tanren code: ${code}`,
     text: `Your Tanren sign-in code is: ${code}\n\nThis code expires in 10 minutes. Do not share it with anyone.`,
