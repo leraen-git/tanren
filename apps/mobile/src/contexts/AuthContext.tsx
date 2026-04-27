@@ -9,6 +9,7 @@ try {
   // Native module not available — Google Sign-In will be disabled
 }
 import { getToken, setToken, clearToken } from '@/services/authTokenService'
+import { storage, STORAGE_KEYS } from '@/lib/storage'
 
 const API_URL = process.env['EXPO_PUBLIC_API_URL'] ?? 'http://localhost:3000'
 
@@ -199,6 +200,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } catch {}
     }
     await clearToken()
+    storage.remove(STORAGE_KEYS.INTRO_SEEN)
     setTokenState(null)
     setStatus('unauthenticated')
   }, [token])

@@ -69,7 +69,20 @@ export const authRouter = router({
         .where(eq(users.authId, appleUserId))
         .limit(1)
 
-      if (!user) {
+      if (user && user.deletedAt) {
+        const name = input.fullName?.trim() || email?.split('@')[0] || 'Athlete'
+        const encrypted = encryptUserFields({ name, email: email ?? `${appleUserId}@apple.id` })
+        const [reactivated] = await ctx.db.update(users).set({
+          deletedAt: null,
+          name: encrypted.name!,
+          email: encrypted.email!,
+          emailHash: encrypted.emailHash,
+          onboardingDone: false,
+          updatedAt: new Date(),
+        }).where(eq(users.id, user.id)).returning()
+        user = reactivated!
+        ctx.req.log.info({ event: 'user_reactivated', userId: user.id, provider: 'apple' }, 'Deleted user reactivated')
+      } else if (!user) {
         const name =
           input.fullName?.trim() ||
           email?.split('@')[0] ||
@@ -143,7 +156,21 @@ export const authRouter = router({
         .where(eq(users.authId, googleUser.sub))
         .limit(1)
 
-      if (!user) {
+      if (user && user.deletedAt) {
+        const name = googleUser.name?.trim() || googleUser.email.split('@')[0] || 'Athlete'
+        const encrypted = encryptUserFields({ name, email: googleUser.email })
+        const [reactivated] = await ctx.db.update(users).set({
+          deletedAt: null,
+          name: encrypted.name!,
+          email: encrypted.email!,
+          emailHash: encrypted.emailHash,
+          avatarUrl: googleUser.picture ?? null,
+          onboardingDone: false,
+          updatedAt: new Date(),
+        }).where(eq(users.id, user.id)).returning()
+        user = reactivated!
+        ctx.req.log.info({ event: 'user_reactivated', userId: user.id, provider: 'google' }, 'Deleted user reactivated')
+      } else if (!user) {
         const name = googleUser.name?.trim() || googleUser.email.split('@')[0] || 'Athlete'
         const encrypted = encryptUserFields({ name, email: googleUser.email })
         const [created] = await ctx.db.insert(users).values({
@@ -267,7 +294,20 @@ export const authRouter = router({
         .where(eq(users.authId, email))
         .limit(1)
 
-      if (!user) {
+      if (user && user.deletedAt) {
+        const name = email.split('@')[0] || 'User'
+        const encrypted = encryptUserFields({ name, email })
+        const [reactivated] = await ctx.db.update(users).set({
+          deletedAt: null,
+          name: encrypted.name!,
+          email: encrypted.email!,
+          emailHash: encrypted.emailHash,
+          onboardingDone: false,
+          updatedAt: new Date(),
+        }).where(eq(users.id, user.id)).returning()
+        user = reactivated!
+        ctx.req.log.info({ event: 'user_reactivated', userId: user.id, provider: 'email' }, 'Deleted user reactivated')
+      } else if (!user) {
         const name = email.split('@')[0] || 'User'
         const encrypted = encryptUserFields({ name, email })
         const [created] = await ctx.db.insert(users).values({
