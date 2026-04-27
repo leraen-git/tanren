@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { View, Text, Pressable, Animated, Easing, StyleSheet, useColorScheme } from 'react-native'
 import { StatusBar } from 'expo-status-bar'
+import { SafeAreaView } from 'react-native-safe-area-context'
 import { router, useNavigation } from 'expo-router'
 import { useIntroSeen } from '../src/hooks/useIntroSeen'
 
@@ -12,6 +13,7 @@ const TOKENS = {
     textMute: 'rgba(255,255,255,0.55)',
     textGhost: 'rgba(255,255,255,0.5)',
     accent: '#FF2D3F',
+    glyphOpacity: 0.10,
   },
   light: {
     bg: '#FFFFFF',
@@ -20,6 +22,7 @@ const TOKENS = {
     textMute: 'rgba(0,0,0,0.55)',
     textGhost: 'rgba(0,0,0,0.5)',
     accent: '#E8192C',
+    glyphOpacity: 0.10,
   },
 }
 
@@ -53,93 +56,87 @@ export default function IntroScreen() {
   }
 
   return (
-    <View style={[styles.screen, { backgroundColor: t.bg }]}>
+    <View style={[styles.root, { backgroundColor: t.bg }]}>
       <StatusBar style={scheme === 'light' ? 'dark' : 'light'} />
-
-      {/* Vignette */}
-      <View style={[styles.vignette, { backgroundColor: t.accent, opacity: scheme === 'light' ? 0.04 : 0.07 }]} pointerEvents="none" />
 
       {/* Background glyph — both kanji horizontal, partially cropped right */}
       <Text
-        style={[styles.glyphBg, { color: t.accent }]}
+        style={[styles.glyphBg, { color: t.accent, opacity: t.glyphOpacity }]}
         numberOfLines={1}
         pointerEvents="none"
       >
         鍛 錬
       </Text>
 
-      {/* Skip */}
-      <Pressable
-        onPress={finish}
-        hitSlop={12}
-        style={styles.skipBtn}
-        accessibilityRole="button"
-        accessibilityLabel="Passer l'introduction"
-      >
-        <Text style={[styles.skipText, { color: t.textGhost }]}>PASSER</Text>
-      </Pressable>
-
-      {/* Kanji */}
-      <Animated.Text
-        style={[styles.kanjiPair, { color: t.accent, opacity: kanjiOpacity }]}
-        accessibilityLabel="Tanren, écrit en kanji japonais"
-      >
-        鍛 錬
-      </Animated.Text>
-
-      {/* Romaji */}
-      <Animated.Text style={[styles.romaji, { color: t.textMute, opacity: romajiOpacity }]}>
-        tan · ren
-      </Animated.Text>
-
-      {/* Divider */}
-      <Animated.View style={[styles.divider, { backgroundColor: t.accent, opacity: romajiOpacity }]} />
-
-      {/* Quote */}
-      <Animated.Text style={[styles.quote, { color: t.textDim, opacity: quoteOpacity }]}>
-        L'acier ne devient lame qu'après{' '}
-        <Text style={{ color: t.accent, fontStyle: 'italic' }}>
-          mille coups de marteau
-        </Text>
-        .
-      </Animated.Text>
-
-      {/* Attribution */}
-      <Animated.Text style={[styles.attribution, { color: t.textGhost, opacity: quoteOpacity }]}>
-        {'— proverbe forgeron\njaponais'}
-      </Animated.Text>
-
-      {/* CTA */}
-      <Animated.View style={[styles.ctaWrapper, { opacity: ctaOpacity }]}>
+      <SafeAreaView style={styles.screen}>
+        {/* Skip */}
         <Pressable
           onPress={finish}
+          hitSlop={12}
+          style={styles.skipBtn}
           accessibilityRole="button"
-          accessibilityLabel="Commencer Tanren"
-          style={({ pressed }) => [
-            styles.ctaBtn,
-            { backgroundColor: t.accent, opacity: pressed ? 0.85 : 1 },
-          ]}
+          accessibilityLabel="Passer l'introduction"
         >
-          <Text style={styles.ctaText}>Commencer</Text>
+          <Text style={[styles.skipText, { color: t.textGhost }]}>PASSER</Text>
         </Pressable>
-      </Animated.View>
+
+        {/* Kanji */}
+        <Animated.Text
+          style={[styles.kanjiPair, { color: t.accent, opacity: kanjiOpacity }]}
+          accessibilityLabel="Tanren, écrit en kanji japonais"
+        >
+          鍛 錬
+        </Animated.Text>
+
+        {/* Romaji */}
+        <Animated.Text style={[styles.romaji, { color: t.textMute, opacity: romajiOpacity }]}>
+          tan · ren
+        </Animated.Text>
+
+        {/* Divider */}
+        <Animated.View style={[styles.divider, { backgroundColor: t.accent, opacity: romajiOpacity }]} />
+
+        {/* Quote */}
+        <Animated.Text style={[styles.quote, { color: t.textDim, opacity: quoteOpacity }]}>
+          L'acier ne devient lame qu'après{' '}
+          <Text style={{ color: t.accent, fontStyle: 'italic' }}>
+            mille coups de marteau
+          </Text>
+          .
+        </Animated.Text>
+
+        {/* Attribution */}
+        <Animated.Text style={[styles.attribution, { color: t.textGhost, opacity: quoteOpacity }]}>
+          {'— proverbe forgeron\njaponais'}
+        </Animated.Text>
+
+        {/* CTA */}
+        <Animated.View style={[styles.ctaWrapper, { opacity: ctaOpacity }]}>
+          <Pressable
+            onPress={finish}
+            accessibilityRole="button"
+            accessibilityLabel="Commencer Tanren"
+            style={({ pressed }) => [
+              styles.ctaBtn,
+              { backgroundColor: t.accent, opacity: pressed ? 0.85 : 1 },
+            ]}
+          >
+            <Text style={styles.ctaText}>Commencer</Text>
+          </Pressable>
+        </Animated.View>
+      </SafeAreaView>
     </View>
   )
 }
 
 const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+  },
   screen: {
     flex: 1,
-    paddingTop: 60,
     paddingHorizontal: 32,
-    paddingBottom: 40,
-  },
-  vignette: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: '50%',
+    paddingBottom: 16,
   },
   glyphBg: {
     position: 'absolute',
@@ -150,13 +147,10 @@ const styles = StyleSheet.create({
     fontSize: 280,
     lineHeight: 280 * 0.85,
     letterSpacing: 280 * 0.05,
-    opacity: 0.10,
   },
   skipBtn: {
-    position: 'absolute',
-    top: 28,
-    right: 28,
-    paddingVertical: 4,
+    alignSelf: 'flex-end',
+    paddingVertical: 8,
     paddingHorizontal: 4,
     zIndex: 10,
   },
@@ -174,7 +168,7 @@ const styles = StyleSheet.create({
     lineHeight: 130,
     letterSpacing: 130 * 0.06,
     textAlign: 'center',
-    marginTop: 40,
+    marginTop: 20,
     marginBottom: 22,
   },
   romaji: {
