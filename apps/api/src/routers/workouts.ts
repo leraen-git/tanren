@@ -181,7 +181,7 @@ export const workoutsRouter = router({
           defaultWeight: workoutExercises.defaultWeight,
           defaultRestSeconds: workoutExercises.defaultRestSeconds,
           notes: workoutExercises.notes,
-          exerciseName: exercises.name,
+          exerciseName: sql<string>`coalesce(${exercises.nameFr}, ${exercises.name})`.as('exercise_name'),
           muscleGroups: exercises.muscleGroups,
           difficulty: exercises.difficulty,
           videoUrl: exercises.videoUrl,

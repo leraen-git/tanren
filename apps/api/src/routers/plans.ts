@@ -376,11 +376,12 @@ export const plansRouter = router({
         ? ['BEGINNER', 'INTERMEDIATE']
         : ['BEGINNER', 'INTERMEDIATE', 'ADVANCED']
 
-      let allExercises: { id: string; name: string; muscleGroups: string[]; difficulty: string }[]
+      let allExercises: { id: string; name: string; nameFr: string | null; muscleGroups: string[]; difficulty: string }[]
       try {
         allExercises = await ctx.db.select({
           id: exercises.id,
           name: exercises.name,
+          nameFr: exercises.nameFr,
           muscleGroups: exercises.muscleGroups,
           difficulty: exercises.difficulty,
         }).from(exercises).where(inArray(exercises.difficulty, levelFilter))
@@ -390,7 +391,7 @@ export const plansRouter = router({
       }
 
       const exerciseList = allExercises
-        .map((e) => `${e.id} | ${e.name} | ${e.muscleGroups.join(', ')} | ${e.difficulty}`)
+        .map((e) => `${e.id} | ${isFr && e.nameFr ? e.nameFr : e.name} | ${e.muscleGroups.join(', ')} | ${e.difficulty}`)
         .join('\n')
 
       const isFr = input.language === 'fr'

@@ -215,7 +215,7 @@ export const sessionsRouter = router({
 
         exerciseComparisons.push({
           exerciseId: ex.exerciseId,
-          exerciseName: exName?.name ?? '',
+          exerciseName: exName?.nameFr ?? exName?.name ?? '',
           currentVolume: exVolume,
           previousVolume: prevVol,
           delta,
