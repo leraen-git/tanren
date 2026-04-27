@@ -252,6 +252,7 @@ function AuthRedirect() {
   const inAuthGroup = seg0 === '(auth)'
   const inOnboarding = seg0 === 'onboarding'
   const inIntro = seg0 === 'intro'
+  const inPrivacy = seg0 === 'privacy'
 
   if (status === 'loading') return null
   if (status === 'unauthenticated' && !inAuthGroup) return <Redirect href="/sign-in" />
@@ -262,7 +263,7 @@ function AuthRedirect() {
         if (inIntro) return null
         return <Redirect href="/intro" />
       }
-      if (!inOnboarding) {
+      if (!inOnboarding && !inPrivacy) {
         const skipConsent = user.authProvider === 'guest'
         return <Redirect href={skipConsent ? '/onboarding/step1' : '/onboarding/step0'} />
       }
