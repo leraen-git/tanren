@@ -2,7 +2,7 @@ import { Resend } from 'resend'
 
 const apiKey = process.env['RESEND_API_KEY']
 const resend = apiKey ? new Resend(apiKey) : null
-const FROM_EMAIL = process.env['FROM_EMAIL'] ?? 'Tanren <noreply@send.tanren.fr>'
+const FROM_EMAIL = process.env['FROM_EMAIL'] ?? 'Tanren <noreply@tanren.fr>'
 const REPLY_TO = process.env['REPLY_TO_EMAIL'] ?? 'support@tanren.fr'
 const isDev = process.env['NODE_ENV'] === 'development'
 

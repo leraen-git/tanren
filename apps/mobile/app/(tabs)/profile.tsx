@@ -28,7 +28,6 @@ import { EditTrainingLevelModal } from '@/components/profile/EditTrainingLevelMo
 import { EditTrainingGoalModal } from '@/components/profile/EditTrainingGoalModal'
 import { EditSessionsPerWeekModal } from '@/components/profile/EditSessionsPerWeekModal'
 import { LogoutConfirmModal } from '@/components/profile/LogoutConfirmModal'
-import { useIntroSeen } from '@/hooks/useIntroSeen'
 
 function SectionLabel({ label }: { label: string }) {
   const { tokens, fonts } = useTheme()
@@ -246,7 +245,6 @@ export default function ProfileScreen() {
   const { signOut } = useAuth()
   const { activeModal, openModal, closeModal } = useProfileStore()
 
-  const { reset: resetIntroSeen } = useIntroSeen()
   const profileQuery = useProfile()
   const { data: user, refetch } = profileQuery
   const sessionsQuery = useSessions({ limit: 100 })
@@ -403,7 +401,7 @@ export default function ProfileScreen() {
 
         {/* Réglages — always visible, no query dependency */}
         <SectionLabel label={t('profile.sectionReglages')} />
-        <Row label="Notre Mantra" onPress={() => { resetIntroSeen(); router.push('/intro') }} muted />
+        <Row label="Notre Mantra" onPress={() => router.push('/mantra')} muted />
         <Row label={t('explore.title')} onPress={() => router.push('/explore')} muted />
         <Row label={t('profile.reminders')} onPress={() => router.push('/settings/reminders')} muted />
         <Row label={t('profile.healthTitle')} disabled badge={t('profile.healthSoonBadge')} />
