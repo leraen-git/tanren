@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
     fontFamily: 'NotoSerifJP_900Black_subset',
     fontWeight: '900',
     fontSize: 130,
-    lineHeight: 130,
+    lineHeight: 160,
     letterSpacing: 130 * 0.06,
     textAlign: 'center',
     marginBottom: 22,
