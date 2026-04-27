@@ -263,7 +263,7 @@ function AuthRedirect() {
         return <Redirect href="/intro" />
       }
       if (!inOnboarding) {
-        const skipConsent = user.authProvider === 'guest' || user.authProvider === 'email'
+        const skipConsent = user.authProvider === 'guest'
         return <Redirect href={skipConsent ? '/onboarding/step1' : '/onboarding/step0'} />
       }
       return null
