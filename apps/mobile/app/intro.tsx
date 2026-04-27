@@ -8,9 +8,9 @@ const TOKENS = {
   dark: {
     bg: '#000000',
     text: '#FFFFFF',
-    textDim: 'rgba(255,255,255,0.92)',
-    textMute: 'rgba(255,255,255,0.5)',
-    textGhost: 'rgba(255,255,255,0.4)',
+    textDim: 'rgba(255,255,255,0.95)',
+    textMute: 'rgba(255,255,255,0.55)',
+    textGhost: 'rgba(255,255,255,0.5)',
     accent: '#FF2D3F',
   },
   light: {
@@ -18,7 +18,7 @@ const TOKENS = {
     text: '#000000',
     textDim: 'rgba(0,0,0,0.85)',
     textMute: 'rgba(0,0,0,0.55)',
-    textGhost: 'rgba(0,0,0,0.45)',
+    textGhost: 'rgba(0,0,0,0.5)',
     accent: '#E8192C',
   },
 }
@@ -59,12 +59,13 @@ export default function IntroScreen() {
       {/* Vignette */}
       <View style={[styles.vignette, { backgroundColor: t.accent, opacity: scheme === 'light' ? 0.04 : 0.07 }]} pointerEvents="none" />
 
-      {/* Background glyph */}
+      {/* Background glyph — both kanji horizontal, partially cropped right */}
       <Text
-        style={[styles.glyphBg, { color: t.accent, opacity: scheme === 'light' ? 0.05 : 0.04 }]}
+        style={[styles.glyphBg, { color: t.accent }]}
+        numberOfLines={1}
         pointerEvents="none"
       >
-        鍛
+        鍛 錬
       </Text>
 
       {/* Skip */}
@@ -75,7 +76,7 @@ export default function IntroScreen() {
         accessibilityRole="button"
         accessibilityLabel="Passer l'introduction"
       >
-        <Text style={[styles.skipText, { color: t.textGhost }]}>Passer</Text>
+        <Text style={[styles.skipText, { color: t.textGhost }]}>PASSER</Text>
       </Pressable>
 
       {/* Kanji */}
@@ -88,7 +89,7 @@ export default function IntroScreen() {
 
       {/* Romaji */}
       <Animated.Text style={[styles.romaji, { color: t.textMute, opacity: romajiOpacity }]}>
-        TAN · REN
+        tan · ren
       </Animated.Text>
 
       {/* Divider */}
@@ -97,7 +98,7 @@ export default function IntroScreen() {
       {/* Quote */}
       <Animated.Text style={[styles.quote, { color: t.textDim, opacity: quoteOpacity }]}>
         L'acier ne devient lame qu'après{' '}
-        <Text style={{ color: t.accent, fontStyle: 'normal', fontWeight: '500' }}>
+        <Text style={{ color: t.accent, fontStyle: 'italic' }}>
           mille coups de marteau
         </Text>
         .
@@ -105,7 +106,7 @@ export default function IntroScreen() {
 
       {/* Attribution */}
       <Animated.Text style={[styles.attribution, { color: t.textGhost, opacity: quoteOpacity }]}>
-        — proverbe forgeron japonais
+        {'— proverbe forgeron\njaponais'}
       </Animated.Text>
 
       {/* CTA */}
@@ -129,8 +130,8 @@ export default function IntroScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    paddingTop: 90,
-    paddingHorizontal: 24,
+    paddingTop: 60,
+    paddingHorizontal: 32,
     paddingBottom: 40,
   },
   vignette: {
@@ -142,86 +143,88 @@ const styles = StyleSheet.create({
   },
   glyphBg: {
     position: 'absolute',
-    right: -30,
-    bottom: 100,
+    right: -120,
+    bottom: 60,
     fontFamily: 'NotoSerifJP_900Black_subset',
     fontWeight: '900',
-    fontSize: 240,
-    lineHeight: 240,
-    letterSpacing: -10,
+    fontSize: 280,
+    lineHeight: 280 * 0.85,
+    letterSpacing: 280 * 0.05,
+    opacity: 0.10,
   },
   skipBtn: {
     position: 'absolute',
-    top: 60,
-    right: 24,
+    top: 28,
+    right: 28,
     paddingVertical: 4,
     paddingHorizontal: 4,
-    zIndex: 5,
+    zIndex: 10,
   },
   skipText: {
-    fontFamily: 'BarlowCondensed_500Medium',
-    fontWeight: '500',
-    fontSize: 11,
-    letterSpacing: 2.2,
+    fontFamily: 'BarlowCondensed_400Regular',
+    fontWeight: '400',
+    fontSize: 12,
+    letterSpacing: 12 * 0.32,
     textTransform: 'uppercase',
   },
   kanjiPair: {
     fontFamily: 'NotoSerifJP_900Black_subset',
     fontWeight: '900',
-    fontSize: 64,
-    lineHeight: 64,
-    letterSpacing: -1.2,
+    fontSize: 130,
+    lineHeight: 130,
+    letterSpacing: 130 * 0.06,
     textAlign: 'center',
-    marginTop: 60,
-    marginBottom: 14,
+    marginTop: 40,
+    marginBottom: 22,
   },
   romaji: {
-    fontFamily: 'JetBrainsMono_400Regular',
+    fontFamily: 'BarlowCondensed_400Regular',
     fontWeight: '400',
-    fontSize: 11,
-    letterSpacing: 5.5,
+    fontSize: 14,
+    letterSpacing: 14 * 0.5,
     textAlign: 'center',
     textTransform: 'uppercase',
-    marginBottom: 32,
-    paddingLeft: 5,
+    marginBottom: 38,
+    paddingLeft: 7,
   },
   divider: {
-    width: 32,
-    height: 1,
+    width: 36,
+    height: 1.5,
     alignSelf: 'center',
-    marginBottom: 24,
+    marginBottom: 38,
   },
   quote: {
     fontFamily: 'BarlowCondensed_300Light',
     fontStyle: 'italic',
     fontWeight: '300',
-    fontSize: 18,
-    lineHeight: 26,
+    fontSize: 26,
+    lineHeight: 26 * 1.45,
     textAlign: 'center',
     paddingHorizontal: 4,
-    marginBottom: 14,
+    marginBottom: 26,
   },
   attribution: {
-    fontFamily: 'BarlowCondensed_500Medium',
-    fontWeight: '500',
-    fontSize: 10,
-    letterSpacing: 3.2,
+    fontFamily: 'BarlowCondensed_400Regular',
+    fontWeight: '400',
+    fontSize: 12,
+    letterSpacing: 12 * 0.32,
     textAlign: 'center',
     textTransform: 'uppercase',
+    lineHeight: 12 * 1.6,
   },
   ctaWrapper: {
     marginTop: 'auto',
   },
   ctaBtn: {
-    paddingVertical: 14,
-    borderRadius: 4,
+    paddingVertical: 18,
+    borderRadius: 6,
     alignItems: 'center',
   },
   ctaText: {
     fontFamily: 'BarlowCondensed_700Bold',
     fontWeight: '700',
-    fontSize: 12,
-    letterSpacing: 2.16,
+    fontSize: 13,
+    letterSpacing: 13 * 0.28,
     textTransform: 'uppercase',
     color: '#FFFFFF',
   },
