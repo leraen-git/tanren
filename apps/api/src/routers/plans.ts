@@ -390,11 +390,11 @@ export const plansRouter = router({
         throw new TRPCError({ code: 'BAD_REQUEST', message: `Erreur chargement exercices : ${dbErr?.message ?? 'requête échouée'}` })
       }
 
+      const isFr = input.language === 'fr'
+
       const exerciseList = allExercises
         .map((e) => `${e.id} | ${isFr && e.nameFr ? e.nameFr : e.name} | ${e.muscleGroups.join(', ')} | ${e.difficulty}`)
         .join('\n')
-
-      const isFr = input.language === 'fr'
 
       const systemPrompt = `Tu es un coach expert en musculation. Tu crées des plans d'entraînement personnalisés.
 
