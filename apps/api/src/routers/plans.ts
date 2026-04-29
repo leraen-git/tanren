@@ -12,6 +12,13 @@ async function resolveUser(db: any, userId: string) {
   return user
 }
 
+async function syncWeeklyTarget(db: any, userId: string, planId: string) {
+  const days = await db.select({ id: workoutPlanDays.id }).from(workoutPlanDays).where(eq(workoutPlanDays.planId, planId))
+  if (days.length > 0) {
+    await db.update(users).set({ weeklyTarget: days.length }).where(eq(users.id, userId))
+  }
+}
+
 const AI_GENERATION_LIMIT = 2
 
 function startOfWeekUTC(): Date {
@@ -282,6 +289,7 @@ export const plansRouter = router({
         )
       }
 
+      await syncWeeklyTarget(ctx.db, user.id, plan!.id)
       return plan
     }),
 
@@ -297,6 +305,7 @@ export const plansRouter = router({
         .update(workoutPlans)
         .set({ isActive: true })
         .where(and(eq(workoutPlans.id, input.id), eq(workoutPlans.userId, user.id)))
+      await syncWeeklyTarget(ctx.db, user.id, input.id)
       return { success: true }
     }),
 
@@ -593,6 +602,7 @@ Retourne cette structure JSON exacte :
         )
       }
 
+      await syncWeeklyTarget(ctx.db, user.id, plan!.id)
       return plan
     }),
 })
