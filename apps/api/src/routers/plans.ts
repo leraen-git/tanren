@@ -3,7 +3,7 @@ import { eq, and, gte, lt, count, inArray } from 'drizzle-orm'
 import { TRPCError } from '@trpc/server'
 import Anthropic from '@anthropic-ai/sdk'
 import { router, protectedProcedure } from '../trpc.js'
-import { users, workoutPlans, workoutPlanDays, workoutTemplates, workoutExercises, exercises, workoutSessions } from '../db/schema.js'
+import { users, workoutPlans, workoutPlanDays, workoutTemplates, workoutExercises, exercises, workoutSessions, notificationPreferences } from '../db/schema.js'
 import { dowUiToDb, dowDbToUi } from '../utils/dayOfWeek.js'
 
 async function resolveUser(db: any, userId: string) {
@@ -13,9 +13,11 @@ async function resolveUser(db: any, userId: string) {
 }
 
 async function syncWeeklyTarget(db: any, userId: string, planId: string) {
-  const days = await db.select({ id: workoutPlanDays.id }).from(workoutPlanDays).where(eq(workoutPlanDays.planId, planId))
+  const days = await db.select({ dayOfWeek: workoutPlanDays.dayOfWeek }).from(workoutPlanDays).where(eq(workoutPlanDays.planId, planId))
   if (days.length > 0) {
     await db.update(users).set({ weeklyTarget: days.length }).where(eq(users.id, userId))
+    const reminderDays = days.map((d: { dayOfWeek: number }) => d.dayOfWeek)
+    await db.update(notificationPreferences).set({ workoutDays: reminderDays }).where(eq(notificationPreferences.userId, userId))
   }
 }
 
@@ -527,7 +529,8 @@ Retourne cette structure JSON exacte :
 
       const remainingCredits = AI_GENERATION_LIMIT - generationsThisWeek - 1
 
-      return { plan, assistantMessage: text, remainingCredits }
+      const summary = `Plan "${plan.name}" — ${plan.days.length} jours : ${plan.days.map((d: any) => d.workoutName).join(', ')}`
+      return { plan, assistantMessage: summary, remainingCredits }
     }),
 
   acceptGenerated: protectedProcedure
