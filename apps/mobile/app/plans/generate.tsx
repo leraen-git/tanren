@@ -16,7 +16,7 @@ const SUGGESTIONS = [
 ] as const
 
 export default function GeneratePlanScreen() {
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label } = useTheme()
   const { t } = useTranslation()
   const { data: user } = useProfile()
   const { conversationHistory, lastPrompt, setPendingPrompt, reset } = useAIPlanStore()
@@ -55,7 +55,7 @@ export default function GeneratePlanScreen() {
             accessibilityLabel={t('common.back')}
             accessibilityRole="button"
           >
-            <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.accent, textTransform: 'uppercase', letterSpacing: 2 }}>
+            <Text style={{ ...label.md, color: tokens.accent }}>
               {'< '}{t('common.back').toUpperCase()}
             </Text>
           </TouchableOpacity>
@@ -87,7 +87,7 @@ export default function GeneratePlanScreen() {
           {/* Profile chips */}
           {user && (
             <View style={{ gap: 8 }}>
-              <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
+              <Text style={{ ...label.sm, color: tokens.textMute }}>
                 {t('ai.profile').toUpperCase()}
               </Text>
               <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
@@ -121,7 +121,7 @@ export default function GeneratePlanScreen() {
             <View style={{ gap: 8 }}>
               {conversationHistory.map((msg, i) => (
                 <View key={i} style={{ gap: 2 }}>
-                  <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: msg.role === 'user' ? tokens.accent : tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
+                  <Text style={{ ...label.sm, color: msg.role === 'user' ? tokens.accent : tokens.textMute }}>
                     {msg.role === 'user' ? t('ai.conversationToi') : t('ai.conversationIa')}
                   </Text>
                   <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textDim }} numberOfLines={3}>
@@ -134,7 +134,7 @@ export default function GeneratePlanScreen() {
 
           {/* Prompt input */}
           <View style={{ gap: 8 }}>
-            <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
+            <Text style={{ ...label.md, color: tokens.textMute }}>
               {isRefinement ? t('ai.adjustments').toUpperCase() : t('ai.request').toUpperCase()}
             </Text>
             <TextInput
@@ -162,7 +162,7 @@ export default function GeneratePlanScreen() {
           {/* Suggestions */}
           {!isRefinement && (
             <View style={{ gap: 8 }}>
-              <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
+              <Text style={{ ...label.sm, color: tokens.textMute }}>
                 {t('ai.suggestions').toUpperCase()}
               </Text>
               <View style={{ gap: 0 }}>

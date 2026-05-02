@@ -30,17 +30,11 @@ import { EditSessionsPerWeekModal } from '@/components/profile/EditSessionsPerWe
 import { LogoutConfirmModal } from '@/components/profile/LogoutConfirmModal'
 
 function SectionLabel({ label }: { label: string }) {
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label: labelPreset } = useTheme()
   return (
-    <Text style={{
-      fontFamily: fonts.sansM,
-      fontSize: 9,
-      color: tokens.textGhost,
-      letterSpacing: 3,
-      textTransform: 'uppercase',
+    <Text style={{ ...labelPreset.sm, color: tokens.textGhost,
       marginTop: 24,
-      marginBottom: 4,
-    }}>
+      marginBottom: 4 }}>
       {label}
     </Text>
   )
@@ -63,7 +57,7 @@ function Row({
   disabled?: boolean
   badge?: string
 }) {
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label: labelPreset } = useTheme()
 
   const content = (
     <View style={{
@@ -139,7 +133,7 @@ function ProfileStatsStrip({ sessionsQuery, recordsQuery }: {
   sessionsQuery: ReturnType<typeof useSessions>
   recordsQuery: ReturnType<typeof usePersonalRecords>
 }) {
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label: labelPreset } = useTheme()
   const { t } = useTranslation()
   const sessions = sessionsQuery.data
   const records = recordsQuery.data
@@ -176,7 +170,7 @@ function ProfileStatsStrip({ sessionsQuery, recordsQuery }: {
           <Text style={{ fontFamily: fonts.sansX, fontSize: 20, color: highlight ? tokens.accent : tokens.text, lineHeight: 22, marginBottom: 4 }}>
             {value}
           </Text>
-          <Text style={{ fontFamily: fonts.sansM, fontSize: 9, letterSpacing: 2, color: tokens.textMute, textTransform: 'uppercase' }}>
+          <Text style={{ ...labelPreset.sm, color: tokens.textMute }}>
             {label}
           </Text>
         </View>
@@ -240,7 +234,7 @@ function ThemeRow({ label }: { label: string }) {
 }
 
 export default function ProfileScreen() {
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label: labelPreset } = useTheme()
   const { t } = useTranslation()
   const { signOut } = useAuth()
   const { activeModal, openModal, closeModal } = useProfileStore()
@@ -365,7 +359,7 @@ export default function ProfileScreen() {
                     <Text style={{ fontFamily: fonts.sans, fontSize: 11, letterSpacing: 0.5, color: tokens.textMute }}>
                       {u.authProvider === 'guest' ? '' : u.email}
                     </Text>
-                    <Text style={{ fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 2, textTransform: 'uppercase', color: tokens.accent, marginTop: 4 }}>
+                    <Text style={{ ...labelPreset.sm, color: tokens.accent, marginTop: 4 }}>
                       {providerLabel}
                     </Text>
                   </View>

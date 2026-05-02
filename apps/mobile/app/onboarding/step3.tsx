@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { useOnboardingStore } from '@/stores/onboardingStore'
 
 export default function OnboardingStep3() {
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label } = useTheme()
   const { t } = useTranslation()
   const ob = useOnboardingStore()
   const [height, setHeight] = useState(ob.heightCm)
@@ -55,7 +55,7 @@ export default function OnboardingStep3() {
 
         {/* Height */}
         <View style={{ gap: 6 }}>
-          <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
+          <Text style={{ ...label.sm, color: tokens.textMute }}>
             {t('onboarding.heightLabel')}
           </Text>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
@@ -85,7 +85,7 @@ export default function OnboardingStep3() {
 
         {/* Weight */}
         <View style={{ gap: 6 }}>
-          <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
+          <Text style={{ ...label.sm, color: tokens.textMute }}>
             {t('onboarding.weightLabel')}
           </Text>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>

@@ -31,7 +31,7 @@ const PERIOD_OPTIONS = [
 ]
 
 export default function HistoryScreen() {
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label: labelPreset } = useTheme()
   const { t, i18n } = useTranslation()
   const bannerVisible = useGuestBannerVisible()
   const { viewMode, setViewMode, period, setPeriod, muscleGroup, setMuscleGroup, resetFilters } = useHistoryStore()
@@ -148,7 +148,7 @@ export default function HistoryScreen() {
                   marginLeft: i > 0 ? -1 : 0,
                 }}>
                   <Text style={{ fontFamily: fonts.sansX, fontSize: 22, color: tokens.text, marginBottom: 4 }}>{value}</Text>
-                  <Text style={{ fontFamily: fonts.sansM, fontSize: 10, letterSpacing: 2, color: tokens.textMute, textTransform: 'uppercase' }}>
+                  <Text style={{ ...labelPreset.md, color: tokens.textMute }}>
                     {label}
                   </Text>
                 </View>
@@ -210,7 +210,7 @@ function StatsView({ data, loading, onRefresh }: {
   loading: boolean
   onRefresh: () => void
 }) {
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label: labelPreset } = useTheme()
   const { t } = useTranslation()
 
   if (loading || !data) {
@@ -234,7 +234,7 @@ function StatsView({ data, loading, onRefresh }: {
         <View style={{ paddingHorizontal: 16, gap: 24, paddingTop: 16, paddingBottom: 40 }}>
           {/* Total volume */}
           <View>
-            <Text style={{ fontFamily: fonts.sansB, fontSize: 10, letterSpacing: 3, textTransform: 'uppercase', color: tokens.textMute }}>
+            <Text style={{ ...labelPreset.md, color: tokens.textMute }}>
               {t('history.statsVolumeTotal')}
             </Text>
             <Text style={{ fontFamily: fonts.sansX, fontSize: 38, color: tokens.text, marginTop: 4 }}>
@@ -249,7 +249,7 @@ function StatsView({ data, loading, onRefresh }: {
 
           {/* Heatmap */}
           <View>
-            <Text style={{ fontFamily: fonts.sansB, fontSize: 10, letterSpacing: 3, textTransform: 'uppercase', color: tokens.textMute, marginBottom: 8 }}>
+            <Text style={{ ...labelPreset.md, color: tokens.textMute, marginBottom: 8 }}>
               {t('history.statsActivity')}
             </Text>
             <HistoryHeatmap cells={data.heatmap.cells} startDate={data.heatmap.startDate} />
@@ -258,7 +258,7 @@ function StatsView({ data, loading, onRefresh }: {
           {/* Weekly volume */}
           {data.weeklyVolume.length > 0 && (
             <View>
-              <Text style={{ fontFamily: fonts.sansB, fontSize: 10, letterSpacing: 3, textTransform: 'uppercase', color: tokens.textMute, marginBottom: 8 }}>
+              <Text style={{ ...labelPreset.md, color: tokens.textMute, marginBottom: 8 }}>
                 {t('history.statsWeeklyVolume')}
               </Text>
               <WeeklyVolumeChart weeks={data.weeklyVolume} />
@@ -268,7 +268,7 @@ function StatsView({ data, loading, onRefresh }: {
           {/* Recent PRs */}
           {data.recentPRs.length > 0 && (
             <View>
-              <Text style={{ fontFamily: fonts.sansB, fontSize: 10, letterSpacing: 3, textTransform: 'uppercase', color: tokens.textMute, marginBottom: 4 }}>
+              <Text style={{ ...labelPreset.md, color: tokens.textMute, marginBottom: 4 }}>
                 {t('history.statsRecentPRs')}
               </Text>
               {data.recentPRs.map((pr) => (

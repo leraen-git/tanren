@@ -25,7 +25,7 @@ const MUSCLE_GROUP_IDS = ['Chest', 'Back', 'Shoulders', 'Biceps', 'Triceps', 'Qu
 const DURATIONS = [30, 45, 60, 75, 90]
 
 export default function WorkoutBuildScreen() {
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label } = useTheme()
   const { t } = useTranslation()
   const insets = useSafeAreaInsets()
   const { editId, forPlanDay } = useLocalSearchParams<{ editId?: string; forPlanDay?: string }>()
@@ -165,21 +165,21 @@ export default function WorkoutBuildScreen() {
         {/* Header */}
         <View style={{ flexDirection: 'row', alignItems: 'center', padding: 16, gap: 12 }}>
           <TouchableOpacity onPress={() => router.back()} accessibilityLabel={t('common.back')} accessibilityRole="button">
-            <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.accent, textTransform: 'uppercase', letterSpacing: 2 }}>
+            <Text style={{ ...label.md, color: tokens.accent }}>
               {'< ' + t('common.back').toUpperCase()}
             </Text>
           </TouchableOpacity>
           <View style={{ flex: 1 }} />
           {isEdit && (
             <View style={{ backgroundColor: tokens.accent, paddingHorizontal: 8, paddingVertical: 2 }}>
-              <Text style={{ fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 2, color: '#FFFFFF', textTransform: 'uppercase' }}>
+              <Text style={{ ...label.sm, color: '#FFFFFF' }}>
                 {t('workout.editBadge')}
               </Text>
             </View>
           )}
           {isEdit && (
             <TouchableOpacity onPress={handleDelete} accessibilityLabel={t('common.delete')} accessibilityRole="button">
-              <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.accent, textTransform: 'uppercase', letterSpacing: 2 }}>
+              <Text style={{ ...label.md, color: tokens.accent }}>
                 {t('common.delete').toUpperCase()}
               </Text>
             </TouchableOpacity>
@@ -237,7 +237,7 @@ export default function WorkoutBuildScreen() {
           <ScrollView contentContainerStyle={{ padding: 16, gap: 20 }}>
             {/* Workout name */}
             <View style={{ gap: 6 }}>
-              <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
+              <Text style={{ ...label.sm, color: tokens.textMute }}>
                 {t('workout.sessionName').toUpperCase()}
               </Text>
               <TextInput
@@ -259,7 +259,7 @@ export default function WorkoutBuildScreen() {
 
             {/* Muscle groups */}
             <View style={{ gap: 6 }}>
-              <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
+              <Text style={{ ...label.sm, color: tokens.textMute }}>
                 {t('workout.muscleGroups').toUpperCase()}
               </Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -299,7 +299,7 @@ export default function WorkoutBuildScreen() {
 
             {/* Duration */}
             <View style={{ gap: 6 }}>
-              <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
+              <Text style={{ ...label.sm, color: tokens.textMute }}>
                 {t('workout.estimatedDuration').toUpperCase()}
               </Text>
               <View style={{ flexDirection: 'row', gap: 4 }}>
@@ -435,7 +435,7 @@ export default function WorkoutBuildScreen() {
 
             {/* Exercise list header */}
             <View style={{ paddingHorizontal: 16, paddingVertical: 8 }}>
-              <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
+              <Text style={{ ...label.sm, color: tokens.textMute }}>
                 {t('workout.exercises')} ({draft.exercises.length})
               </Text>
             </View>

@@ -8,7 +8,7 @@ interface SectionHeaderTemporalProps {
 }
 
 export const SectionHeaderTemporal = React.memo(function SectionHeaderTemporal({ label, count }: SectionHeaderTemporalProps) {
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label: labelPreset } = useTheme()
 
   return (
     <View style={{
@@ -21,13 +21,7 @@ export const SectionHeaderTemporal = React.memo(function SectionHeaderTemporal({
       marginTop: 16,
       marginBottom: 8,
     }}>
-      <Text style={{
-        fontFamily: fonts.sansB,
-        fontSize: 10,
-        letterSpacing: 3,
-        textTransform: 'uppercase',
-        color: tokens.accent,
-      }}>
+      <Text style={{ ...labelPreset.md, color: tokens.accent }}>
         {label}
       </Text>
       <Text style={{

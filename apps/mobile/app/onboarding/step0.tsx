@@ -13,7 +13,7 @@ function DataRow({
   value: string
   muted?: boolean
 }) {
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label: labelPreset } = useTheme()
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: tokens.border }}>
       <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute, flex: 1 }}>
@@ -33,7 +33,7 @@ function DataRow({
 }
 
 export default function OnboardingStep0() {
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label: labelPreset } = useTheme()
   const { t } = useTranslation()
   const { data: user } = useProfile()
 
@@ -74,7 +74,7 @@ export default function OnboardingStep0() {
 
         {/* What the provider shared */}
         <View style={{ borderWidth: 1, borderColor: tokens.border, padding: 12, gap: 4 }}>
-          <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2, marginBottom: 4 }}>
+          <Text style={{ ...labelPreset.sm, color: tokens.textMute, marginBottom: 4 }}>
             {isGoogle ? t('onboarding.step0GoogleSection') : t('onboarding.step0AppleSection')}
           </Text>
           <DataRow label={t('onboarding.step0Email')} value={displayEmail} />
@@ -88,7 +88,7 @@ export default function OnboardingStep0() {
 
         {/* What we'll ask next */}
         <View style={{ borderWidth: 1, borderColor: tokens.border, padding: 12, gap: 4 }}>
-          <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2, marginBottom: 4 }}>
+          <Text style={{ ...labelPreset.sm, color: tokens.textMute, marginBottom: 4 }}>
             {t('onboarding.step0YouSection')}
           </Text>
           <DataRow label={t('onboarding.step0Gender')} value={t('onboarding.step0YouEnter')} muted />

@@ -26,18 +26,12 @@ import {
 import { useActivePlan } from '@/data/useActivePlan'
 
 function SectionHeader({ label }: { label: string }) {
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label: labelPreset } = useTheme()
   return (
-    <Text style={{
-      fontFamily: fonts.sansB,
-      fontSize: 9,
-      color: tokens.textMute,
-      textTransform: 'uppercase',
-      letterSpacing: 2,
+    <Text style={{ ...labelPreset.sm, color: tokens.textMute,
       paddingHorizontal: 16,
       paddingTop: 24,
-      paddingBottom: 8,
-    }}>
+      paddingBottom: 8 }}>
       {label}
     </Text>
   )
@@ -46,7 +40,7 @@ function SectionHeader({ label }: { label: string }) {
 function SettingRow({
   label, sublabel, right, onPress,
 }: { label: string; sublabel?: string; right: React.ReactNode; onPress?: () => void }) {
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label: labelPreset } = useTheme()
   const Wrapper = onPress ? TouchableOpacity : View
   return (
     <Wrapper
@@ -76,7 +70,7 @@ function SettingRow({
 }
 
 function TimeBadge({ time, onPress }: { time: string; onPress: () => void }) {
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label: labelPreset } = useTheme()
   return (
     <TouchableOpacity
       onPress={onPress}
@@ -97,7 +91,7 @@ function TimeBadge({ time, onPress }: { time: string; onPress: () => void }) {
 }
 
 function PermissionBanner({ onPress }: { onPress: () => void }) {
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label: labelPreset } = useTheme()
   const { t } = useTranslation()
   return (
     <TouchableOpacity
@@ -187,7 +181,7 @@ function ChipSelector<T extends string | number>({
   onChange: (v: T) => void
   labelMap?: Record<string, string>
 }) {
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label: labelPreset } = useTheme()
   return (
     <View style={{ flexDirection: 'row', gap: 4 }}>
       {options.map((opt) => {
@@ -225,7 +219,7 @@ function ChipSelector<T extends string | number>({
 }
 
 export default function RemindersScreen() {
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label: labelPreset } = useTheme()
   const { t, i18n } = useTranslation()
   const settings = useNotificationSettingsStore()
   const { enableWithPermission, permDenied } = usePermissionToggle()
@@ -325,7 +319,7 @@ export default function RemindersScreen() {
           onPress={() => router.back()}
           accessibilityLabel={t('common.back')} accessibilityRole="button"
         >
-          <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.accent, textTransform: 'uppercase', letterSpacing: 2 }}>
+          <Text style={{ ...labelPreset.md, color: tokens.accent }}>
             {'< BACK'}
           </Text>
         </TouchableOpacity>

@@ -24,7 +24,7 @@ interface FeatureGroup {
 }
 
 function FeatureRow({ item }: { item: FeatureItem }) {
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label } = useTheme()
   const { t } = useTranslation()
 
   return (
@@ -114,19 +114,13 @@ function FeatureRow({ item }: { item: FeatureItem }) {
 }
 
 function GroupBlock({ group }: { group: FeatureGroup }) {
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label } = useTheme()
   return (
     <View>
-      <Text style={{
-        fontFamily: fonts.sansB,
-        fontSize: 9,
-        color: tokens.textMute,
-        letterSpacing: 2,
-        textTransform: 'uppercase',
+      <Text style={{ ...label.sm, color: tokens.textMute,
         paddingHorizontal: 16,
         paddingTop: 24,
-        paddingBottom: 8,
-      }}>
+        paddingBottom: 8 }}>
         {group.label}
       </Text>
       <View style={{ backgroundColor: tokens.surface1, borderWidth: 1, borderColor: tokens.border, marginHorizontal: 16, overflow: 'hidden' }}>
@@ -139,7 +133,7 @@ function GroupBlock({ group }: { group: FeatureGroup }) {
 }
 
 export default function ExploreScreen() {
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label } = useTheme()
   const { t } = useTranslation()
 
   const { data: user }       = useProfile()
@@ -212,7 +206,7 @@ export default function ExploreScreen() {
           accessibilityLabel={t('common.back')}
           accessibilityRole="button"
         >
-          <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.accent, textTransform: 'uppercase', letterSpacing: 2 }}>
+          <Text style={{ ...label.md, color: tokens.accent }}>
             {'< BACK'}
           </Text>
         </TouchableOpacity>

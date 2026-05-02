@@ -28,12 +28,9 @@ function ProgressPills({ step }: { step: number }) {
 }
 
 function MiniLabel({ children }: { children: string }) {
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label: labelPreset } = useTheme()
   return (
-    <Text style={{
-      fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute,
-      textTransform: 'uppercase', letterSpacing: 2,
-    }}>
+    <Text style={{ ...labelPreset.sm, color: tokens.textMute }}>
       {children}
     </Text>
   )
@@ -42,7 +39,7 @@ function MiniLabel({ children }: { children: string }) {
 function SegOption({
   label, selected, onPress,
 }: { label: string; selected: boolean; onPress: () => void }) {
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label: labelPreset } = useTheme()
   return (
     <TouchableOpacity
       onPress={onPress}
@@ -67,7 +64,7 @@ function SegOption({
 function RadioCard({
   title, desc, selected, onPress,
 }: { title: string; desc: string; selected: boolean; onPress: () => void }) {
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label: labelPreset } = useTheme()
   return (
     <TouchableOpacity
       onPress={onPress}
@@ -93,7 +90,7 @@ function RadioCard({
 function NumericInput({
   value, onChangeText, placeholder, unit,
 }: { value: string; onChangeText: (v: string) => void; placeholder?: string; unit: string }) {
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label: labelPreset } = useTheme()
   return (
     <View style={{
       flexDirection: 'row', alignItems: 'center',
@@ -119,7 +116,7 @@ function NumericInput({
 }
 
 export default function IntakeStatsScreen() {
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label: labelPreset } = useTheme()
   const { t } = useTranslation()
   const { draft, update } = useIntakeDraftV2Store()
   const { data: user } = useProfile()
@@ -171,10 +168,7 @@ export default function IntakeStatsScreen() {
         >
           <ProgressPills step={0} />
 
-          <Text style={{
-            fontFamily: fonts.sansB, fontSize: 10, letterSpacing: 2,
-            textTransform: 'uppercase', color: tokens.textMute,
-          }}>
+          <Text style={{ ...labelPreset.md, color: tokens.textMute }}>
             {t('intakeV2.step1Label')}
           </Text>
 

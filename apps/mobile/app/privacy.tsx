@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/theme/ThemeContext'
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label } = useTheme()
   return (
     <View style={{ borderWidth: 1, borderColor: tokens.border, padding: 12, gap: 8 }}>
       <Text style={{ fontFamily: fonts.sansB, fontSize: 13, color: tokens.text, textTransform: 'uppercase' }}>
@@ -18,7 +18,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 }
 
 function Bullet({ text }: { text: string }) {
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label } = useTheme()
   return (
     <View style={{ flexDirection: 'row', gap: 8 }}>
       <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.accent, marginTop: 1 }}>-</Text>
@@ -30,7 +30,7 @@ function Bullet({ text }: { text: string }) {
 }
 
 function Body({ text }: { text: string }) {
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label } = useTheme()
   return (
     <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute, lineHeight: 18 }}>
       {text}
@@ -39,7 +39,7 @@ function Body({ text }: { text: string }) {
 }
 
 export default function PrivacyScreen() {
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label } = useTheme()
   const { t, i18n } = useTranslation()
   const isFr = i18n.language === 'fr'
 
@@ -51,7 +51,7 @@ export default function PrivacyScreen() {
           accessibilityLabel={t('common.back')}
           accessibilityRole="button"
         >
-          <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.accent, textTransform: 'uppercase', letterSpacing: 2 }}>
+          <Text style={{ ...label.md, color: tokens.accent }}>
             {'< BACK'}
           </Text>
         </TouchableOpacity>

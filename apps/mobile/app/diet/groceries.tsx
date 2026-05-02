@@ -48,7 +48,7 @@ function CheckBox({ checked, onPress }: { checked: boolean; onPress: () => void 
 function CollapsibleSection({
   name, items, onToggle,
 }: { name: string; items: GroceryItem[]; onToggle: (id: string) => void }) {
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label } = useTheme()
   const [collapsed, setCollapsed] = useState(false)
   const checkedCount = items.filter((i) => i.isChecked).length
 
@@ -63,10 +63,7 @@ function CollapsibleSection({
         accessibilityRole="button"
       >
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-          <Text style={{
-            fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 3,
-            color: tokens.textMute, textTransform: 'uppercase',
-          }}>
+          <Text style={{ ...label.sm, color: tokens.textMute }}>
             {name}
           </Text>
           <Text style={{ fontFamily: fonts.mono, fontSize: 10, color: tokens.textGhost }}>
@@ -113,7 +110,7 @@ function CollapsibleSection({
 }
 
 export default function GroceriesScreen() {
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label } = useTheme()
   const { t } = useTranslation()
   const { data: plan } = trpc.diet.getMyPlanV2.useQuery()
   const utils = trpc.useUtils()
@@ -186,7 +183,7 @@ export default function GroceriesScreen() {
       <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 40, gap: 16 }}>
         {/* Summary header */}
         <View style={{ gap: 8 }}>
-          <Text style={{ fontFamily: fonts.sansB, fontSize: 10, letterSpacing: 2.8, color: tokens.textMute, textTransform: 'uppercase' }}>
+          <Text style={{ ...label.md, color: tokens.textMute }}>
             {t('diet.groceriesWeek')}
           </Text>
           <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 8 }}>

@@ -15,14 +15,14 @@ import { useTranslation } from 'react-i18next'
 const DOW_DB_KEY = ['', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const
 
 function MacroCell({ label, value, color }: { label: string; value: number; color: string }) {
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label: labelPreset } = useTheme()
   return (
     <View style={{
       flex: 1, paddingVertical: 10, alignItems: 'center',
       borderWidth: 1, borderColor: tokens.border,
       borderTopWidth: 2, borderTopColor: color,
     }}>
-      <Text style={{ fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 2, color: tokens.textMute, textTransform: 'uppercase', marginBottom: 4 }}>
+      <Text style={{ ...labelPreset.sm, color: tokens.textMute, marginBottom: 4 }}>
         {label}
       </Text>
       <Text style={{ fontFamily: fonts.monoB, fontSize: 15, color }}>
@@ -39,7 +39,7 @@ function V2MealCard({
   isDessert: boolean
   onPress: () => void
 }) {
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label: labelPreset } = useTheme()
   const { t } = useTranslation()
   const borderColor = isDessert ? tokens.amber : tokens.accent
   const typeColor = isDessert ? tokens.amber : tokens.textMute
@@ -57,10 +57,7 @@ function V2MealCard({
     >
       {/* Head: type left, kcal right */}
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 8 }}>
-        <Text style={{
-          fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 2.4,
-          color: typeColor, textTransform: 'uppercase',
-        }}>
+        <Text style={{ ...labelPreset.sm, color: typeColor }}>
           {t(`diet.mealType.${meal.mealType}`, { defaultValue: meal.mealType })}
           {' · '}{meal.suggestedTime}
         </Text>
@@ -94,7 +91,7 @@ function V2MealCard({
 // ─── No plan state ──────────────────────────────────────────────────────────
 
 function NoPlanView({ isGuest, showError }: { isGuest: boolean; showError?: boolean }) {
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label: labelPreset } = useTheme()
   const { t } = useTranslation()
   const { data: planCount } = useDietPlanCount()
   const invalidateDiet = useInvalidateDiet()
@@ -144,10 +141,7 @@ function NoPlanView({ isGuest, showError }: { isGuest: boolean; showError?: bool
       )}
 
       {/* Features */}
-      <Text style={{
-        fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 3,
-        color: tokens.textMute, textTransform: 'uppercase',
-      }}>
+      <Text style={{ ...labelPreset.sm, color: tokens.textMute }}>
         {t('diet.v2Features')}
       </Text>
 
@@ -268,7 +262,7 @@ interface V2PlanData {
 }
 
 function V2ActivePlan({ plan }: { plan: V2PlanData }) {
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label: labelPreset } = useTheme()
   const { t } = useTranslation()
   const { data: user } = useProfile()
   const isGuest = user?.authProvider === 'guest'
@@ -350,7 +344,7 @@ function V2ActivePlan({ plan }: { plan: V2PlanData }) {
             paddingVertical: 14, paddingHorizontal: 16,
             justifyContent: 'center',
           }}>
-            <Text style={{ fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 2, color: tokens.accent, textTransform: 'uppercase', marginBottom: 6 }}>
+            <Text style={{ ...labelPreset.sm, color: tokens.accent, marginBottom: 6 }}>
               {currentDay.dayLabel} · {t('diet.v2DayTheme')}
             </Text>
             <Text style={{ fontFamily: fonts.sansX, fontSize: 20, letterSpacing: 0.4, color: tokens.text, textTransform: 'uppercase', lineHeight: 24 }}>
@@ -363,7 +357,7 @@ function V2ActivePlan({ plan }: { plan: V2PlanData }) {
             flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline',
             borderWidth: 1, borderColor: tokens.border, padding: 14,
           }}>
-            <Text style={{ fontFamily: fonts.sansB, fontSize: 10, letterSpacing: 2.8, color: tokens.textMute, textTransform: 'uppercase' }}>
+            <Text style={{ ...labelPreset.md, color: tokens.textMute }}>
               {t('diet.v2DayTarget')}
             </Text>
             <Text style={{ fontFamily: fonts.monoB, fontSize: 22, lineHeight: 22, color: tokens.text }}>
@@ -379,10 +373,7 @@ function V2ActivePlan({ plan }: { plan: V2PlanData }) {
           </View>
 
           {/* Meals label */}
-          <Text style={{
-            fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 3,
-            color: tokens.textMute, textTransform: 'uppercase', marginTop: 4,
-          }}>
+          <Text style={{ ...labelPreset.sm, color: tokens.textMute, marginTop: 4 }}>
             {t('diet.v2Meals')}
           </Text>
 
@@ -433,10 +424,7 @@ function V2ActivePlan({ plan }: { plan: V2PlanData }) {
           {/* Snack swaps */}
           {plan.aiSnackSwaps && plan.aiSnackSwaps.length > 0 && (
             <View style={{ marginTop: 12, gap: 8 }}>
-              <Text style={{
-                fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 3,
-                color: tokens.textMute, textTransform: 'uppercase',
-              }}>
+              <Text style={{ ...labelPreset.sm, color: tokens.textMute }}>
                 {t('diet.snackSwaps')}
               </Text>
               {plan.aiSnackSwaps.map((swap, i) => (
@@ -463,10 +451,7 @@ function V2ActivePlan({ plan }: { plan: V2PlanData }) {
           {/* Supplements */}
           {plan.aiSupplements && plan.aiSupplements.length > 0 && (
             <View style={{ marginTop: 12, gap: 8 }}>
-              <Text style={{
-                fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 3,
-                color: tokens.textMute, textTransform: 'uppercase',
-              }}>
+              <Text style={{ ...labelPreset.sm, color: tokens.textMute }}>
                 {t('diet.supplements')}
               </Text>
               {plan.aiSupplements.map((sup, i) => (
@@ -515,7 +500,7 @@ function V2ActivePlan({ plan }: { plan: V2PlanData }) {
 // ─── Main screen ────────────────────────────────────────────────────────────
 
 function GeneratingInlineView() {
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label: labelPreset } = useTheme()
   const { t } = useTranslation()
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 20 }}>
@@ -551,7 +536,7 @@ function GeneratingInlineView() {
 }
 
 function GeneratingBanner() {
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label: labelPreset } = useTheme()
   const { t } = useTranslation()
   return (
     <View style={{

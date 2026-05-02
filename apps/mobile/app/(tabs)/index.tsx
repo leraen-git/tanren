@@ -29,7 +29,7 @@ const DAY_NAMES_UI: Record<number, string> = { 1: 'Lundi', 2: 'Mardi', 3: 'Mercr
 const DAY_NAMES_UI_EN: Record<number, string> = { 1: 'Monday', 2: 'Tuesday', 3: 'Wednesday', 4: 'Thursday', 5: 'Friday', 6: 'Saturday', 7: 'Sunday' }
 
 export default function HomeScreen() {
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label } = useTheme()
   const { t, i18n } = useTranslation()
   const bannerVisible = useGuestBannerVisible()
 
@@ -200,9 +200,9 @@ export default function HomeScreen() {
                   accessibilityRole="tab"
                 >
                   <Text style={{
-                    fontFamily: fonts.sansB,
-                    fontSize: 12,
-                    letterSpacing: 3,
+                    fontFamily: fonts.sansM,
+                    fontSize: 13,
+                    letterSpacing: 4,
                     textTransform: 'uppercase',
                     color: isActive ? tokens.accent : tokens.textMute,
                   }}>
@@ -226,10 +226,7 @@ export default function HomeScreen() {
                   borderLeftWidth: 3, borderLeftColor: tokens.accent,
                   justifyContent: 'center',
                 }}>
-                  <Text style={{
-                    fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 2,
-                    textTransform: 'uppercase', color: tokens.accent, marginBottom: 3,
-                  }}>
+                  <Text style={{ ...label.sm, color: tokens.accent, marginBottom: 3 }}>
                     {t('home.today')}
                   </Text>
                   <Text style={{
@@ -245,10 +242,7 @@ export default function HomeScreen() {
                   flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline',
                   paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: tokens.border,
                 }}>
-                  <Text style={{
-                    fontFamily: fonts.sansM, fontSize: 11, letterSpacing: 2,
-                    textTransform: 'uppercase', color: tokens.textMute,
-                  }}>
+                  <Text style={{ ...label.md, color: tokens.textMute }}>
                     {t('diet.calorieTarget')}
                   </Text>
                   <Text style={{ fontFamily: fonts.sansX, fontSize: 22, color: tokens.text }}>
@@ -262,10 +256,7 @@ export default function HomeScreen() {
 
                 {/* Section divider */}
                 <View style={{ borderBottomWidth: 1, borderBottomColor: tokens.border, paddingBottom: 6, marginTop: 4 }}>
-                  <Text style={{
-                    fontFamily: fonts.sansB, fontSize: 10, letterSpacing: 3,
-                    textTransform: 'uppercase', color: tokens.textMute,
-                  }}>
+                  <Text style={{ ...label.md, color: tokens.textMute }}>
                     {t('diet.mealsToday')}
                   </Text>
                 </View>
@@ -382,7 +373,7 @@ export default function HomeScreen() {
                 accessibilityLabel={t('home.startWorkout')}
                 accessibilityRole="button"
               >
-                <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
+                <Text style={{ ...label.sm, color: tokens.textMute }}>
                   {t('home.todayWorkout')}
                 </Text>
                 <Text style={{ fontFamily: fonts.sansX, fontSize: 18, color: tokens.text, textTransform: 'uppercase' }}>
@@ -415,10 +406,7 @@ export default function HomeScreen() {
             {nextWorkout && !isTodayWorkout && (
               <View style={{ gap: 8 }}>
                 <View style={{ borderBottomWidth: 1, borderBottomColor: tokens.border, paddingBottom: 6 }}>
-                  <Text style={{
-                    fontFamily: fonts.sansB, fontSize: 10, letterSpacing: 3,
-                    textTransform: 'uppercase', color: tokens.textMute,
-                  }}>
+                  <Text style={{ ...label.md, color: tokens.textMute }}>
                     {t('home.nextWorkout')}
                   </Text>
                 </View>
@@ -448,10 +436,7 @@ export default function HomeScreen() {
             {remainingWorkouts.length > 0 && (
               <View style={{ gap: 8 }}>
                 <View style={{ borderBottomWidth: 1, borderBottomColor: tokens.border, paddingBottom: 6 }}>
-                  <Text style={{
-                    fontFamily: fonts.sansB, fontSize: 10, letterSpacing: 3,
-                    textTransform: 'uppercase', color: tokens.textMute,
-                  }}>
+                  <Text style={{ ...label.md, color: tokens.textMute }}>
                     {t('home.alsoThisWeek')}
                   </Text>
                 </View>

@@ -14,7 +14,7 @@ import { formatDateDayMonthLong } from '@/utils/format'
 type RegenMode = 'same' | 'edit'
 
 export default function RegeneratePlanScreen() {
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label } = useTheme()
   const { t } = useTranslation()
   const [mode, setMode] = useState<RegenMode>('same')
   const invalidateDiet = useInvalidateDiet()
@@ -79,7 +79,7 @@ export default function RegeneratePlanScreen() {
       <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 40, gap: 16 }}>
         {/* Current plan info */}
         <View style={{ paddingBottom: 14, borderBottomWidth: 1, borderBottomColor: tokens.border }}>
-          <Text style={{ fontFamily: fonts.sansB, fontSize: 10, letterSpacing: 2.8, color: tokens.textMute, textTransform: 'uppercase', marginBottom: 4 }}>
+          <Text style={{ ...label.md, color: tokens.textMute, marginBottom: 4 }}>
             {t('diet.regenCurrent')}
           </Text>
           <Text style={{ fontFamily: fonts.sansX, fontSize: 20, color: tokens.text, textTransform: 'uppercase', letterSpacing: 0.4, marginBottom: 4 }}>
@@ -94,14 +94,14 @@ export default function RegeneratePlanScreen() {
         </View>
 
         {/* Regen section */}
-        <Text style={{ fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 3, color: tokens.textMute, textTransform: 'uppercase' }}>
+        <Text style={{ ...label.sm, color: tokens.textMute }}>
           {t('diet.regenSection')}
         </Text>
 
         {/* Credit counter */}
         <View style={{ borderWidth: 1, borderColor: tokens.border, borderTopWidth: 3, borderTopColor: tokens.accent, padding: 16, gap: 10 }}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
-            <Text style={{ fontFamily: fonts.sansB, fontSize: 10, letterSpacing: 2.8, color: tokens.textMute, textTransform: 'uppercase' }}>
+            <Text style={{ ...label.md, color: tokens.textMute }}>
               {t('diet.regenCreditsLabel')}
             </Text>
             <Text style={{ fontFamily: fonts.monoB, fontSize: 24 }}>
@@ -140,7 +140,7 @@ export default function RegeneratePlanScreen() {
         </View>
 
         {/* Actions */}
-        <Text style={{ fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 3, color: tokens.textMute, textTransform: 'uppercase' }}>
+        <Text style={{ ...label.sm, color: tokens.textMute }}>
           {t('diet.regenActions')}
         </Text>
 

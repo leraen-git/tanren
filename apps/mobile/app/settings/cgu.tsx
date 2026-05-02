@@ -6,14 +6,14 @@ import { useTheme } from '@/theme/ThemeContext'
 import { useTranslation } from 'react-i18next'
 
 export default function CGUScreen() {
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label } = useTheme()
   const { t } = useTranslation()
 
   return (
     <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: tokens.bg }}>
       <View style={{ flexDirection: 'row', alignItems: 'center', padding: 16, gap: 12 }}>
         <TouchableOpacity onPress={() => router.back()} accessibilityRole="button">
-          <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.accent, textTransform: 'uppercase', letterSpacing: 2 }}>
+          <Text style={{ ...label.md, color: tokens.accent }}>
             {'< RETOUR'}
           </Text>
         </TouchableOpacity>

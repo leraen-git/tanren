@@ -12,7 +12,7 @@ interface SessionHeroProps {
 }
 
 export const SessionHero = React.memo(function SessionHero({ session }: SessionHeroProps) {
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label } = useTheme()
   const { t } = useTranslation()
 
   const date = new Date(session.startedAt)
@@ -59,14 +59,8 @@ export const SessionHero = React.memo(function SessionHero({ session }: SessionH
               borderLeftColor: tokens.border,
             }}>
               <Text style={{ fontFamily: fonts.sansX, fontSize: 20, color: tokens.text }}>{s.value}</Text>
-              <Text style={{
-                fontFamily: fonts.sansB,
-                fontSize: 9,
-                letterSpacing: 2,
-                color: tokens.textMute,
-                textTransform: 'uppercase',
-                marginTop: 2,
-              }}>
+              <Text style={{ ...label.sm, color: tokens.textMute,
+                marginTop: 2 }}>
                 {s.label}
               </Text>
             </View>

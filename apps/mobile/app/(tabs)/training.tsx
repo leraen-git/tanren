@@ -19,16 +19,10 @@ const DOW_KEY: Record<number, string> = { 1: 'mon', 2: 'tue', 3: 'wed', 4: 'thu'
 function jsDowToUi(jsDow: number): number { return jsDow === 0 ? 7 : jsDow }
 
 function SectionLabel({ title, count, onAdd, addLabel }: { title: string; count?: number; onAdd?: () => void; addLabel?: string }) {
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label } = useTheme()
   return (
     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-      <Text style={{
-        fontFamily: fonts.sansB,
-        fontSize: 10,
-        letterSpacing: 3,
-        color: tokens.textMute,
-        textTransform: 'uppercase',
-      }}>
+      <Text style={{ ...label.md, color: tokens.textMute }}>
         {title}{count != null ? ` (${count})` : ''}
       </Text>
       {onAdd && addLabel && (
@@ -49,7 +43,7 @@ function SectionLabel({ title, count, onAdd, addLabel }: { title: string; count?
 }
 
 export default function TrainingScreen() {
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label } = useTheme()
   const { t } = useTranslation()
   const bannerVisible = useGuestBannerVisible()
 
@@ -119,7 +113,7 @@ export default function TrainingScreen() {
               <>
                 {isTodayDone && (
                   <View style={{ backgroundColor: tokens.surface1, borderWidth: 1, borderColor: tokens.green, padding: 16, gap: 4 }}>
-                    <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.green, textTransform: 'uppercase', letterSpacing: 2 }}>
+                    <Text style={{ ...label.sm, color: tokens.green }}>
                       {t('training.todayLabel')} · {DOW_SHORT[todayUiDow]}
                     </Text>
                     <Text style={{ fontFamily: fonts.sansX, fontSize: 18, color: tokens.text, textTransform: 'uppercase' }}>
@@ -133,7 +127,7 @@ export default function TrainingScreen() {
                     style={{ backgroundColor: tokens.surface1, borderWidth: 1, borderColor: tokens.accent, padding: 16, gap: 8 }}
                     accessibilityLabel={t('training.startSession')} accessibilityRole="button"
                   >
-                    <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
+                    <Text style={{ ...label.sm, color: tokens.textMute }}>
                       {t('training.todayLabel')} · {DOW_SHORT[todayUiDow]}
                     </Text>
                     <Text style={{ fontFamily: fonts.sansX, fontSize: 22, color: tokens.text, textTransform: 'uppercase' }}>{nw.workoutName}</Text>
@@ -154,7 +148,7 @@ export default function TrainingScreen() {
                 )}
                 {!isToday && !isTodayDone && nw && (
                   <View style={{ backgroundColor: tokens.surface1, borderWidth: 1, borderColor: tokens.border, padding: 16, gap: 4 }}>
-                    <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
+                    <Text style={{ ...label.sm, color: tokens.textMute }}>
                       {isRestDay ? t('training.restDay') : t('training.nextSession')} · {DOW_SHORT[nw.dayOfWeek]}
                     </Text>
                     <Text style={{ fontFamily: fonts.sansX, fontSize: 18, color: tokens.text, textTransform: 'uppercase' }}>{nw.workoutName}</Text>
@@ -180,7 +174,7 @@ export default function TrainingScreen() {
                         </Text>
                       </View>
                       <View style={{ backgroundColor: tokens.accent, paddingHorizontal: 8, paddingVertical: 2 }}>
-                        <Text style={{ fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 2, color: '#FFFFFF', textTransform: 'uppercase' }}>{t('training.active')}</Text>
+                        <Text style={{ ...label.sm, color: '#FFFFFF' }}>{t('training.active')}</Text>
                       </View>
                     </View>
                     <View style={{ flexDirection: 'row', borderTopWidth: 1, borderTopColor: tokens.border }}>

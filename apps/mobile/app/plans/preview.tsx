@@ -13,7 +13,7 @@ import { translateMuscleGroup } from '@/hooks/useExercises'
 const DAY_NAMES: Record<number, string> = { 1: 'Lun', 2: 'Mar', 3: 'Mer', 4: 'Jeu', 5: 'Ven', 6: 'Sam', 7: 'Dim' }
 
 export default function PreviewPlanScreen() {
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label } = useTheme()
   const { t } = useTranslation()
   const { proposedPlan, reset } = useAIPlanStore()
   const { data: plans } = trpc.plans.list.useQuery()
@@ -56,7 +56,7 @@ export default function PreviewPlanScreen() {
       <SafeAreaView style={{ flex: 1, backgroundColor: tokens.bg, alignItems: 'center', justifyContent: 'center' }}>
         <Text style={{ fontFamily: fonts.sans, color: tokens.textMute }}>{t('plans.noPlans')}</Text>
         <TouchableOpacity onPress={() => router.back()} style={{ marginTop: 16 }} accessibilityLabel={t('common.back')} accessibilityRole="button">
-          <Text style={{ fontFamily: fonts.sansB, color: tokens.accent, textTransform: 'uppercase', letterSpacing: 2, fontSize: 10 }}>{t('common.back')}</Text>
+          <Text style={{ ...label.md, color: tokens.accent }}>{t('common.back')}</Text>
         </TouchableOpacity>
       </SafeAreaView>
     )
@@ -69,7 +69,7 @@ export default function PreviewPlanScreen() {
       {/* Header */}
       <View style={{ flexDirection: 'row', alignItems: 'center', padding: 16, gap: 12 }}>
         <TouchableOpacity onPress={() => router.back()} accessibilityLabel={t('common.back')} accessibilityRole="button">
-          <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.accent, textTransform: 'uppercase', letterSpacing: 2 }}>
+          <Text style={{ ...label.md, color: tokens.accent }}>
             {'< '}{t('common.back').toUpperCase()}
           </Text>
         </TouchableOpacity>
@@ -95,7 +95,7 @@ export default function PreviewPlanScreen() {
           borderLeftWidth: 3,
           borderLeftColor: tokens.accent,
         }}>
-          <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
+          <Text style={{ ...label.sm, color: tokens.textMute }}>
             {t('ai.previewTitle').toUpperCase()}
           </Text>
           <Text style={{ fontFamily: fonts.sansX, fontSize: 24, color: tokens.text, textTransform: 'uppercase', marginTop: 4 }}>
@@ -107,7 +107,7 @@ export default function PreviewPlanScreen() {
         </View>
 
         {/* Schedule header */}
-        <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
+        <Text style={{ ...label.md, color: tokens.textMute }}>
           {t('ai.previewSchedule').toUpperCase()}
         </Text>
 

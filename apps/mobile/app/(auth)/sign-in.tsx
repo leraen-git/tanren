@@ -59,7 +59,7 @@ function MailIcon({ color }: { color: string }) {
 }
 
 export default function SignInScreen() {
-  const { tokens, fonts, isDark } = useTheme()
+  const { tokens, fonts, isDark, label } = useTheme()
   const { t } = useTranslation()
   const params = useLocalSearchParams<{ upgrade?: string }>()
   const isUpgrade = params.upgrade === '1'
@@ -292,7 +292,7 @@ export default function SignInScreen() {
             <View style={{ width: '100%', gap: 12 }}>
               {emailStep === 'emailInput' || emailStep === 'sending' ? (
                 <>
-                  <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: muted, textTransform: 'uppercase', letterSpacing: 2 }}>
+                  <Text style={{ ...label.sm, color: muted }}>
                     {t('signIn.emailLabel').toUpperCase()}
                   </Text>
                   <TextInput

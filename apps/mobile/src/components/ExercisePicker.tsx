@@ -29,7 +29,7 @@ type Props = {
 }
 
 export function ExercisePicker({ visible, mode, excludeIds = [], preselectedMuscles = [], onClose, onConfirm }: Props) {
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label } = useTheme()
   const { t } = useTranslation()
   const [search, setSearch] = useState('')
   const [activeFilters, setActiveFilters] = useState<string[]>([])
@@ -98,7 +98,7 @@ export function ExercisePicker({ visible, mode, excludeIds = [], preselectedMusc
           borderBottomColor: tokens.border,
         }}>
           <TouchableOpacity onPress={onClose} accessibilityLabel={t('exercisePicker.close')} accessibilityRole="button">
-            <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.accent, textTransform: 'uppercase', letterSpacing: 2 }}>
+            <Text style={{ ...label.md, color: tokens.accent }}>
               {t('exercisePicker.close')}
             </Text>
           </TouchableOpacity>

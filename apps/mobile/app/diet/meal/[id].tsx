@@ -8,7 +8,7 @@ import { trpc } from '@/lib/trpc'
 import { useTranslation } from 'react-i18next'
 
 export default function MealDetailScreen() {
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label } = useTheme()
   const { t } = useTranslation()
   const { id } = useLocalSearchParams<{ id: string }>()
   const { data: plan } = trpc.diet.getMyPlanV2.useQuery()
@@ -44,10 +44,7 @@ export default function MealDetailScreen() {
       <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 40 }}>
         {/* Header */}
         <View style={{ marginBottom: 16 }}>
-          <Text style={{
-            fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 2.4,
-            color: tokens.accent, textTransform: 'uppercase', marginBottom: 4,
-          }}>
+          <Text style={{ ...label.sm, color: tokens.accent, marginBottom: 4 }}>
             {t(`diet.mealType.${meal.mealType}`, { defaultValue: meal.mealType })}
             {' · '}{meal.suggestedTime}
             {meal.prepTimeMin ? ` · ${meal.prepTimeMin} min` : ''}
@@ -85,10 +82,7 @@ export default function MealDetailScreen() {
         {/* Ingredients */}
         {ingredients.length > 0 && (
           <>
-            <Text style={{
-              fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 3,
-              color: tokens.textMute, textTransform: 'uppercase', marginBottom: 8,
-            }}>
+            <Text style={{ ...label.sm, color: tokens.textMute, marginBottom: 8 }}>
               {t('diet.mealIngredients')}
             </Text>
             {ingredients.map((ing, i) => (
@@ -110,11 +104,8 @@ export default function MealDetailScreen() {
         {/* Recipe steps */}
         {steps.length > 0 && (
           <>
-            <Text style={{
-              fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 3,
-              color: tokens.textMute, textTransform: 'uppercase',
-              marginTop: 16, marginBottom: 8,
-            }}>
+            <Text style={{ ...label.sm, color: tokens.textMute,
+              marginTop: 16, marginBottom: 8 }}>
               {t('diet.mealPrep')}
             </Text>
             {steps.map((step) => (

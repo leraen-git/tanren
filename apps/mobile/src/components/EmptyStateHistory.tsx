@@ -8,7 +8,7 @@ interface EmptyStateGlobalProps {
 }
 
 export function EmptyStateGlobal({ onStartSession }: EmptyStateGlobalProps) {
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label } = useTheme()
   const { t } = useTranslation()
 
   return (
@@ -16,14 +16,8 @@ export function EmptyStateGlobal({ onStartSession }: EmptyStateGlobalProps) {
       <Text style={{ fontFamily: fonts.jpX, fontSize: 96, color: tokens.accent, opacity: 0.85 }}>
         錬
       </Text>
-      <Text style={{
-        fontFamily: fonts.sansM,
-        fontSize: 10,
-        letterSpacing: 3,
-        color: tokens.accent,
-        textTransform: 'uppercase',
-        marginTop: 12,
-      }}>
+      <Text style={{ ...label.md, color: tokens.accent,
+        marginTop: 12 }}>
         {t('history.emptyGlobalLabel')}
       </Text>
       <Text style={{
@@ -79,7 +73,7 @@ interface EmptyStateFilteredProps {
 }
 
 export function EmptyStateFiltered({ onReset }: EmptyStateFilteredProps) {
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label } = useTheme()
   const { t } = useTranslation()
 
   return (

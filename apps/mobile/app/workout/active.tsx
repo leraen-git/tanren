@@ -29,7 +29,7 @@ const HEARTBEAT_INTERVAL_MS = 30_000
 const DEFAULT_REST_SECONDS = 90
 
 export default function ActiveWorkoutScreen() {
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label } = useTheme()
   const { t } = useTranslation()
   const {
     currentWorkout,
@@ -308,13 +308,7 @@ export default function ActiveWorkoutScreen() {
           </View>
 
           {/* Sets header */}
-          <Text style={{
-            fontFamily: fonts.sansB,
-            fontSize: 10,
-            letterSpacing: 3,
-            color: tokens.textMute,
-            textTransform: 'uppercase',
-          }}>
+          <Text style={{ ...label.md, color: tokens.textMute }}>
             {t('common.sets')} · {completedSets}/{sets.length}
           </Text>
 

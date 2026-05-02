@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next'
 import { useOnboardingStore } from '@/stores/onboardingStore'
 
 export default function OnboardingStep1() {
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label } = useTheme()
   const { t } = useTranslation()
   const { data: me } = useProfile()
   const providerName = me?.name && me.name !== 'Athlete' ? me.name : ''
@@ -64,7 +64,7 @@ export default function OnboardingStep1() {
 
         {/* Name */}
         <View style={{ gap: 6 }}>
-          <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
+          <Text style={{ ...label.sm, color: tokens.textMute }}>
             {t('onboarding.nameLabel')}
           </Text>
           <TextInput
@@ -92,7 +92,7 @@ export default function OnboardingStep1() {
 
         {/* Gender */}
         <View style={{ gap: 6 }}>
-          <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
+          <Text style={{ ...label.sm, color: tokens.textMute }}>
             {t('onboarding.genderLabel')}
           </Text>
           <View style={{ flexDirection: 'row', gap: 8 }}>

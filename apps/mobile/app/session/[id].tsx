@@ -12,7 +12,7 @@ import { ExerciseBlock } from '@/components/ExerciseBlock'
 
 export default function SessionDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label } = useTheme()
   const { t } = useTranslation()
 
   const { data: session, isLoading } = trpc.history.detail.useQuery(
@@ -41,17 +41,11 @@ export default function SessionDetailScreen() {
 
         {/* Exercises section */}
         <View>
-          <Text style={{
-            fontFamily: fonts.sansB,
-            fontSize: 10,
-            letterSpacing: 3,
-            textTransform: 'uppercase',
-            color: tokens.textMute,
+          <Text style={{ ...label.md, color: tokens.textMute,
             marginBottom: 8,
             borderBottomWidth: 1,
             borderBottomColor: tokens.border,
-            paddingBottom: 6,
-          }}>
+            paddingBottom: 6 }}>
             {t('history.detailExercises')}
           </Text>
           {session.exercises.map((ex, i) => (

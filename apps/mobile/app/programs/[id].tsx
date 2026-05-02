@@ -10,7 +10,7 @@ import { TouchableOpacity } from 'react-native'
 
 export default function ProgramDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label } = useTheme()
   const { t } = useTranslation()
 
   const { data: program, isLoading } = trpc.programs.byId.useQuery({ id })
@@ -33,7 +33,7 @@ export default function ProgramDetailScreen() {
     <SafeAreaView style={{ flex: 1, backgroundColor: tokens.bg }}>
       <ScrollView contentContainerStyle={{ padding: 16, gap: 20 }}>
         <TouchableOpacity onPress={() => router.back()} accessibilityLabel="Go back" accessibilityRole="button">
-          <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.accent, textTransform: 'uppercase', letterSpacing: 2 }}>
+          <Text style={{ ...label.md, color: tokens.accent }}>
             {'< BACK'}
           </Text>
         </TouchableOpacity>
@@ -75,7 +75,7 @@ export default function ProgramDetailScreen() {
 
             {/* Goal */}
             <View style={{ borderWidth: 1, borderColor: tokens.border, padding: 12, gap: 6 }}>
-              <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
+              <Text style={{ ...label.sm, color: tokens.textMute }}>
                 GOAL
               </Text>
               <View style={{
@@ -92,7 +92,7 @@ export default function ProgramDetailScreen() {
             </View>
 
             {/* Week overview */}
-            <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
+            <Text style={{ ...label.md, color: tokens.textMute }}>
               WEEK OVERVIEW
             </Text>
             {Array.from({ length: Math.min(program.durationWeeks, 4) }).map((_, wi) => (

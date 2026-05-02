@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next'
 import { useOnboardingStore } from '@/stores/onboardingStore'
 
 export default function OnboardingStep2() {
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label } = useTheme()
   const { t } = useTranslation()
   const ob = useOnboardingStore()
   const [level, setLevel] = useState<'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED' | null>(ob.level)
@@ -68,7 +68,7 @@ export default function OnboardingStep2() {
 
         {/* Level */}
         <View style={{ gap: 8 }}>
-          <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
+          <Text style={{ ...label.sm, color: tokens.textMute }}>
             {t('onboarding.levelLabel')}
           </Text>
           <View style={{ gap: 6 }}>
@@ -110,7 +110,7 @@ export default function OnboardingStep2() {
 
         {/* Training days */}
         <View style={{ gap: 8 }}>
-          <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
+          <Text style={{ ...label.sm, color: tokens.textMute }}>
             {t('onboarding.daysLabel')}
           </Text>
           <View style={{ flexDirection: 'row', gap: 0 }}>
@@ -148,7 +148,7 @@ export default function OnboardingStep2() {
 
         {/* Goal */}
         <View style={{ gap: 8 }}>
-          <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
+          <Text style={{ ...label.sm, color: tokens.textMute }}>
             {t('onboarding.goalLabel')}
           </Text>
           <View style={{ flexDirection: 'row', gap: 6 }}>

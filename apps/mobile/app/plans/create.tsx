@@ -35,7 +35,7 @@ type PlanDay = {
 }
 
 export default function CreatePlanScreen() {
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label } = useTheme()
   const { t } = useTranslation()
   const { id } = useLocalSearchParams<{ id?: string }>()
   const isEditing = !!id
@@ -174,14 +174,14 @@ export default function CreatePlanScreen() {
       {/* Header */}
       <View style={{ flexDirection: 'row', alignItems: 'center', padding: 16, gap: 12 }}>
         <TouchableOpacity onPress={() => router.back()} accessibilityLabel={t('common.back')} accessibilityRole="button">
-          <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.accent, textTransform: 'uppercase', letterSpacing: 2 }}>
+          <Text style={{ ...label.md, color: tokens.accent }}>
             {'< '}{t('common.back').toUpperCase()}
           </Text>
         </TouchableOpacity>
         <View style={{ flex: 1 }} />
         {isEditing && (
           <View style={{ backgroundColor: tokens.accent, paddingHorizontal: 8, paddingVertical: 2 }}>
-            <Text style={{ fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 2, color: '#FFFFFF', textTransform: 'uppercase' }}>
+            <Text style={{ ...label.sm, color: '#FFFFFF' }}>
               {t('planBuilder.editBadge')}
             </Text>
           </View>
@@ -213,7 +213,7 @@ export default function CreatePlanScreen() {
 
         {/* Plan name */}
         <View>
-          <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2, marginBottom: 8 }}>
+          <Text style={{ ...label.sm, color: tokens.textMute, marginBottom: 8 }}>
             {t('planBuilder.planName').toUpperCase()}
           </Text>
           <TextInput
@@ -235,7 +235,7 @@ export default function CreatePlanScreen() {
 
         {/* Day picker */}
         <View style={{ gap: 8 }}>
-          <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
+          <Text style={{ ...label.md, color: tokens.textMute }}>
             {t('planBuilder.trainingDays').toUpperCase()}
           </Text>
           <Text style={{ fontFamily: fonts.sans, fontSize: 13, color: tokens.textDim }}>
@@ -316,7 +316,7 @@ export default function CreatePlanScreen() {
             </TouchableOpacity>
 
             {workouts && workouts.length > 0 && (
-              <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
+              <Text style={{ ...label.md, color: tokens.textMute }}>
                 {t('planBuilder.orPickExisting').toUpperCase()}
               </Text>
             )}
@@ -347,7 +347,7 @@ export default function CreatePlanScreen() {
               accessibilityLabel={t('planBuilder.cancelSelection')}
               accessibilityRole="button"
             >
-              <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
+              <Text style={{ ...label.md, color: tokens.textMute }}>
                 {t('planBuilder.cancelSelection').toUpperCase()}
               </Text>
             </TouchableOpacity>
@@ -357,7 +357,7 @@ export default function CreatePlanScreen() {
         {/* Schedule summary */}
         {planDays.length > 0 && selectingDayFor === null && (
           <View style={{ gap: 8 }}>
-            <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
+            <Text style={{ ...label.md, color: tokens.textMute }}>
               {t('planBuilder.schedule').toUpperCase()}
             </Text>
             <View style={{ borderWidth: 1, borderColor: tokens.border }}>

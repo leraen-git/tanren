@@ -9,7 +9,7 @@ import { translateMuscleGroup } from '@/hooks/useExercises'
 
 export default function WorkoutDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label } = useTheme()
   const { t } = useTranslation()
   const insets = useSafeAreaInsets()
 
@@ -31,7 +31,7 @@ export default function WorkoutDetailScreen() {
       {/* Header */}
       <View style={{ flexDirection: 'row', alignItems: 'center', padding: 16, gap: 12 }}>
         <TouchableOpacity onPress={() => router.back()} accessibilityLabel={t('common.back')} accessibilityRole="button">
-          <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.accent, textTransform: 'uppercase', letterSpacing: 2 }}>
+          <Text style={{ ...label.md, color: tokens.accent }}>
             {'< ' + t('common.back').toUpperCase()}
           </Text>
         </TouchableOpacity>
@@ -41,7 +41,7 @@ export default function WorkoutDetailScreen() {
           accessibilityLabel={t('workout.modify')}
           accessibilityRole="button"
         >
-          <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.accent, textTransform: 'uppercase', letterSpacing: 2 }}>
+          <Text style={{ ...label.md, color: tokens.accent }}>
             {t('workout.modify').toUpperCase()}
           </Text>
         </TouchableOpacity>
@@ -50,7 +50,7 @@ export default function WorkoutDetailScreen() {
       <ScrollView contentContainerStyle={{ padding: 16, gap: 16, paddingBottom: 100 }}>
         {/* Name + meta */}
         <View style={{ gap: 4 }}>
-          <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
+          <Text style={{ ...label.sm, color: tokens.textMute }}>
             {t('workout.session').toUpperCase()}
           </Text>
           <Text style={{ fontFamily: fonts.sansX, fontSize: 22, color: tokens.text, textTransform: 'uppercase' }}>
@@ -83,7 +83,7 @@ export default function WorkoutDetailScreen() {
 
         {/* Exercises */}
         <View>
-          <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2, marginBottom: 8 }}>
+          <Text style={{ ...label.md, color: tokens.textMute, marginBottom: 8 }}>
             {t('workout.exercises').toUpperCase()}
           </Text>
           {workout.exercises.map((ex, i) => (

@@ -33,7 +33,7 @@ function ConfigModal({
   onStart: (sets: SetConfig[]) => void
   onClose: () => void
 }) {
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label } = useTheme()
   const { t } = useTranslation()
   const insets = useSafeAreaInsets()
   const [numSets, setNumSets] = useState(3)
@@ -63,7 +63,7 @@ function ConfigModal({
       <View style={{ flex: 1, backgroundColor: tokens.bg, paddingTop: insets.top, paddingBottom: insets.bottom }}>
         <View style={{ flexDirection: 'row', alignItems: 'flex-start', paddingHorizontal: 16, paddingTop: 12, paddingBottom: 16, gap: 12, borderBottomWidth: 1, borderBottomColor: tokens.border }}>
           <TouchableOpacity onPress={onClose} accessibilityLabel={t('quick.close')} accessibilityRole="button" style={{ paddingTop: 2 }}>
-            <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.accent, textTransform: 'uppercase', letterSpacing: 2 }}>
+            <Text style={{ ...label.md, color: tokens.accent }}>
               {t('quick.close').toUpperCase()}
             </Text>
           </TouchableOpacity>
@@ -79,7 +79,7 @@ function ConfigModal({
 
         <ScrollView contentContainerStyle={{ padding: 16, gap: 16 }} keyboardShouldPersistTaps="handled">
           <View style={{ gap: 6 }}>
-            <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
+            <Text style={{ ...label.sm, color: tokens.textMute }}>
               {t('quick.numSets').toUpperCase()}
             </Text>
             <View style={{ flexDirection: 'row', gap: 4 }}>
@@ -166,7 +166,7 @@ function ConfigModal({
 }
 
 export default function QuickExerciseScreen() {
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label } = useTheme()
   const [search, setSearch] = useState('')
   const [muscle, setMuscle] = useState('All')
   const [selected, setSelected] = useState<Exercise | null>(null)
@@ -213,7 +213,7 @@ export default function QuickExerciseScreen() {
       {/* Header */}
       <View style={{ flexDirection: 'row', alignItems: 'center', padding: 16, gap: 12 }}>
         <TouchableOpacity onPress={() => router.back()} accessibilityLabel={t('common.back')} accessibilityRole="button">
-          <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.accent, textTransform: 'uppercase', letterSpacing: 2 }}>
+          <Text style={{ ...label.md, color: tokens.accent }}>
             {t('common.back').toUpperCase()}
           </Text>
         </TouchableOpacity>

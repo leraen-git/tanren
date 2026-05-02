@@ -17,7 +17,7 @@ const METRIC_OPTIONS = ['Max weight', 'Volume', 'Reps']
 
 export default function ExerciseDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label } = useTheme()
   const { t } = useTranslation()
   const [metric, setMetric] = useState('Max weight')
 
@@ -99,15 +99,9 @@ export default function ExerciseDetailScreen() {
                 activeOpacity={0.8}
               >
                 <View style={{ borderWidth: 1, borderColor: tokens.border }}>
-                  <Text style={{
-                    fontFamily: fonts.sansB,
-                    fontSize: 10,
-                    letterSpacing: 2,
-                    color: tokens.textMute,
-                    textTransform: 'uppercase',
+                  <Text style={{ ...label.md, color: tokens.textMute,
                     padding: 16,
-                    paddingBottom: 8,
-                  }}>
+                    paddingBottom: 8 }}>
                     {t('exercise.demonstration')}
                   </Text>
                   <View style={{ overflow: 'hidden' }}>
@@ -169,14 +163,8 @@ export default function ExerciseDetailScreen() {
 
             {/* Progression chart */}
             <View style={{ borderWidth: 1, borderColor: tokens.border, padding: 16 }}>
-              <Text style={{
-                fontFamily: fonts.sansB,
-                fontSize: 10,
-                letterSpacing: 2,
-                color: tokens.textMute,
-                textTransform: 'uppercase',
-                marginBottom: 8,
-              }}>
+              <Text style={{ ...label.md, color: tokens.textMute,
+                marginBottom: 8 }}>
                 Progression
               </Text>
               <LineChart data={chartData} height={140} width={320} />
@@ -185,14 +173,8 @@ export default function ExerciseDetailScreen() {
             {/* Personal records */}
             {exerciseRecords.length > 0 && (
               <View>
-                <Text style={{
-                  fontFamily: fonts.sansB,
-                  fontSize: 10,
-                  letterSpacing: 3,
-                  color: tokens.textMute,
-                  textTransform: 'uppercase',
-                  marginBottom: 12,
-                }}>
+                <Text style={{ ...label.md, color: tokens.textMute,
+                  marginBottom: 12 }}>
                   {t('history.records')}
                 </Text>
                 {exerciseRecords.slice(0, 5).map((r) => (
@@ -221,14 +203,8 @@ export default function ExerciseDetailScreen() {
             {/* Goal progress */}
             {currentMax > 0 && (
               <View style={{ borderWidth: 1, borderColor: tokens.border, padding: 16 }}>
-                <Text style={{
-                  fontFamily: fonts.sansB,
-                  fontSize: 10,
-                  letterSpacing: 2,
-                  color: tokens.textMute,
-                  textTransform: 'uppercase',
-                  marginBottom: 8,
-                }}>
+                <Text style={{ ...label.md, color: tokens.textMute,
+                  marginBottom: 8 }}>
                   {t('exercise.goalProgress')}
                 </Text>
                 <ProgressBar
@@ -248,14 +224,8 @@ export default function ExerciseDetailScreen() {
               borderLeftColor: tokens.accent,
               padding: 16,
             }}>
-              <Text style={{
-                fontFamily: fonts.sansB,
-                fontSize: 9,
-                letterSpacing: 2,
-                color: tokens.textMute,
-                textTransform: 'uppercase',
-                marginBottom: 4,
-              }}>
+              <Text style={{ ...label.sm, color: tokens.textMute,
+                marginBottom: 4 }}>
                 Coach
               </Text>
               <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.text }}>

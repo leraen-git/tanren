@@ -1,6 +1,7 @@
 import { TextInput, Pressable, Text, View, StyleSheet } from 'react-native'
 import { useState, useRef } from 'react'
 import { useTheme } from '@/theme/ThemeContext'
+import { label } from '@/theme/tokens'
 
 function parseRestInput(s: string): number {
   if (s.includes(':')) {
@@ -38,7 +39,7 @@ export function TapTimerCell({ label, valueSeconds, onChange }: Props) {
       onPress={() => { setBuffer(formatRest(valueSeconds)); setEditing(true) }}
       style={styles.container}
     >
-      <Text style={[styles.label, { fontFamily: fonts.sansB, color: tokens.textMute }]}>
+      <Text style={[styles.label, { color: tokens.textMute }]}>
         {label}
       </Text>
       {editing ? (
@@ -76,9 +77,10 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   label: {
-    fontSize: 9,
-    letterSpacing: 2,
-    textTransform: 'uppercase',
+    fontFamily: label.sm.fontFamily,
+    fontSize: label.sm.fontSize,
+    letterSpacing: label.sm.letterSpacing,
+    textTransform: label.sm.textTransform,
     marginBottom: 4,
   },
   value: {

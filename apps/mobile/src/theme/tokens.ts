@@ -78,6 +78,12 @@ export const fonts = {
   monoB: 'JetBrainsMono_700Bold',
 } as const
 
+export const label = {
+  lg: { fontFamily: fonts.sansM, fontSize: 13, letterSpacing: 4, textTransform: 'uppercase' as const },
+  md: { fontFamily: fonts.sansM, fontSize: 11, letterSpacing: 3, textTransform: 'uppercase' as const },
+  sm: { fontFamily: fonts.sansM, fontSize: 10, letterSpacing: 2.8, textTransform: 'uppercase' as const },
+} as const
+
 export const heatmapColors = [
   '#141414',
   'rgba(255,45,63,0.2)',

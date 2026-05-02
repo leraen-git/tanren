@@ -5,6 +5,7 @@ import {
   darkTheme,
   lightTheme,
   fonts,
+  label,
   type ThemeTokens,
 } from './tokens'
 
@@ -14,6 +15,7 @@ type ColorScheme = 'light' | 'dark'
 interface Theme {
   tokens: ThemeTokens
   fonts: typeof fonts
+  label: typeof label
   scheme: ColorScheme
   isDark: boolean
   preference: ThemePreference
@@ -61,6 +63,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const theme: Theme = {
     tokens,
     fonts,
+    label,
     scheme,
     isDark,
     preference,

@@ -20,7 +20,7 @@ function pad(n: number): string {
 }
 
 export function TimePickerModal({ visible, value, onConfirm, onClose, label }: Props) {
-  const { tokens, fonts } = useTheme()
+  const { tokens, fonts, label: labelPreset } = useTheme()
 
   const [hour, minute] = value.split(':').map(Number)
   const [h, setH] = useState(pad(hour ?? 0))
@@ -82,10 +82,8 @@ export function TimePickerModal({ visible, value, onConfirm, onClose, label }: P
               borderTopColor: tokens.border,
             }}>
               {label && (
-                <Text style={{
-                  fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute,
-                  textAlign: 'center', textTransform: 'uppercase', letterSpacing: 2, marginBottom: 20,
-                }}>
+                <Text style={{ ...labelPreset.sm, color: tokens.textMute,
+                  textAlign: 'center', marginBottom: 20 }}>
                   {label}
                 </Text>
               )}
