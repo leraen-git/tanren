@@ -28,6 +28,7 @@ import { useActiveSessionStore } from '@/stores/activeSessionStore'
 import { useSyncWorker } from '@/hooks/useSyncWorker'
 import { useProfile } from '@/data/useProfile'
 import { useIntroSeen } from '@/hooks/useIntroSeen'
+import * as Updates from 'expo-updates'
 import '@/i18n'
 
 const SENTRY_DSN = process.env['EXPO_PUBLIC_SENTRY_DSN']
@@ -174,6 +175,27 @@ function NotificationWatcher() {
     return () => { sub.remove(); tapSub.remove() }
   }, [])
 
+  return null
+}
+
+function OTAUpdateChecker() {
+  useEffect(() => {
+    if (__DEV__) return
+    async function check() {
+      try {
+        const update = await Updates.checkForUpdateAsync()
+        if (update.isAvailable) {
+          await Updates.fetchUpdateAsync()
+          await Updates.reloadAsync()
+        }
+      } catch {}
+    }
+    check()
+    const sub = AppState.addEventListener('change', (state: AppStateStatus) => {
+      if (state === 'active') check()
+    })
+    return () => sub.remove()
+  }, [])
   return null
 }
 
@@ -330,6 +352,7 @@ export default function RootLayout() {
                 {splashDone && <SessionResumeChecker />}
                 <SyncWorkerHost />
                 <NotificationWatcher />
+                <OTAUpdateChecker />
                 <DietGenerationWatcher />
                 <ToastHost />
               </AuthGateProvider>
