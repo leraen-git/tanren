@@ -447,3 +447,14 @@ export const notificationPreferences = pgTable('notification_preferences', {
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
   createdAt: timestamp('created_at').notNull().defaultNow(),
 })
+
+// ─── AI Generation Log ──────────────────────────────────────────────────────
+
+export const aiGenerationLog = pgTable('ai_generation_log', {
+  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  type: text('type').notNull(), // 'workout_plan' | 'diet_plan'
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+}, (table) => [
+  index('idx_ai_gen_log_user_created').on(table.userId, table.createdAt),
+])

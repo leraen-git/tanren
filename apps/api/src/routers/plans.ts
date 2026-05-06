@@ -3,7 +3,7 @@ import { eq, and, gte, lt, count, inArray } from 'drizzle-orm'
 import { TRPCError } from '@trpc/server'
 import Anthropic from '@anthropic-ai/sdk'
 import { router, protectedProcedure } from '../trpc.js'
-import { users, workoutPlans, workoutPlanDays, workoutTemplates, workoutExercises, exercises, workoutSessions, notificationPreferences } from '../db/schema.js'
+import { users, workoutPlans, workoutPlanDays, workoutTemplates, workoutExercises, exercises, workoutSessions, notificationPreferences, aiGenerationLog } from '../db/schema.js'
 import { dowUiToDb, dowDbToUi } from '../utils/dayOfWeek.js'
 
 async function resolveUser(db: any, userId: string) {
@@ -326,11 +326,11 @@ export const plansRouter = router({
       const weekStart = startOfWeekUTC()
       const result = await ctx.db
         .select({ value: count() })
-        .from(workoutPlans)
+        .from(aiGenerationLog)
         .where(and(
-          eq(workoutPlans.userId, ctx.userId),
-          eq(workoutPlans.generatedByAi, true),
-          gte(workoutPlans.createdAt, weekStart)
+          eq(aiGenerationLog.userId, ctx.userId),
+          eq(aiGenerationLog.type, 'workout_plan'),
+          gte(aiGenerationLog.createdAt, weekStart)
         ))
       const used = result[0]?.value ?? 0
       const nextMonday = new Date(weekStart)
@@ -355,17 +355,17 @@ export const plansRouter = router({
 
       const user = await resolveUser(ctx.db, ctx.userId)
 
-      // Rate limit: count ONLY AI-generated plans this week
+      // Rate limit: count ALL generation attempts this week (not just accepted)
       const weekStart = startOfWeekUTC()
       let generationsThisWeek = 0
       try {
         const [countRow] = await ctx.db
           .select({ value: count() })
-          .from(workoutPlans)
+          .from(aiGenerationLog)
           .where(and(
-            eq(workoutPlans.userId, user.id),
-            eq(workoutPlans.generatedByAi, true),
-            gte(workoutPlans.createdAt, weekStart)
+            eq(aiGenerationLog.userId, user.id),
+            eq(aiGenerationLog.type, 'workout_plan'),
+            gte(aiGenerationLog.createdAt, weekStart)
           ))
         generationsThisWeek = countRow?.value ?? 0
       } catch (dbErr: any) {
@@ -379,6 +379,9 @@ export const plansRouter = router({
           message: `Limite hebdomadaire atteinte (${AI_GENERATION_LIMIT}/semaine).`,
         })
       }
+
+      // Log this generation attempt immediately (before AI call)
+      await ctx.db.insert(aiGenerationLog).values({ userId: user.id, type: 'workout_plan' })
 
       // Fetch exercise library — filter by user level to reduce prompt size
       const levelFilter: ('BEGINNER' | 'INTERMEDIATE' | 'ADVANCED')[] = user.level === 'BEGINNER'

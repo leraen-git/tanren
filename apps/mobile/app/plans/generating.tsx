@@ -1,11 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { View, Text, Alert, TouchableOpacity } from 'react-native'
+import { View, Text, Alert } from 'react-native'
+import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withTiming, Easing } from 'react-native-reanimated'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
 import { trpc } from '@/lib/trpc'
 import { useAIPlanStore } from '@/stores/aiPlanStore'
 import { useTranslation } from 'react-i18next'
+import { useAuth } from '@/contexts/AuthContext'
 
 const STEPS = [
   'ai.genStepProfile',
@@ -17,10 +19,21 @@ const STEPS = [
 export default function PlanGeneratingScreen() {
   const { tokens, fonts } = useTheme()
   const { pendingPrompt, conversationHistory, setProposedPlan } = useAIPlanStore()
+  const { token } = useAuth()
   const { t, i18n } = useTranslation()
   const lang = (i18n.language === 'fr' ? 'fr' : 'en') as 'en' | 'fr'
   const [stepIndex, setStepIndex] = useState(0)
   const triggered = useRef(false)
+
+  const pulseOpacity = useSharedValue(0.15)
+  useEffect(() => {
+    pulseOpacity.value = withRepeat(
+      withTiming(0.35, { duration: 1200, easing: Easing.inOut(Easing.ease) }),
+      -1,
+      true,
+    )
+  }, [])
+  const kanjiStyle = useAnimatedStyle(() => ({ opacity: pulseOpacity.value }))
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -43,18 +56,18 @@ export default function PlanGeneratingScreen() {
   })
 
   useEffect(() => {
-    if (triggered.current || !pendingPrompt) return
+    if (triggered.current || !pendingPrompt || !token) return
     triggered.current = true
     generate.mutate({ prompt: pendingPrompt, language: lang, conversationHistory })
-  }, [])
+  }, [token])
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: tokens.bg, alignItems: 'center', justifyContent: 'center' }}>
       <View style={{ alignItems: 'center', gap: 32, paddingHorizontal: 32 }}>
-        {/* Kanji hero */}
-        <Text style={{ fontFamily: fonts.jp, fontSize: 96, color: tokens.accent, opacity: 0.15 }}>
+        {/* Kanji hero — pulses to signal loading */}
+        <Animated.Text style={[{ fontFamily: fonts.jp, fontSize: 96, color: tokens.accent }, kanjiStyle]}>
           鍛
-        </Text>
+        </Animated.Text>
 
         {/* Title */}
         <View style={{ alignItems: 'center', gap: 8 }}>

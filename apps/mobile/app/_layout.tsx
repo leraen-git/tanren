@@ -94,6 +94,14 @@ function TRPCProvider({ children }: { children: React.ReactNode }) {
           if (t) h['Authorization'] = `Bearer ${t}`
           return h
         },
+        fetch: (url, options) => {
+          const controller = new AbortController()
+          const timeoutId = setTimeout(() => controller.abort(), 120_000)
+          const signal = options?.signal
+            ? AbortSignal.any([options.signal, controller.signal])
+            : controller.signal
+          return fetch(url, { ...options, signal }).finally(() => clearTimeout(timeoutId))
+        },
       })],
     }),
   )

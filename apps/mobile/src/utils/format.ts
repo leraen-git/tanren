@@ -12,8 +12,12 @@ export function formatWeight(kg: number): string {
   return `${formatted} kg`
 }
 
-/** Format a volume/tonnage for display: "450 kg", "12 450 kg" */
+/** Format a volume/tonnage for display: "450 kg", "12 450 kg", "1,2 t" */
 export function formatVolume(kg: number): string {
+  if (kg >= 100_000) {
+    const t = kg / 1000
+    return `${t.toLocaleString(getLocaleTag(), { minimumFractionDigits: 1, maximumFractionDigits: 1 })} t`
+  }
   return `${Math.round(kg).toLocaleString(getLocaleTag())} kg`
 }
 

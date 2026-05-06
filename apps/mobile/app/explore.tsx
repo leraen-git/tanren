@@ -201,7 +201,6 @@ export default function ExploreScreen() {
       label: t('explore.groupPlans'),
       items: [
         { icon: 'AI', title: isGuest ? t('guest.aiLocked') : t('explore.aiWorkoutPlan'), desc: isGuest ? t('guest.aiLockedDesc') : t('explore.aiWorkoutPlanDesc'), route: '/plans/generate', isNew: !isGuest, used: hasWorkoutPlan, locked: isGuest },
-        { icon: 'PG', title: t('explore.guidedPrograms'), desc: t('explore.guidedProgramsDesc'), route: '/(tabs)/training', used: false, comingSoon: true },
       ],
     },
     {
