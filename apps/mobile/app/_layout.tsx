@@ -1,7 +1,7 @@
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { Stack, router, Redirect, useSegments } from 'expo-router'
 import { ThemeProvider, useTheme } from '@/theme/ThemeContext'
-import { QueryClient, onlineManager } from '@tanstack/react-query'
+import { QueryClient, onlineManager, useIsRestoring } from '@tanstack/react-query'
 import NetInfo from '@react-native-community/netinfo'
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client'
 import { mmkvPersister } from '@/lib/queryPersister'
@@ -73,13 +73,23 @@ function TRPCProvider({ children }: { children: React.ReactNode }) {
   }))
 
   const tokenRef = useRef<string | null>(token)
+  const isInitialLoadRef = useRef(true)
   const prevTokenRef = useRef<string | null>(token)
-  const prevToken = prevTokenRef.current
   tokenRef.current = token
-  prevTokenRef.current = token
-  if (prevToken !== token) {
-    queryClient.clear()
-  }
+
+  useEffect(() => {
+    const prev = prevTokenRef.current
+    prevTokenRef.current = token
+
+    if (isInitialLoadRef.current) {
+      isInitialLoadRef.current = false
+      return
+    }
+
+    if (prev !== token) {
+      queryClient.clear()
+    }
+  }, [token, queryClient])
 
   const [trpcClient] = useState(() =>
     trpc.createClient({
@@ -271,18 +281,24 @@ function AuthRedirect() {
     if (status === 'authenticated') hasSignedOut.current = false
   }, [status])
 
+  const isRestoring = useIsRestoring()
+
   useEffect(() => {
     if (
       status === 'authenticated' &&
+      !isRestoring &&
       !profileQuery.isPending &&
       !profileQuery.isError &&
+      profileQuery.fetchStatus !== 'paused' &&
+      profileQuery.dataUpdatedAt > 0 &&
       user === null &&
       !hasSignedOut.current
     ) {
       hasSignedOut.current = true
       signOut()
     }
-  }, [status, profileQuery.isPending, profileQuery.isError, user, signOut])
+  }, [status, isRestoring, profileQuery.isPending, profileQuery.isError,
+      profileQuery.fetchStatus, profileQuery.dataUpdatedAt, user, signOut])
 
   const seg0 = segments[0] as string
   const inAuthGroup = seg0 === '(auth)'
