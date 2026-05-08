@@ -7,6 +7,7 @@ import {
   Alert,
   Linking,
 } from 'react-native'
+import Constants from 'expo-constants'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useGuestBannerVisible } from '@/contexts/GuestBannerContext'
 import { router } from 'expo-router'
@@ -464,6 +465,10 @@ export default function ProfileScreen() {
         <Row label={t('profile.privacyPolicy')} onPress={() => router.push('/settings/privacy')} muted />
         <Row label={t('profile.signOut')} onPress={() => openModal('logoutConfirm')} muted />
         <Row label={t('profile.deleteAccount')} onPress={handleDeleteAccount} danger />
+
+        <Text style={{ textAlign: 'center', color: tokens.textGhost, fontSize: 12, marginTop: 24, marginBottom: 16 }}>
+          v{Constants.expoConfig?.version ?? '?'} ({Constants.expoConfig?.android?.versionCode ?? Constants.expoConfig?.ios?.buildNumber ?? '?'})
+        </Text>
       </ScrollView>
 
       <LogoutConfirmModal open={activeModal === 'logoutConfirm'} onClose={closeModal} onConfirm={handleLogout} />
