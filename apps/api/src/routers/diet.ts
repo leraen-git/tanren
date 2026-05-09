@@ -2,6 +2,7 @@ import { z } from 'zod'
 import { eq, and, desc, count, isNull } from 'drizzle-orm'
 import { TRPCError } from '@trpc/server'
 import { router, publicProcedure, protectedProcedure } from '../trpc.js'
+import { resolveModelForUser } from '../services/llmRouter.js'
 import {
   users,
   dietProfiles,
@@ -361,12 +362,13 @@ export const dietRouter = router({
 
       let ai: AiPlanResponse
       try {
+        const dietModel = resolveModelForUser({ role: ctx.user.role, preferredModel: ctx.user.preferredLlmModel })
         ai = await generatePlanWithClaude({
           ...input,
           goalWeightKg: input.goalWeightKg ?? null,
           goalFeel: input.goalFeel ?? null,
           hatedFoods: input.hatedFoods ?? null,
-        } as Parameters<typeof generatePlanWithClaude>[0])
+        } as Parameters<typeof generatePlanWithClaude>[0], { model: dietModel })
       } catch (err) {
         const msg = err instanceof Error ? err.message : 'Unknown error'
         throw new TRPCError({
@@ -482,7 +484,7 @@ export const dietRouter = router({
           snackMotivation: intake.snackMotivation,
           snackPreference: intake.snackPreference,
           nightSnacking: intake.nightSnacking,
-        })
+        }, { model: resolveModelForUser({ role: ctx.user.role, preferredModel: ctx.user.preferredLlmModel }) })
       } catch (err) {
         const msg = err instanceof Error ? err.message : 'Unknown error'
         throw new TRPCError({

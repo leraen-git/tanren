@@ -61,7 +61,7 @@ SECTION 4 — SNACK HABITS
 Generate my complete 7-day plan now.`
 }
 
-export async function generatePlanWithClaude(intake: IntakeData): Promise<AiPlanResponse> {
+export async function generatePlanWithClaude(intake: IntakeData, options?: { model?: string }): Promise<AiPlanResponse> {
   const apiKey = process.env['ANTHROPIC_API_KEY']
   if (!apiKey || apiKey === 'your_key_here') {
     throw new Error('AI diet generation is not configured.')
@@ -78,7 +78,7 @@ export async function generatePlanWithClaude(intake: IntakeData): Promise<AiPlan
   try {
     const stream = client.messages.stream(
       {
-        model: 'claude-sonnet-4-6',
+        model: options?.model ?? 'claude-sonnet-4-6',
         max_tokens: 32000,
         system: DIET_SYSTEM_PROMPT,
         messages: [{ role: 'user', content: userMessage }],

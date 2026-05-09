@@ -56,6 +56,41 @@ If the AES key is compromised:
   - `auth.verifyOtp`: 5 attempts per OTP (in-router)
 - POST-only: GET requests to `/trpc/*` return 405
 
+## Admin role
+
+Tanren has a binary role model: `user` (default) or `admin`. Stored in the
+`users.role` column (Postgres enum `user_role_enum`).
+
+### Promotion
+
+Promotion is done via a CLI script — never via API, never via env var:
+
+```bash
+cd apps/api && npm run admin:promote -- --email <email>
+```
+
+The script writes an entry to `admin_audit_log` with action='bootstrap'.
+
+### Admin procedure
+
+All admin routes use `adminProcedure` middleware which:
+- Returns `NOT_FOUND` (not `FORBIDDEN`) to non-admin users — no info leak
+- Logs the denial attempt for monitoring
+- Injects `ctx.user` with role, quotaOverrides, and preferredLlmModel
+
+### Audit log
+
+Every admin mutation writes a row to `admin_audit_log`. The table is
+append-only by convention (no DELETE in code). To inspect:
+
+```sql
+SELECT created_at, action, target_user_id, payload
+FROM admin_audit_log
+WHERE admin_user_id = '<your-uuid>'
+ORDER BY created_at DESC
+LIMIT 50;
+```
+
 ## Dev-only endpoints
 
 - `auth.devSignIn`: throws `NOT_FOUND` in production (invisible)

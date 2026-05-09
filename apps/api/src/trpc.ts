@@ -73,7 +73,12 @@ export const protectedProcedure = baseProcedure.use(async ({ ctx, next, path }) 
   }
 
   const [user] = await ctx.db
-    .select({ id: users.id })
+    .select({
+      id: users.id,
+      role: users.role,
+      aiQuotaOverrides: users.aiQuotaOverrides,
+      preferredLlmModel: users.preferredLlmModel,
+    })
     .from(users)
     .where(and(eq(users.id, ctx.userId), isNull(users.deletedAt)))
     .limit(1)
@@ -82,5 +87,14 @@ export const protectedProcedure = baseProcedure.use(async ({ ctx, next, path }) 
     throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Compte introuvable' })
   }
 
-  return next({ ctx: { ...ctx, userId: ctx.userId } })
+  return next({ ctx: { ...ctx, userId: ctx.userId, user } })
+})
+
+export const adminProcedure = protectedProcedure.use(async ({ ctx, next, path }) => {
+  if (ctx.user.role !== 'admin') {
+    ctx.req.log.warn({ event: 'admin_deny', path, userId: ctx.userId }, 'Non-admin attempted admin route')
+    throw new TRPCError({ code: 'NOT_FOUND', message: 'Procedure not available' })
+  }
+
+  return next({ ctx })
 })

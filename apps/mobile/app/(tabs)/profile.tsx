@@ -196,7 +196,7 @@ function ProfileStatsStrip({ sessionsQuery, recordsQuery }: {
   const isLoading = sessionsQuery.isPending || recordsQuery.isPending
   const isError = sessionsQuery.isError || recordsQuery.isError
 
-  if (isLoading) return <SkeletonCard height={60} />
+  if (isLoading && !sessions && !records) return <SkeletonCard height={60} />
 
   if (isError && !sessions && !records) {
     return (
@@ -450,6 +450,17 @@ export default function ProfileScreen() {
 
         <SyncStatusBanner />
 
+        {/* Admin section — visible only to admin users */}
+        {user?.role === 'admin' && (
+          <>
+            <SectionLabel label={t('admin.sectionTitle')} />
+            <Row label={t('admin.dashboard')} onPress={() => router.push('/profile/admin')} muted />
+            <Row label={t('admin.users')} onPress={() => router.push('/profile/admin/users')} muted />
+            <Row label={t('admin.llmModel')} onPress={() => router.push('/profile/admin/llm')} muted />
+            <Row label={t('admin.auditLog')} onPress={() => router.push('/profile/admin/audit')} muted />
+          </>
+        )}
+
         {/* Réglages — always visible, no query dependency */}
         <SectionLabel label={t('profile.sectionReglages')} />
         <Row label="Notre Mantra" onPress={() => router.push('/mantra')} muted />
@@ -467,7 +478,7 @@ export default function ProfileScreen() {
         <Row label={t('profile.deleteAccount')} onPress={handleDeleteAccount} danger />
 
         <Text style={{ textAlign: 'center', color: tokens.textGhost, fontSize: 12, marginTop: 24, marginBottom: 16 }}>
-          v{Constants.expoConfig?.version ?? '?'} ({Constants.expoConfig?.android?.versionCode ?? Constants.expoConfig?.ios?.buildNumber ?? '?'})
+          v{Constants.expoConfig?.version ?? '?'}
         </Text>
       </ScrollView>
 

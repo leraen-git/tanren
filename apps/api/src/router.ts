@@ -11,6 +11,7 @@ import { dietRouter } from './routers/diet.js'
 import { notificationsRouter } from './routers/notifications.js'
 import { historyRouter } from './routers/history.js'
 import { weightRouter } from './routers/weight.js'
+import { adminRouter } from './routers/admin/index.js'
 
 export const appRouter = router({
   auth: authRouter,
@@ -25,6 +26,7 @@ export const appRouter = router({
   notifications: notificationsRouter,
   history: historyRouter,
   weight: weightRouter,
+  admin: adminRouter,
 })
 
 export type AppRouter = typeof appRouter

@@ -5,6 +5,7 @@ import Anthropic from '@anthropic-ai/sdk'
 import { router, protectedProcedure } from '../trpc.js'
 import { users, workoutPlans, workoutPlanDays, workoutTemplates, workoutExercises, exercises, workoutSessions, notificationPreferences, aiGenerationLog } from '../db/schema.js'
 import { dowUiToDb, dowDbToUi } from '../utils/dayOfWeek.js'
+import { resolveModelForUser } from '../services/llmRouter.js'
 
 async function resolveUser(db: any, userId: string) {
   const [user] = await db.select().from(users).where(eq(users.id, userId)).limit(1)
@@ -475,9 +476,10 @@ Retourne cette structure JSON exacte :
 
       let text: string
       try {
+        const model = resolveModelForUser({ role: ctx.user.role, preferredModel: ctx.user.preferredLlmModel })
         const response = await client.messages.create(
           {
-            model: 'claude-sonnet-4-6',
+            model,
             max_tokens: 4096,
             system: systemPrompt,
             messages,

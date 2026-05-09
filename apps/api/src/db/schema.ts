@@ -13,8 +13,20 @@ import {
 } from 'drizzle-orm/pg-core'
 import { sql } from 'drizzle-orm'
 
+// ─── Admin types ─────────────────────────────────────────────────────────────
+
+export type AiQuotaOverrides = {
+  unlimited?: boolean
+  workoutsPerMonth?: number
+  nutritionPerMonth?: number
+  expiresAt?: string | null
+}
+
+export type UserRole = (typeof userRoleEnum.enumValues)[number]
+
 // ─── Enums ────────────────────────────────────────────────────────────────────
 
+export const userRoleEnum = pgEnum('user_role_enum', ['user', 'admin'])
 export const authProviderEnum = pgEnum('auth_provider_enum', ['apple', 'google', 'email', 'guest'])
 export const userLevelEnum = pgEnum('user_level', ['BEGINNER', 'INTERMEDIATE', 'ADVANCED'])
 export const userGoalEnum = pgEnum('user_goal', ['WEIGHT_LOSS', 'MUSCLE_GAIN', 'MAINTENANCE'])
@@ -51,6 +63,9 @@ export const users = pgTable('users', {
   weightKg: numeric('weight_kg', { precision: 5, scale: 1, mode: 'number' }),
   gender: text('gender'),
   onboardingDone: boolean('onboarding_done').notNull().default(false),
+  role: userRoleEnum('role').notNull().default('user'),
+  aiQuotaOverrides: jsonb('ai_quota_overrides').$type<AiQuotaOverrides>().notNull().default({}),
+  preferredLlmModel: text('preferred_llm_model'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
   deletedAt: timestamp('deleted_at'),
@@ -457,4 +472,32 @@ export const aiGenerationLog = pgTable('ai_generation_log', {
   createdAt: timestamp('created_at').notNull().defaultNow(),
 }, (table) => [
   index('idx_ai_gen_log_user_created').on(table.userId, table.createdAt),
+])
+
+// ─── Admin Audit Log ────────────────────────────────────────────────────────
+
+export const adminAuditActionEnum = pgEnum('admin_audit_action_enum', [
+  'role_changed',
+  'user_soft_deleted',
+  'user_restored',
+  'ai_quota_overridden',
+  'ai_quota_reset',
+  'feature_flag_overridden',
+  'llm_model_changed',
+  'bootstrap',
+])
+
+export const adminAuditLog = pgTable('admin_audit_log', {
+  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  adminUserId: text('admin_user_id').notNull().references(() => users.id),
+  action: adminAuditActionEnum('action').notNull(),
+  targetUserId: text('target_user_id').references(() => users.id),
+  payload: jsonb('payload').$type<Record<string, unknown>>().notNull().default({}),
+  ipAddress: text('ip_address'),
+  userAgent: text('user_agent'),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+}, (table) => [
+  index('idx_audit_admin_user').on(table.adminUserId, table.createdAt),
+  index('idx_audit_target_user').on(table.targetUserId, table.createdAt),
+  index('idx_audit_action').on(table.action, table.createdAt),
 ])
