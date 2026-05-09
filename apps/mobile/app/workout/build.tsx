@@ -13,6 +13,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist'
 import { useTheme } from '@/theme/ThemeContext'
 import { trpc } from '@/lib/trpc'
+import { syncQueue } from '@/lib/syncQueue'
 import { useInvalidateWorkouts } from '@/lib/invalidation'
 import { useTranslation } from 'react-i18next'
 import { translateMuscleGroup } from '@/hooks/useExercises'
@@ -85,7 +86,11 @@ export default function WorkoutBuildScreen() {
       draft.reset()
       router.back()
     },
-    onError: (err) => Alert.alert(t('common.error'), err.message),
+    onError: (err) => {
+      syncQueue.add({ procedure: 'workouts.create', payload: pendingPayload.current! })
+      draft.reset()
+      router.back()
+    },
   })
 
   const updateMutation = trpc.workouts.update.useMutation({
@@ -94,7 +99,11 @@ export default function WorkoutBuildScreen() {
       draft.reset()
       router.back()
     },
-    onError: (err) => Alert.alert(t('common.error'), err.message),
+    onError: (err) => {
+      syncQueue.add({ procedure: 'workouts.update', payload: pendingPayload.current! })
+      draft.reset()
+      router.back()
+    },
   })
 
   const deleteMutation = trpc.workouts.delete.useMutation({
@@ -104,6 +113,8 @@ export default function WorkoutBuildScreen() {
       router.back()
     },
   })
+
+  const pendingPayload = React.useRef<any>(null)
 
   const handleSave = () => {
     if (!draft.name.trim()) {
@@ -124,8 +135,10 @@ export default function WorkoutBuildScreen() {
       })),
     }
     if (isEdit) {
+      pendingPayload.current = { id: editId!, ...payload }
       updateMutation.mutate({ id: editId!, ...payload })
     } else {
+      pendingPayload.current = payload
       createMutation.mutate(payload)
     }
   }

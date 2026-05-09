@@ -4,6 +4,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useLocalSearchParams, router } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
 import { useTranslation } from 'react-i18next'
+import { useIsRestoring } from '@tanstack/react-query'
 import { trpc } from '@/lib/trpc'
 import { translateMuscleGroup } from '@/hooks/useExercises'
 
@@ -12,16 +13,25 @@ export default function WorkoutDetailScreen() {
   const { tokens, fonts, label } = useTheme()
   const { t } = useTranslation()
   const insets = useSafeAreaInsets()
+  const isRestoring = useIsRestoring()
 
-  const { data: workout, isLoading } = trpc.workouts.detail.useQuery(
+  const workoutQuery = trpc.workouts.detail.useQuery(
     { id: id ?? '' },
-    { enabled: !!id },
+    { enabled: !!id && !isRestoring },
   )
+  const workout = workoutQuery.data
 
-  if (isLoading || !workout) {
+  if (!workout) {
+    const isOffline = !isRestoring && workoutQuery.fetchStatus === 'paused'
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: tokens.bg, alignItems: 'center', justifyContent: 'center' }}>
-        <ActivityIndicator color={tokens.accent} size="large" />
+        {isOffline ? (
+          <Text style={{ fontFamily: fonts.sans, fontSize: 14, color: tokens.textMute, textAlign: 'center', paddingHorizontal: 32 }}>
+            {t('common.checkConnection')}
+          </Text>
+        ) : (
+          <ActivityIndicator color={tokens.accent} size="large" />
+        )}
       </SafeAreaView>
     )
   }

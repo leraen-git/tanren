@@ -23,7 +23,7 @@ export const syncQueue = {
     const queue = this.read()
     queue.push({
       ...mutation,
-      id: crypto.randomUUID(),
+      id: `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`,
       attempts: 0,
       lastError: null,
       createdAt: new Date().toISOString(),

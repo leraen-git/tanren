@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { View, Text, ScrollView, TouchableOpacity, RefreshControl } from 'react-native'
 import { router, useFocusEffect, type Href } from 'expo-router'
+import { onlineManager } from '@tanstack/react-query'
 import { useTheme } from '@/theme/ThemeContext'
 import { Screen } from '@/components/Screen'
 import { StatsStrip } from '@/components/StatsStrip'
@@ -16,6 +17,7 @@ import { useTranslation } from 'react-i18next'
 import { useGuestBannerVisible } from '@/contexts/GuestBannerContext'
 import { sortMeals } from '@/components/MealDetailModal'
 import { translateMuscleGroup } from '@/hooks/useExercises'
+import { OfflineBanner } from '@/components/OfflineBanner'
 
 // JS getDay() (0=Sun) → UI convention (1=Mon, 7=Sun)
 function jsDowToUi(jsDow: number): number { return jsDow === 0 ? 7 : jsDow }
@@ -51,7 +53,7 @@ export default function HomeScreen() {
   const isGuest = user?.authProvider === 'guest'
   const { data: activePlan, refetch: refetchPlan, isRefetching } = useActivePlan()
   const { data: v2Plan } = useDietPlan()
-  useFocusEffect(useCallback(() => { refetchPlan() }, []))
+  useFocusEffect(useCallback(() => { if (onlineManager.isOnline()) refetchPlan() }, []))
   const { data: lastSessionPRCount } = useLastSessionPRCount()
 
   const nextWorkout = activePlan?.stats.nextWorkout
@@ -138,6 +140,7 @@ export default function HomeScreen() {
         contentContainerStyle={{ padding: 16, gap: 10 }}
         refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetchPlan} tintColor={tokens.accent} />}
       >
+        <OfflineBanner />
         {/* Greeting */}
         <View style={{ gap: 4 }}>
           <Text style={{
@@ -149,7 +152,7 @@ export default function HomeScreen() {
           }}>
             {getGreeting()}
           </Text>
-          {userLoading ? (
+          {userLoading && !user ? (
             <SkeletonCard height={32} />
           ) : (
             <Text style={{ fontFamily: fonts.sansX, fontSize: 28, color: tokens.text, textTransform: 'uppercase' }}>
@@ -482,6 +485,29 @@ export default function HomeScreen() {
                   </TouchableOpacity>
                 ))}
               </View>
+            )}
+
+            {/* Quick exercise shortcut */}
+            {activePlan && (
+              <TouchableOpacity
+                onPress={() => router.push('/exercise/quick')}
+                style={{
+                  borderWidth: 1, borderColor: tokens.border, padding: 12,
+                  flexDirection: 'row', alignItems: 'center',
+                }}
+                accessibilityLabel={t('home.quickExercise')}
+                accessibilityRole="button"
+              >
+                <View style={{ flex: 1 }}>
+                  <Text style={{ fontFamily: fonts.sansB, fontSize: 14, color: tokens.text, textTransform: 'uppercase' }}>
+                    {t('home.quickExercise')}
+                  </Text>
+                  <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute }}>
+                    {t('home.quickExerciseDesc')}
+                  </Text>
+                </View>
+                <Text style={{ fontFamily: fonts.sansB, fontSize: 16, color: tokens.accent }}>›</Text>
+              </TouchableOpacity>
             )}
 
             {/* No plan state */}

@@ -11,15 +11,16 @@ export function useSyncWorker() {
     const queue = syncQueue.read()
     if (queue.length === 0) return
 
+    let synced = false
     for (const m of queue) {
       if (new Date(m.nextRetryAt) > new Date()) continue
       try {
         const parts = m.procedure.split('.')
-        // Navigate the tRPC client: e.g. 'sessions.save' → client.sessions.save
         let target: any = utils.client
         for (const p of parts) target = target[p]
         await target.mutate(m.payload)
         syncQueue.remove(m.id)
+        synced = true
       } catch (err: any) {
         if (err?.data?.code === 'BAD_REQUEST') {
           syncQueue.remove(m.id)
@@ -27,6 +28,12 @@ export function useSyncWorker() {
           syncQueue.markFailed(m.id, err?.message ?? 'Unknown error')
         }
       }
+    }
+    if (synced) {
+      utils.history.list.invalidate()
+      utils.plans.active.invalidate()
+      utils.progress.records.invalidate()
+      utils.workouts.list.invalidate()
     }
   }, [utils])
 

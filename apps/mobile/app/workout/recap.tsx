@@ -1,13 +1,14 @@
 import React, { useEffect, useRef, useState, useMemo } from 'react'
-import { View, Text, ScrollView, ActivityIndicator, Alert, Modal, TouchableOpacity, TextInput } from 'react-native'
+import { View, Text, ScrollView, Modal, TouchableOpacity, TextInput } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
 import { Button } from '@/components/Button'
 import { useActiveSessionStore } from '@/stores/activeSessionStore'
 import { calcSessionVolume } from '@tanren/shared'
-import { trpc } from '@/lib/trpc'
+import { syncQueue } from '@/lib/syncQueue'
 import { useInvalidateSessions } from '@/lib/invalidation'
+import { trpc } from '@/lib/trpc'
 import { useTranslation } from 'react-i18next'
 import { useExercises, translateMuscleGroup, translateDifficulty } from '@/hooks/useExercises'
 import { formatNumber, formatDateShort, getLocaleTag } from '@/utils/format'
@@ -18,6 +19,7 @@ export default function RecapScreen() {
   const { tokens, fonts } = useTheme()
   const { exercises, currentWorkout, isQuickSession, startedAt, finishSession, addExercise } = useActiveSessionStore()
   const savedRef = useRef(false)
+  const [savedOffline, setSavedOffline] = useState(false)
   const [pickerVisible, setPickerVisible] = useState(false)
   const [search, setSearch] = useState('')
   const [muscle, setMuscle] = useState('All')
@@ -72,28 +74,47 @@ export default function RecapScreen() {
   // Count exercises with improved volume as "records"
   const improvedCount = exerciseComparisons.filter((c) => c.delta !== null && c.delta > 0.01).length
 
-  const saveSession = trpc.sessions.save.useMutation()
-  const saveQuick = trpc.sessions.saveQuick.useMutation()
   const invalidateSessions = useInvalidateSessions()
+  const utils = trpc.useUtils()
 
   useEffect(() => {
     if (savedRef.current || !currentWorkout || !startedAt) return
+    const startedIso = startedAt.toISOString()
+    const alreadyQueued = syncQueue.read().some(
+      (m) => (m.payload as any)?.startedAt === startedIso,
+    )
+    if (alreadyQueued) { savedRef.current = true; return }
     savedRef.current = true
 
-    const onError = (err: { message: string }) => Alert.alert('Save failed', err.message)
-    const invalidate = () => {
-      invalidateSessions()
-    }
+    let procedure: string
+    let payload: any
 
     if (isQuickSession && exercises[0]) {
       const ex = exercises[0]
-      saveQuick.mutate(
-        {
+      procedure = 'sessions.saveQuick'
+      payload = {
+        exerciseId: ex.exerciseId,
+        exerciseName: ex.exerciseName,
+        muscleGroups: [] as string[],
+        startedAt: startedIso,
+        durationSeconds,
+        sets: ex.sets.map((s, i) => ({
+          setNumber: i + 1,
+          reps: s.reps,
+          weight: s.weight,
+          restSeconds: s.restSeconds,
+          isCompleted: s.isCompleted,
+        })),
+      }
+    } else {
+      procedure = 'sessions.save'
+      payload = {
+        workoutTemplateId: currentWorkout.id,
+        startedAt: startedIso,
+        durationSeconds,
+        exercises: exercises.map((ex, order) => ({
           exerciseId: ex.exerciseId,
-          exerciseName: ex.exerciseName,
-          muscleGroups: [],
-          startedAt: startedAt.toISOString(),
-          durationSeconds,
+          order,
           sets: ex.sets.map((s, i) => ({
             setNumber: i + 1,
             reps: s.reps,
@@ -101,30 +122,23 @@ export default function RecapScreen() {
             restSeconds: s.restSeconds,
             isCompleted: s.isCompleted,
           })),
-        },
-        { onSuccess: invalidate, onError },
-      )
-    } else {
-      saveSession.mutate(
-        {
-          workoutTemplateId: currentWorkout.id,
-          startedAt: startedAt.toISOString(),
-          durationSeconds,
-          exercises: exercises.map((ex, order) => ({
-            exerciseId: ex.exerciseId,
-            order,
-            sets: ex.sets.map((s, i) => ({
-              setNumber: i + 1,
-              reps: s.reps,
-              weight: s.weight,
-              restSeconds: s.restSeconds,
-              isCompleted: s.isCompleted,
-            })),
-          })),
-        },
-        { onSuccess: invalidate, onError },
-      )
+        })),
+      }
     }
+
+    const callMutation = async () => {
+      try {
+        const parts = procedure.split('.')
+        let target: any = utils.client
+        for (const p of parts) target = target[p]
+        await target.mutate(payload)
+        invalidateSessions()
+      } catch {
+        syncQueue.add({ procedure, payload })
+        setSavedOffline(true)
+      }
+    }
+    callMutation()
   }, [])
 
   const handlePickExercise = (ex: { id: string; name: string }) => {
@@ -140,14 +154,7 @@ export default function RecapScreen() {
     router.back()
   }
 
-  const handleDone = async () => {
-    if (saveSession.isPending) {
-      await new Promise<void>((resolve) => {
-        const check = setInterval(() => {
-          if (!saveSession.isPending) { clearInterval(check); resolve() }
-        }, 50)
-      })
-    }
+  const handleDone = () => {
     invalidateSessions()
     finishSession()
     router.replace('/')
@@ -213,7 +220,7 @@ export default function RecapScreen() {
           }}>
             {dateDisplay} · {currentWorkout?.name ?? ''} · {durationLabel}
           </Text>
-          {saveSession.isPending && <ActivityIndicator color={tokens.accent} style={{ marginTop: 8 }} />}
+          {savedOffline && <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textGhost, marginTop: 8 }}>{t('common.savedLocally')}</Text>}
         </View>
 
         {/* 2x2 stat grid */}

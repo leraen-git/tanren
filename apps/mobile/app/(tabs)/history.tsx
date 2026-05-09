@@ -3,6 +3,7 @@ import { View, Text, SectionList, TouchableOpacity, RefreshControl } from 'react
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
+import { useIsRestoring } from '@tanstack/react-query'
 import { useHistoryList, useHistoryStats } from '@/data/useHistory'
 import { useTranslation } from 'react-i18next'
 import { useGuestBannerVisible } from '@/contexts/GuestBannerContext'
@@ -22,6 +23,7 @@ import { HistoryHeatmap } from '@/components/HistoryHeatmap'
 import { WeeklyVolumeChart } from '@/components/WeeklyVolumeChart'
 import { PRRecordItem } from '@/components/PRRecordItem'
 import { EmptyStateGlobal, EmptyStateFiltered } from '@/components/EmptyStateHistory'
+import { OfflineBanner } from '@/components/OfflineBanner'
 
 const PERIOD_OPTIONS = [
   { value: '1w' as const, label: '' },
@@ -36,6 +38,7 @@ export default function HistoryScreen() {
   const bannerVisible = useGuestBannerVisible()
   const { viewMode, setViewMode, period, setPeriod, muscleGroup, setMuscleGroup, resetFilters } = useHistoryStore()
 
+  const isRestoring = useIsRestoring()
   const periodOptions = useMemo(() => PERIOD_OPTIONS.map((p) => ({ ...p, label: t(`history.filter_${p.value}`) })), [t])
   const muscleOptions = useMemo(() => [
     { value: '__all__', label: t('history.muscleAll') },
@@ -44,12 +47,12 @@ export default function HistoryScreen() {
 
   const { data: listData, isLoading: listLoading, refetch: refetchList } = useHistoryList(
     { period, muscleGroup: muscleGroup ?? undefined, limit: 50 },
-    { enabled: viewMode === 'list' },
+    { enabled: viewMode === 'list' && !isRestoring },
   )
 
   const { data: statsData, isLoading: statsLoading, refetch: refetchStats } = useHistoryStats(
     { period },
-    { enabled: viewMode === 'stats' },
+    { enabled: viewMode === 'stats' && !isRestoring },
   )
 
   const locale = (i18n.language === 'fr' ? 'fr' : 'en') as 'fr' | 'en'
@@ -103,6 +106,8 @@ export default function HistoryScreen() {
           <Ionicons name="search-outline" size={22} color={tokens.text} />
         </TouchableOpacity>
       </View>
+
+      <OfflineBanner />
 
       {/* View toggle */}
       <View style={{ paddingHorizontal: 16, marginBottom: 8 }}>
@@ -213,10 +218,10 @@ function StatsView({ data, loading, onRefresh }: {
   const { tokens, fonts, label: labelPreset } = useTheme()
   const { t } = useTranslation()
 
-  if (loading || !data) {
+  if (!data) {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <Text style={{ fontFamily: fonts.sans, fontSize: 14, color: tokens.textMute }}>{t('common.loading')}</Text>
+        <Text style={{ fontFamily: fonts.sans, fontSize: 14, color: tokens.textMute }}>{loading ? t('common.loading') : ''}</Text>
       </View>
     )
   }

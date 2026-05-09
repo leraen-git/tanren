@@ -73,7 +73,6 @@ function TRPCProvider({ children }: { children: React.ReactNode }) {
   }))
 
   const tokenRef = useRef<string | null>(token)
-  const isInitialLoadRef = useRef(true)
   const prevTokenRef = useRef<string | null>(token)
   tokenRef.current = token
 
@@ -81,12 +80,7 @@ function TRPCProvider({ children }: { children: React.ReactNode }) {
     const prev = prevTokenRef.current
     prevTokenRef.current = token
 
-    if (isInitialLoadRef.current) {
-      isInitialLoadRef.current = false
-      return
-    }
-
-    if (prev !== token) {
+    if (prev !== null && prev !== token) {
       queryClient.clear()
     }
   }, [token, queryClient])
@@ -378,16 +372,20 @@ export default function RootLayout() {
           <AuthProvider>
             <TRPCProvider>
               <AuthGateProvider>
-                <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: 'transparent' } }}>
-                  <Stack.Screen name="profile/evolution/capture" options={{ presentation: 'modal' }} />
-                </Stack>
-                <AuthRedirect />
-                {splashDone && <SessionResumeChecker />}
-                <SyncWorkerHost />
-                <NotificationWatcher />
-                <OTAUpdateChecker />
-                <DietGenerationWatcher />
-                <ToastHost />
+                {fontsReady && (
+                  <>
+                    <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: 'transparent' } }}>
+                      <Stack.Screen name="profile/evolution/capture" options={{ presentation: 'modal' }} />
+                    </Stack>
+                    <AuthRedirect />
+                    {splashDone && <SessionResumeChecker />}
+                    <SyncWorkerHost />
+                    <NotificationWatcher />
+                    <OTAUpdateChecker />
+                    <DietGenerationWatcher />
+                    <ToastHost />
+                  </>
+                )}
               </AuthGateProvider>
             </TRPCProvider>
           </AuthProvider>

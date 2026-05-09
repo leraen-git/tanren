@@ -11,6 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { router, useLocalSearchParams } from 'expo-router'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/theme/ThemeContext'
+import { useIsRestoring } from '@tanstack/react-query'
 import { trpc } from '@/lib/trpc'
 import { useActiveSessionStore } from '@/stores/activeSessionStore'
 import { translateMuscleGroup } from '@/hooks/useExercises'
@@ -41,10 +42,12 @@ export default function WorkoutPreviewScreen() {
   const { templateId } = useLocalSearchParams<{ templateId: string }>()
   const { tokens, fonts } = useTheme()
   const { t } = useTranslation()
-  const { data: workout, isLoading } = trpc.workouts.detail.useQuery(
+  const isRestoring = useIsRestoring()
+  const workoutQuery = trpc.workouts.detail.useQuery(
     { id: templateId ?? '' },
-    { enabled: !!templateId },
+    { enabled: !!templateId && !isRestoring },
   )
+  const workout = workoutQuery.data
 
   const [setsConfig, setSetsConfig] = useState<Record<string, SetConfig[]>>({})
   const [extraExercises, setExtraExercises] = useState<ExtraExercise[]>([])
@@ -199,10 +202,17 @@ export default function WorkoutPreviewScreen() {
     })
   }
 
-  if (isLoading || !workout) {
+  if (!workout) {
+    const isOffline = !isRestoring && workoutQuery.fetchStatus === 'paused'
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: tokens.bg, alignItems: 'center', justifyContent: 'center' }}>
-        <ActivityIndicator color={tokens.accent} size="large" />
+        {isOffline ? (
+          <Text style={{ fontFamily: fonts.sans, fontSize: 14, color: tokens.textMute, textAlign: 'center', paddingHorizontal: 32 }}>
+            {t('common.checkConnection')}
+          </Text>
+        ) : (
+          <ActivityIndicator color={tokens.accent} size="large" />
+        )}
       </SafeAreaView>
     )
   }

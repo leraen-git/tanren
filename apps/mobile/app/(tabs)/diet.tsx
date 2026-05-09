@@ -568,7 +568,7 @@ export default function DietScreen() {
     if (genStatus === 'done' && v2Plan) resetGen()
   }, [genStatus, v2Plan])
 
-  if (isLoading) {
+  if (isLoading && !v2Plan) {
     return (
       <SafeAreaView edges={bannerVisible ? [] : ['top']} style={{ flex: 1, backgroundColor: tokens.bg }}>
         <View style={{ padding: 16, gap: 12 }}>

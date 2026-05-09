@@ -3,6 +3,7 @@ import { View, Text, ScrollView, TouchableOpacity } from 'react-native'
 import { useLocalSearchParams, router } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
 import { useTranslation } from 'react-i18next'
+import { useIsRestoring } from '@tanstack/react-query'
 import { trpc } from '@/lib/trpc'
 import { Screen } from '@/components/Screen'
 import { ScreenHeader } from '@/components/ScreenHeader'
@@ -15,17 +16,22 @@ export default function SessionDetailScreen() {
   const { tokens, fonts, label } = useTheme()
   const { t } = useTranslation()
 
-  const { data: session, isLoading } = trpc.history.detail.useQuery(
+  const isRestoring = useIsRestoring()
+  const sessionQuery = trpc.history.detail.useQuery(
     { sessionId: id! },
-    { enabled: !!id },
+    { enabled: !!id && !isRestoring },
   )
+  const session = sessionQuery.data
 
-  if (isLoading || !session) {
+  if (!session) {
+    const isOffline = !isRestoring && sessionQuery.fetchStatus === 'paused'
     return (
       <Screen showKanji kanjiChar="鍛">
         <ScreenHeader title={t('history.detailTitle')} />
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <Text style={{ fontFamily: fonts.sans, fontSize: 14, color: tokens.textMute }}>{t('common.loading')}</Text>
+          <Text style={{ fontFamily: fonts.sans, fontSize: 14, color: tokens.textMute }}>
+            {isOffline ? t('common.checkConnection') : t('common.loading')}
+          </Text>
         </View>
       </Screen>
     )

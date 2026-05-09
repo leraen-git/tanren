@@ -34,7 +34,7 @@ export function SectionStatus<T>({
   const { t } = useTranslation()
   const { data, isPending, isError, error, refetch, isRefetching } = query
 
-  if (isPending) {
+  if (isPending && data == null) {
     return <SkeletonCard height={loadingHeight} />
   }
 
