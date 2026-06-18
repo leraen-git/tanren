@@ -270,21 +270,29 @@ function AuthRedirect() {
   const user = profileQuery.data
   const hasSignedOut = useRef(false)
   const { seen: introSeen } = useIntroSeen()
+  const authTimestamp = useRef(0)
+  const utils = trpc.useUtils()
 
   useEffect(() => {
-    if (status === 'authenticated') hasSignedOut.current = false
-  }, [status])
+    if (status === 'authenticated') {
+      hasSignedOut.current = false
+      authTimestamp.current = Date.now()
+      utils.auth.me.invalidate()
+    }
+  }, [status, utils.auth.me])
 
   const isRestoring = useIsRestoring()
 
   useEffect(() => {
+    const timeSinceAuth = Date.now() - authTimestamp.current
     if (
       status === 'authenticated' &&
       !isRestoring &&
       !profileQuery.isPending &&
       !profileQuery.isError &&
       profileQuery.fetchStatus !== 'paused' &&
-      profileQuery.dataUpdatedAt > 0 &&
+      profileQuery.dataUpdatedAt > authTimestamp.current &&
+      timeSinceAuth > 2000 &&
       user === null &&
       !hasSignedOut.current
     ) {
