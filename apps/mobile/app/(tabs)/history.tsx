@@ -69,8 +69,8 @@ export default function HistoryScreen() {
   })), [grouped])
 
   const isEmpty = !listLoading && (listData?.sessions?.length ?? 0) === 0
-  const isFilteredEmpty = isEmpty && (period !== '1m' || muscleGroup !== null)
-  const isGlobalEmpty = isEmpty && period === '1m' && muscleGroup === null
+  const isFilteredEmpty = isEmpty && (period !== '3m' || muscleGroup !== null)
+  const isGlobalEmpty = isEmpty && period === '3m' && muscleGroup === null
 
   const onRefresh = useCallback(() => {
     if (viewMode === 'list') refetchList()

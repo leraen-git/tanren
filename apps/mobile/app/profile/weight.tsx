@@ -17,7 +17,7 @@ import type { WeightPeriod } from '@tanren/shared'
 export default function WeightScreen() {
   const { t } = useTranslation()
   const { tokens, fonts } = useTheme()
-  const [period, setPeriod] = useState<WeightPeriod>('30d')
+  const [period, setPeriod] = useState<WeightPeriod>('3m')
   const [addModalOpen, setAddModalOpen] = useState(false)
 
   const { data, isLoading } = trpc.weight.list.useQuery({ period })

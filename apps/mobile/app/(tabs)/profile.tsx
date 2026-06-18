@@ -437,12 +437,7 @@ export default function ProfileScreen() {
                 <Row label={t('profile.fieldGoal')} value={goalLabels[u.goal] ?? u.goal} onPress={() => openModal('editGoal')} />
                 <Row label={t('profile.sessionsPerWeekLabel')} value={String(u.weeklyTarget)} onPress={() => openModal('editSessions')} />
 
-                {/* Modals */}
-                <EditFirstNameModal open={activeModal === 'editFirstName'} onClose={closeModal} currentValue={u.name} onSave={(v) => save({ name: v })} />
-                <EditHeightModal open={activeModal === 'editHeight'} onClose={closeModal} currentValue={u.heightCm} onSave={(v) => save({ heightCm: v })} />
-                <EditTrainingLevelModal open={activeModal === 'editLevel'} onClose={closeModal} currentValue={u.level} onSave={(v) => save({ level: v })} />
-                <EditTrainingGoalModal open={activeModal === 'editGoal'} onClose={closeModal} currentValue={u.goal} onSave={(v) => save({ goal: v })} />
-                <EditSessionsPerWeekModal open={activeModal === 'editSessions'} onClose={closeModal} currentValue={u.weeklyTarget} onSave={(v) => save({ weeklyTarget: v })} />
+                {/* Modals rendered outside ScrollView — see below SafeAreaView close */}
               </>
             )
           }}
@@ -483,6 +478,15 @@ export default function ProfileScreen() {
       </ScrollView>
 
       <LogoutConfirmModal open={activeModal === 'logoutConfirm'} onClose={closeModal} onConfirm={handleLogout} />
+      {user && (
+        <>
+          <EditFirstNameModal open={activeModal === 'editFirstName'} onClose={closeModal} currentValue={user.name} onSave={(v) => save({ name: v })} />
+          <EditHeightModal open={activeModal === 'editHeight'} onClose={closeModal} currentValue={user.heightCm} onSave={(v) => save({ heightCm: v })} />
+          <EditTrainingLevelModal open={activeModal === 'editLevel'} onClose={closeModal} currentValue={user.level} onSave={(v) => save({ level: v })} />
+          <EditTrainingGoalModal open={activeModal === 'editGoal'} onClose={closeModal} currentValue={user.goal} onSave={(v) => save({ goal: v })} />
+          <EditSessionsPerWeekModal open={activeModal === 'editSessions'} onClose={closeModal} currentValue={user.weeklyTarget} onSave={(v) => save({ weeklyTarget: v })} />
+        </>
+      )}
     </SafeAreaView>
   )
 }

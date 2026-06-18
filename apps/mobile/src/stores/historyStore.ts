@@ -15,10 +15,10 @@ interface HistoryState {
 
 export const useHistoryStore = create<HistoryState>((set) => ({
   viewMode: 'list',
-  period: '1m',
+  period: '3m',
   muscleGroup: null,
   setViewMode: (viewMode) => set({ viewMode }),
   setPeriod: (period) => set({ period }),
   setMuscleGroup: (muscleGroup) => set({ muscleGroup }),
-  resetFilters: () => set({ period: '1m', muscleGroup: null }),
+  resetFilters: () => set({ period: '3m', muscleGroup: null }),
 }))
