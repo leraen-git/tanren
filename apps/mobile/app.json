@@ -5,7 +5,7 @@
     "version": "1.0.2",
     "scheme": "tanren",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/icon/tanren_icon_1024.png",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/splash.png",
@@ -14,6 +14,7 @@
     },
     "ios": {
       "supportsTablet": false,
+      "icon": "./assets/Tanren.icon",
       "bundleIdentifier": "app.tanren",
       "infoPlist": {
         "UIUserInterfaceStyle": "Automatic",
@@ -28,12 +29,13 @@
         "NSCameraUsageDescription": "Tanren needs access to your camera to take a photo for your session share card.",
         "ITSAppUsesNonExemptEncryption": false
       },
-      "buildNumber": "2"
+      "buildNumber": "3"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#000000"
+        "foregroundImage": "./assets/icon/tanren_adaptive_foreground.png",
+        "backgroundImage": "./assets/icon/tanren_adaptive_background.png",
+        "monochromeImage": "./assets/icon/tanren_adaptive_monochrome.png"
       },
       "package": "app.tanren",
       "versionCode": 3,

@@ -1,0 +1,48 @@
+{
+  "fill" : {
+    "solid" : "display-p3:0.03797,0.03797,0.03797,1.00000"
+  },
+  "groups" : [
+    {
+      "layers" : [
+        {
+          "glass" : true,
+          "image-name" : "tanren_icon_layer4_core_sparks 2.svg",
+          "name" : "tanren_icon_layer4_core_sparks 2"
+        },
+        {
+          "image-name" : "tanren_icon_layer3_cross 2.svg",
+          "name" : "tanren_icon_layer3_cross 2",
+          "opacity" : 0.75
+        },
+        {
+          "blend-mode" : "normal",
+          "hidden" : false,
+          "image-name" : "tanren_icon_layer2_ring 2.svg",
+          "name" : "tanren_icon_layer2_ring 2",
+          "opacity" : 0.8
+        },
+        {
+          "glass" : false,
+          "hidden" : false,
+          "image-name" : "tanren_icon_layer1_background 2.svg",
+          "name" : "tanren_icon_layer1_background 2"
+        }
+      ],
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.5
+      },
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.5
+      }
+    }
+  ],
+  "supported-platforms" : {
+    "circles" : [
+      "watchOS"
+    ],
+    "squares" : "shared"
+  }
+}
