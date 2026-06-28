@@ -94,7 +94,8 @@ export const weightRouter = router({
     }))
     .mutation(async ({ ctx, input }) => {
       const measuredAt = new Date(input.measuredAt)
-      if (measuredAt > new Date()) {
+      const now = new Date(Date.now() + 60_000)
+      if (measuredAt > now) {
         throw new TRPCError({ code: 'BAD_REQUEST', message: 'measuredAt cannot be in the future' })
       }
 
