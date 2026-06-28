@@ -22,8 +22,14 @@ export default function WeightScreen() {
 
   const { data, isLoading } = trpc.weight.list.useQuery({ period })
   const invalidateWeight = useInvalidateWeight()
-  const addMutation = trpc.weight.add.useMutation({ onSuccess: invalidateWeight })
-  const deleteMutation = trpc.weight.delete.useMutation({ onSuccess: invalidateWeight })
+  const addMutation = trpc.weight.add.useMutation({
+    onSuccess: invalidateWeight,
+    onError: (err) => Alert.alert(t('common.error'), err.message),
+  })
+  const deleteMutation = trpc.weight.delete.useMutation({
+    onSuccess: invalidateWeight,
+    onError: (err) => Alert.alert(t('common.error'), err.message),
+  })
 
   const entries = data?.entries ?? []
   const stats = data?.stats ?? null

@@ -2,7 +2,7 @@
   "expo": {
     "name": "Tanren",
     "slug": "tanren",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "scheme": "tanren",
     "orientation": "portrait",
     "icon": "./assets/icon/tanren_icon_1024.png",
@@ -38,7 +38,7 @@
         "monochromeImage": "./assets/icon/tanren_adaptive_monochrome.png"
       },
       "package": "app.tanren",
-      "versionCode": 4,
+      "versionCode": 5,
       "permissions": [
         "android.permission.RECORD_AUDIO",
         "android.permission.MODIFY_AUDIO_SETTINGS",
@@ -46,9 +46,7 @@
         "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"
       ]
     },
-    "runtimeVersion": {
-      "policy": "fingerprint"
-    },
+    "runtimeVersion": "1.0.3",
     "updates": {
       "url": "https://u.expo.dev/933ef993-9092-4e5c-aaa8-af38a9735b8d"
     },
