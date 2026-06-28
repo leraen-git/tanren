@@ -71,16 +71,16 @@ export default function IntroScreen() {
 
           {/* Quote */}
           <Animated.Text style={[styles.quote, { color: textDim, opacity: quoteOpacity }]}>
-            L'acier ne devient lame qu'après{' '}
+            {t('intro.quote')}
             <Text style={{ color: accent, fontStyle: 'italic' }}>
-              mille coups de marteau
+              {t('intro.quoteAccent')}
             </Text>
             .
           </Animated.Text>
 
           {/* Attribution */}
           <Animated.Text style={[styles.attribution, { color: textGhost, opacity: quoteOpacity }]}>
-            {'— proverbe forgeron\njaponais'}
+            {t('intro.attribution')}
           </Animated.Text>
         </View>
 

@@ -11,7 +11,7 @@ import { Button } from '@/components/Button'
 import { BottomSheetShell } from '@/components/BottomSheetShell'
 import { useProgressPhotosStore } from '@/stores/progressPhotosStore'
 import { useToastStore } from '@/stores/toastStore'
-import { ANGLE_LABELS } from '@/types/progressPhoto'
+import { getAngleLabels } from '@/types/progressPhoto'
 import type { ProgressPhoto } from '@/types/progressPhoto'
 import { captureRef } from 'react-native-view-shot'
 import * as Sharing from 'expo-sharing'
@@ -21,9 +21,10 @@ const SCREEN_WIDTH = Dimensions.get('window').width
 export default function CompareScreen() {
   const params = useLocalSearchParams<{ before?: string; after?: string }>()
   const { tokens, fonts, label } = useTheme()
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const showToast = useToastStore(s => s.show)
 
+  const ANGLE_LABELS = getAngleLabels(t)
   const photos = useProgressPhotosStore(s => s.photos)
   const getOldest = useProgressPhotosStore(s => s.getOldest)
   const getNewest = useProgressPhotosStore(s => s.getNewest)
@@ -41,7 +42,7 @@ export default function CompareScreen() {
   if (!before || !after) {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: tokens.bg, alignItems: 'center', justifyContent: 'center' }}>
-        <Text style={{ fontFamily: fonts.sans, color: tokens.textMute }}>Photos introuvables</Text>
+        <Text style={{ fontFamily: fonts.sans, color: tokens.textMute }}>{t('evolution.photosNotFound')}</Text>
         <TouchableOpacity onPress={() => router.back()} style={{ marginTop: 16 }}>
           <Text style={{ fontFamily: fonts.sansB, color: tokens.accent }}>{t('common.back')}</Text>
         </TouchableOpacity>
@@ -58,7 +59,8 @@ export default function CompareScreen() {
 
   const formatDate = (iso: string) => {
     const d = new Date(iso)
-    return d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' }).replace('.', '')
+    const locale = i18n.language === 'fr' ? 'fr-FR' : 'en-US'
+    return d.toLocaleDateString(locale, { day: '2-digit', month: 'short', year: 'numeric' }).replace('.', '')
   }
 
   const formatWeight = (kg: number | null) => {
@@ -78,7 +80,7 @@ export default function CompareScreen() {
       if (await Sharing.isAvailableAsync()) {
         await Sharing.shareAsync(uri, {
           mimeType: 'image/png',
-          dialogTitle: 'Partager ma progression',
+          dialogTitle: t('evolution.shareProgress'),
         })
       }
     } catch {
@@ -99,15 +101,15 @@ export default function CompareScreen() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: tokens.bg }} edges={['top']}>
       <KanjiWatermark char="錬" />
-      <ScreenHeader title="Comparaison" />
+      <ScreenHeader title={t('evolution.comparisonTitle')} />
 
       <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 140 }}>
         {/* Compare card */}
         <View style={{ borderWidth: 1, borderColor: tokens.border, marginBottom: 16 }}>
           {/* Labels */}
           <View style={{ flexDirection: 'row', paddingHorizontal: 12, paddingTop: 12 }}>
-            <Text style={{ flex: 1, ...label.sm, color: tokens.textMute }}>AVANT</Text>
-            <Text style={{ flex: 1, ...label.sm, color: tokens.textMute, textAlign: 'right' }}>APRÈS</Text>
+            <Text style={{ flex: 1, ...label.sm, color: tokens.textMute }}>{t('evolution.before').toUpperCase()}</Text>
+            <Text style={{ flex: 1, ...label.sm, color: tokens.textMute, textAlign: 'right' }}>{t('evolution.after').toUpperCase()}</Text>
           </View>
 
           {/* Photos */}
@@ -151,10 +153,10 @@ export default function CompareScreen() {
           <View style={{ flexDirection: 'row', borderTopWidth: 1, borderTopColor: tokens.border }}>
             <View style={{ flex: 1, alignItems: 'center', paddingVertical: 10, borderRightWidth: 1, borderRightColor: tokens.border }}>
               <Text style={{ fontFamily: fonts.sansX, fontSize: 20, color: tokens.text }}>
-                {Math.abs(daysDiff)} {daysDiff === 1 ? 'jour' : 'jours'}
+                {Math.abs(daysDiff)} {t('evolution.days').toLowerCase()}
               </Text>
               <Text style={{ fontFamily: fonts.sansM, fontSize: 9, letterSpacing: 1.5, textTransform: 'uppercase', color: tokens.textMute, marginTop: 2 }}>
-                Écart
+                {t('evolution.delta')}
               </Text>
             </View>
             <View style={{ flex: 1, alignItems: 'center', paddingVertical: 10 }}>
@@ -162,7 +164,7 @@ export default function CompareScreen() {
                 {weightDelta != null ? `${weightDelta > 0 ? '+' : ''}${String(weightDelta).replace('.', ',')} kg` : '—'}
               </Text>
               <Text style={{ fontFamily: fonts.sansM, fontSize: 9, letterSpacing: 1.5, textTransform: 'uppercase', color: tokens.textMute, marginTop: 2 }}>
-                Delta poids
+                {t('evolution.weightDelta')}
               </Text>
             </View>
           </View>
@@ -170,7 +172,7 @@ export default function CompareScreen() {
 
         {/* Swap photos */}
         <View style={{ gap: 8, marginBottom: 24 }}>
-          <Text style={{ ...label.sm, color: tokens.textMute }}>CHANGER LES PHOTOS</Text>
+          <Text style={{ ...label.sm, color: tokens.textMute }}>{t('evolution.changePhotos')}</Text>
           <View style={{ flexDirection: 'row', gap: 12 }}>
             <TouchableOpacity
               onPress={() => setPickerTarget('before')}
@@ -179,7 +181,7 @@ export default function CompareScreen() {
             >
               <Image source={{ uri: before.uri }} style={{ width: 36, aspectRatio: 3 / 4 }} contentFit="cover" />
               <View style={{ flex: 1 }}>
-                <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 0.5 }}>Avant</Text>
+                <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 0.5 }}>{t('evolution.before')}</Text>
                 <Text style={{ fontFamily: fonts.mono, fontSize: 10, color: tokens.textDim }}>{formatDate(before.takenAt)}</Text>
               </View>
               <Text style={{ fontFamily: fonts.sansB, fontSize: 14, color: tokens.accent }}>›</Text>
@@ -192,7 +194,7 @@ export default function CompareScreen() {
             >
               <Image source={{ uri: after.uri }} style={{ width: 36, aspectRatio: 3 / 4 }} contentFit="cover" />
               <View style={{ flex: 1 }}>
-                <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 0.5 }}>Après</Text>
+                <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 0.5 }}>{t('evolution.after')}</Text>
                 <Text style={{ fontFamily: fonts.mono, fontSize: 10, color: tokens.textDim }}>{formatDate(after.takenAt)}</Text>
               </View>
               <Text style={{ fontFamily: fonts.sansB, fontSize: 14, color: tokens.accent }}>›</Text>
@@ -203,7 +205,7 @@ export default function CompareScreen() {
 
       {/* Bottom action */}
       <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: tokens.bg, padding: 16, borderTopWidth: 1, borderTopColor: tokens.border }}>
-        <Button label="Partager" onPress={handleShare} loading={sharing} />
+        <Button label={t('evolution.share')} onPress={handleShare} loading={sharing} />
       </View>
 
       {/* Off-screen share card for capture */}
@@ -221,7 +223,7 @@ export default function CompareScreen() {
       <BottomSheetShell
         open={!!pickerTarget}
         onClose={() => setPickerTarget(null)}
-        title={pickerTarget === 'before' ? 'Choisir avant' : 'Choisir après'}
+        title={pickerTarget === 'before' ? t('evolution.chooseBefore') : t('evolution.chooseAfter')}
       >
         <ScrollView style={{ maxHeight: 400 }} showsVerticalScrollIndicator={false}>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 4 }}>
@@ -255,9 +257,11 @@ const ShareCardContent = React.forwardRef<View, {
   daysDiff: number
   weightDelta: number | null
 }>(function ShareCardContent({ before, after, daysDiff, weightDelta }, ref) {
+  const { t, i18n } = useTranslation()
+  const locale = i18n.language === 'fr' ? 'fr-FR' : 'en-US'
   const formatDate = (iso: string) => {
     const d = new Date(iso)
-    return d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' }).replace('.', '')
+    return d.toLocaleDateString(locale, { day: '2-digit', month: 'short', year: 'numeric' }).replace('.', '')
   }
   const formatWeight = (kg: number | null) => {
     if (kg == null) return ''
@@ -291,7 +295,7 @@ const ShareCardContent = React.forwardRef<View, {
         <View style={{ flexDirection: 'row', gap: 24 }}>
           <View style={{ flex: 1 }}>
             <Text style={{ fontFamily: 'BarlowCondensed_700Bold', fontSize: 28, color: 'rgba(255,255,255,0.5)', letterSpacing: 6, textTransform: 'uppercase', marginBottom: 16 }}>
-              Avant
+              {t('evolution.before')}
             </Text>
             <Image source={{ uri: before.uri }} style={{ width: '100%', aspectRatio: 3 / 4 }} contentFit="cover" />
             <Text style={{ fontFamily: 'JetBrainsMono_400Regular', fontSize: 22, color: '#FFFFFF', marginTop: 16 }}>
@@ -305,7 +309,7 @@ const ShareCardContent = React.forwardRef<View, {
           </View>
           <View style={{ flex: 1 }}>
             <Text style={{ fontFamily: 'BarlowCondensed_700Bold', fontSize: 28, color: 'rgba(255,255,255,0.5)', letterSpacing: 6, textTransform: 'uppercase', marginBottom: 16 }}>
-              Après
+              {t('evolution.after')}
             </Text>
             <Image source={{ uri: after.uri }} style={{ width: '100%', aspectRatio: 3 / 4 }} contentFit="cover" />
             <Text style={{ fontFamily: 'JetBrainsMono_400Regular', fontSize: 22, color: '#FFFFFF', marginTop: 16 }}>
@@ -326,7 +330,7 @@ const ShareCardContent = React.forwardRef<View, {
               {Math.abs(daysDiff)}
             </Text>
             <Text style={{ fontFamily: 'BarlowCondensed_500Medium', fontSize: 22, color: 'rgba(255,255,255,0.5)', letterSpacing: 6, textTransform: 'uppercase' }}>
-              Jours
+              {t('evolution.days')}
             </Text>
           </View>
           {weightDelta != null && (

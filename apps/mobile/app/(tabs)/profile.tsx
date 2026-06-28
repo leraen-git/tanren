@@ -172,12 +172,12 @@ function EvolutionRow() {
         {!seen && (
           <View style={{ backgroundColor: tokens.accent, paddingHorizontal: 6, paddingVertical: 2 }}>
             <Text style={{ fontFamily: fonts.sansB, fontSize: 8, letterSpacing: 1.5, color: '#FFFFFF', textTransform: 'uppercase' }}>
-              NEW
+              {t('profile.newBadge')}
             </Text>
           </View>
         )}
         <Text style={{ fontFamily: fonts.sansM, fontSize: 13, letterSpacing: 0.3, color: tokens.textMute }}>
-          {photoCount} {photoCount === 1 ? 'photo' : 'photos'}
+          {t('profile.photoCount', { count: photoCount })}
         </Text>
         <Text style={{ fontFamily: fonts.sans, fontSize: 14, color: tokens.textMute, marginLeft: 4 }}>›</Text>
       </View>
@@ -239,6 +239,7 @@ type ThemeValue = 'light' | 'dark' | 'system'
 
 function ThemeRow({ label }: { label: string }) {
   const { tokens, fonts, preference, setTheme } = useTheme()
+  const { t } = useTranslation()
   return (
     <View style={{
       flexDirection: 'row', alignItems: 'center',
@@ -258,7 +259,7 @@ function ThemeRow({ label }: { label: string }) {
       <View style={{ flexDirection: 'row', borderWidth: 1, borderColor: tokens.borderStrong }}>
         {(['light', 'dark', 'system'] as ThemeValue[]).map((value) => {
           const selected = preference === value
-          const labels: Record<ThemeValue, string> = { light: 'Clair', dark: 'Sombre', system: 'Auto' }
+          const labels: Record<ThemeValue, string> = { light: t('profile.themeLight'), dark: t('profile.themeDark'), system: t('profile.themeSystem') }
           return (
             <TouchableOpacity
               key={value}
@@ -382,9 +383,9 @@ export default function ProfileScreen() {
           {(u) => {
             const providerLabel = (() => {
               if (u.authProvider === 'guest') return t('guest.connectedWith')
-              if (u.authProvider === 'google') return 'Connecte via Google'
-              if (u.authProvider === 'email') return 'Connecte via Email'
-              return 'Connecte via Apple'
+              if (u.authProvider === 'google') return t('profile.connectedViaGoogle')
+              if (u.authProvider === 'email') return t('profile.connectedViaEmail')
+              return t('profile.connectedViaApple')
             })()
             const weightDisplay = u.weightKg != null
               ? `${u.weightKg.toFixed(1).replace('.', ',')} kg`
@@ -458,7 +459,7 @@ export default function ProfileScreen() {
 
         {/* Réglages — always visible, no query dependency */}
         <SectionLabel label={t('profile.sectionReglages')} />
-        <Row label="Notre Mantra" onPress={() => router.push('/mantra')} muted />
+        <Row label={t('mantra.ourMantra')} onPress={() => router.push('/mantra')} muted />
         <Row label={t('explore.title')} onPress={() => router.push('/explore')} muted />
         <Row label={t('profile.reminders')} onPress={() => router.push('/settings/reminders')} muted />
         <Row label={t('profile.healthTitle')} disabled badge={t('profile.healthSoonBadge')} />

@@ -7,12 +7,13 @@ import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/theme/ThemeContext'
 import { ScreenHeader } from '@/components/ScreenHeader'
 import { useProgressPhotosStore } from '@/stores/progressPhotosStore'
-import { ANGLE_LABELS } from '@/types/progressPhoto'
+import { getAngleLabels } from '@/types/progressPhoto'
 
 export default function PhotoDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
   const { tokens, fonts, label } = useTheme()
   const { t } = useTranslation()
+  const ANGLE_LABELS = getAngleLabels(t)
 
   const photos = useProgressPhotosStore(s => s.photos)
   const removePhoto = useProgressPhotosStore(s => s.remove)

@@ -22,13 +22,17 @@ export default function OnboardingStep3() {
   const handleFinish = async () => {
     ob.setField('heightCm', height)
     ob.setField('weightKg', weight)
-    await updateMe.mutateAsync({
-      heightCm: height ? parseFloat(height) : null,
-      weightKg: weight ? parseFloat(weight) : null,
-      onboardingDone: true,
-    })
-    ob.reset()
-    await utils.auth.me.invalidate()
+    try {
+      await updateMe.mutateAsync({
+        heightCm: height ? parseFloat(height.replace(',', '.')) : null,
+        weightKg: weight ? parseFloat(weight.replace(',', '.')) : null,
+        onboardingDone: true,
+      })
+      ob.reset()
+      await utils.auth.me.invalidate()
+    } catch {
+      // onError already shows the alert
+    }
   }
 
   return (

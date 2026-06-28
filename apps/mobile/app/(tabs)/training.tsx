@@ -217,7 +217,7 @@ export default function TrainingScreen() {
               >
                 <View style={{ flex: 1, gap: 2 }}>
                   <Text style={{ fontFamily: fonts.sansB, fontSize: 14, color: tokens.text }}>{p.name}</Text>
-                  <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute }}>{p.days.length} j/sem</Text>
+                  <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute }}>{t('workout.daysPerWeekShort', { count: p.days.length })}</Text>
                 </View>
                 <Text style={{ fontFamily: fonts.sans, fontSize: 20, color: tokens.textMute }}>›</Text>
               </TouchableOpacity>

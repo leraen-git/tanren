@@ -83,9 +83,9 @@ export default function RegeneratePlanScreen() {
             {t('diet.regenCurrent')}
           </Text>
           <Text style={{ fontFamily: fonts.sansX, fontSize: 20, color: tokens.text, textTransform: 'uppercase', letterSpacing: 0.4, marginBottom: 4 }}>
-            {plan?.goal === 'FAT_LOSS' ? 'Perte de gras' :
-             plan?.goal === 'MUSCLE_GAIN' ? 'Prise de muscle' :
-             plan?.goal === 'RECOMPOSITION' ? 'Recomposition' : 'Performance'}
+            {plan?.goal === 'FAT_LOSS' ? t('diet.goalFatLoss') :
+             plan?.goal === 'MUSCLE_GAIN' ? t('diet.goalMuscleGainLabel') :
+             plan?.goal === 'RECOMPOSITION' ? t('diet.goalRecomposition') : t('diet.goalPerformance')}
             {plan?.targetKcal ? ` · ${plan.targetKcal} kcal` : ''}
           </Text>
           <Text style={{ fontFamily: fonts.sans, fontSize: 11, color: tokens.textMute, letterSpacing: 0.8 }}>

@@ -12,7 +12,7 @@ import { useProgressPhotosStore } from '@/stores/progressPhotosStore'
 import { useToastStore } from '@/stores/toastStore'
 import { trpc } from '@/lib/trpc'
 import type { PhotoAngle } from '@/types/progressPhoto'
-import { ANGLE_LABELS } from '@/types/progressPhoto'
+import { getAngleLabels } from '@/types/progressPhoto'
 
 type Step = 'source' | 'confirm'
 
@@ -21,6 +21,7 @@ export default function CaptureScreen() {
   const isEdit = !!id
   const { tokens, fonts, label: labelPreset } = useTheme()
   const { t } = useTranslation()
+  const ANGLE_LABELS = getAngleLabels(t)
   const showToast = useToastStore(s => s.show)
 
   const photos = useProgressPhotosStore(s => s.photos)

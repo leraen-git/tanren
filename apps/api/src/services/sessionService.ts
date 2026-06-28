@@ -1,30 +1,23 @@
 import crypto from 'node:crypto'
-import { redis } from '../redis.js'
+import { eq, and, gt } from 'drizzle-orm'
+import { db } from '../db/index.js'
+import { authSessions } from '../db/schema.js'
 
-const SESSION_PREFIX = 'session:'
-const USER_SESSIONS_PREFIX = 'user_sessions:'
-const DEFAULT_TTL = 30 * 24 * 3600 // 30 days
-const GUEST_TTL = 7 * 24 * 3600    // 7 days
-
-interface SessionData {
-  userId: string
-  createdAt: string
-}
+const DEFAULT_TTL = 30 * 24 * 3600
+const GUEST_TTL = 7 * 24 * 3600
 
 export async function createSession(
   userId: string,
   ttlSeconds: number = DEFAULT_TTL,
 ): Promise<string> {
   const token = crypto.randomBytes(32).toString('base64url')
-  const data: SessionData = { userId, createdAt: new Date().toISOString() }
+  const expiresAt = new Date(Date.now() + ttlSeconds * 1000)
 
-  await redis.set(
-    SESSION_PREFIX + token,
-    JSON.stringify(data),
-    'EX',
-    ttlSeconds,
-  )
-  await redis.sadd(USER_SESSIONS_PREFIX + userId, token)
+  await db.insert(authSessions).values({
+    token,
+    userId,
+    expiresAt,
+  })
 
   return token
 }
@@ -32,28 +25,26 @@ export async function createSession(
 export async function validateSession(
   token: string,
 ): Promise<{ userId: string } | null> {
-  const raw = await redis.get(SESSION_PREFIX + token)
-  if (!raw) return null
+  const [row] = await db
+    .select({ userId: authSessions.userId })
+    .from(authSessions)
+    .where(
+      and(
+        eq(authSessions.token, token),
+        gt(authSessions.expiresAt, new Date()),
+      ),
+    )
+    .limit(1)
 
-  const data = JSON.parse(raw) as SessionData
-  return { userId: data.userId }
+  return row ?? null
 }
 
 export async function revokeSession(token: string): Promise<void> {
-  const raw = await redis.get(SESSION_PREFIX + token)
-  if (raw) {
-    const data = JSON.parse(raw) as SessionData
-    await redis.srem(USER_SESSIONS_PREFIX + data.userId, token)
-  }
-  await redis.del(SESSION_PREFIX + token)
+  await db.delete(authSessions).where(eq(authSessions.token, token))
 }
 
 export async function revokeAllUserSessions(userId: string): Promise<void> {
-  const tokens = await redis.smembers(USER_SESSIONS_PREFIX + userId)
-  if (tokens.length > 0) {
-    await redis.del(...tokens.map((t) => SESSION_PREFIX + t))
-  }
-  await redis.del(USER_SESSIONS_PREFIX + userId)
+  await db.delete(authSessions).where(eq(authSessions.userId, userId))
 }
 
 export { GUEST_TTL, DEFAULT_TTL }

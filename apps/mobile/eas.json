@@ -22,6 +22,13 @@
         "simulator": true
       }
     },
+    "testflight": {
+      "distribution": "store",
+      "channel": "preview",
+      "ios": {
+        "autoIncrement": true
+      }
+    },
     "production": {
       "channel": "production",
       "autoIncrement": true
@@ -29,6 +36,9 @@
   },
   "submit": {
     "production": {
+      "ios": {
+        "ascAppId": "YOUR_ASC_APP_ID"
+      },
       "android": {
         "serviceAccountKeyPath": "./google-service-account.json",
         "track": "internal"

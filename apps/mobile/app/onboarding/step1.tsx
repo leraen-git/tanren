@@ -38,8 +38,12 @@ export default function OnboardingStep1() {
     }
     ob.setField('name', name.trim())
     ob.setField('gender', gender)
-    await updateMe.mutateAsync({ name: name.trim(), gender })
-    router.push('/onboarding/step2')
+    try {
+      await updateMe.mutateAsync({ name: name.trim(), gender })
+      router.push('/onboarding/step2')
+    } catch {
+      // onError already shows the alert
+    }
   }
 
   return (

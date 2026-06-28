@@ -6,90 +6,96 @@ import { router, useNavigation } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
 import { useTranslation } from 'react-i18next'
 
-const PAGES = [
-  {
-    eyebrow: "L'origine",
-    heading: [
-      { text: 'Tanren,\n', accent: false },
-      { text: 'deux kanji', accent: true },
-      { text: '\npour un mot', accent: false },
-    ],
-    body: [
-      {
-        segments: [
-          { text: 'Tanren (鍛錬)', bold: true },
-          { text: ' est un mot japonais qui désigne la pratique de la forge.', bold: false },
-        ],
+function usePages() {
+  const { t } = useTranslation()
+  return [
+    {
+      eyebrow: t('mantra.eyebrow1'),
+      heading: [
+        { text: t('mantra.heading1Pre'), accent: false },
+        { text: t('mantra.heading1Accent'), accent: true },
+        { text: t('mantra.heading1Post'), accent: false },
+      ],
+      body: [
+        {
+          segments: [
+            { text: t('mantra.body1a'), bold: true },
+            { text: t('mantra.body1aPost'), bold: false },
+          ],
+        },
+        {
+          segments: [
+            { text: t('mantra.body1b'), bold: false },
+            { text: t('mantra.body1bBold'), bold: true },
+            { text: t('mantra.body1bPost'), bold: false },
+          ],
+        },
+      ],
+      infoBlock: {
+        type: 'etymology' as const,
+        label: t('mantra.etymologyLabel'),
+        tanMeaning: t('mantra.tanMeaning'),
+        renMeaning: t('mantra.renMeaning'),
       },
-      {
-        segments: [
-          { text: 'Au Japon ancien, c\'est ainsi qu\'on travaillait l\'acier des sabres : par ', bold: false },
-          { text: 'la chauffe et la frappe répétées', bold: true },
-          { text: ', jour après jour, pendant des années.', bold: false },
-        ],
-      },
-    ],
-    infoBlock: {
-      type: 'etymology' as const,
-      label: 'Étymologie',
     },
-  },
-  {
-    eyebrow: 'La philosophie',
-    heading: [
-      { text: 'Le corps\ncomme\nune ', accent: false },
-      { text: 'lame', accent: true },
-    ],
-    body: [
-      {
-        segments: [
-          { text: 'Les arts martiaux japonais ont étendu le mot au-delà du métal.', bold: false },
-        ],
+    {
+      eyebrow: t('mantra.eyebrow2'),
+      heading: [
+        { text: t('mantra.heading2Pre'), accent: false },
+        { text: t('mantra.heading2Accent'), accent: true },
+      ],
+      body: [
+        {
+          segments: [
+            { text: t('mantra.body2a'), bold: false },
+          ],
+        },
+        {
+          segments: [
+            { text: t('mantra.body2bBold1'), bold: true },
+            { text: t('mantra.body2bMid'), bold: false },
+            { text: t('mantra.body2bBold2'), bold: true },
+            { text: t('mantra.body2bPost'), bold: false },
+          ],
+        },
+      ],
+      infoBlock: {
+        type: 'tradition' as const,
+        label: t('mantra.traditionLabel'),
+        text: t('mantra.traditionQuote'),
       },
-      {
-        segments: [
-          { text: 'Tanren', bold: true },
-          { text: ', c\'est la discipline qui transforme un corps ordinaire en outil précis. Par la répétition. Par la patience. Par ', bold: false },
-          { text: 'l\'effort soutenu sur le long terme', bold: true },
-          { text: '.', bold: false },
-        ],
-      },
-    ],
-    infoBlock: {
-      type: 'tradition' as const,
-      label: 'Dans la tradition',
-      text: '"Forger le corps avec la même rigueur que l\'acier."',
     },
-  },
-  {
-    eyebrow: "L'application",
-    heading: [
-      { text: 'Ton corps,\nta ', accent: false },
-      { text: 'forge', accent: true },
-    ],
-    body: [
-      {
-        segments: [
-          { text: 'Tanren n\'est pas une app de fitness. C\'est une ', bold: false },
-          { text: 'application de forgeage', bold: true },
-          { text: '.', bold: false },
-        ],
-      },
-      {
-        segments: [
-          { text: 'Chaque séance enregistrée, chaque rep loggée, chaque kilo soulevé est ', bold: false },
-          { text: 'un coup de marteau', bold: true },
-          { text: '. Le résultat n\'apparaît pas en 10 jours. Il apparaît dans 10 ans.', bold: false },
-        ],
-      },
-    ],
-    closingQuestion: 'Tu es prêt à commencer ?',
-  },
-] as const
+    {
+      eyebrow: t('mantra.eyebrow3'),
+      heading: [
+        { text: t('mantra.heading3Pre'), accent: false },
+        { text: t('mantra.heading3Accent'), accent: true },
+      ],
+      body: [
+        {
+          segments: [
+            { text: t('mantra.body3a'), bold: false },
+            { text: t('mantra.body3aBold'), bold: true },
+            { text: t('mantra.body3aPost'), bold: false },
+          ],
+        },
+        {
+          segments: [
+            { text: t('mantra.body3b'), bold: false },
+            { text: t('mantra.body3bBold'), bold: true },
+            { text: t('mantra.body3bPost'), bold: false },
+          ],
+        },
+      ],
+      closingQuestion: t('mantra.closingQuestion'),
+    },
+  ]
+}
 
 export default function MantraScreen() {
   const { isDark, tokens, fonts } = useTheme()
   const { t } = useTranslation()
+  const PAGES = usePages()
   const navigation = useNavigation()
   const [page, setPage] = useState(0)
 
@@ -181,15 +187,15 @@ export default function MantraScreen() {
               <Text style={[styles.infoLabel, { color: textMute }]}>
                 {current.infoBlock.label}
               </Text>
-              {current.infoBlock.type === 'etymology' ? (
+              {current.infoBlock.type === 'etymology' && 'tanMeaning' in current.infoBlock ? (
                 <View>
                   <Text style={[styles.etyLine, { color: textDim }]}>
                     <Text style={[styles.etyKanji, { color: accent }]}>鍛 </Text>
-                    (tan) = forger
+                    {current.infoBlock.tanMeaning}
                   </Text>
                   <Text style={[styles.etyLine, { color: textDim }]}>
                     <Text style={[styles.etyKanji, { color: accent }]}>錬 </Text>
-                    (ren) = affiner
+                    {current.infoBlock.renMeaning}
                   </Text>
                 </View>
               ) : (

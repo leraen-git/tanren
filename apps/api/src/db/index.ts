@@ -30,6 +30,18 @@ export async function runPendingMigrations() {
     await client.query(`CREATE INDEX IF NOT EXISTS wpd_plan_idx ON workout_plan_days (plan_id)`)
     await client.query(`CREATE INDEX IF NOT EXISTS ex_difficulty_idx ON exercises (difficulty)`)
     console.log('[migration] Ensured indexes exist')
+
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS auth_sessions (
+        token text PRIMARY KEY,
+        user_id text NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        created_at timestamptz NOT NULL DEFAULT now(),
+        expires_at timestamptz NOT NULL
+      )
+    `)
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_auth_sessions_user ON auth_sessions (user_id)`)
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_auth_sessions_expires ON auth_sessions (expires_at)`)
+    console.log('[migration] Ensured auth_sessions table exists')
   } finally {
     client.release()
   }

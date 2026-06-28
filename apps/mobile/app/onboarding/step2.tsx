@@ -39,8 +39,12 @@ export default function OnboardingStep2() {
     ob.setField('level', level)
     ob.setField('weeklyTarget', days)
     ob.setField('goal', goal)
-    await updateMe.mutateAsync({ level, weeklyTarget: days, goal })
-    router.push('/onboarding/step3')
+    try {
+      await updateMe.mutateAsync({ level, weeklyTarget: days, goal })
+      router.push('/onboarding/step3')
+    } catch {
+      // onError already shows the alert
+    }
   }
 
   return (

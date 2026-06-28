@@ -288,7 +288,7 @@ function V2ActivePlan({ plan }: { plan: V2PlanData }) {
       {/* Header */}
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingTop: 16, paddingBottom: 8 }}>
         <Text style={{ fontFamily: fonts.sansX, fontSize: 24, color: tokens.text, textTransform: 'uppercase', letterSpacing: 0.5 }}>
-          Nutrition
+          {t('diet.nutritionTitle')}
         </Text>
         <TouchableOpacity
           onPress={() => router.push('/diet/regenerate' as Href)}
@@ -395,9 +395,9 @@ function V2ActivePlan({ plan }: { plan: V2PlanData }) {
 
           {/* Macro row */}
           <View style={{ flexDirection: 'row', gap: 6 }}>
-            <MacroCell label="Prot." value={dayTotalProtein} color={tokens.accent} />
-            <MacroCell label="Gluc." value={dayTotalCarbs} color={tokens.amber} />
-            <MacroCell label="Lip." value={dayTotalFat} color={tokens.green} />
+            <MacroCell label={t('diet.proteinLabel')} value={dayTotalProtein} color={tokens.accent} />
+            <MacroCell label={t('diet.carbsLabel')} value={dayTotalCarbs} color={tokens.amber} />
+            <MacroCell label={t('diet.fatLabel')} value={dayTotalFat} color={tokens.green} />
           </View>
 
           {/* Meals label */}

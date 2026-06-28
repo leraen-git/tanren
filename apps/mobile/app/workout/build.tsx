@@ -455,6 +455,7 @@ export default function WorkoutBuildScreen() {
 
             {/* Drag-drop exercise list */}
             <DraggableFlatList
+              style={{ flex: 1 }}
               data={draft.exercises}
               onDragEnd={({ data }) => draft.reorderExercises(data)}
               keyExtractor={(item, i) => `${item.exerciseId}-${i}`}

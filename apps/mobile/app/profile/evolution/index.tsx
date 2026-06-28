@@ -9,7 +9,7 @@ import { ScreenHeader } from '@/components/ScreenHeader'
 import { KanjiWatermark } from '@/components/KanjiWatermark'
 import { useProgressPhotosStore } from '@/stores/progressPhotosStore'
 import type { PhotoAngle, ProgressPhoto } from '@/types/progressPhoto'
-import { ANGLE_LABELS } from '@/types/progressPhoto'
+import { getAngleLabels } from '@/types/progressPhoto'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const GRID_GAP = 4
@@ -21,6 +21,7 @@ type FilterAngle = PhotoAngle | 'all'
 export default function EvolutionScreen() {
   const { tokens, fonts, label } = useTheme()
   const { t } = useTranslation()
+  const ANGLE_LABELS = getAngleLabels(t)
   const photos = useProgressPhotosStore(s => s.photos)
   const isLoaded = useProgressPhotosStore(s => s.isLoaded)
   const removePhoto = useProgressPhotosStore(s => s.remove)

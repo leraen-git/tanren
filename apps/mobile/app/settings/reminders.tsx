@@ -320,7 +320,7 @@ export default function RemindersScreen() {
           accessibilityLabel={t('common.back')} accessibilityRole="button"
         >
           <Text style={{ ...labelPreset.md, color: tokens.accent }}>
-            {'< BACK'}
+            {'< '}{t('common.back').toUpperCase()}
           </Text>
         </TouchableOpacity>
         <Text style={{ fontFamily: fonts.sansX, fontSize: 20, color: tokens.text, textTransform: 'uppercase' }}>

@@ -33,10 +33,10 @@ export function VolumeFeedback({ percent }: VolumeFeedbackProps) {
           fontFamily: fonts.sansX, fontSize: 14,
           letterSpacing: 0.6, textTransform: 'uppercase', color: tokens.accent,
         }}>
-          Volume {formatted}
+          {t('workout.volumeLabel')} {formatted}
         </Text>
         <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textDim, marginTop: 2 }}>
-          {t('workout.vsPreviousSession') ?? 'vs ta dernière séance sur cet exo'}
+          {t('workout.vsPreviousSession')}
         </Text>
       </View>
     </View>

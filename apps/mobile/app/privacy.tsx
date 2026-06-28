@@ -52,7 +52,7 @@ export default function PrivacyScreen() {
           accessibilityRole="button"
         >
           <Text style={{ ...label.md, color: tokens.accent }}>
-            {'< BACK'}
+            {'< '}{t('common.back').toUpperCase()}
           </Text>
         </TouchableOpacity>
         <Text style={{ fontFamily: fonts.sansX, fontSize: 20, color: tokens.text, textTransform: 'uppercase' }}>

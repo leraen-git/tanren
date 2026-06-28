@@ -230,7 +230,7 @@ export default function ExploreScreen() {
           accessibilityRole="button"
         >
           <Text style={{ ...label.md, color: tokens.accent }}>
-            {'< BACK'}
+            {'< '}{t('common.back').toUpperCase()}
           </Text>
         </TouchableOpacity>
         <View style={{ flex: 1 }}>

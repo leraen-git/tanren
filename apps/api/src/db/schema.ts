@@ -501,3 +501,15 @@ export const adminAuditLog = pgTable('admin_audit_log', {
   index('idx_audit_target_user').on(table.targetUserId, table.createdAt),
   index('idx_audit_action').on(table.action, table.createdAt),
 ])
+
+// ─── Auth Sessions ───────────────────────────────────────────────────────────
+
+export const authSessions = pgTable('auth_sessions', {
+  token: text('token').primaryKey(),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+}, (table) => [
+  index('idx_auth_sessions_user').on(table.userId),
+  index('idx_auth_sessions_expires').on(table.expiresAt),
+])
