@@ -20,19 +20,15 @@
         "CFBundleURLTypes": [
           {
             "CFBundleURLSchemes": [
-              "com.googleusercontent.apps.YOUR_IOS_CLIENT_ID"
-            ]
-          },
-          {
-            "CFBundleURLSchemes": [
-              "com.googleusercontent.apps.YOUR_IOS_CLIENT_ID"
+              "com.googleusercontent.apps.499901737559-nqbmbv9djsi4c88eh08h8hqv0ofadesr"
             ]
           }
         ],
         "NSPhotoLibraryUsageDescription": "Tanren needs access to your photo library to add a background photo to your session share card.",
         "NSCameraUsageDescription": "Tanren needs access to your camera to take a photo for your session share card.",
         "ITSAppUsesNonExemptEncryption": false
-      }
+      },
+      "buildNumber": "2"
     },
     "android": {
       "adaptiveIcon": {
