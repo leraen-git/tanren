@@ -4,11 +4,7 @@
     "appVersionSource": "local"
   },
   "build": {
-    "base": {
-      "prebuildCommand": "test -f ../../packages/shared/dist/index.js || node ../../node_modules/typescript/bin/tsc -p ../../packages/shared/tsconfig.json"
-    },
     "development": {
-      "extends": "base",
       "developmentClient": true,
       "distribution": "internal",
       "channel": "development",
@@ -17,7 +13,6 @@
       }
     },
     "preview": {
-      "extends": "base",
       "distribution": "internal",
       "channel": "preview",
       "android": {
@@ -28,7 +23,6 @@
       }
     },
     "testflight": {
-      "extends": "base",
       "distribution": "store",
       "channel": "preview",
       "ios": {
@@ -37,7 +31,6 @@
       }
     },
     "production": {
-      "extends": "base",
       "channel": "production",
       "autoIncrement": true
     }
