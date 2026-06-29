@@ -2,7 +2,7 @@
   "expo": {
     "name": "Tanren",
     "slug": "tanren",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "scheme": "tanren",
     "orientation": "portrait",
     "icon": "./assets/icon/tanren_icon_1024.png",
@@ -29,7 +29,7 @@
         "NSCameraUsageDescription": "Tanren needs access to your camera to take a photo for your session share card.",
         "ITSAppUsesNonExemptEncryption": false
       },
-      "buildNumber": "6"
+      "buildNumber": "7"
     },
     "android": {
       "adaptiveIcon": {
@@ -38,7 +38,7 @@
         "monochromeImage": "./assets/icon/tanren_adaptive_monochrome.png"
       },
       "package": "app.tanren",
-      "versionCode": 7,
+      "versionCode": 8,
       "permissions": [
         "android.permission.RECORD_AUDIO",
         "android.permission.MODIFY_AUDIO_SETTINGS",
@@ -46,7 +46,7 @@
         "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"
       ]
     },
-    "runtimeVersion": "1.0.3",
+    "runtimeVersion": "1.0.4",
     "updates": {
       "url": "https://u.expo.dev/933ef993-9092-4e5c-aaa8-af38a9735b8d"
     },
