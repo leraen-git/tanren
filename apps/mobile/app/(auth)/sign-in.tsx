@@ -417,20 +417,7 @@ export default function SignInScreen() {
                 </TouchableOpacity>
               )}
 
-              {/* Google */}
-              {googleAvailable && (
-                <TouchableOpacity
-                  style={[styles.cta, { backgroundColor: secondaryBg }]}
-                  onPress={handleGoogleSignIn}
-                  accessibilityLabel={t('signIn.continueWithGoogle')}
-                  accessibilityRole="button"
-                >
-                  <GoogleIcon />
-                  <Text style={[styles.ctaText, { color: secondaryFg, fontFamily: fonts.sansB }]}>
-                    {t('signIn.continueWithGoogle').toUpperCase()}
-                  </Text>
-                </TouchableOpacity>
-              )}
+              {/* Google — hidden until OAuth review approved */}
 
               {/* Email */}
               <TouchableOpacity
