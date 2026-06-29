@@ -1,4 +1,4 @@
-import { randomInt } from 'node:crypto'
+import { randomInt, timingSafeEqual } from 'node:crypto'
 import { z } from 'zod'
 import { eq, and, isNull } from 'drizzle-orm'
 import { TRPCError } from '@trpc/server'
@@ -15,6 +15,12 @@ const isDev = process.env['NODE_ENV'] === 'development'
 // Apple's public key set — fetched once and cached automatically by jose
 const APPLE_JWKS = createRemoteJWKSet(new URL('https://appleid.apple.com/auth/keys'))
 const APPLE_BUNDLE_ID = 'app.tanren'
+
+const GOOGLE_CLIENT_IDS = [
+  process.env['GOOGLE_WEB_CLIENT_ID'],
+  process.env['GOOGLE_IOS_CLIENT_ID'],
+  process.env['GOOGLE_ANDROID_CLIENT_ID'],
+].filter(Boolean) as string[]
 
 // ─── OTP helpers ──────────────────────────────────────────────────────────────
 
@@ -130,7 +136,11 @@ export const authRouter = router({
           throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Invalid Google ID token' })
         }
         const tokenInfo = await tokenInfoRes.json() as {
-          sub: string; email: string; name?: string; picture?: string
+          sub: string; email: string; name?: string; picture?: string; aud?: string
+        }
+        if (GOOGLE_CLIENT_IDS.length > 0 && (!tokenInfo.aud || !GOOGLE_CLIENT_IDS.includes(tokenInfo.aud))) {
+          ctx.req.log.warn({ event: 'auth_failure', provider: 'google', aud: tokenInfo.aud }, 'Google token audience mismatch')
+          throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Invalid Google token audience' })
         }
         googleUser = tokenInfo
       } else {
@@ -273,7 +283,12 @@ export const authRouter = router({
       // Increment attempts before checking (limits timing-based enumeration)
       const newAttempts = record.attempts + 1
 
-      if (input.code !== record.code) {
+      const codeMatch = (() => {
+        try {
+          return timingSafeEqual(Buffer.from(input.code.padEnd(6, '\0')), Buffer.from(record.code.padEnd(6, '\0')))
+        } catch { return false }
+      })()
+      if (!codeMatch) {
         await redis.set(otpKey, JSON.stringify({ ...record, attempts: newAttempts }), 'KEEPTTL')
         const remaining = OTP_MAX_ATTEMPTS - newAttempts
         throw new TRPCError({

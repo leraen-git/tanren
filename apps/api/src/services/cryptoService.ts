@@ -39,5 +39,10 @@ export function decrypt(encrypted: string): string {
 }
 
 export function deterministicHash(value: string): string {
-  return crypto.createHash('sha256').update(value.trim().toLowerCase()).digest('hex')
+  const secret = process.env['EMAIL_HASH_SECRET']
+  const normalized = value.trim().toLowerCase()
+  if (secret) {
+    return crypto.createHmac('sha256', secret).update(normalized).digest('hex')
+  }
+  return crypto.createHash('sha256').update(normalized).digest('hex')
 }

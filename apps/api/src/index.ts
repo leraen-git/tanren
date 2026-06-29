@@ -91,13 +91,20 @@ server.get('/health', async (_req, reply) => {
     await redis.ping()
     return { status: 'ok', timestamp: new Date().toISOString() }
   } catch (err) {
-    reply.code(503).send({ status: 'error', error: String(err) })
+    server.log.error({ event: 'health_check_failed', err }, 'Health check failed')
+    reply.code(503).send({ status: 'error' })
   }
 })
 
-server.setErrorHandler((error: Error & { statusCode?: number }, _req, reply) => {
+server.setErrorHandler((error: Error & { statusCode?: number }, req, reply) => {
   Sentry.captureException(error)
-  reply.code(error.statusCode ?? 500).send({ error: error.message })
+  const statusCode = error.statusCode ?? 500
+  if (statusCode >= 500) {
+    req.log.error({ event: 'unhandled_error', err: error }, 'Unhandled server error')
+    reply.code(statusCode).send({ error: 'Internal server error' })
+  } else {
+    reply.code(statusCode).send({ error: error.message })
+  }
 })
 
 await runPendingMigrations()
