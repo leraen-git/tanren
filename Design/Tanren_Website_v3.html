@@ -1,0 +1,2419 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TANREN — Forge ta force, une rep après l'autre.</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,300;0,400;0,500;0,700;0,900;1,400&family=Noto+Serif+JP:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* Palette tokens (independent of theme) */
+    --forge-dark: #FF2D3F;
+    --forge-light: #E8192C;
+    --green: #22c55e;
+    --green-dim: rgba(34,197,94,0.10);
+    --amber: #f59e0b;
+    --amber-dim: rgba(245,158,11,0.10);
+  }
+
+  /* Dark theme tokens */
+  html[data-theme="dark"] {
+    --bg: #0A0A0A;
+    --bg-2: #141414;
+    --bg-3: #1F1F1F;
+    --bg-soft: rgba(255,255,255,0.02);
+    --text: #FFFFFF;
+    --text-mute: #888;
+    --text-dim: #555;
+    --text-ghost: #333;
+    --border: rgba(255,255,255,0.08);
+    --border-strong: rgba(255,255,255,0.16);
+    --grid: rgba(255,255,255,0.04);
+    --accent: var(--forge-dark);
+    --accent-glow: rgba(255,45,63,0.25);
+    --frame-border: #2a2a2a;
+    --shadow-strong: 0 24px 60px rgba(0,0,0,0.6);
+    --shadow-phone: 0 40px 80px rgba(0,0,0,0.5);
+
+    /* App-internal tokens (inside phone screens) */
+    --app-bg: #000000;
+    --app-bg-soft: #0A0A0A;
+    --app-text: #FFFFFF;
+    --app-text-mute: #888888;
+    --app-text-dim: #555555;
+    --app-text-ghost: #444444;
+    --app-border: rgba(255,255,255,0.08);
+    --app-border-soft: rgba(255,255,255,0.04);
+    --app-divider: rgba(255,255,255,0.10);
+    --app-card-bg: rgba(255,255,255,0.02);
+    --app-pill-bg: rgba(255,255,255,0.02);
+    --phone-frame: #1a1a1a;
+  }
+
+  /* Light theme tokens */
+  html[data-theme="light"] {
+    --bg: #FFFFFF;
+    --bg-2: #F5F5F5;
+    --bg-3: #EBEBEB;
+    --bg-soft: rgba(0,0,0,0.02);
+    --text: #0A0A0A;
+    --text-mute: #666;
+    --text-dim: #888;
+    --text-ghost: #BBB;
+    --border: rgba(0,0,0,0.10);
+    --border-strong: rgba(0,0,0,0.18);
+    --grid: rgba(0,0,0,0.04);
+    --accent: var(--forge-light);
+    --accent-glow: rgba(232,25,44,0.18);
+    --frame-border: #DDD;
+    --shadow-strong: 0 24px 60px rgba(0,0,0,0.12);
+    --shadow-phone: 0 40px 80px rgba(0,0,0,0.18);
+
+    /* App-internal tokens — light mode */
+    --app-bg: #FFFFFF;
+    --app-bg-soft: #FAFAFA;
+    --app-text: #0A0A0A;
+    --app-text-mute: #666666;
+    --app-text-dim: #999999;
+    --app-text-ghost: #BBBBBB;
+    --app-border: rgba(0,0,0,0.10);
+    --app-border-soft: rgba(0,0,0,0.05);
+    --app-divider: rgba(0,0,0,0.10);
+    --app-card-bg: rgba(0,0,0,0.02);
+    --app-pill-bg: rgba(0,0,0,0.02);
+    --phone-frame: #DDDDDD;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Barlow Condensed', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    transition: background 0.25s ease, color 0.25s ease;
+    overflow-x: hidden;
+  }
+
+  /* ─────────────────────────────────────────────
+     Background grid (covers full body)
+  ───────────────────────────────────────────── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ─────────────────────────────────────────────
+     THEME TOGGLE (fixed top-right of viewport)
+  ───────────────────────────────────────────── */
+  .theme-toggle {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    z-index: 100;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+  .theme-toggle:hover {
+    border-color: var(--accent);
+    transform: scale(1.05);
+  }
+  .theme-toggle svg { width: 20px; height: 20px; color: var(--text); }
+  html[data-theme="dark"] .theme-icon-light { display: none; }
+  html[data-theme="light"] .theme-icon-dark { display: none; }
+
+  /* ─────────────────────────────────────────────
+     TOP BAR
+  ───────────────────────────────────────────── */
+  .topbar {
+    position: relative;
+    z-index: 10;
+    padding: 24px 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(12px);
+    background: var(--bg);
+  }
+  .topbar-brand { display: flex; align-items: center; gap: 12px; }
+  .topbar-wordmark {
+    font-weight: 900;
+    font-size: 20px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .topbar-kanji {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 15px;
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .topbar-nav {
+    display: flex;
+    gap: 32px;
+    align-items: center;
+  }
+  .topbar-link {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-mute);
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+  .topbar-link:hover { color: var(--text); }
+  .topbar-cta {
+    background: var(--accent);
+    color: #FFF;
+    border: none;
+    padding: 11px 22px;
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: filter 0.2s;
+  }
+  .topbar-cta:hover { filter: brightness(1.1); }
+
+  /* ─────────────────────────────────────────────
+     HERO
+  ───────────────────────────────────────────── */
+  .hero {
+    position: relative;
+    z-index: 1;
+    padding: 100px 32px 80px;
+    text-align: center;
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+  .corner {
+    position: absolute;
+    width: 36px; height: 36px;
+    border: 2px solid var(--accent);
+  }
+  .corner.tl { top: 32px; left: 32px; border-right: none; border-bottom: none; }
+  .corner.tr { top: 32px; right: 32px; border-left: none; border-bottom: none; }
+
+  .corner-kanji {
+    position: absolute;
+    top: 100px;
+    right: 80px;
+    font-family: 'Noto Serif JP', serif;
+    font-size: 240px;
+    color: var(--accent);
+    opacity: 0.04;
+    pointer-events: none;
+    line-height: 1;
+    font-weight: 900;
+  }
+  html[data-theme="light"] .corner-kanji { opacity: 0.06; }
+
+  .hero-mark {
+    margin: 0 auto 36px;
+    width: 100px;
+    height: 100px;
+    position: relative;
+  }
+  .hero-mark svg { width: 100%; height: 100%; }
+  .hero-mark::before {
+    content: '';
+    position: absolute;
+    inset: -50px;
+    background: radial-gradient(circle, var(--accent-glow) 0%, transparent 60%);
+    z-index: -1;
+  }
+
+  .hero-eyebrow {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 18px;
+  }
+
+  .hero-title {
+    font-size: 88px;
+    font-weight: 900;
+    letter-spacing: -0.01em;
+    line-height: 0.95;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .hero-title-accent { color: var(--accent); font-style: italic; }
+
+  .hero-kanji {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 28px;
+    color: var(--accent);
+    margin: 12px 0 24px;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+  }
+
+  .hero-subtitle {
+    font-size: 19px;
+    font-weight: 400;
+    color: var(--text-mute);
+    max-width: 700px;
+    margin: 0 auto 48px;
+    line-height: 1.55;
+  }
+
+  .hero-cta-row {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #FFF;
+    border: none;
+    padding: 18px 32px;
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.2s;
+  }
+  .btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); }
+  .btn-primary svg { width: 16px; height: 16px; }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border-strong);
+    padding: 18px 32px;
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s;
+  }
+  .btn-secondary:hover { border-color: var(--text); }
+
+  .hero-microcopy {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 20px;
+    letter-spacing: 0.04em;
+  }
+
+  /* ─────────────────────────────────────────────
+     PHONE SHOWCASE
+  ───────────────────────────────────────────── */
+  .hero-showcase {
+    margin: 80px auto 0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 28px;
+    perspective: 1200px;
+    max-width: 100%;
+  }
+
+  /* ─────────────────────────────────────────────
+     PHONE — base structure (theme-aware)
+  ───────────────────────────────────────────── */
+  .phone {
+    width: 270px;
+    aspect-ratio: 9 / 19.5;
+    border-radius: 38px;
+    border: 7px solid var(--phone-frame);
+    overflow: hidden;
+    background: var(--app-bg);
+    box-shadow: var(--shadow-phone);
+    position: relative;
+    flex-shrink: 0;
+    transition: border-color 0.25s ease, background 0.25s ease;
+  }
+  .phone.left { transform: rotate(-4deg) translateY(20px); }
+  .phone.center { transform: scale(1.06); z-index: 2; }
+  .phone.right { transform: rotate(4deg) translateY(20px); }
+  .phone.solo { transform: none; }
+
+  /* App screen — follows site theme */
+  .app {
+    width: 100%;
+    height: 100%;
+    background: var(--app-bg);
+    color: var(--app-text);
+    padding: 18px 14px 12px;
+    font-family: 'Barlow Condensed', sans-serif;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.25s ease, color 0.25s ease;
+  }
+
+  /* Status bar simulation */
+  .app-statusbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 10px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    padding: 0 4px;
+    color: var(--app-text);
+  }
+  .app-statusbar-icons { display: flex; gap: 4px; align-items: center; opacity: 0.85; }
+
+  /* ─────────────────────────────────────────────
+     ACTIVE WORKOUT screen (image 3 — Barbell Bench Press)
+  ───────────────────────────────────────────── */
+  .aw-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 10px;
+    border-bottom: 0.5px solid var(--app-divider);
+  }
+  .aw-back {
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    color: var(--app-text-mute);
+  }
+  .aw-header-mid {
+    text-align: center;
+  }
+  .aw-header-title {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--app-text);
+  }
+  .aw-header-meta {
+    font-size: 8px;
+    color: var(--app-text-mute);
+    letter-spacing: 0.08em;
+    margin-top: 2px;
+  }
+  .aw-finish {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    color: var(--forge-dark);
+  }
+
+  .aw-exercise-name {
+    text-align: center;
+    margin-top: 24px;
+    font-size: 18px;
+    font-weight: 900;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--app-text);
+  }
+  .aw-exercise-num {
+    text-align: center;
+    font-size: 10px;
+    color: var(--app-text-dim);
+    letter-spacing: 0.08em;
+    margin-top: 2px;
+  }
+  .aw-exercise-arrows {
+    display: flex;
+    justify-content: space-between;
+    margin-top: -28px;
+    color: var(--app-text-ghost);
+    font-size: 18px;
+    padding: 0 4px;
+  }
+  .aw-divider-tab {
+    width: 24px;
+    height: 2px;
+    background: var(--forge-dark);
+    margin: 12px auto 0;
+  }
+
+  .aw-series-label {
+    font-size: 9px;
+    color: var(--app-text-dim);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin: 16px 0 8px;
+    font-weight: 500;
+  }
+
+  .aw-set-card {
+    border: 1.2px solid;
+    border-radius: 6px;
+    padding: 8px 10px;
+    margin-bottom: 7px;
+    display: grid;
+    grid-template-columns: 18px 1fr 1fr 50px 28px;
+    gap: 8px;
+    align-items: center;
+  }
+  .aw-set-card.done { border-color: rgba(34,197,94,0.55); }
+  .aw-set-card.current { border-color: var(--forge-dark); }
+  .aw-set-card.pending { border-color: var(--app-border); }
+
+  .aw-set-num {
+    font-size: 14px;
+    font-weight: 900;
+  }
+  .aw-set-card.done .aw-set-num { color: var(--green); }
+  .aw-set-card.current .aw-set-num { color: var(--forge-dark); }
+  .aw-set-card.pending .aw-set-num { color: var(--app-text-ghost); }
+
+  .aw-set-field { display: flex; flex-direction: column; gap: 1px; }
+  .aw-set-field-label {
+    font-size: 7px;
+    color: var(--app-text-dim);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .aw-set-field-val {
+    font-size: 18px;
+    font-weight: 900;
+    line-height: 1;
+    color: var(--app-text);
+    border-bottom: 0.5px solid var(--app-border);
+    padding-bottom: 2px;
+  }
+  .aw-set-card.pending .aw-set-field-val { color: var(--app-text-ghost); }
+
+  .aw-set-rest {
+    font-size: 7px;
+    color: var(--app-text-dim);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    text-align: right;
+  }
+  .aw-set-rest-val {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--app-text);
+  }
+  .aw-set-rest-unit {
+    font-size: 8px;
+    color: var(--app-text-mute);
+  }
+  .aw-set-card.pending .aw-set-rest-val { color: var(--app-text-dim); }
+
+  .aw-set-check {
+    width: 22px;
+    height: 22px;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 900;
+  }
+  .aw-set-check.done { background: var(--green); color: #FFF; }
+  .aw-set-check.empty { border: 1px solid var(--app-border); }
+
+  .aw-validate-btn {
+    background: var(--forge-dark);
+    color: #FFF;
+    padding: 12px;
+    text-align: center;
+    border-radius: 4px;
+    margin-top: 10px;
+    font-weight: 900;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .aw-video-link {
+    text-align: center;
+    margin-top: 12px;
+    font-size: 9px;
+    color: var(--app-text-mute);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+  }
+  .aw-video-link-icon {
+    width: 14px;
+    height: 10px;
+    background: var(--forge-dark);
+    border-radius: 2px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #FFF;
+    font-size: 7px;
+  }
+
+  /* ─────────────────────────────────────────────
+     NUTRITION screen (image 2 — Diet)
+  ───────────────────────────────────────────── */
+  .nu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-top: 4px;
+  }
+  .nu-title {
+    font-size: 22px;
+    font-weight: 900;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--app-text);
+  }
+  .nu-plan-link {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--forge-dark);
+  }
+
+  .nu-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 3px;
+    margin-top: 14px;
+  }
+  .nu-day {
+    border: 0.5px solid var(--app-border);
+    border-radius: 3px;
+    padding: 5px 2px;
+    text-align: center;
+  }
+  .nu-day.active { background: var(--forge-dark); border-color: var(--forge-dark); }
+  .nu-day-name {
+    font-size: 7px;
+    letter-spacing: 0.12em;
+    color: var(--app-text-mute);
+    font-weight: 500;
+    text-transform: uppercase;
+  }
+  .nu-day.active .nu-day-name { color: rgba(255,255,255,0.80); }
+  .nu-day-num {
+    font-size: 13px;
+    font-weight: 900;
+    line-height: 1;
+    margin-top: 2px;
+    color: var(--app-text);
+  }
+  .nu-day.active .nu-day-num { color: #FFF; }
+  .nu-day-cal {
+    font-size: 7px;
+    color: var(--app-text-dim);
+    margin-top: 3px;
+  }
+  .nu-day.active .nu-day-cal { color: rgba(255,255,255,0.85); }
+
+  .nu-theme {
+    background: rgba(255,45,63,0.12);
+    border-left: 3px solid var(--forge-dark);
+    padding: 9px 10px;
+    margin-top: 12px;
+    border-radius: 0 4px 4px 0;
+  }
+  html[data-theme="light"] .nu-theme { background: rgba(232,25,44,0.08); }
+  .nu-theme-label {
+    font-size: 7px;
+    color: var(--forge-dark);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .nu-theme-name {
+    font-size: 11px;
+    font-weight: 900;
+    margin-top: 2px;
+    text-transform: uppercase;
+    color: var(--app-text);
+  }
+
+  .nu-target {
+    border: 0.5px solid var(--app-border-soft);
+    border-radius: 4px;
+    padding: 10px;
+    margin-top: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  .nu-target-label {
+    font-size: 8px;
+    color: var(--app-text-mute);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .nu-target-val {
+    font-size: 18px;
+    font-weight: 900;
+    line-height: 1;
+    color: var(--app-text);
+  }
+  .nu-target-unit {
+    font-size: 9px;
+    color: var(--app-text-mute);
+  }
+
+  .nu-macros {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+    margin-top: 6px;
+  }
+  .nu-macro {
+    border: 0.5px solid var(--app-border-soft);
+    border-radius: 4px;
+    padding: 8px 6px;
+    text-align: center;
+    border-top-width: 2px;
+  }
+  .nu-macro.p { border-top-color: var(--forge-dark); }
+  .nu-macro.g { border-top-color: var(--amber); }
+  .nu-macro.l { border-top-color: var(--green); }
+  .nu-macro-label {
+    font-size: 7px;
+    color: var(--app-text-mute);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .nu-macro-val {
+    font-size: 16px;
+    font-weight: 900;
+    margin-top: 3px;
+    line-height: 1;
+  }
+  .nu-macro.p .nu-macro-val { color: var(--forge-dark); }
+  .nu-macro.g .nu-macro-val { color: var(--amber); }
+  .nu-macro.l .nu-macro-val { color: var(--green); }
+  .nu-macro-unit {
+    font-size: 8px;
+    color: var(--app-text-mute);
+  }
+
+  .nu-meals-label {
+    font-size: 8px;
+    color: var(--app-text-dim);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-top: 12px;
+    margin-bottom: 4px;
+    font-weight: 500;
+  }
+
+  .nu-meal {
+    border: 0.5px solid var(--app-border-soft);
+    border-left: 3px solid var(--forge-dark);
+    border-radius: 0 4px 4px 0;
+    padding: 8px 10px;
+    margin-bottom: 4px;
+  }
+  .nu-meal-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  .nu-meal-time {
+    font-size: 7px;
+    color: var(--app-text-dim);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  .nu-meal-cal {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--app-text);
+  }
+  .nu-meal-cal-unit {
+    font-size: 8px;
+    color: var(--app-text-mute);
+  }
+  .nu-meal-name {
+    font-size: 10px;
+    font-weight: 900;
+    text-transform: uppercase;
+    margin-top: 2px;
+    letter-spacing: 0.02em;
+    color: var(--app-text);
+  }
+  .nu-meal-macros {
+    display: flex;
+    gap: 4px;
+    margin-top: 5px;
+  }
+  .nu-meal-macro {
+    border: 0.5px solid;
+    border-radius: 2px;
+    padding: 1px 6px;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+  .nu-meal-macro.p { color: var(--forge-dark); border-color: var(--forge-dark); }
+  .nu-meal-macro.g { color: var(--amber); border-color: var(--amber); }
+  .nu-meal-macro.l { color: var(--green); border-color: var(--green); }
+
+  .nu-tabbar {
+    margin-top: auto;
+    padding-top: 8px;
+    border-top: 0.5px solid var(--app-border-soft);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+  }
+  .nu-tab {
+    width: 18px;
+    height: 18px;
+    color: var(--app-text-ghost);
+  }
+  .nu-tab.active { color: var(--forge-dark); }
+  .nu-tab svg { width: 100%; height: 100%; }
+
+  /* ─────────────────────────────────────────────
+     LIBRARY screen (image 1)
+  ───────────────────────────────────────────── */
+  .lib-header {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-top: 4px;
+  }
+  .lib-close {
+    font-size: 9px;
+    color: var(--forge-dark);
+    font-weight: 700;
+    letter-spacing: 0.16em;
+  }
+  .lib-title {
+    font-size: 16px;
+    font-weight: 900;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--app-text);
+  }
+
+  .lib-search {
+    border-bottom: 0.5px solid var(--app-border);
+    padding: 14px 0 8px;
+    font-size: 10px;
+    color: var(--app-text-dim);
+    margin-top: 14px;
+  }
+
+  .lib-chips {
+    display: flex;
+    gap: 4px;
+    margin-top: 10px;
+    overflow: hidden;
+  }
+  .lib-chip {
+    font-size: 8px;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 3px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border: 0.5px solid var(--app-border);
+    color: var(--app-text-mute);
+    flex-shrink: 0;
+  }
+  .lib-chip.active { background: var(--forge-dark); border-color: var(--forge-dark); color: #FFF; }
+
+  .lib-list {
+    margin-top: 12px;
+    overflow: hidden;
+  }
+  .lib-row {
+    display: grid;
+    grid-template-columns: 36px 1fr 14px;
+    gap: 8px;
+    padding: 8px 0;
+    align-items: center;
+    border-bottom: 0.5px solid var(--app-border-soft);
+  }
+  .lib-row-img {
+    width: 36px;
+    height: 28px;
+    background: linear-gradient(135deg, var(--app-bg-soft), var(--app-bg));
+    border: 0.5px solid var(--app-border-soft);
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--forge-dark);
+    opacity: 0.85;
+    position: relative;
+    overflow: hidden;
+  }
+  .lib-row-img::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, rgba(255,45,63,0.18), transparent 60%);
+  }
+  .lib-row-img svg { width: 18px; height: 18px; position: relative; z-index: 1; }
+  .lib-row-name {
+    font-size: 9px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    line-height: 1.15;
+    color: var(--app-text);
+  }
+  .lib-row-tags {
+    font-size: 7px;
+    color: var(--app-text-dim);
+    margin-top: 2px;
+    letter-spacing: 0.04em;
+  }
+  .lib-row-checkbox {
+    width: 12px;
+    height: 12px;
+    border: 0.5px solid var(--app-border);
+    border-radius: 1px;
+  }
+
+  /* ─────────────────────────────────────────────
+     AI GENERATOR (centre phone — featured)
+  ───────────────────────────────────────────── */
+  .ai-wrap {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 18px;
+    text-align: center;
+    padding: 0 8px;
+  }
+  .ai-eyebrow {
+    text-align: center;
+    font-size: 9px;
+    color: var(--forge-dark);
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .ai-kanji {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 100px;
+    color: var(--forge-dark);
+    line-height: 1;
+    font-weight: 900;
+    text-shadow: 0 0 40px rgba(255,45,63,0.4);
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.75; transform: scale(0.96); }
+  }
+  .ai-status {
+    font-size: 10px;
+    color: var(--app-text-mute);
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .ai-title {
+    font-size: 24px;
+    font-weight: 900;
+    text-transform: uppercase;
+    line-height: 1.05;
+    color: var(--app-text);
+  }
+  .ai-dots {
+    display: flex;
+    gap: 6px;
+  }
+  .ai-dots span {
+    width: 6px; height: 6px;
+    background: var(--forge-dark);
+    border-radius: 50%;
+  }
+  .ai-dots span:nth-child(2) { opacity: 0.6; }
+  .ai-dots span:nth-child(3) { opacity: 0.3; }
+  .ai-quote {
+    font-size: 11px;
+    color: var(--app-text-dim);
+    font-style: italic;
+    max-width: 200px;
+    line-height: 1.4;
+  }
+  .ai-progress {
+    width: 80%;
+    height: 2px;
+    background: var(--app-border);
+    overflow: hidden;
+    border-radius: 1px;
+  }
+  .ai-progress-fill {
+    height: 100%;
+    background: var(--forge-dark);
+    width: 70%;
+  }
+  .ai-meta {
+    margin-top: auto;
+    padding-top: 10px;
+    border-top: 0.5px solid var(--app-border-soft);
+    width: 100%;
+  }
+  .ai-meta-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 3px 0;
+    font-size: 9px;
+  }
+  .ai-meta-row .lbl { color: var(--app-text-dim); letter-spacing: 0.14em; text-transform: uppercase; font-weight: 500; }
+  .ai-meta-row .val { color: var(--app-text); font-weight: 700; }
+
+  /* ─────────────────────────────────────────────
+     TRUST STRIP
+  ───────────────────────────────────────────── */
+  .trust-strip {
+    position: relative;
+    z-index: 1;
+    padding: 36px 32px;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-soft);
+  }
+  .trust-grid {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+  }
+  .trust-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .trust-icon {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    color: var(--accent);
+  }
+  .trust-icon svg {
+    width: 100%; height: 100%;
+    stroke-width: 1.6;
+  }
+  .trust-text-strong {
+    font-size: 14px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    line-height: 1.1;
+  }
+  .trust-text-sub {
+    font-size: 11px;
+    color: var(--text-mute);
+    margin-top: 4px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-weight: 400;
+  }
+
+  /* ─────────────────────────────────────────────
+     FEATURES
+  ───────────────────────────────────────────── */
+  .features-section {
+    position: relative;
+    z-index: 1;
+    padding: 120px 32px;
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+  .features-header {
+    text-align: center;
+    max-width: 760px;
+    margin: 0 auto 96px;
+  }
+  .features-eyebrow {
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    font-weight: 500;
+    margin-bottom: 18px;
+  }
+  .features-title {
+    font-size: 56px;
+    font-weight: 900;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: -0.005em;
+    margin-bottom: 20px;
+  }
+  .features-sub {
+    font-size: 17px;
+    color: var(--text-mute);
+    line-height: 1.6;
+    font-weight: 400;
+  }
+
+  .feature-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 96px;
+    align-items: center;
+    max-width: 1100px;
+    margin: 0 auto 120px;
+  }
+  .feature-row:last-of-type { margin-bottom: 0; }
+  .feature-row.reverse > .feature-text { order: 2; }
+  .feature-row.reverse > .feature-phone-wrap { order: 1; }
+
+  .feature-text-eyebrow {
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    font-weight: 500;
+    margin-bottom: 14px;
+  }
+  .feature-text-title {
+    font-size: 44px;
+    font-weight: 900;
+    line-height: 1;
+    text-transform: uppercase;
+    margin-bottom: 18px;
+    letter-spacing: -0.005em;
+  }
+  .feature-text-body {
+    font-size: 16px;
+    color: var(--text-mute);
+    line-height: 1.6;
+    margin-bottom: 24px;
+    font-weight: 400;
+  }
+  .feature-text-list {
+    list-style: none;
+  }
+  .feature-text-list li {
+    font-size: 14px;
+    color: var(--text-mute);
+    padding: 10px 0;
+    border-bottom: 0.5px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-weight: 400;
+  }
+  .feature-text-list li::before {
+    content: '';
+    display: block;
+    width: 8px; height: 8px;
+    background: var(--accent);
+    flex-shrink: 0;
+  }
+  .feature-phone-wrap {
+    display: flex;
+    justify-content: center;
+  }
+
+  /* ─────────────────────────────────────────────
+     WHY TANREN (4 cards)
+  ───────────────────────────────────────────── */
+  .why-section {
+    position: relative;
+    z-index: 1;
+    padding: 120px 32px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+  .why-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 32px;
+    max-width: 1100px;
+    margin: 64px auto 0;
+  }
+  .why-card {
+    text-align: left;
+    padding: 32px 24px;
+    border-top: 2px solid var(--accent);
+    background: var(--bg-soft);
+  }
+  .why-num {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 13px;
+    color: var(--accent);
+    letter-spacing: 0.08em;
+    margin-bottom: 16px;
+    font-weight: 700;
+  }
+  .why-icon {
+    width: 28px;
+    height: 28px;
+    color: var(--text);
+    margin-bottom: 16px;
+  }
+  .why-icon svg { width: 100%; height: 100%; stroke-width: 1.6; }
+  .why-title {
+    font-size: 18px;
+    font-weight: 900;
+    text-transform: uppercase;
+    line-height: 1.1;
+    margin-bottom: 12px;
+    letter-spacing: 0.02em;
+  }
+  .why-body {
+    font-size: 13px;
+    color: var(--text-mute);
+    line-height: 1.6;
+    font-weight: 400;
+  }
+
+  /* ─────────────────────────────────────────────
+     ETYMOLOGY (philosophy block — replaces dedicated manifesto)
+  ───────────────────────────────────────────── */
+  .etym-section {
+    position: relative;
+    z-index: 1;
+    padding: 140px 32px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    overflow: hidden;
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+  .etym-kanji {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 220px;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 32px;
+    letter-spacing: 0.04em;
+    font-weight: 900;
+  }
+  .etym-pronounce {
+    font-size: 12px;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 12px;
+  }
+  .etym-title {
+    font-size: 60px;
+    font-weight: 900;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+    line-height: 1;
+  }
+  .etym-body {
+    font-style: italic;
+    font-weight: 400;
+    font-size: 22px;
+    line-height: 1.55;
+    color: var(--text-mute);
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  /* ─────────────────────────────────────────────
+     WAITLIST
+  ───────────────────────────────────────────── */
+  .waitlist-section {
+    position: relative;
+    z-index: 1;
+    padding: 120px 32px;
+    border-top: 1px solid var(--border);
+    background: var(--bg-2);
+  }
+  .waitlist-wrap {
+    max-width: 720px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .waitlist-eyebrow {
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    font-weight: 500;
+    margin-bottom: 18px;
+  }
+  .waitlist-title {
+    font-size: 52px;
+    font-weight: 900;
+    text-transform: uppercase;
+    line-height: 1;
+    margin-bottom: 18px;
+  }
+  .waitlist-sub {
+    font-size: 16px;
+    color: var(--text-mute);
+    margin-bottom: 44px;
+    line-height: 1.6;
+    font-weight: 400;
+  }
+  .form-group {
+    margin-bottom: 22px;
+    text-align: left;
+  }
+  .form-label {
+    display: block;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-mute);
+    margin-bottom: 10px;
+    font-weight: 500;
+  }
+  .form-input {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 16px;
+    font-family: inherit;
+    font-size: 15px;
+    border-radius: 4px;
+    transition: border-color 0.2s;
+  }
+  .form-input:focus { outline: none; border-color: var(--accent); }
+  .form-input::placeholder { color: var(--text-dim); }
+  .form-pills {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .form-pill {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 12px 20px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s;
+  }
+  .form-pill:hover { border-color: var(--text); }
+  .form-pill.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #FFF;
+  }
+  .form-submit {
+    width: 100%;
+    background: var(--accent);
+    color: #FFF;
+    border: none;
+    padding: 22px;
+    font-family: inherit;
+    font-weight: 900;
+    font-size: 14px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-top: 14px;
+    transition: filter 0.2s;
+  }
+  .form-submit:hover { filter: brightness(1.1); }
+  .form-microcopy {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 18px;
+    letter-spacing: 0.04em;
+    line-height: 1.6;
+  }
+
+  /* ─────────────────────────────────────────────
+     FOOTER
+  ───────────────────────────────────────────── */
+  .footer {
+    position: relative;
+    z-index: 1;
+    padding: 64px 32px 32px;
+    border-top: 1px solid var(--border);
+    background: var(--bg);
+  }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 48px;
+    max-width: 1100px;
+    margin: 0 auto 40px;
+  }
+  .footer-brand-mark { width: 48px; height: 48px; margin-bottom: 16px; }
+  .footer-wordmark {
+    font-weight: 900;
+    font-size: 22px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .footer-tagline {
+    font-style: italic;
+    font-size: 14px;
+    color: var(--accent);
+    margin-bottom: 16px;
+  }
+  .footer-desc {
+    font-size: 13px;
+    color: var(--text-mute);
+    line-height: 1.6;
+    max-width: 320px;
+    font-weight: 400;
+  }
+  .footer-col-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text);
+    margin-bottom: 16px;
+  }
+  .footer-col-link {
+    display: block;
+    font-size: 13px;
+    color: var(--text-mute);
+    text-decoration: none;
+    padding: 6px 0;
+    cursor: pointer;
+    transition: color 0.2s;
+    font-weight: 400;
+  }
+  .footer-col-link:hover { color: var(--accent); }
+  .footer-bottom {
+    border-top: 1px solid var(--border);
+    max-width: 1100px;
+    margin: 0 auto;
+    padding-top: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 0.06em;
+    font-weight: 500;
+  }
+  .footer-bottom-right {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+  }
+  .footer-bottom-kanji {
+    font-family: 'Noto Serif JP', serif;
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  /* Responsive guard */
+  @media (max-width: 920px) {
+    .hero-title { font-size: 56px; }
+    .features-title, .waitlist-title, .etym-title { font-size: 40px; }
+    .feature-row { grid-template-columns: 1fr; gap: 48px; }
+    .feature-row.reverse > .feature-text { order: 1; }
+    .feature-row.reverse > .feature-phone-wrap { order: 2; }
+    .why-grid { grid-template-columns: repeat(2, 1fr); }
+    .trust-grid { grid-template-columns: repeat(2, 1fr); }
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+    .topbar { padding: 20px 24px; }
+    .topbar-nav { gap: 16px; }
+    .topbar-link { display: none; }
+    .hero-showcase { gap: 12px; transform: scale(0.85); }
+  }
+
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- THEME TOGGLE -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+
+<button class="theme-toggle" onclick="toggleTheme()" aria-label="Basculer thème">
+  <svg class="theme-icon-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+  </svg>
+  <svg class="theme-icon-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="5"/>
+    <line x1="12" y1="1" x2="12" y2="3"/>
+    <line x1="12" y1="21" x2="12" y2="23"/>
+    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+    <line x1="1" y1="12" x2="3" y2="12"/>
+    <line x1="21" y1="12" x2="23" y2="12"/>
+    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+  </svg>
+</button>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- TOP BAR -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+
+<div class="topbar">
+  <div class="topbar-brand">
+    <div class="topbar-wordmark">TANREN</div>
+    <div class="topbar-kanji">鍛錬</div>
+  </div>
+  <div class="topbar-nav">
+    <a class="topbar-link" href="#features">Fonctionnalités</a>
+    <a class="topbar-link" href="#why">Pourquoi</a>
+    <a class="topbar-link" href="#waitlist">Contact</a>
+    <button class="topbar-cta" onclick="document.getElementById('waitlist').scrollIntoView({behavior:'smooth'})">Rejoindre</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- HERO -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+
+<section class="hero">
+  <div class="corner tl"></div>
+  <div class="corner tr"></div>
+  <div class="corner-kanji">鍛</div>
+
+  <!-- Forge-Spark Mark -->
+  <div class="hero-mark">
+    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="glow1" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#FF2D3F" stop-opacity="0.5"/>
+          <stop offset="60%" stop-color="#FF2D3F" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <circle cx="100" cy="100" r="80" fill="url(#glow1)"/>
+      <circle cx="100" cy="100" r="72" fill="none" stroke="currentColor" stroke-width="6"/>
+      <circle cx="100" cy="100" r="14" fill="#FF2D3F"/>
+      <rect x="92" y="20" width="16" height="50" fill="currentColor"/>
+      <rect x="92" y="130" width="16" height="50" fill="currentColor"/>
+      <rect x="20" y="92" width="50" height="16" fill="currentColor"/>
+      <rect x="130" y="92" width="50" height="16" fill="currentColor"/>
+      <line x1="148" y1="52" x2="135" y2="65" stroke="#FF2D3F" stroke-width="4" stroke-linecap="square"/>
+      <line x1="52" y1="148" x2="65" y2="135" stroke="#FF2D3F" stroke-width="4" stroke-linecap="square"/>
+    </svg>
+  </div>
+
+  <div class="hero-eyebrow">Beta fermée · sur invitation</div>
+  <h1 class="hero-title">
+    Forge ta force.<br>
+    <span class="hero-title-accent">Une rep après l'autre.</span>
+  </h1>
+  <div class="hero-kanji">鍛錬</div>
+  <p class="hero-subtitle">
+    L'application de musculation française qui s'adapte à toi grâce à l'IA. Que tu débutes ou que tu pousses fort depuis des années — l'app construit ton plan, suit ta progression et ajuste tes repas.
+  </p>
+  <div class="hero-cta-row">
+    <button class="btn-primary" onclick="document.getElementById('waitlist').scrollIntoView({behavior:'smooth'})">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v20M2 12h20"/></svg>
+      Rejoindre la waitlist
+    </button>
+    <button class="btn-secondary" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">Voir les fonctionnalités</button>
+  </div>
+  <div class="hero-microcopy">Accès limité · Tous les niveaux · Aucun engagement</div>
+
+  <!-- ───────────────────────────────────────── -->
+  <!-- DEVICE SHOWCASE — 3 phones                -->
+  <!-- ───────────────────────────────────────── -->
+
+  <div class="hero-showcase">
+
+    <!-- LEFT: ACTIVE WORKOUT (Barbell Bench Press from screenshot 3) -->
+    <div class="phone left">
+      <div class="app">
+        <div class="app-statusbar">
+          <span>21:58</span>
+          <span class="app-statusbar-icons">
+            <svg width="11" height="8" viewBox="0 0 16 12" fill="currentColor"><path d="M0 8h2v4H0zM5 5h2v7H5zM10 2h2v10h-2z"/></svg>
+            <svg width="14" height="8" viewBox="0 0 18 8" fill="none" stroke="currentColor" stroke-width="1"><rect x="0.5" y="0.5" width="14" height="7" rx="1.5"/><rect x="2" y="2" width="11" height="4" fill="currentColor"/></svg>
+          </span>
+        </div>
+
+        <div class="aw-header">
+          <span class="aw-back">‹ RETOUR</span>
+          <div class="aw-header-mid">
+            <div class="aw-header-title">DÉVELOPPÉ COUCHÉ</div>
+            <div class="aw-header-meta">00:28 · 2/3</div>
+          </div>
+          <span class="aw-finish">TERMINER</span>
+        </div>
+
+        <div class="aw-exercise-arrows">
+          <span>‹</span>
+          <span>›</span>
+        </div>
+        <div class="aw-exercise-name">BARBELL BENCH PRESS</div>
+        <div class="aw-exercise-num">1 / 1</div>
+        <div class="aw-divider-tab"></div>
+
+        <div class="aw-series-label">SÉRIES · 2/3</div>
+
+        <div class="aw-set-card done">
+          <div class="aw-set-num">1</div>
+          <div class="aw-set-field">
+            <div class="aw-set-field-label">REPS</div>
+            <div class="aw-set-field-val">10</div>
+          </div>
+          <div class="aw-set-field">
+            <div class="aw-set-field-label">KG</div>
+            <div class="aw-set-field-val">100</div>
+          </div>
+          <div>
+            <div class="aw-set-rest">REST</div>
+            <div class="aw-set-rest-val">90<span class="aw-set-rest-unit"> s</span></div>
+          </div>
+          <div class="aw-set-check done">✓</div>
+        </div>
+
+        <div class="aw-set-card done">
+          <div class="aw-set-num">2</div>
+          <div class="aw-set-field">
+            <div class="aw-set-field-label">REPS</div>
+            <div class="aw-set-field-val">10</div>
+          </div>
+          <div class="aw-set-field">
+            <div class="aw-set-field-label">KG</div>
+            <div class="aw-set-field-val">110</div>
+          </div>
+          <div>
+            <div class="aw-set-rest">REST</div>
+            <div class="aw-set-rest-val">90<span class="aw-set-rest-unit"> s</span></div>
+          </div>
+          <div class="aw-set-check done">✓</div>
+        </div>
+
+        <div class="aw-set-card current">
+          <div class="aw-set-num">3</div>
+          <div class="aw-set-field">
+            <div class="aw-set-field-label">REPS</div>
+            <div class="aw-set-field-val">10</div>
+          </div>
+          <div class="aw-set-field">
+            <div class="aw-set-field-label">KG</div>
+            <div class="aw-set-field-val">115</div>
+          </div>
+          <div>
+            <div class="aw-set-rest">REST</div>
+            <div class="aw-set-rest-val">90<span class="aw-set-rest-unit"> s</span></div>
+          </div>
+          <div class="aw-set-check empty"></div>
+        </div>
+
+        <div class="aw-validate-btn">VALIDER LA SÉRIE 3</div>
+
+        <div class="aw-video-link">
+          <span class="aw-video-link-icon">▶</span>
+          <span>Voir la vidéo</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CENTER: AI GENERATOR -->
+    <div class="phone center">
+      <div class="app">
+        <div class="app-statusbar">
+          <span>21:59</span>
+          <span class="app-statusbar-icons">
+            <svg width="11" height="8" viewBox="0 0 16 12" fill="currentColor"><path d="M0 8h2v4H0zM5 5h2v7H5zM10 2h2v10h-2z"/></svg>
+            <svg width="14" height="8" viewBox="0 0 18 8" fill="none" stroke="currentColor" stroke-width="1"><rect x="0.5" y="0.5" width="14" height="7" rx="1.5"/><rect x="2" y="2" width="11" height="4" fill="currentColor"/></svg>
+          </span>
+        </div>
+
+        <div class="ai-eyebrow">Génération · 鍛錬</div>
+        <div class="ai-wrap">
+          <div class="ai-kanji">鍛</div>
+          <div class="ai-status">Plan + Nutrition</div>
+          <div class="ai-title">Forge<br>ton plan</div>
+          <div class="ai-dots">
+            <span></span><span></span><span></span>
+          </div>
+          <div class="ai-progress"><div class="ai-progress-fill"></div></div>
+          <div class="ai-quote">"Frappe l'acier pendant qu'il est chaud."</div>
+        </div>
+        <div class="ai-meta">
+          <div class="ai-meta-row">
+            <span class="lbl">Niveau</span>
+            <span class="val">Intermédiaire</span>
+          </div>
+          <div class="ai-meta-row">
+            <span class="lbl">Fréquence</span>
+            <span class="val">4 j / semaine</span>
+          </div>
+          <div class="ai-meta-row">
+            <span class="lbl">Objectif</span>
+            <span class="val">Hypertrophie</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: NUTRITION (from screenshot 2) -->
+    <div class="phone right">
+      <div class="app">
+        <div class="app-statusbar">
+          <span>21:59</span>
+          <span class="app-statusbar-icons">
+            <svg width="11" height="8" viewBox="0 0 16 12" fill="currentColor"><path d="M0 8h2v4H0zM5 5h2v7H5zM10 2h2v10h-2z"/></svg>
+            <svg width="14" height="8" viewBox="0 0 18 8" fill="none" stroke="currentColor" stroke-width="1"><rect x="0.5" y="0.5" width="14" height="7" rx="1.5"/><rect x="2" y="2" width="11" height="4" fill="currentColor"/></svg>
+          </span>
+        </div>
+
+        <div class="nu-header">
+          <div class="nu-title">NUTRITION</div>
+          <div class="nu-plan-link">PLAN ›</div>
+        </div>
+
+        <div class="nu-days">
+          <div class="nu-day">
+            <div class="nu-day-name">LUN</div>
+            <div class="nu-day-num">20</div>
+            <div class="nu-day-cal">2230</div>
+          </div>
+          <div class="nu-day">
+            <div class="nu-day-name">MAR</div>
+            <div class="nu-day-num">21</div>
+            <div class="nu-day-cal">2120</div>
+          </div>
+          <div class="nu-day">
+            <div class="nu-day-name">MER</div>
+            <div class="nu-day-num">22</div>
+            <div class="nu-day-cal">2255</div>
+          </div>
+          <div class="nu-day">
+            <div class="nu-day-name">JEU</div>
+            <div class="nu-day-num">23</div>
+            <div class="nu-day-cal">2285</div>
+          </div>
+          <div class="nu-day">
+            <div class="nu-day-name">VEN</div>
+            <div class="nu-day-num">24</div>
+            <div class="nu-day-cal">2220</div>
+          </div>
+          <div class="nu-day">
+            <div class="nu-day-name">SAM</div>
+            <div class="nu-day-num">25</div>
+            <div class="nu-day-cal">2330</div>
+          </div>
+          <div class="nu-day active">
+            <div class="nu-day-name">DIM</div>
+            <div class="nu-day-num">26</div>
+            <div class="nu-day-cal">2335</div>
+          </div>
+        </div>
+
+        <div class="nu-theme">
+          <div class="nu-theme-label">DIM · THÈME DU JOUR</div>
+          <div class="nu-theme-name">🍝 Dimanche pâtes & famille</div>
+        </div>
+
+        <div class="nu-target">
+          <div class="nu-target-label">CIBLE DU JOUR</div>
+          <div>
+            <span class="nu-target-val">2 335</span><span class="nu-target-unit"> kcal</span>
+          </div>
+        </div>
+
+        <div class="nu-macros">
+          <div class="nu-macro p">
+            <div class="nu-macro-label">PROT.</div>
+            <div class="nu-macro-val">190</div>
+            <div class="nu-macro-unit">g</div>
+          </div>
+          <div class="nu-macro g">
+            <div class="nu-macro-label">GLUC.</div>
+            <div class="nu-macro-val">229</div>
+            <div class="nu-macro-unit">g</div>
+          </div>
+          <div class="nu-macro l">
+            <div class="nu-macro-label">LIP.</div>
+            <div class="nu-macro-val">57</div>
+            <div class="nu-macro-unit">g</div>
+          </div>
+        </div>
+
+        <div class="nu-meals-label">REPAS</div>
+
+        <div class="nu-meal">
+          <div class="nu-meal-row">
+            <div class="nu-meal-time">PETIT-DÉJ · 09H00</div>
+            <div><span class="nu-meal-cal">450</span><span class="nu-meal-cal-unit">kcal</span></div>
+          </div>
+          <div class="nu-meal-name">Crêpes protéinées vanille</div>
+          <div class="nu-meal-macros">
+            <span class="nu-meal-macro p">P 36</span>
+            <span class="nu-meal-macro g">G 48</span>
+            <span class="nu-meal-macro l">L 12</span>
+          </div>
+        </div>
+
+        <div class="nu-meal">
+          <div class="nu-meal-row">
+            <div class="nu-meal-time">DÉJEUNER · 13H00</div>
+            <div><span class="nu-meal-cal">770</span><span class="nu-meal-cal-unit">kcal</span></div>
+          </div>
+          <div class="nu-meal-name">Pâtes bolognaise maison</div>
+          <div class="nu-meal-macros">
+            <span class="nu-meal-macro p">P 54</span>
+            <span class="nu-meal-macro g">G 85</span>
+            <span class="nu-meal-macro l">L 18</span>
+          </div>
+        </div>
+
+        <div class="nu-tabbar">
+          <div class="nu-tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg></div>
+          <div class="nu-tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4v16M18 4v16M6 12h12M2 8h4M18 8h4M2 16h4M18 16h4"/></svg></div>
+          <div class="nu-tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+          <div class="nu-tab active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 2v7c0 1.5 1 2 2 2h2c1 0 2-.5 2-2V2M5 2v20M19 14V2c-2 0-3 1-3 4v6c0 2 1 3 3 3v9"/></svg></div>
+          <div class="nu-tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- TRUST STRIP -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+
+<section class="trust-strip">
+  <div class="trust-grid">
+    <div class="trust-item">
+      <div class="trust-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 4h18l-2 16H5L3 4z"/>
+          <circle cx="12" cy="13" r="3"/>
+        </svg>
+      </div>
+      <div>
+        <div class="trust-text-strong">Construite en France</div>
+        <div class="trust-text-sub">Paris · Hébergée en UE</div>
+      </div>
+    </div>
+
+    <div class="trust-item">
+      <div class="trust-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2L4 6v6c0 5 3.5 9.5 8 10 4.5-.5 8-5 8-10V6l-8-4z"/>
+          <path d="M9 12l2 2 4-4"/>
+        </svg>
+      </div>
+      <div>
+        <div class="trust-text-strong">Données chiffrées</div>
+        <div class="trust-text-sub">RGPD · AES-256</div>
+      </div>
+    </div>
+
+    <div class="trust-item">
+      <div class="trust-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 19.5A2.5 2.5 0 016.5 17H20"/>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/>
+          <line x1="8" y1="7" x2="16" y2="7"/>
+        </svg>
+      </div>
+      <div>
+        <div class="trust-text-strong">600+ exercices</div>
+        <div class="trust-text-sub">Bibliothèque illustrée</div>
+      </div>
+    </div>
+
+    <div class="trust-item">
+      <div class="trust-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>
+        </svg>
+      </div>
+      <div>
+        <div class="trust-text-strong">Sans publicité</div>
+        <div class="trust-text-sub">Jamais. Vraiment.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- FEATURES -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+
+<section class="features-section" id="features">
+  <div class="features-header">
+    <div class="features-eyebrow">Fonctionnalités · 鍛錬</div>
+    <h2 class="features-title">Une app, tous les niveaux.</h2>
+    <p class="features-sub">
+      L'IA s'adapte à toi. Que tu attaques tes premières séries ou que tu vises un nouveau record, l'app suit ton rythme et ajuste ton plan, ta nutrition et tes charges.
+    </p>
+  </div>
+
+  <!-- FEATURE 1 — Suivi de séance -->
+  <div class="feature-row">
+    <div class="feature-text">
+      <div class="feature-text-eyebrow">01 · Suivi de séance</div>
+      <h3 class="feature-text-title">Pendant l'effort,<br>l'app te suit.</h3>
+      <p class="feature-text-body">
+        Chaque série est cadrée — la précédente validée en vert, la suivante en rouge. Tu rentres tes reps, ton poids, tu valides. Le timer de repos s'enchaîne. Une vidéo explicative pour chaque exercice si tu hésites.
+      </p>
+      <ul class="feature-text-list">
+        <li>Validation des séries en un tap</li>
+        <li>Temps de repos réglé par série</li>
+        <li>Vidéo explicative par exercice</li>
+        <li>Comparaison automatique avec la séance précédente</li>
+      </ul>
+    </div>
+    <div class="feature-phone-wrap">
+      <div class="phone solo">
+        <div class="app">
+          <div class="app-statusbar">
+            <span>21:58</span>
+            <span class="app-statusbar-icons">
+              <svg width="11" height="8" viewBox="0 0 16 12" fill="currentColor"><path d="M0 8h2v4H0zM5 5h2v7H5zM10 2h2v10h-2z"/></svg>
+              <svg width="14" height="8" viewBox="0 0 18 8" fill="none" stroke="currentColor" stroke-width="1"><rect x="0.5" y="0.5" width="14" height="7" rx="1.5"/><rect x="2" y="2" width="11" height="4" fill="currentColor"/></svg>
+            </span>
+          </div>
+
+          <div class="aw-header">
+            <span class="aw-back">‹ RETOUR</span>
+            <div class="aw-header-mid">
+              <div class="aw-header-title">DÉVELOPPÉ COUCHÉ</div>
+              <div class="aw-header-meta">00:28 · 2/3</div>
+            </div>
+            <span class="aw-finish">TERMINER</span>
+          </div>
+
+          <div class="aw-exercise-arrows"><span>‹</span><span>›</span></div>
+          <div class="aw-exercise-name">BARBELL BENCH PRESS</div>
+          <div class="aw-exercise-num">1 / 1</div>
+          <div class="aw-divider-tab"></div>
+
+          <div class="aw-series-label">SÉRIES · 2/3</div>
+
+          <div class="aw-set-card done">
+            <div class="aw-set-num">1</div>
+            <div class="aw-set-field"><div class="aw-set-field-label">REPS</div><div class="aw-set-field-val">10</div></div>
+            <div class="aw-set-field"><div class="aw-set-field-label">KG</div><div class="aw-set-field-val">100</div></div>
+            <div><div class="aw-set-rest">REST</div><div class="aw-set-rest-val">90<span class="aw-set-rest-unit"> s</span></div></div>
+            <div class="aw-set-check done">✓</div>
+          </div>
+
+          <div class="aw-set-card done">
+            <div class="aw-set-num">2</div>
+            <div class="aw-set-field"><div class="aw-set-field-label">REPS</div><div class="aw-set-field-val">10</div></div>
+            <div class="aw-set-field"><div class="aw-set-field-label">KG</div><div class="aw-set-field-val">110</div></div>
+            <div><div class="aw-set-rest">REST</div><div class="aw-set-rest-val">90<span class="aw-set-rest-unit"> s</span></div></div>
+            <div class="aw-set-check done">✓</div>
+          </div>
+
+          <div class="aw-set-card current">
+            <div class="aw-set-num">3</div>
+            <div class="aw-set-field"><div class="aw-set-field-label">REPS</div><div class="aw-set-field-val">10</div></div>
+            <div class="aw-set-field"><div class="aw-set-field-label">KG</div><div class="aw-set-field-val">115</div></div>
+            <div><div class="aw-set-rest">REST</div><div class="aw-set-rest-val">90<span class="aw-set-rest-unit"> s</span></div></div>
+            <div class="aw-set-check empty"></div>
+          </div>
+
+          <div class="aw-validate-btn">VALIDER LA SÉRIE 3</div>
+
+          <div class="aw-video-link">
+            <span class="aw-video-link-icon">▶</span>
+            <span>Voir la vidéo</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FEATURE 2 — IA Sport + Nutrition -->
+  <div class="feature-row reverse">
+    <div class="feature-text">
+      <div class="feature-text-eyebrow">02 · Génération IA</div>
+      <h3 class="feature-text-title">Ton plan,<br>tes repas.<br>Ajustés à toi.</h3>
+      <p class="feature-text-body">
+        Renseigne ton niveau, ton objectif, ta fréquence. L'IA Tanren génère un plan d'entraînement complet et un plan nutrition cohérent — calories, macros, idées de repas. Et ça reste 100% modifiable.
+      </p>
+      <ul class="feature-text-list">
+        <li>Plan sport + nutrition généré ensemble</li>
+        <li>Calibré sur ton poids, ta taille, ton niveau</li>
+        <li>S'adapte aussi bien aux débutants qu'aux avancés</li>
+        <li>Modifiable à 100 % comme un plan créé à la main</li>
+      </ul>
+    </div>
+    <div class="feature-phone-wrap">
+      <div class="phone solo">
+        <div class="app">
+          <div class="app-statusbar">
+            <span>22:00</span>
+            <span class="app-statusbar-icons">
+              <svg width="11" height="8" viewBox="0 0 16 12" fill="currentColor"><path d="M0 8h2v4H0zM5 5h2v7H5zM10 2h2v10h-2z"/></svg>
+              <svg width="14" height="8" viewBox="0 0 18 8" fill="none" stroke="currentColor" stroke-width="1"><rect x="0.5" y="0.5" width="14" height="7" rx="1.5"/><rect x="2" y="2" width="11" height="4" fill="currentColor"/></svg>
+            </span>
+          </div>
+
+          <div class="ai-eyebrow">Génération · 鍛錬</div>
+          <div class="ai-wrap">
+            <div class="ai-kanji">鍛</div>
+            <div class="ai-status">Plan + Nutrition</div>
+            <div class="ai-title">Forge<br>ton plan</div>
+            <div class="ai-dots"><span></span><span></span><span></span></div>
+            <div class="ai-progress"><div class="ai-progress-fill"></div></div>
+            <div class="ai-quote">"Frappe l'acier pendant qu'il est chaud."</div>
+          </div>
+          <div class="ai-meta">
+            <div class="ai-meta-row"><span class="lbl">Niveau</span><span class="val">Intermédiaire</span></div>
+            <div class="ai-meta-row"><span class="lbl">Fréquence</span><span class="val">4 j / semaine</span></div>
+            <div class="ai-meta-row"><span class="lbl">Objectif</span><span class="val">Hypertrophie</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FEATURE 3 — Nutrition -->
+  <div class="feature-row">
+    <div class="feature-text">
+      <div class="feature-text-eyebrow">03 · Nutrition</div>
+      <h3 class="feature-text-title">Manger,<br>aussi sérieusement<br>que tu t'entraînes.</h3>
+      <p class="feature-text-body">
+        Plan nutrition jour par jour. Cibles caloriques et macros visibles d'un coup d'œil, repas suggérés cohérents avec ton entraînement, thème du jour pour varier les menus. Pas de scan de code-barres infini.
+      </p>
+      <ul class="feature-text-list">
+        <li>Vue 7 jours avec calories par jour</li>
+        <li>Macros code-couleur — Protéines · Glucides · Lipides</li>
+        <li>Repas avec horaires et macros détaillés</li>
+        <li>Thème quotidien pour ne pas tourner en rond</li>
+      </ul>
+    </div>
+    <div class="feature-phone-wrap">
+      <div class="phone solo">
+        <div class="app">
+          <div class="app-statusbar">
+            <span>21:59</span>
+            <span class="app-statusbar-icons">
+              <svg width="11" height="8" viewBox="0 0 16 12" fill="currentColor"><path d="M0 8h2v4H0zM5 5h2v7H5zM10 2h2v10h-2z"/></svg>
+              <svg width="14" height="8" viewBox="0 0 18 8" fill="none" stroke="currentColor" stroke-width="1"><rect x="0.5" y="0.5" width="14" height="7" rx="1.5"/><rect x="2" y="2" width="11" height="4" fill="currentColor"/></svg>
+            </span>
+          </div>
+
+          <div class="nu-header">
+            <div class="nu-title">NUTRITION</div>
+            <div class="nu-plan-link">PLAN ›</div>
+          </div>
+
+          <div class="nu-days">
+            <div class="nu-day"><div class="nu-day-name">LUN</div><div class="nu-day-num">20</div><div class="nu-day-cal">2230</div></div>
+            <div class="nu-day"><div class="nu-day-name">MAR</div><div class="nu-day-num">21</div><div class="nu-day-cal">2120</div></div>
+            <div class="nu-day"><div class="nu-day-name">MER</div><div class="nu-day-num">22</div><div class="nu-day-cal">2255</div></div>
+            <div class="nu-day"><div class="nu-day-name">JEU</div><div class="nu-day-num">23</div><div class="nu-day-cal">2285</div></div>
+            <div class="nu-day"><div class="nu-day-name">VEN</div><div class="nu-day-num">24</div><div class="nu-day-cal">2220</div></div>
+            <div class="nu-day"><div class="nu-day-name">SAM</div><div class="nu-day-num">25</div><div class="nu-day-cal">2330</div></div>
+            <div class="nu-day active"><div class="nu-day-name">DIM</div><div class="nu-day-num">26</div><div class="nu-day-cal">2335</div></div>
+          </div>
+
+          <div class="nu-theme">
+            <div class="nu-theme-label">DIM · THÈME DU JOUR</div>
+            <div class="nu-theme-name">🍝 Dimanche pâtes & famille</div>
+          </div>
+
+          <div class="nu-target">
+            <div class="nu-target-label">CIBLE DU JOUR</div>
+            <div><span class="nu-target-val">2 335</span><span class="nu-target-unit"> kcal</span></div>
+          </div>
+
+          <div class="nu-macros">
+            <div class="nu-macro p"><div class="nu-macro-label">PROT.</div><div class="nu-macro-val">190</div><div class="nu-macro-unit">g</div></div>
+            <div class="nu-macro g"><div class="nu-macro-label">GLUC.</div><div class="nu-macro-val">229</div><div class="nu-macro-unit">g</div></div>
+            <div class="nu-macro l"><div class="nu-macro-label">LIP.</div><div class="nu-macro-val">57</div><div class="nu-macro-unit">g</div></div>
+          </div>
+
+          <div class="nu-meals-label">REPAS</div>
+
+          <div class="nu-meal">
+            <div class="nu-meal-row">
+              <div class="nu-meal-time">PETIT-DÉJ · 09H00</div>
+              <div><span class="nu-meal-cal">450</span><span class="nu-meal-cal-unit">kcal</span></div>
+            </div>
+            <div class="nu-meal-name">Crêpes protéinées vanille</div>
+            <div class="nu-meal-macros">
+              <span class="nu-meal-macro p">P 36</span>
+              <span class="nu-meal-macro g">G 48</span>
+              <span class="nu-meal-macro l">L 12</span>
+            </div>
+          </div>
+
+          <div class="nu-meal">
+            <div class="nu-meal-row">
+              <div class="nu-meal-time">DÉJEUNER · 13H00</div>
+              <div><span class="nu-meal-cal">770</span><span class="nu-meal-cal-unit">kcal</span></div>
+            </div>
+            <div class="nu-meal-name">Pâtes bolognaise maison</div>
+            <div class="nu-meal-macros">
+              <span class="nu-meal-macro p">P 54</span>
+              <span class="nu-meal-macro g">G 85</span>
+              <span class="nu-meal-macro l">L 18</span>
+            </div>
+          </div>
+
+          <div class="nu-tabbar">
+            <div class="nu-tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg></div>
+            <div class="nu-tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4v16M18 4v16M6 12h12M2 8h4M18 8h4M2 16h4M18 16h4"/></svg></div>
+            <div class="nu-tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+            <div class="nu-tab active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 2v7c0 1.5 1 2 2 2h2c1 0 2-.5 2-2V2M5 2v20M19 14V2c-2 0-3 1-3 4v6c0 2 1 3 3 3v9"/></svg></div>
+            <div class="nu-tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FEATURE 4 — Bibliothèque -->
+  <div class="feature-row reverse">
+    <div class="feature-text">
+      <div class="feature-text-eyebrow">04 · Bibliothèque</div>
+      <h3 class="feature-text-title">600+ exercices,<br>indexés et illustrés.</h3>
+      <p class="feature-text-body">
+        Une bibliothèque exhaustive — du classique aux variantes spécifiques. Chaque exercice est filtré par groupe musculaire, niveau, et tu trouves rapidement ce que tu cherches en une recherche.
+      </p>
+      <ul class="feature-text-list">
+        <li>Plus de 600 exercices documentés et illustrés</li>
+        <li>Filtres par muscle ciblé, équipement, difficulté</li>
+        <li>Tags secondaires (muscles activés en synergie)</li>
+        <li>Création d'exercices custom si tu veux ajouter le tien</li>
+      </ul>
+    </div>
+    <div class="feature-phone-wrap">
+      <div class="phone solo">
+        <div class="app">
+          <div class="app-statusbar">
+            <span>21:59</span>
+            <span class="app-statusbar-icons">
+              <svg width="11" height="8" viewBox="0 0 16 12" fill="currentColor"><path d="M0 8h2v4H0zM5 5h2v7H5zM10 2h2v10h-2z"/></svg>
+              <svg width="14" height="8" viewBox="0 0 18 8" fill="none" stroke="currentColor" stroke-width="1"><rect x="0.5" y="0.5" width="14" height="7" rx="1.5"/><rect x="2" y="2" width="11" height="4" fill="currentColor"/></svg>
+            </span>
+          </div>
+
+          <div class="lib-header">
+            <span class="lib-close">FERMER</span>
+            <div class="lib-title">EXERCICES</div>
+          </div>
+
+          <div class="lib-search">Chercher un exercice…</div>
+
+          <div class="lib-chips">
+            <span class="lib-chip">TOUS</span>
+            <span class="lib-chip active">PECTORAUX</span>
+            <span class="lib-chip">DOS</span>
+            <span class="lib-chip">ÉPAULES</span>
+            <span class="lib-chip">BICEPS</span>
+          </div>
+
+          <div class="lib-list">
+            <div class="lib-row">
+              <div class="lib-row-img">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 12h2l1-3h12l1 3h2v2H3v-2zM7 9h10l-1-3H8L7 9z"/></svg>
+              </div>
+              <div class="lib-row-info">
+                <div class="lib-row-name">Élévation croisée du haut de la poitrine</div>
+                <div class="lib-row-tags">Épaules / Pectoraux / Intermédiaire</div>
+              </div>
+              <div class="lib-row-checkbox"></div>
+            </div>
+
+            <div class="lib-row">
+              <div class="lib-row-img">
+                <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="6" cy="12" r="2"/><circle cx="18" cy="12" r="2"/><rect x="8" y="11" width="8" height="2"/></svg>
+              </div>
+              <div class="lib-row-info">
+                <div class="lib-row-name">Développé assis épaules à la barre</div>
+                <div class="lib-row-tags">Épaules / Traps / Pectoraux</div>
+              </div>
+              <div class="lib-row-checkbox"></div>
+            </div>
+
+            <div class="lib-row">
+              <div class="lib-row-img">
+                <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="6" cy="12" r="2"/><circle cx="18" cy="12" r="2"/><rect x="8" y="11" width="8" height="2"/></svg>
+              </div>
+              <div class="lib-row-info">
+                <div class="lib-row-name">Développé couché prise inversée</div>
+                <div class="lib-row-tags">Pectoraux / Épaules / Triceps</div>
+              </div>
+              <div class="lib-row-checkbox"></div>
+            </div>
+
+            <div class="lib-row">
+              <div class="lib-row-img">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 14c2-3 6-3 8 0 2-3 6-3 8 0v3H4v-3z"/></svg>
+              </div>
+              <div class="lib-row-info">
+                <div class="lib-row-name">Pompes latérales (semi-archer)</div>
+                <div class="lib-row-tags">Pectoraux / Triceps / Débutant</div>
+              </div>
+              <div class="lib-row-checkbox"></div>
+            </div>
+
+            <div class="lib-row">
+              <div class="lib-row-img">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 14c2-3 6-3 8 0 2-3 6-3 8 0v3H4v-3z"/></svg>
+              </div>
+              <div class="lib-row-info">
+                <div class="lib-row-name">Pompes pseudo (push-ups)</div>
+                <div class="lib-row-tags">Pectoraux / Épaules / Débutant</div>
+              </div>
+              <div class="lib-row-checkbox"></div>
+            </div>
+
+            <div class="lib-row">
+              <div class="lib-row-img">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 14c2-3 6-3 8 0 2-3 6-3 8 0v3H4v-3z"/></svg>
+              </div>
+              <div class="lib-row-info">
+                <div class="lib-row-name">Pompes équilibre (handstand)</div>
+                <div class="lib-row-tags">Épaules / Triceps / Avancé</div>
+              </div>
+              <div class="lib-row-checkbox"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- WHY TANREN -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+
+<section class="why-section" id="why">
+  <div class="features-header" style="margin-bottom: 0;">
+    <div class="features-eyebrow">Pourquoi Tanren</div>
+    <h2 class="features-title">Ce qui nous distingue.</h2>
+    <p class="features-sub">Quatre engagements concrets. Pas du marketing. Vérifiables, et qui ne changeront pas.</p>
+  </div>
+
+  <div class="why-grid">
+    <div class="why-card">
+      <div class="why-num">01 · 鍛</div>
+      <div class="why-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 4h18l-2 16H5L3 4z"/>
+          <circle cx="12" cy="13" r="3"/>
+        </svg>
+      </div>
+      <div class="why-title">Construite<br>en France</div>
+      <div class="why-body">
+        Développée à Paris. API hébergée en Europe (Irlande). Tes données ne quittent pas l'UE.
+      </div>
+    </div>
+
+    <div class="why-card">
+      <div class="why-num">02 · 錬</div>
+      <div class="why-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2L4 6v6c0 5 3.5 9.5 8 10 4.5-.5 8-5 8-10V6l-8-4z"/>
+          <path d="M9 12l2 2 4-4"/>
+        </svg>
+      </div>
+      <div class="why-title">Sécurité<br>des données</div>
+      <div class="why-body">
+        Chiffrement AES-256 sur les données sensibles. Aucune revente. Conforme RGPD à la lettre.
+      </div>
+    </div>
+
+    <div class="why-card">
+      <div class="why-num">03 · 鍛</div>
+      <div class="why-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>
+        </svg>
+      </div>
+      <div class="why-title">Sans<br>publicité</div>
+      <div class="why-body">
+        Pas de bannières, pas de placements de produits, pas de partenariats déguisés. Jamais.
+      </div>
+    </div>
+
+    <div class="why-card">
+      <div class="why-num">04 · 錬</div>
+      <div class="why-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 3v18h18"/>
+          <path d="M7 17l5-7 4 5 4-9"/>
+        </svg>
+      </div>
+      <div class="why-title">Adaptée<br>à ton niveau</div>
+      <div class="why-body">
+        Que tu débutes ou que tu pousses fort, l'IA calibre tes plans, ton volume et tes macros à toi.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- ETYMOLOGY (philosophy block) -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+
+<section class="etym-section">
+  <div class="etym-kanji">鍛錬</div>
+  <div class="etym-pronounce">tan · ren</div>
+  <h2 class="etym-title">Forger.<br>Discipliner.</h2>
+  <p class="etym-body">
+    En japonais, 鍛錬 désigne l'acte de forger l'acier — coup après coup, jour après jour, jusqu'à la forme parfaite. C'est aussi le mot qu'on emploie pour décrire la discipline qui forge le corps et l'esprit.
+  </p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- WAITLIST -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+
+<section class="waitlist-section" id="waitlist">
+  <div class="waitlist-wrap">
+    <div class="waitlist-eyebrow">Beta fermée · Sur invitation</div>
+    <h2 class="waitlist-title">Demande<br>ton accès.</h2>
+    <p class="waitlist-sub">
+      Tanren est en accès limité pour qu'on puisse écouter chaque retour. Renseigne ton profil — on revient vers toi rapidement.
+    </p>
+
+    <div class="form-group">
+      <label class="form-label">Adresse email</label>
+      <input class="form-input" type="email" placeholder="ton@email.fr">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Plateforme</label>
+      <div class="form-pills">
+        <button class="form-pill active">iOS</button>
+        <button class="form-pill">Android</button>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Niveau</label>
+      <div class="form-pills">
+        <button class="form-pill">Débutant</button>
+        <button class="form-pill active">Intermédiaire</button>
+        <button class="form-pill">Avancé</button>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Fréquence d'entraînement</label>
+      <div class="form-pills">
+        <button class="form-pill">2 / sem</button>
+        <button class="form-pill">3 / sem</button>
+        <button class="form-pill active">4 / sem</button>
+        <button class="form-pill">5 / sem</button>
+        <button class="form-pill">6+ / sem</button>
+      </div>
+    </div>
+
+    <button class="form-submit">Forger mon accès</button>
+
+    <p class="form-microcopy">
+      On garde ton email pour t'envoyer ton invitation, point. Pas de newsletter, pas de spam.
+      <br>Désinscription en un clic à tout moment.
+    </p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- FOOTER -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+
+<footer class="footer">
+  <div class="footer-grid">
+    <div>
+      <svg class="footer-brand-mark" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="100" cy="100" r="72" fill="none" stroke="currentColor" stroke-width="6"/>
+        <circle cx="100" cy="100" r="14" fill="#FF2D3F"/>
+        <rect x="92" y="20" width="16" height="50" fill="currentColor"/>
+        <rect x="92" y="130" width="16" height="50" fill="currentColor"/>
+        <rect x="20" y="92" width="50" height="16" fill="currentColor"/>
+        <rect x="130" y="92" width="50" height="16" fill="currentColor"/>
+        <line x1="148" y1="52" x2="135" y2="65" stroke="#FF2D3F" stroke-width="4" stroke-linecap="square"/>
+        <line x1="52" y1="148" x2="65" y2="135" stroke="#FF2D3F" stroke-width="4" stroke-linecap="square"/>
+      </svg>
+      <div class="footer-wordmark">TANREN</div>
+      <div class="footer-tagline">Built rep by rep.</div>
+      <p class="footer-desc">
+        Application de musculation pour tous les niveaux. Construite à Paris, hébergée en Europe.
+      </p>
+    </div>
+    <div>
+      <div class="footer-col-title">Produit</div>
+      <a class="footer-col-link">Fonctionnalités</a>
+      <a class="footer-col-link">Pourquoi Tanren</a>
+      <a class="footer-col-link">Press kit</a>
+    </div>
+    <div>
+      <div class="footer-col-title">Légal</div>
+      <a class="footer-col-link">Mentions légales</a>
+      <a class="footer-col-link">Conditions d'utilisation</a>
+      <a class="footer-col-link">Confidentialité</a>
+      <a class="footer-col-link">Cookies</a>
+    </div>
+    <div>
+      <div class="footer-col-title">Contact</div>
+      <a class="footer-col-link">contact@tanren.fr</a>
+      <a class="footer-col-link">support@tanren.fr</a>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <span>© 2026 Tanren · Tous droits réservés</span>
+    <div class="footer-bottom-right">
+      <span class="footer-bottom-kanji">鍛錬</span>
+      <span>Made in France · Hosted in Europe</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Theme toggle — persists choice in localStorage substitute (window state)
+  // Note: in the Astro production version, use localStorage. Here we just toggle.
+  function toggleTheme() {
+    const html = document.documentElement;
+    const current = html.getAttribute('data-theme');
+    html.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+  }
+</script>
+
+</body>
+</html>

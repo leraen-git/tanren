@@ -1,0 +1,2246 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tanren · Site web v4 · Refonte complète</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;700;900&family=Barlow:wght@400;500;700&family=JetBrains+Mono:wght@400;500&family=Noto+Serif+JP:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════════
+   DESIGN TOKENS — Tanren brand
+   ═══════════════════════════════════════════════════════════ */
+:root {
+  --forge-dark: #FF2D3F;
+  --forge-light: #E8192C;
+  --iron-deep: #0A0A0A;
+  --iron: #141414;
+  --iron-soft: #1F1F1F;
+  --iron-line: #2A2A2A;
+  --anvil: #FFFFFF;
+  --anvil-soft: #F5F5F5;
+  --ash: #888888;
+  --ash-dim: #555555;
+  --ash-dimmer: #333333;
+  --green-pr: #4ADE80;
+  --amber: #F59E0B;
+
+  --border-dark: rgba(255,255,255,0.08);
+  --border-light: rgba(0,0,0,0.08);
+
+  --font-display: 'Barlow Condensed', sans-serif;
+  --font-body: 'Barlow', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-kanji: 'Noto Serif JP', serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--iron-deep);
+  color: var(--anvil);
+  font-weight: 400;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+.site.light {
+  background: var(--anvil-soft);
+  color: var(--iron-deep);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   PAGE HEADER (mockup label)
+   ═══════════════════════════════════════════════════════════ */
+.page-header {
+  padding: 48px 48px 0;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+.page-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--forge-dark);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.page-title {
+  font-family: var(--font-display);
+  font-size: 56px;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+}
+.page-subtitle {
+  font-size: 14px;
+  color: var(--ash);
+  letter-spacing: 0.02em;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TOP BAR
+   ═══════════════════════════════════════════════════════════ */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 48px;
+  background: rgba(10,10,10,0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 0.5px solid var(--border-dark);
+  margin-top: 64px;
+}
+.site.light .topbar {
+  background: rgba(245,245,245,0.85);
+  border-bottom: 0.5px solid var(--border-light);
+}
+.topbar-left { display: flex; align-items: center; gap: 14px; }
+.topbar-logo { width: 32px; height: 32px; }
+.topbar-wordmark {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+.topbar-kanji {
+  font-family: var(--font-kanji);
+  font-size: 14px;
+  color: var(--forge-dark);
+  letter-spacing: 0.4em;
+  margin-left: 4px;
+}
+.topbar-nav { display: flex; gap: 32px; align-items: center; }
+.topbar-nav a {
+  color: var(--ash);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  transition: color 0.2s;
+}
+.topbar-nav a:hover { color: var(--anvil); }
+.site.light .topbar-nav a:hover { color: var(--iron-deep); }
+.topbar-cta {
+  background: var(--forge-dark);
+  color: var(--anvil);
+  padding: 10px 18px;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+.site.light .topbar-cta { background: var(--forge-light); }
+.theme-toggle {
+  background: transparent;
+  border: 1px solid var(--border-dark);
+  color: inherit;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: border-color 0.2s;
+}
+.site.light .theme-toggle { border-color: var(--border-light); }
+.theme-toggle:hover { border-color: var(--forge-dark); }
+
+/* ═══════════════════════════════════════════════════════════
+   SHARED — corner accents, kanji watermark
+   ═══════════════════════════════════════════════════════════ */
+.corner-accent {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  border-color: var(--forge-dark);
+  pointer-events: none;
+}
+.corner-tl { top: 24px; left: 24px; border-top: 2px solid; border-left: 2px solid; }
+.corner-tr { top: 24px; right: 24px; border-top: 2px solid; border-right: 2px solid; }
+.corner-bl { bottom: 24px; left: 24px; border-bottom: 2px solid; border-left: 2px solid; }
+.corner-br { bottom: 24px; right: 24px; border-bottom: 2px solid; border-right: 2px solid; }
+
+.kanji-watermark {
+  position: absolute;
+  font-family: var(--font-kanji);
+  font-weight: 900;
+  color: var(--forge-dark);
+  opacity: 0.06;
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   HERO
+   ═══════════════════════════════════════════════════════════ */
+.hero {
+  position: relative;
+  padding: 120px 48px 80px;
+  max-width: 1280px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+.hero-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--forge-dark);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+.hero-eyebrow::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: var(--forge-dark);
+  margin-right: 12px;
+  vertical-align: middle;
+  animation: pulse 1.8s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+.hero-h1 {
+  font-family: var(--font-display);
+  font-size: 96px;
+  font-weight: 900;
+  line-height: 0.92;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+.hero-h1 .accent { color: var(--forge-dark); }
+.hero-h1 .italic { font-style: italic; font-weight: 400; }
+.hero-subtitle {
+  font-size: 19px;
+  color: var(--ash);
+  max-width: 640px;
+  line-height: 1.5;
+  margin-bottom: 40px;
+  font-weight: 400;
+}
+.site.light .hero-subtitle { color: var(--ash-dim); }
+.hero-ctas { display: flex; gap: 16px; align-items: center; margin-bottom: 80px; }
+.btn-primary {
+  background: var(--forge-dark);
+  color: var(--anvil);
+  padding: 18px 32px;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  transition: transform 0.2s;
+}
+.site.light .btn-primary { background: var(--forge-light); }
+.btn-primary:hover { transform: translateY(-2px); }
+.btn-secondary {
+  background: transparent;
+  color: var(--anvil);
+  padding: 18px 32px;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border: 1px solid var(--border-dark);
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+.site.light .btn-secondary { color: var(--iron-deep); border-color: var(--border-light); }
+
+/* Hero phones fan */
+.hero-phones {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 0;
+  padding: 0 0 0 0;
+  margin-top: 40px;
+  height: 720px;
+  perspective: 1800px;
+}
+.hero-phone {
+  position: relative;
+  z-index: 1;
+}
+.hero-phone--left {
+  transform: rotate(-8deg) translateY(40px);
+  margin-right: -40px;
+  z-index: 1;
+}
+.hero-phone--center {
+  transform: scale(1.06);
+  z-index: 3;
+}
+.hero-phone--right {
+  transform: rotate(8deg) translateY(40px);
+  margin-left: -40px;
+  z-index: 2;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   PHONE FRAME (re-usable)
+   ═══════════════════════════════════════════════════════════ */
+.phone {
+  width: 320px;
+  height: 660px;
+  background: var(--iron-deep);
+  border-radius: 44px;
+  border: 8px solid #1A1A1A;
+  position: relative;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 2px #000,
+    0 30px 80px rgba(0,0,0,0.6);
+}
+.site.light .phone {
+  border-color: #2A2A2A;
+  box-shadow:
+    0 0 0 2px #1A1A1A,
+    0 30px 80px rgba(0,0,0,0.25);
+}
+.phone-notch {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 28px;
+  background: #000;
+  border-radius: 14px;
+  z-index: 10;
+}
+.phone-screen {
+  width: 100%;
+  height: 100%;
+  background: var(--iron-deep);
+  position: relative;
+  overflow: hidden;
+}
+.phone-statusbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 22px 8px;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--anvil);
+}
+.phone-statusbar-icons {
+  display: flex;
+  gap: 4px;
+  font-size: 11px;
+  letter-spacing: -0.05em;
+}
+</style>
+</head>
+<body class="site dark">
+
+<!-- ═══════════════════════════════════════════════════════════
+     PAGE HEADER (mockup label)
+     ═══════════════════════════════════════════════════════════ -->
+<div class="page-header">
+  <div class="page-label">Tanren · Site web mockup · v4 · Refonte complète</div>
+  <div class="page-title">tanren.fr</div>
+  <div class="page-subtitle">8 fonctionnalités majeures · 16 phones reproduits · Dark + Light mode</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     TOP BAR
+     ═══════════════════════════════════════════════════════════ -->
+<nav class="topbar">
+  <div class="topbar-left">
+    <svg class="topbar-logo" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="100" cy="100" r="92" stroke="currentColor" stroke-width="6" fill="none"/>
+      <circle cx="100" cy="100" r="38" fill="#FF2D3F"/>
+      <rect x="96" y="40" width="8" height="120" fill="white"/>
+      <rect x="40" y="96" width="120" height="8" fill="white"/>
+      <line x1="155" y1="45" x2="180" y2="20" stroke="#FF2D3F" stroke-width="4" stroke-linecap="round"/>
+      <line x1="160" y1="35" x2="172" y2="22" stroke="#FF2D3F" stroke-width="3" stroke-linecap="round"/>
+    </svg>
+    <span class="topbar-wordmark">Tanren</span>
+    <span class="topbar-kanji">鍛 錬</span>
+  </div>
+  <div class="topbar-nav">
+    <a href="#features">Fonctionnalités</a>
+    <a href="#progression">Progression</a>
+    <a href="#nutrition">Nutrition</a>
+    <a href="#manifesto">Manifesto</a>
+    <button class="theme-toggle" onclick="document.body.classList.toggle('dark'); document.body.classList.toggle('light');">☀ / ☾</button>
+    <a href="#waitlist" class="topbar-cta">Beta · Waitlist</a>
+  </div>
+</nav>
+<!-- ═══════════════════════════════════════════════════════════
+     HERO
+     ═══════════════════════════════════════════════════════════ -->
+<section class="hero">
+  <div class="kanji-watermark" style="top: 80px; right: 0; font-size: 360px; line-height: 1;">鍛</div>
+
+  <div class="hero-eyebrow">Beta fermée · Sur invitation</div>
+
+  <h1 class="hero-h1">
+    Forge ta force.<br>
+    <span class="italic">Une rep</span> <span class="accent">après l'autre.</span>
+  </h1>
+
+  <p class="hero-subtitle">
+    L'app de musculation IA-native qui te suit pendant l'effort, écrit tes plans à partir d'un texte libre, calcule tes macros, et garde la trace de chaque rep.
+  </p>
+
+  <div class="hero-ctas">
+    <a href="#waitlist" class="btn-primary">Rejoindre la waitlist</a>
+    <a href="#features" class="btn-secondary">Voir l'app</a>
+  </div>
+
+  <!-- 3 phones en éventail : Coach IA · Recette · Avant/Après -->
+  <div class="hero-phones">
+
+    <!-- ════ PHONE LEFT — COACH IA TEXTE LIBRE ════ -->
+    <div class="hero-phone hero-phone--left">
+      <div class="phone">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="phone-statusbar">
+            <span>11:46</span>
+            <div class="phone-statusbar-icons">···· 􀙇 ▮</div>
+          </div>
+          <div style="padding: 16px 18px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 28px;">
+              <span style="font-family: var(--font-mono); font-size: 11px; color: var(--forge-dark); letter-spacing: 0.15em;">‹ RETOUR</span>
+              <span style="font-family: var(--font-mono); font-size: 10px; color: var(--forge-dark); letter-spacing: 0.15em; border: 1px solid var(--forge-dark); padding: 3px 8px;">AI</span>
+            </div>
+            <h2 style="font-family: var(--font-display); font-size: 22px; font-weight: 900; line-height: 1; text-transform: uppercase; margin-bottom: 6px; color: white;">Ton coach IA<br>de l'entraînement</h2>
+            <p style="font-size: 11px; color: var(--ash); margin-bottom: 16px;">Décris ton objectif et l'IA construit ton plan hebdo.</p>
+
+            <div style="border: 1px solid var(--iron-line); padding: 10px 12px; margin-bottom: 14px; border-top: 2px solid var(--forge-dark);">
+              <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ash); letter-spacing: 0.1em; margin-bottom: 4px;">GÉNÉRATIONS RESTANTES</div>
+              <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                <span style="font-family: var(--font-mono); font-size: 9px; color: var(--ash);">Recharge le <strong style="color: white;">11 mai</strong></span>
+                <span style="font-family: var(--font-display); font-size: 22px; font-weight: 900; color: white;">2<span style="color: var(--ash); font-size: 13px; font-weight: 400;"> / 2</span></span>
+              </div>
+            </div>
+
+            <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ash); letter-spacing: 0.15em; margin-bottom: 6px;">TON PROFIL</div>
+            <div style="display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 14px;">
+              <span style="border: 1px solid var(--forge-dark); color: var(--forge-dark); padding: 3px 6px; font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.05em;">AVANCÉ</span>
+              <span style="border: 1px solid var(--forge-dark); color: var(--forge-dark); padding: 3px 6px; font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.05em;">PRISE DE MUSCLE</span>
+              <span style="border: 1px solid var(--forge-dark); color: var(--forge-dark); padding: 3px 6px; font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.05em;">4× / SEM</span>
+              <span style="border: 1px solid var(--forge-dark); color: var(--forge-dark); padding: 3px 6px; font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.05em;">75.5 KG</span>
+            </div>
+
+            <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ash); letter-spacing: 0.15em; margin-bottom: 6px;">TA DEMANDE</div>
+            <div style="background: var(--iron-soft); border: 1px solid var(--iron-line); padding: 12px; margin-bottom: 14px;">
+              <p style="font-size: 11px; color: white; line-height: 1.45;">Je souhaite un entraînement intense, pour une recomposition corporelle, lundi, mardi, vendredi, samedi. Environ 1h. Pas de squat, ni fentes.<span style="background: var(--forge-dark); width: 1px; display: inline-block; height: 11px; vertical-align: middle; margin-left: 1px;"></span></p>
+            </div>
+
+            <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ash); letter-spacing: 0.15em; margin-bottom: 8px;">SUGGESTIONS</div>
+            <div style="border-bottom: 0.5px solid var(--border-dark); padding-bottom: 8px; margin-bottom: 8px;">
+              <div style="font-family: var(--font-display); font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.05em; color: white;">Push · Pull · Legs · 3J</div>
+              <div style="font-size: 9px; color: var(--ash);">Plan classique PPL, accessible.</div>
+            </div>
+            <div style="border-bottom: 0.5px solid var(--border-dark); padding-bottom: 8px;">
+              <div style="font-family: var(--font-display); font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.05em; color: white;">Upper · Lower · 4J</div>
+              <div style="font-size: 9px; color: var(--ash);">Fréquence 2× / muscle.</div>
+            </div>
+
+            <button style="width: calc(100% + 36px); margin: 16px -18px -16px; background: var(--forge-dark); color: white; padding: 14px; border: none; font-family: var(--font-display); font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;">Générer mon plan</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ PHONE CENTER — AVANT/APRÈS PARTAGE 9:16 ════ -->
+    <div class="hero-phone hero-phone--center">
+      <div class="phone">
+        <div class="phone-notch"></div>
+        <div class="phone-screen" style="background: #000;">
+          <div class="phone-statusbar">
+            <span>11:44</span>
+            <div class="phone-statusbar-icons">···· 􀙇 ▮</div>
+          </div>
+          <div style="padding: 30px 24px 0; height: calc(100% - 35px); display: flex; flex-direction: column;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 80px;">
+              <span style="font-family: var(--font-kanji); font-size: 22px; color: var(--forge-dark); font-weight: 900; letter-spacing: 0.4em;">鍛 錬</span>
+              <span style="font-family: var(--font-mono); font-size: 9px; color: var(--ash); letter-spacing: 0.15em;">@ T A N R E N A P P</span>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px;">
+              <div>
+                <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ash); letter-spacing: 0.2em; margin-bottom: 4px;">A V A N T</div>
+                <div style="aspect-ratio: 1; background: linear-gradient(135deg, #5a4a3a, #3a3028); position: relative; overflow: hidden;">
+                  <div style="position: absolute; inset: 0; background: radial-gradient(circle at 35% 40%, #d4b896 0%, #8a6f56 35%, #2a2018 80%);"></div>
+                </div>
+                <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ash); margin-top: 4px;">05 mars 2026</div>
+                <div style="font-family: var(--font-mono); font-size: 12px; color: white; font-weight: 500;">90 kg</div>
+              </div>
+              <div>
+                <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ash); letter-spacing: 0.2em; margin-bottom: 4px;">A P R È S</div>
+                <div style="aspect-ratio: 1; background: linear-gradient(135deg, #4a3a2a, #2a201a); position: relative; overflow: hidden;">
+                  <div style="position: absolute; inset: 0; background: radial-gradient(circle at 50% 35%, #c8a07a 0%, #6b4c34 40%, #1a1208 80%);"></div>
+                </div>
+                <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ash); margin-top: 4px;">06 mai 2026</div>
+                <div style="font-family: var(--font-mono); font-size: 12px; color: white; font-weight: 500;">70 kg</div>
+              </div>
+            </div>
+
+            <div style="border-top: 0.5px solid var(--iron-line); padding-top: 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; text-align: center; margin-bottom: 60px;">
+              <div>
+                <div style="font-family: var(--font-display); font-size: 32px; font-weight: 900; color: white; line-height: 1;">62</div>
+                <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ash); letter-spacing: 0.2em; margin-top: 2px;">JOURS</div>
+              </div>
+              <div>
+                <div style="font-family: var(--font-display); font-size: 32px; font-weight: 900; color: var(--forge-dark); line-height: 1;">-20</div>
+                <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ash); letter-spacing: 0.2em; margin-top: 2px;">KG</div>
+              </div>
+            </div>
+
+            <div style="margin-top: auto; text-align: center; padding-bottom: 30px;">
+              <div style="font-family: var(--font-display); font-size: 14px; font-weight: 700; letter-spacing: 0.2em; color: white;">UNE REP</div>
+              <div style="font-family: var(--font-display); font-size: 14px; font-weight: 700; letter-spacing: 0.2em; color: var(--forge-dark);">APRÈS L'AUTRE</div>
+              <div style="font-family: var(--font-kanji); font-size: 13px; color: white; letter-spacing: 0.4em; margin-top: 6px; opacity: 0.9;">鍛 錬</div>
+              <div style="font-family: var(--font-mono); font-size: 8px; color: var(--ash); letter-spacing: 0.2em; margin-top: 4px;">@ T A N R E N A P P</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ PHONE RIGHT — RECETTE SAUMON POÊLÉ ════ -->
+    <div class="hero-phone hero-phone--right">
+      <div class="phone">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="phone-statusbar">
+            <span>12:02</span>
+            <div class="phone-statusbar-icons">···· 􀙇 ▮</div>
+          </div>
+          <div style="padding: 16px 18px; position: relative;">
+            <div style="position: absolute; top: 30px; right: -10px; font-family: var(--font-kanji); font-size: 80px; color: var(--forge-dark); opacity: 0.08; font-weight: 900;">鍛</div>
+            <div style="font-family: var(--font-mono); font-size: 11px; color: var(--forge-dark); letter-spacing: 0.15em; margin-bottom: 28px;">‹ BACK</div>
+            <div style="font-family: var(--font-mono); font-size: 9px; color: var(--forge-dark); letter-spacing: 0.2em; margin-bottom: 6px;">DÎNER · 19H30 · 30 MIN</div>
+            <h2 style="font-family: var(--font-display); font-size: 19px; font-weight: 900; line-height: 1.05; text-transform: uppercase; color: white; margin-bottom: 14px;">Saumon poêlé,<br>patates douces rôties</h2>
+
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--iron-line); margin-bottom: 16px;">
+              <div style="padding: 8px 6px; text-align: center; border-right: 0.5px solid var(--iron-line);">
+                <div style="font-family: var(--font-mono); font-size: 8px; color: var(--ash); letter-spacing: 0.15em;">CAL</div>
+                <div style="font-family: var(--font-display); font-size: 16px; font-weight: 900; color: white;">520</div>
+              </div>
+              <div style="padding: 8px 6px; text-align: center; border-right: 0.5px solid var(--iron-line);">
+                <div style="font-family: var(--font-mono); font-size: 8px; color: var(--ash); letter-spacing: 0.15em;">PROT</div>
+                <div style="font-family: var(--font-display); font-size: 16px; font-weight: 900; color: var(--forge-dark);">38<span style="font-size: 9px; color: var(--ash);">g</span></div>
+              </div>
+              <div style="padding: 8px 6px; text-align: center; border-right: 0.5px solid var(--iron-line);">
+                <div style="font-family: var(--font-mono); font-size: 8px; color: var(--ash); letter-spacing: 0.15em;">GLUC</div>
+                <div style="font-family: var(--font-display); font-size: 16px; font-weight: 900; color: var(--amber);">44<span style="font-size: 9px; color: var(--ash);">g</span></div>
+              </div>
+              <div style="padding: 8px 6px; text-align: center;">
+                <div style="font-family: var(--font-mono); font-size: 8px; color: var(--ash); letter-spacing: 0.15em;">LIP</div>
+                <div style="font-family: var(--font-display); font-size: 16px; font-weight: 900; color: var(--green-pr);">18<span style="font-size: 9px; color: var(--ash);">g</span></div>
+              </div>
+            </div>
+
+            <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ash); letter-spacing: 0.15em; margin-bottom: 8px;">INGRÉDIENTS · 1 PERS.</div>
+            <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 0.5px solid var(--border-dark); font-size: 11px; color: white;">
+              <span>Pavé de saumon</span><span style="color: var(--ash);">160 g</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 0.5px solid var(--border-dark); font-size: 11px; color: white;">
+              <span>Patate douce</span><span style="color: var(--ash);">200 g</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 0.5px solid var(--border-dark); font-size: 11px; color: white;">
+              <span>Huile d'olive</span><span style="color: var(--ash);">1 c. à soupe</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 0.5px solid var(--border-dark); font-size: 11px; color: white;">
+              <span>Paprika fumé</span><span style="color: var(--ash);">1 c. à café</span>
+            </div>
+
+            <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ash); letter-spacing: 0.15em; margin: 14px 0 8px;">PRÉPARATION</div>
+            <div style="display: flex; gap: 10px; padding: 4px 0; font-size: 10px; line-height: 1.45;">
+              <span style="font-family: var(--font-display); font-size: 13px; font-weight: 900; color: var(--forge-dark); flex-shrink: 0; min-width: 16px;">01</span>
+              <span style="color: white;">Préchauffe le four à 200°C. Coupe la patate douce en cubes.</span>
+            </div>
+            <div style="display: flex; gap: 10px; padding: 4px 0; font-size: 10px; line-height: 1.45;">
+              <span style="font-family: var(--font-display); font-size: 13px; font-weight: 900; color: var(--forge-dark); flex-shrink: 0; min-width: 16px;">02</span>
+              <span style="color: white;">Étale les cubes sur une plaque, enfourne 20-25 min.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     TRUST STRIP
+     ═══════════════════════════════════════════════════════════ -->
+<section style="border-top: 0.5px solid var(--border-dark); border-bottom: 0.5px solid var(--border-dark); padding: 32px 48px;">
+  <div style="max-width: 1280px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; text-align: center;">
+    <div>
+      <div style="font-family: var(--font-display); font-size: 22px; font-weight: 900; color: var(--forge-dark); text-transform: uppercase; letter-spacing: 0.05em;">FR</div>
+      <div style="font-size: 11px; color: var(--ash); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 4px;">Fait en France</div>
+    </div>
+    <div>
+      <div style="font-family: var(--font-display); font-size: 22px; font-weight: 900; color: var(--forge-dark); text-transform: uppercase; letter-spacing: 0.05em;">RGPD</div>
+      <div style="font-size: 11px; color: var(--ash); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 4px;">Tes données te restent</div>
+    </div>
+    <div>
+      <div style="font-family: var(--font-display); font-size: 22px; font-weight: 900; color: var(--forge-dark); text-transform: uppercase; letter-spacing: 0.05em;">600+</div>
+      <div style="font-size: 11px; color: var(--ash); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 4px;">Exercices référencés</div>
+    </div>
+    <div>
+      <div style="font-family: var(--font-display); font-size: 22px; font-weight: 900; color: var(--forge-dark); text-transform: uppercase; letter-spacing: 0.05em;">Ø</div>
+      <div style="font-size: 11px; color: var(--ash); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 4px;">Aucune publicité</div>
+    </div>
+  </div>
+</section>
+<!-- ═══════════════════════════════════════════════════════════
+     SECTION HEADER STYLES (shared)
+     ═══════════════════════════════════════════════════════════ -->
+<style>
+.section {
+  position: relative;
+  padding: 120px 48px;
+  max-width: 1280px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+.section-num {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--forge-dark);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+.section-title {
+  font-family: var(--font-display);
+  font-size: 64px;
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+.section-title .accent { color: var(--forge-dark); }
+.section-title .italic { font-style: italic; font-weight: 400; }
+.section-lede {
+  font-size: 18px;
+  color: var(--ash);
+  max-width: 640px;
+  line-height: 1.5;
+  margin-bottom: 64px;
+}
+.site.light .section-lede { color: var(--ash-dim); }
+
+.feature-grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 48px;
+  align-items: start;
+}
+.feature-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: center;
+}
+.feature-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 32px;
+  align-items: start;
+}
+.feature-card {
+  position: relative;
+}
+.feature-card-num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--forge-dark);
+  letter-spacing: 0.2em;
+  margin-bottom: 12px;
+}
+.feature-card-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  line-height: 1.05;
+  margin-bottom: 10px;
+}
+.feature-card-body {
+  font-size: 14px;
+  color: var(--ash);
+  line-height: 1.6;
+}
+.site.light .feature-card-body { color: var(--ash-dim); }
+.feature-phone-wrap {
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: center;
+}
+.feature-phone-wrap .phone {
+  transform: scale(0.78);
+  transform-origin: top center;
+  margin-bottom: -150px;
+}
+
+/* Dividers between sections */
+.section-divider {
+  border: none;
+  border-top: 0.5px solid var(--border-dark);
+  max-width: 1280px;
+  margin: 0 auto;
+}
+.site.light .section-divider { border-color: var(--border-light); }
+</style>
+
+<hr class="section-divider">
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECTION 01 — PENDANT L'EFFORT
+     ═══════════════════════════════════════════════════════════ -->
+<section class="section" id="features">
+  <div class="kanji-watermark" style="top: 80px; left: -40px; font-size: 280px;">鍛</div>
+
+  <div class="section-num">01 · Pendant l'effort</div>
+  <h2 class="section-title">L'app qui te suit<br><span class="italic">à chaque</span> <span class="accent">série.</span></h2>
+  <p class="section-lede">Le détail de ta séance, la validation rep par rep, le timer de repos automatique, et le récap qui te dit si tu as progressé. Sans friction, sans manip.</p>
+
+  <div class="feature-grid-4">
+
+    <!-- 1.1 — DÉTAIL SÉANCE -->
+    <div class="feature-card">
+      <div class="feature-phone-wrap">
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <div class="phone-statusbar"><span>11:36</span><div class="phone-statusbar-icons">···· 􀙇 ▮</div></div>
+            <div style="padding: 16px 18px;">
+              <div style="display: flex; justify-content: space-between; margin-bottom: 32px;">
+                <span style="font-family: var(--font-mono); font-size: 11px; color: var(--forge-dark); letter-spacing: 0.15em;">‹ RETOUR</span>
+                <span style="font-family: var(--font-mono); font-size: 11px; color: var(--forge-dark); letter-spacing: 0.15em;">MODIFIER</span>
+              </div>
+              <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ash); letter-spacing: 0.15em; margin-bottom: 6px;">SÉANCE</div>
+              <h3 style="font-family: var(--font-display); font-size: 19px; font-weight: 900; line-height: 1; text-transform: uppercase; color: white; margin-bottom: 8px;">Push - Poitrine & Épaules & Triceps</h3>
+              <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ash); margin-bottom: 10px;">7 exercices / ~80 min</div>
+              <div style="display: flex; gap: 4px; margin-bottom: 16px;">
+                <span style="border: 1px solid var(--iron-line); padding: 3px 6px; font-family: var(--font-display); font-size: 8px; color: var(--ash); letter-spacing: 0.05em; text-transform: uppercase;">PECTORAUX</span>
+                <span style="border: 1px solid var(--iron-line); padding: 3px 6px; font-family: var(--font-display); font-size: 8px; color: var(--ash); letter-spacing: 0.05em; text-transform: uppercase;">ÉPAULES</span>
+                <span style="border: 1px solid var(--iron-line); padding: 3px 6px; font-family: var(--font-display); font-size: 8px; color: var(--ash); letter-spacing: 0.05em; text-transform: uppercase;">TRICEPS</span>
+              </div>
+              <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ash); letter-spacing: 0.15em; margin-bottom: 8px; border-top: 0.5px solid var(--border-dark); padding-top: 12px;">EXERCICES</div>
+
+              <!-- Exercise 1 with PR -->
+              <div style="display: flex; gap: 10px; padding: 8px 0; border-bottom: 0.5px solid var(--border-dark); align-items: center;">
+                <div style="width: 22px; height: 22px; border: 1px solid var(--forge-dark); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 10px; font-weight: 700; color: var(--forge-dark);">01</div>
+                <div style="flex: 1;">
+                  <div style="font-family: var(--font-display); font-size: 10px; font-weight: 900; text-transform: uppercase; color: white; letter-spacing: 0.02em;">Développé couché à la barre</div>
+                  <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ash);">4s × 8r / 120s</div>
+                </div>
+                <div style="text-align: right;">
+                  <div style="font-family: var(--font-mono); font-size: 7px; color: var(--forge-dark); letter-spacing: 0.1em;">PR</div>
+                  <div style="font-family: var(--font-display); font-size: 11px; font-weight: 900; color: var(--forge-dark);">115<span style="font-size: 8px; color: var(--ash);"> kg</span></div>
+                </div>
+              </div>
+              <div style="display: flex; gap: 10px; padding: 8px 0; border-bottom: 0.5px solid var(--border-dark); align-items: center;">
+                <div style="width: 22px; height: 22px; border: 1px solid var(--forge-dark); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 10px; font-weight: 700; color: var(--forge-dark);">02</div>
+                <div>
+                  <div style="font-family: var(--font-display); font-size: 9px; font-weight: 900; text-transform: uppercase; color: white; letter-spacing: 0.02em; line-height: 1.15;">Développé couché incliné alterné haltères</div>
+                  <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ash);">4s × 10r / 90s</div>
+                </div>
+              </div>
+              <div style="display: flex; gap: 10px; padding: 8px 0; border-bottom: 0.5px solid var(--border-dark); align-items: center;">
+                <div style="width: 22px; height: 22px; border: 1px solid var(--forge-dark); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 10px; font-weight: 700; color: var(--forge-dark);">03</div>
+                <div>
+                  <div style="font-family: var(--font-display); font-size: 10px; font-weight: 900; text-transform: uppercase; color: white;">Écartés inclinés haltères</div>
+                  <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ash);">3s × 12r / 75s</div>
+                </div>
+              </div>
+              <div style="display: flex; gap: 10px; padding: 8px 0; border-bottom: 0.5px solid var(--border-dark); align-items: center;">
+                <div style="width: 22px; height: 22px; border: 1px solid var(--forge-dark); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 10px; font-weight: 700; color: var(--forge-dark);">04</div>
+                <div>
+                  <div style="font-family: var(--font-display); font-size: 10px; font-weight: 900; text-transform: uppercase; color: white;">Développé militaire debout</div>
+                  <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ash);">4s × 8r / 120s</div>
+                </div>
+              </div>
+
+              <button style="width: calc(100% + 36px); margin: 14px -18px -16px; background: var(--forge-dark); color: white; padding: 13px; border: none; font-family: var(--font-display); font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;">Démarrer la séance</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="feature-card-num">1.1</div>
+      <h3 class="feature-card-title">Détail séance avec PR</h3>
+      <p class="feature-card-body">Tes records personnels par exercice, affichés là où tu en as besoin. Avant que tu lances la séance.</p>
+    </div>
+
+    <!-- 1.2 — VALIDATION SÉRIE -->
+    <div class="feature-card">
+      <div class="feature-phone-wrap">
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <div class="phone-statusbar"><span>11:37</span><div class="phone-statusbar-icons">···· 􀙇 ▮</div></div>
+            <div style="padding: 12px 16px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 8px; border-bottom: 0.5px solid var(--border-dark);">
+                <span style="font-family: var(--font-mono); font-size: 10px; color: var(--ash); letter-spacing: 0.1em;">‹ RETOUR</span>
+                <div style="text-align: center;">
+                  <div style="font-family: var(--font-display); font-size: 9px; font-weight: 700; color: white; letter-spacing: 0.05em; text-transform: uppercase;">Push - Poitrine</div>
+                  <div style="font-family: var(--font-mono); font-size: 8px; color: var(--ash);">00:10 · 1/24</div>
+                </div>
+                <span style="font-family: var(--font-mono); font-size: 10px; color: var(--forge-dark); letter-spacing: 0.1em;">TERMINER</span>
+              </div>
+
+              <div style="display: flex; align-items: center; justify-content: space-between; padding: 18px 0 8px;">
+                <span style="color: var(--forge-dark); font-size: 16px;">‹</span>
+                <div style="text-align: center;">
+                  <h3 style="font-family: var(--font-display); font-size: 14px; font-weight: 900; text-transform: uppercase; color: white; line-height: 1;">Développé couché<br>à la barre</h3>
+                  <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ash); margin-top: 4px;">1 / 7</div>
+                </div>
+                <span style="color: var(--forge-dark); font-size: 16px;">›</span>
+              </div>
+              <div style="display: flex; gap: 4px; padding: 8px 0 14px; justify-content: center;">
+                <div style="width: 24px; height: 2px; background: var(--forge-dark);"></div>
+                <div style="width: 24px; height: 2px; background: var(--iron-line);"></div>
+                <div style="width: 24px; height: 2px; background: var(--iron-line);"></div>
+                <div style="width: 24px; height: 2px; background: var(--iron-line);"></div>
+                <div style="width: 24px; height: 2px; background: var(--iron-line);"></div>
+                <div style="width: 24px; height: 2px; background: var(--iron-line);"></div>
+                <div style="width: 24px; height: 2px; background: var(--iron-line);"></div>
+              </div>
+
+              <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ash); letter-spacing: 0.15em; margin-bottom: 8px;">SÉRIES · 1/4</div>
+
+              <!-- Set 1 — VALIDATED (green) -->
+              <div style="border: 1.5px solid var(--green-pr); padding: 10px 12px; display: grid; grid-template-columns: 18px 1fr 1fr 50px 28px; gap: 8px; align-items: center; margin-bottom: 6px;">
+                <span style="font-family: var(--font-display); font-size: 14px; font-weight: 700; color: var(--green-pr);">1</span>
+                <div>
+                  <div style="font-family: var(--font-mono); font-size: 7px; color: var(--ash); letter-spacing: 0.1em;">REPS</div>
+                  <div style="font-family: var(--font-display); font-size: 22px; font-weight: 700; color: white; line-height: 1;">10</div>
+                </div>
+                <div>
+                  <div style="font-family: var(--font-mono); font-size: 7px; color: var(--ash); letter-spacing: 0.1em;">KG</div>
+                  <div style="font-family: var(--font-display); font-size: 22px; font-weight: 700; color: white; line-height: 1;">100</div>
+                </div>
+                <div>
+                  <div style="font-family: var(--font-mono); font-size: 7px; color: var(--ash); letter-spacing: 0.1em;">REST</div>
+                  <div style="font-family: var(--font-mono); font-size: 11px; color: var(--ash);">120 s</div>
+                </div>
+                <div style="background: var(--green-pr); color: black; height: 26px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 14px;">✓</div>
+              </div>
+
+              <!-- Set 2 — ACTIVE (red) -->
+              <div style="border: 1.5px solid var(--forge-dark); padding: 10px 12px; display: grid; grid-template-columns: 18px 1fr 1fr 50px 28px; gap: 8px; align-items: center; margin-bottom: 6px;">
+                <span style="font-family: var(--font-display); font-size: 14px; font-weight: 700; color: var(--forge-dark);">2</span>
+                <div>
+                  <div style="font-family: var(--font-mono); font-size: 7px; color: var(--ash); letter-spacing: 0.1em;">REPS</div>
+                  <div style="font-family: var(--font-display); font-size: 22px; font-weight: 700; color: white; line-height: 1;">10</div>
+                </div>
+                <div>
+                  <div style="font-family: var(--font-mono); font-size: 7px; color: var(--ash); letter-spacing: 0.1em;">KG</div>
+                  <div style="font-family: var(--font-display); font-size: 22px; font-weight: 700; color: white; line-height: 1;">110</div>
+                </div>
+                <div>
+                  <div style="font-family: var(--font-mono); font-size: 7px; color: var(--ash); letter-spacing: 0.1em;">REST</div>
+                  <div style="font-family: var(--font-mono); font-size: 11px; color: var(--ash);">120 s</div>
+                </div>
+                <div style="background: transparent; height: 26px;"></div>
+              </div>
+
+              <!-- Set 3 — pending -->
+              <div style="border: 1px solid var(--iron-line); padding: 10px 12px; display: grid; grid-template-columns: 18px 1fr 1fr 50px 28px; gap: 8px; align-items: center; margin-bottom: 6px;">
+                <span style="font-family: var(--font-display); font-size: 14px; font-weight: 700; color: var(--ash);">3</span>
+                <div>
+                  <div style="font-family: var(--font-mono); font-size: 7px; color: var(--ash); letter-spacing: 0.1em;">REPS</div>
+                  <div style="font-family: var(--font-display); font-size: 22px; font-weight: 700; color: white; line-height: 1;">10</div>
+                </div>
+                <div>
+                  <div style="font-family: var(--font-mono); font-size: 7px; color: var(--ash); letter-spacing: 0.1em;">KG</div>
+                  <div style="font-family: var(--font-display); font-size: 22px; font-weight: 700; color: white; line-height: 1;">115</div>
+                </div>
+                <div>
+                  <div style="font-family: var(--font-mono); font-size: 7px; color: var(--ash); letter-spacing: 0.1em;">REST</div>
+                  <div style="font-family: var(--font-mono); font-size: 11px; color: var(--ash);">120 s</div>
+                </div>
+                <div></div>
+              </div>
+
+              <button style="width: 100%; background: var(--forge-dark); color: white; padding: 12px; border: none; font-family: var(--font-display); font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-top: 8px;">Valider la série 2</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="feature-card-num">1.2</div>
+      <h3 class="feature-card-title">Validation rep par rep</h3>
+      <p class="feature-card-body">Chaque série validée passe au vert. La suivante en rouge. Pas d'écran, juste l'effort.</p>
+    </div>
+
+    <!-- 1.3 — REST TIMER -->
+    <div class="feature-card">
+      <div class="feature-phone-wrap">
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <div class="phone-statusbar"><span>11:37</span><div class="phone-statusbar-icons">···· 􀙇 ▮</div></div>
+            <div style="padding: 60px 24px 16px; display: flex; flex-direction: column; align-items: center; height: calc(100% - 30px);">
+              <div style="font-family: var(--font-display); font-size: 10px; font-weight: 500; color: var(--ash); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 24px;">Développé couché à la barre</div>
+
+              <div style="position: relative; width: 220px; height: 220px; margin-bottom: 36px;">
+                <svg width="220" height="220" viewBox="0 0 220 220">
+                  <circle cx="110" cy="110" r="100" stroke="var(--iron-line)" stroke-width="8" fill="none"/>
+                  <circle cx="110" cy="110" r="100" stroke="var(--forge-dark)" stroke-width="8" fill="none"
+                    stroke-dasharray="628" stroke-dashoffset="50" stroke-linecap="butt"
+                    transform="rotate(-90 110 110)"/>
+                </svg>
+                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+                  <div style="font-family: var(--font-display); font-size: 56px; font-weight: 900; color: white; line-height: 1; letter-spacing: -0.02em;">01:54</div>
+                  <div style="font-family: var(--font-mono); font-size: 12px; color: var(--ash); margin-top: 4px;">/ 02:00</div>
+                </div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; width: 100%; margin-bottom: 12px;">
+                <button style="background: transparent; border: 1px solid var(--iron-line); color: white; padding: 14px; font-family: var(--font-display); font-size: 13px; font-weight: 700;">-15s</button>
+                <button style="background: transparent; border: 1px solid var(--iron-line); color: white; padding: 14px; font-family: var(--font-display); font-size: 13px; font-weight: 700;">+15s</button>
+                <button style="background: transparent; border: 1px solid var(--iron-line); color: white; padding: 14px; font-family: var(--font-display); font-size: 13px; font-weight: 700;">▮▮</button>
+              </div>
+              <button style="width: 100%; background: var(--forge-dark); color: white; padding: 14px; border: none; font-family: var(--font-display); font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;">Passer</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="feature-card-num">1.3</div>
+      <h3 class="feature-card-title">Timer de repos auto</h3>
+      <p class="feature-card-body">Le timer démarre dès que tu valides ta série. -15 / +15 ou skip si tu veux pousser.</p>
+    </div>
+
+    <!-- 1.4 — RÉCAP SESSION -->
+    <div class="feature-card">
+      <div class="feature-phone-wrap">
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <div class="phone-statusbar"><span>11:39</span><div class="phone-statusbar-icons">···· 􀙇 ▮</div></div>
+            <div style="padding: 36px 18px 16px; text-align: center;">
+              <div style="font-family: var(--font-kanji); font-size: 26px; color: var(--forge-dark); letter-spacing: 0.4em; margin-bottom: 14px; font-weight: 900;">鍛 錬</div>
+              <h3 style="font-family: var(--font-display); font-size: 26px; font-weight: 900; text-transform: uppercase; color: white; line-height: 1; margin-bottom: 8px;">Séance<br>terminée</h3>
+              <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ash); letter-spacing: 0.1em; margin-bottom: 24px;">MER 6 MAI · CURLS MARTEAU · 0MIN</div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--iron-line); margin-bottom: 24px;">
+                <div style="padding: 14px; border-right: 0.5px solid var(--iron-line); border-bottom: 0.5px solid var(--iron-line); text-align: left;">
+                  <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ash); letter-spacing: 0.15em;">VOLUME</div>
+                  <div style="font-family: var(--font-display); font-size: 28px; font-weight: 900; color: white; line-height: 1;">1000<span style="font-size: 11px; color: var(--ash); font-weight: 400;">kg</span></div>
+                </div>
+                <div style="padding: 14px; border-bottom: 0.5px solid var(--iron-line); text-align: left;">
+                  <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ash); letter-spacing: 0.15em;">DURÉE</div>
+                  <div style="font-family: var(--font-display); font-size: 28px; font-weight: 900; color: white; line-height: 1;">0<span style="font-size: 11px; color: var(--ash); font-weight: 400;">min</span></div>
+                </div>
+                <div style="padding: 14px; border-right: 0.5px solid var(--iron-line); text-align: left;">
+                  <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ash); letter-spacing: 0.15em;">SÉRIES</div>
+                  <div style="font-family: var(--font-display); font-size: 28px; font-weight: 900; color: white; line-height: 1;">4</div>
+                </div>
+                <div style="padding: 14px; text-align: left;">
+                  <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ash); letter-spacing: 0.15em;">RECORDS</div>
+                  <div style="font-family: var(--font-display); font-size: 28px; font-weight: 900; color: var(--forge-dark); line-height: 1;">1</div>
+                </div>
+              </div>
+
+              <div style="text-align: left; font-family: var(--font-mono); font-size: 9px; color: var(--ash); letter-spacing: 0.15em; margin-bottom: 8px;">COMPARAISON PAR EXERCICE</div>
+              <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 0.5px solid var(--border-dark); margin-bottom: 16px;">
+                <span style="font-size: 12px; color: white;">Curls marteau debout</span>
+                <span style="border: 1px solid var(--green-pr); color: var(--green-pr); padding: 3px 8px; font-family: var(--font-mono); font-size: 11px; font-weight: 700;">+66,7 %</span>
+              </div>
+
+              <button style="width: 100%; background: var(--forge-dark); color: white; padding: 12px; border: none; font-family: var(--font-display); font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px;">Terminer la séance</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="feature-card-num">1.4</div>
+      <h3 class="feature-card-title">Récap progression</h3>
+      <p class="feature-card-body">À la fin, le delta vert qui te dit que tu as poussé plus que la fois d'avant.</p>
+    </div>
+
+  </div>
+</section>
+<hr class="section-divider">
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECTION 02 — INTELLIGENCE QUI T'AIDE
+     ═══════════════════════════════════════════════════════════ -->
+<section class="section">
+  <div class="kanji-watermark" style="top: 60px; right: -40px; font-size: 280px;">錬</div>
+
+  <div class="section-num">02 · L'intelligence qui t'aide</div>
+  <h2 class="section-title">Décris ton objectif.<br><span class="italic">L'IA</span> <span class="accent">forge ton plan.</span></h2>
+  <p class="section-lede">Pas de quiz à 30 questions. Tu écris ce que tu veux, l'IA croise avec ton profil, ton niveau, ton équipement, et te génère un plan hebdo en 30 secondes. Tu peux aussi le construire à la main.</p>
+
+  <div class="feature-grid-3">
+
+    <!-- 2.1 — TEXTE LIBRE (déjà dans le hero, version compacte ici) -->
+    <div class="feature-card">
+      <div class="feature-phone-wrap">
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <div class="phone-statusbar"><span>11:46</span><div class="phone-statusbar-icons">···· 􀙇 ▮</div></div>
+            <div style="padding: 16px 18px;">
+              <div style="display: flex; justify-content: space-between; margin-bottom: 24px;">
+                <span style="font-family: var(--font-mono); font-size: 11px; color: var(--forge-dark); letter-spacing: 0.15em;">‹ RETOUR</span>
+                <span style="font-family: var(--font-mono); font-size: 10px; color: var(--forge-dark); letter-spacing: 0.15em; border: 1px solid var(--forge-dark); padding: 3px 8px;">AI</span>
+              </div>
+              <h3 style="font-family: var(--font-display); font-size: 20px; font-weight: 900; line-height: 1; text-transform: uppercase; color: white; margin-bottom: 6px;">Ton coach IA</h3>
+              <p style="font-size: 11px; color: var(--ash); margin-bottom: 16px;">Décris ton objectif et l'IA construit ton plan hebdo.</p>
+
+              <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ash); letter-spacing: 0.15em; margin-bottom: 6px;">TON PROFIL</div>
+              <div style="display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 14px;">
+                <span style="border: 1px solid var(--forge-dark); color: var(--forge-dark); padding: 3px 6px; font-family: var(--font-display); font-size: 9px; font-weight: 700;">AVANCÉ</span>
+                <span style="border: 1px solid var(--forge-dark); color: var(--forge-dark); padding: 3px 6px; font-family: var(--font-display); font-size: 9px; font-weight: 700;">PRISE DE MUSCLE</span>
+                <span style="border: 1px solid var(--forge-dark); color: var(--forge-dark); padding: 3px 6px; font-family: var(--font-display); font-size: 9px; font-weight: 700;">4× / SEM</span>
+              </div>
+
+              <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ash); letter-spacing: 0.15em; margin-bottom: 6px;">TA DEMANDE</div>
+              <div style="background: var(--iron-soft); border: 1px solid var(--iron-line); padding: 12px; margin-bottom: 14px;">
+                <p style="font-size: 11px; color: white; line-height: 1.45;">Recomposition corporelle, lundi mardi vendredi samedi. Environ 1h. Pas de squat ni fentes.</p>
+              </div>
+
+              <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ash); letter-spacing: 0.15em; margin-bottom: 8px;">SUGGESTIONS</div>
+              <div style="border-bottom: 0.5px solid var(--border-dark); padding: 6px 0;">
+                <div style="font-family: var(--font-display); font-size: 11px; font-weight: 900; text-transform: uppercase; color: white;">Push · Pull · Legs · 3J</div>
+                <div style="font-size: 9px; color: var(--ash);">Plan classique PPL.</div>
+              </div>
+              <div style="border-bottom: 0.5px solid var(--border-dark); padding: 6px 0;">
+                <div style="font-family: var(--font-display); font-size: 11px; font-weight: 900; text-transform: uppercase; color: white;">Upper · Lower · 4J</div>
+                <div style="font-size: 9px; color: var(--ash);">Fréquence 2× / muscle.</div>
+              </div>
+              <div style="padding: 6px 0;">
+                <div style="font-family: var(--font-display); font-size: 11px; font-weight: 900; text-transform: uppercase; color: white;">Full Body · 3J</div>
+                <div style="font-size: 9px; color: var(--ash);">Pour démarrer ou reprendre.</div>
+              </div>
+
+              <button style="width: calc(100% + 36px); margin: 14px -18px -16px; background: var(--forge-dark); color: white; padding: 13px; border: none; font-family: var(--font-display); font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;">Générer mon plan</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="feature-card-num">2.1</div>
+      <h3 class="feature-card-title">Coach IA texte libre</h3>
+      <p class="feature-card-body">Tu écris en langage naturel, l'IA comprend tes contraintes, tes blessures, tes préférences. 2 générations gratuites par semaine.</p>
+    </div>
+
+    <!-- 2.2 — LOADING 4 STEPS -->
+    <div class="feature-card">
+      <div class="feature-phone-wrap">
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <div class="phone-statusbar"><span>11:55</span><div class="phone-statusbar-icons">···· 􀙇 ▮</div></div>
+            <div style="padding: 100px 24px 16px; display: flex; flex-direction: column; align-items: center; height: calc(100% - 30px);">
+              <div style="font-family: var(--font-kanji); font-size: 130px; font-weight: 900; color: var(--forge-dark); opacity: 0.35; line-height: 1; margin-bottom: 36px;">鍛</div>
+
+              <div style="text-align: center; margin-bottom: 20px;">
+                <h3 style="font-family: var(--font-display); font-size: 22px; font-weight: 900; text-transform: uppercase; color: white;">Ton plan se <span style="color: var(--forge-dark);">forge</span></h3>
+                <p style="font-size: 11px; color: var(--ash); margin-top: 6px; line-height: 1.4;">L'IA analyse ton profil et construit un plan adapté à ton objectif.</p>
+              </div>
+
+              <div style="width: 100%; padding: 0 24px;">
+                <!-- Step 1: ACTIVE -->
+                <div style="display: flex; gap: 12px; align-items: center; padding: 6px 0;">
+                  <div style="width: 14px; height: 14px; border: 1.5px solid var(--forge-dark); display: flex; align-items: center; justify-content: center;">
+                    <div style="width: 6px; height: 6px; background: var(--forge-dark);"></div>
+                  </div>
+                  <span style="font-family: var(--font-display); font-size: 11px; font-weight: 700; color: white; letter-spacing: 0.05em; text-transform: uppercase;">Analyse du profil</span>
+                </div>
+                <!-- Step 2: pending -->
+                <div style="display: flex; gap: 12px; align-items: center; padding: 6px 0;">
+                  <div style="width: 14px; height: 14px; border: 1px solid var(--iron-line);"></div>
+                  <span style="font-family: var(--font-display); font-size: 11px; font-weight: 500; color: var(--ash-dim); letter-spacing: 0.1em; text-transform: uppercase;">Répartition hebdo</span>
+                </div>
+                <!-- Step 3: pending -->
+                <div style="display: flex; gap: 12px; align-items: center; padding: 6px 0;">
+                  <div style="width: 14px; height: 14px; border: 1px solid var(--iron-line);"></div>
+                  <span style="font-family: var(--font-display); font-size: 11px; font-weight: 500; color: var(--ash-dim); letter-spacing: 0.1em; text-transform: uppercase;">Sélection des exercices</span>
+                </div>
+                <!-- Step 4: pending -->
+                <div style="display: flex; gap: 12px; align-items: center; padding: 6px 0;">
+                  <div style="width: 14px; height: 14px; border: 1px solid var(--iron-line);"></div>
+                  <span style="font-family: var(--font-display); font-size: 11px; font-weight: 500; color: var(--ash-dim); letter-spacing: 0.1em; text-transform: uppercase;">Volume et intensité</span>
+                </div>
+              </div>
+
+              <!-- Progress bar -->
+              <div style="width: 80%; height: 2px; background: var(--iron-line); margin-top: 36px; position: relative;">
+                <div style="width: 25%; height: 100%; background: var(--forge-dark);"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="feature-card-num">2.2</div>
+      <h3 class="feature-card-title">Génération transparente</h3>
+      <p class="feature-card-body">Tu vois l'IA travailler en 4 étapes. Pas une boîte noire : un processus.</p>
+    </div>
+
+    <!-- 2.3 — PLAN GÉNÉRÉ -->
+    <div class="feature-card">
+      <div class="feature-phone-wrap">
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <div class="phone-statusbar"><span>12:01</span><div class="phone-statusbar-icons">···· 􀙇 ▮</div></div>
+            <div style="padding: 16px 18px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;">
+                <span style="font-family: var(--font-mono); font-size: 11px; color: var(--forge-dark); letter-spacing: 0.15em;">‹ RETOUR</span>
+                <span style="font-family: var(--font-mono); font-size: 9px; color: white; letter-spacing: 0.1em; background: var(--forge-dark); padding: 4px 8px;">GÉNÉRÉ PAR IA</span>
+              </div>
+
+              <div style="border-left: 3px solid var(--forge-dark); padding: 12px 14px; background: var(--iron-soft); border-top: 1px solid var(--iron-line); border-right: 1px solid var(--iron-line); border-bottom: 1px solid var(--iron-line); margin-bottom: 18px;">
+                <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ash); letter-spacing: 0.2em; margin-bottom: 6px;">APERÇU</div>
+                <h3 style="font-family: var(--font-display); font-size: 17px; font-weight: 900; text-transform: uppercase; color: white; line-height: 1; margin-bottom: 6px;">Recomposition corporelle - 4 jours intense</h3>
+                <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ash);">Lun · Mar · Ven · Sam · 4 exos/sem</div>
+              </div>
+
+              <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ash); letter-spacing: 0.15em; margin-bottom: 8px;">PLANNING HEBDOMADAIRE</div>
+
+              <div style="border: 1px solid var(--iron-line); padding: 10px 12px; margin-bottom: 6px;">
+                <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 4px;">
+                  <span style="background: var(--forge-dark); color: white; font-family: var(--font-display); font-size: 9px; font-weight: 700; padding: 2px 6px; letter-spacing: 0.05em; text-transform: uppercase;">LUN</span>
+                  <span style="font-family: var(--font-display); font-size: 11px; font-weight: 900; text-transform: uppercase; color: white; letter-spacing: 0.02em;">Push - Pectoraux / Épaules / Triceps</span>
+                </div>
+                <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ash); margin-bottom: 6px;">~60 min</div>
+
+                <div style="border-top: 0.5px solid var(--border-dark); padding-top: 6px;">
+                  <div style="display: flex; gap: 8px; align-items: center; padding: 4px 0; border-bottom: 0.5px solid var(--border-dark);">
+                    <div style="width: 18px; height: 18px; border: 1px solid var(--forge-dark); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 9px; color: var(--forge-dark);">1</div>
+                    <div style="flex: 1;">
+                      <div style="font-family: var(--font-display); font-size: 9px; font-weight: 900; text-transform: uppercase; color: white; line-height: 1.1;">Développé couché à la barre</div>
+                      <div style="font-family: var(--font-mono); font-size: 8px; color: var(--ash);">4s × 8r · 90s</div>
+                    </div>
+                    <span style="font-family: var(--font-mono); font-size: 8px; color: var(--forge-dark);">CHANGER</span>
+                  </div>
+                  <div style="display: flex; gap: 8px; align-items: center; padding: 4px 0; border-bottom: 0.5px solid var(--border-dark);">
+                    <div style="width: 18px; height: 18px; border: 1px solid var(--forge-dark); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 9px; color: var(--forge-dark);">2</div>
+                    <div style="flex: 1;">
+                      <div style="font-family: var(--font-display); font-size: 9px; font-weight: 900; text-transform: uppercase; color: white; line-height: 1.1;">Dév. incliné haltères</div>
+                      <div style="font-family: var(--font-mono); font-size: 8px; color: var(--ash);">3s × 10r · 75s</div>
+                    </div>
+                    <span style="font-family: var(--font-mono); font-size: 8px; color: var(--forge-dark);">CHANGER</span>
+                  </div>
+                  <div style="display: flex; gap: 8px; align-items: center; padding: 4px 0; border-bottom: 0.5px solid var(--border-dark);">
+                    <div style="width: 18px; height: 18px; border: 1px solid var(--forge-dark); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 9px; color: var(--forge-dark);">3</div>
+                    <div style="flex: 1;">
+                      <div style="font-family: var(--font-display); font-size: 9px; font-weight: 900; text-transform: uppercase; color: white; line-height: 1.1;">Écartés couchés haltères</div>
+                      <div style="font-family: var(--font-mono); font-size: 8px; color: var(--ash);">3s × 12r · 60s</div>
+                    </div>
+                    <span style="font-family: var(--font-mono); font-size: 8px; color: var(--forge-dark);">CHANGER</span>
+                  </div>
+                  <div style="display: flex; gap: 8px; align-items: center; padding: 4px 0;">
+                    <div style="width: 18px; height: 18px; border: 1px solid var(--forge-dark); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 9px; color: var(--forge-dark);">4</div>
+                    <div style="flex: 1;">
+                      <div style="font-family: var(--font-display); font-size: 9px; font-weight: 900; text-transform: uppercase; color: white; line-height: 1.1;">Dév. militaire barre</div>
+                      <div style="font-family: var(--font-mono); font-size: 8px; color: var(--ash);">4s × 8r · 90s</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <button style="width: calc(100% + 36px); margin: 12px -18px -16px; background: var(--forge-dark); color: white; padding: 13px; border: none; font-family: var(--font-display); font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;">Activer</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="feature-card-num">2.3</div>
+      <h3 class="feature-card-title">Plan que tu peux modifier</h3>
+      <p class="feature-card-body">Le plan généré n'est pas figé. Tu peux changer chaque exercice. C'est un point de départ, pas une prescription.</p>
+    </div>
+
+  </div>
+
+  <!-- Manual creation note -->
+  <div style="margin-top: 80px; padding: 32px; border: 1px solid var(--iron-line); border-left: 3px solid var(--forge-dark); display: flex; gap: 24px; align-items: center;">
+    <div style="font-family: var(--font-kanji); font-size: 56px; color: var(--forge-dark); opacity: 0.5; font-weight: 900; line-height: 1;">鍛</div>
+    <div>
+      <div style="font-family: var(--font-mono); font-size: 11px; color: var(--forge-dark); letter-spacing: 0.2em; margin-bottom: 6px;">2.4 · CRÉATION MANUELLE</div>
+      <div style="font-family: var(--font-display); font-size: 22px; font-weight: 900; text-transform: uppercase; margin-bottom: 6px;">Tu préfères tout maîtriser ? Tu construis à la main.</div>
+      <div style="font-size: 14px; color: var(--ash);">Crée ton plan, nomme-le, choisis tes jours, ajoute tes séances. L'IA reste optionnelle.</div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECTION 03 — PROGRESSION VISIBLE
+     ═══════════════════════════════════════════════════════════ -->
+<section class="section" id="progression">
+  <div class="kanji-watermark" style="top: 100px; left: -60px; font-size: 320px;">錬</div>
+
+  <div class="section-num">03 · Ta progression visible</div>
+  <h2 class="section-title">Chaque rep<br><span class="italic">laisse</span> <span class="accent">une trace.</span></h2>
+  <p class="section-lede">Ton historique, tes records, ta courbe de poids, tes photos. Tout est là, en lecture rapide. Pour voir où tu vas — et d'où tu viens.</p>
+
+  <div class="feature-grid-2" style="margin-bottom: 80px;">
+
+    <!-- 3.1 — STATS LONG TERME -->
+    <div class="feature-card">
+      <div class="feature-phone-wrap">
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <div class="phone-statusbar"><span>11:41</span><div class="phone-statusbar-icons">···· 􀙇 ▮</div></div>
+            <div style="padding: 14px 18px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                <h3 style="font-family: var(--font-display); font-size: 24px; font-weight: 900; text-transform: uppercase; color: white;">Historique</h3>
+                <span style="color: var(--forge-dark); font-size: 16px;">⌕</span>
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--iron-line); margin-bottom: 12px;">
+                <div style="padding: 8px; text-align: center; color: var(--ash); font-family: var(--font-display); font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase;">LISTE</div>
+                <div style="padding: 8px; text-align: center; color: white; font-family: var(--font-display); font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; background: var(--iron-soft);">STATS</div>
+              </div>
+              <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin-bottom: 18px;">
+                <div style="padding: 6px; border: 1px solid var(--iron-line); text-align: center; font-family: var(--font-display); font-size: 9px; color: var(--ash); text-transform: uppercase; letter-spacing: 0.1em;">1 sem.</div>
+                <div style="padding: 6px; background: var(--forge-dark); text-align: center; font-family: var(--font-display); font-size: 9px; color: white; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700;">1 mois</div>
+                <div style="padding: 6px; border: 1px solid var(--iron-line); text-align: center; font-family: var(--font-display); font-size: 9px; color: var(--ash); text-transform: uppercase; letter-spacing: 0.1em;">3 mois</div>
+                <div style="padding: 6px; border: 1px solid var(--iron-line); text-align: center; font-family: var(--font-display); font-size: 9px; color: var(--ash); text-transform: uppercase; letter-spacing: 0.1em;">1 an</div>
+              </div>
+
+              <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ash); letter-spacing: 0.15em; margin-bottom: 4px;">VOLUME TOTAL</div>
+              <div style="font-family: var(--font-display); font-size: 32px; font-weight: 900; color: white; line-height: 1; margin-bottom: 22px;">26 280 <span style="font-size: 16px; color: var(--ash); font-weight: 400;">kg</span></div>
+
+              <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ash); letter-spacing: 0.15em; margin-bottom: 8px;">ACTIVITÉ</div>
+              <div style="display: flex; gap: 10px; margin-bottom: 14px; align-items: center;">
+                <div style="display: grid; grid-template-rows: repeat(7, 8px); grid-auto-flow: column; grid-auto-columns: 8px; gap: 2px;">
+                  <!-- Heatmap 7 rows × 7 cols -->
+                  <div style="background: var(--iron-line);"></div><div style="background: rgba(255,45,63,0.5);"></div><div style="background: var(--iron-line);"></div><div style="background: var(--iron-line);"></div><div style="background: var(--iron-line);"></div><div style="background: var(--iron-line);"></div><div style="background: var(--iron-line);"></div>
+                  <div style="background: var(--iron-line);"></div><div style="background: var(--iron-line);"></div><div style="background: var(--iron-line);"></div><div style="background: var(--iron-line);"></div><div style="background: var(--iron-line);"></div><div style="background: var(--iron-line);"></div><div style="background: var(--iron-line);"></div>
+                  <div style="background: var(--forge-dark);"></div><div style="background: var(--iron-line);"></div><div style="background: var(--iron-line);"></div><div style="background: var(--iron-line);"></div><div style="background: var(--iron-line);"></div><div style="background: var(--iron-line);"></div><div style="background: var(--iron-line);"></div>
+                  <div style="background: var(--iron-line);"></div><div style="background: var(--iron-line);"></div><div style="background: var(--iron-line);"></div><div style="background: var(--iron-line);"></div><div style="background: var(--iron-line);"></div><div style="background: var(--iron-line);"></div><div style="background: var(--iron-line);"></div>
+                  <div style="background: var(--iron-line);"></div><div style="background: rgba(255,45,63,0.4);"></div><div style="background: var(--iron-line);"></div><div style="background: var(--iron-line);"></div><div style="background: var(--iron-line);"></div><div style="background: var(--iron-line);"></div><div style="background: var(--iron-line);"></div>
+                  <div style="background: var(--iron-line);"></div><div style="background: rgba(255,45,63,0.3);"></div><div style="background: var(--iron-line);"></div><div style="background: var(--iron-line);"></div><div style="background: var(--iron-line);"></div><div style="background: var(--iron-line);"></div><div style="background: var(--iron-line);"></div>
+                  <div style="background: var(--forge-dark);"></div><div style="background: rgba(255,45,63,0.4);"></div><div style="background: var(--iron-line);"></div><div style="background: var(--iron-line);"></div><div style="background: var(--iron-line);"></div><div style="background: var(--iron-line);"></div><div style="background: var(--iron-line);"></div>
+                </div>
+              </div>
+
+              <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ash); letter-spacing: 0.15em; margin-bottom: 8px;">VOLUME HEBDOMADAIRE</div>
+              <svg width="100%" height="60" viewBox="0 0 240 60" style="margin-bottom: 14px;">
+                <polyline points="10,55 50,55 90,55 130,30 170,18 210,12 230,6" stroke="var(--forge-dark)" stroke-width="2" fill="none"/>
+                <circle cx="10" cy="55" r="2.5" fill="var(--forge-dark)"/>
+                <circle cx="130" cy="30" r="2.5" fill="var(--forge-dark)"/>
+                <circle cx="170" cy="18" r="2.5" fill="var(--forge-dark)"/>
+                <circle cx="230" cy="6" r="3" fill="var(--forge-dark)"/>
+              </svg>
+
+              <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ash); letter-spacing: 0.15em; margin-bottom: 6px;">RECORDS RÉCENTS</div>
+              <div style="display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 0.5px solid var(--border-dark);">
+                <span style="border: 1px solid var(--forge-dark); color: var(--forge-dark); padding: 2px 5px; font-family: var(--font-mono); font-size: 8px; letter-spacing: 0.1em;">PR</span>
+                <div style="flex: 1;">
+                  <div style="font-family: var(--font-display); font-size: 10px; font-weight: 900; text-transform: uppercase; color: white;">Shrugs avec haltères</div>
+                  <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ash);">5 mai</div>
+                </div>
+                <span style="font-family: var(--font-display); font-size: 13px; font-weight: 900; color: var(--forge-dark);">20 kg</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="feature-card-num">3.1</div>
+      <h3 class="feature-card-title">Heatmap d'activité + courbe de volume</h3>
+      <p class="feature-card-body">Une vue façon GitHub de toutes tes séances, ta courbe de volume hebdo, et tes records les plus récents. Tu vois la progression à l'échelle du trimestre.</p>
+    </div>
+
+    <!-- 3.2 — HISTORIQUE LISTE -->
+    <div class="feature-card">
+      <div class="feature-phone-wrap">
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <div class="phone-statusbar"><span>11:41</span><div class="phone-statusbar-icons">···· 􀙇 ▮</div></div>
+            <div style="padding: 14px 18px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                <h3 style="font-family: var(--font-display); font-size: 24px; font-weight: 900; text-transform: uppercase; color: white;">Historique</h3>
+                <span style="color: white; font-size: 16px;">⌕</span>
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--iron-line); margin-bottom: 12px;">
+                <div style="padding: 8px; text-align: center; color: white; font-family: var(--font-display); font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; background: var(--iron-soft);">LISTE</div>
+                <div style="padding: 8px; text-align: center; color: var(--ash); font-family: var(--font-display); font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase;">STATS</div>
+              </div>
+              <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin-bottom: 12px;">
+                <div style="padding: 6px; border: 1px solid var(--iron-line); text-align: center; font-family: var(--font-display); font-size: 9px; color: var(--ash); text-transform: uppercase;">1 sem.</div>
+                <div style="padding: 6px; background: var(--forge-dark); text-align: center; font-family: var(--font-display); font-size: 9px; color: white; text-transform: uppercase; font-weight: 700;">1 mois</div>
+                <div style="padding: 6px; border: 1px solid var(--iron-line); text-align: center; font-family: var(--font-display); font-size: 9px; color: var(--ash); text-transform: uppercase;">3 mois</div>
+                <div style="padding: 6px; border: 1px solid var(--iron-line); text-align: center; font-family: var(--font-display); font-size: 9px; color: var(--ash); text-transform: uppercase;">1 an</div>
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--iron-line); margin-bottom: 14px;">
+                <div style="padding: 12px; text-align: center; border-right: 0.5px solid var(--iron-line);">
+                  <div style="font-family: var(--font-display); font-size: 22px; font-weight: 900; color: white; line-height: 1;">11</div>
+                  <div style="font-family: var(--font-mono); font-size: 8px; color: var(--ash); letter-spacing: 0.15em; margin-top: 2px;">SÉANCES</div>
+                </div>
+                <div style="padding: 12px; text-align: center;">
+                  <div style="font-family: var(--font-display); font-size: 22px; font-weight: 900; color: white; line-height: 1;">26 280 <span style="font-size: 11px; color: var(--ash); font-weight: 400;">kg</span></div>
+                  <div style="font-family: var(--font-mono); font-size: 8px; color: var(--ash); letter-spacing: 0.15em; margin-top: 2px;">VOLUME</div>
+                </div>
+              </div>
+
+              <div style="font-family: var(--font-mono); font-size: 9px; color: var(--forge-dark); letter-spacing: 0.15em; margin-bottom: 4px; border-bottom: 1px solid var(--forge-dark); padding-bottom: 4px;">CETTE SEMAINE <span style="float: right;">2</span></div>
+
+              <div style="border: 1px solid var(--iron-line); padding: 10px 12px; margin: 8px 0;">
+                <div style="font-family: var(--font-display); font-size: 11px; font-weight: 900; text-transform: uppercase; color: white; margin-bottom: 2px;">Curls Marteau Debout</div>
+                <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ash); margin-bottom: 4px;">MER 6 MAI</div>
+                <div style="display: flex; gap: 12px; font-family: var(--font-mono); font-size: 10px;">
+                  <span style="color: white; font-weight: 700;">0 min</span>
+                  <span style="color: white; font-weight: 700;">1000 kg</span>
+                  <span style="color: var(--ash);">4 séries</span>
+                </div>
+              </div>
+
+              <div style="border: 1px solid var(--iron-line); border-left: 2px solid var(--forge-dark); padding: 10px 12px; position: relative;">
+                <span style="position: absolute; top: 8px; right: 8px; border: 1px solid var(--forge-dark); color: var(--forge-dark); padding: 2px 5px; font-family: var(--font-mono); font-size: 8px; letter-spacing: 0.1em;">6 PR</span>
+                <div style="font-family: var(--font-display); font-size: 11px; font-weight: 900; text-transform: uppercase; color: white; margin-bottom: 2px;">Pull · Dos / Biceps / Trapèzes</div>
+                <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ash); margin-bottom: 4px;">MAR 5 MAI</div>
+                <div style="display: flex; gap: 12px; font-family: var(--font-mono); font-size: 10px; margin-bottom: 6px;">
+                  <span style="color: white; font-weight: 700;">1 min</span>
+                  <span style="color: white; font-weight: 700;">8 610 kg</span>
+                  <span style="color: var(--ash);">24 séries</span>
+                </div>
+                <div style="display: flex; gap: 4px;">
+                  <span style="border: 1px solid var(--iron-line); color: var(--ash); padding: 2px 5px; font-family: var(--font-display); font-size: 8px; text-transform: uppercase; letter-spacing: 0.05em;">DOS</span>
+                  <span style="border: 1px solid var(--iron-line); color: var(--ash); padding: 2px 5px; font-family: var(--font-display); font-size: 8px; text-transform: uppercase; letter-spacing: 0.05em;">BICEPS</span>
+                  <span style="border: 1px solid var(--iron-line); color: var(--ash); padding: 2px 5px; font-family: var(--font-display); font-size: 8px; text-transform: uppercase; letter-spacing: 0.05em;">TRAPÈZES</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="feature-card-num">3.2</div>
+      <h3 class="feature-card-title">Historique des séances avec PR</h3>
+      <p class="feature-card-body">Tes séances groupées par semaine, avec les badges PR qui ressortent. Filtres par muscle, par période. Recherche directe.</p>
+    </div>
+
+  </div>
+
+  <div class="feature-grid-2">
+
+    <!-- 3.3 — POIDS -->
+    <div class="feature-card">
+      <div class="feature-phone-wrap">
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <div class="phone-statusbar"><span>11:42</span><div class="phone-statusbar-icons">···· 􀙇 ▮</div></div>
+            <div style="padding: 14px 18px;">
+              <div style="display: flex; justify-content: space-between; margin-bottom: 24px;">
+                <span style="font-family: var(--font-mono); font-size: 11px; color: var(--forge-dark); letter-spacing: 0.15em;"><strong>‹ BACK</strong> POIDS</span>
+                <span style="font-family: var(--font-mono); font-size: 11px; color: var(--forge-dark); letter-spacing: 0.15em;">+ AJOUTER</span>
+              </div>
+              <div style="text-align: center; margin-bottom: 24px;">
+                <div style="font-family: var(--font-display); font-size: 64px; font-weight: 900; line-height: 1; color: white; letter-spacing: -0.02em;">75,5<span style="font-size: 22px; color: var(--ash); font-weight: 400;"> kg</span></div>
+                <div style="font-size: 11px; color: var(--ash); margin-top: 4px;">Aujourd'hui · 11:42</div>
+                <div style="font-family: var(--font-display); font-size: 14px; font-weight: 700; color: var(--green-pr); letter-spacing: 0.05em; margin-top: 6px;">-0,5 kg · 30 jours</div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--iron-line); margin-bottom: 20px;">
+                <div style="padding: 8px; text-align: center; color: var(--ash); font-family: var(--font-display); font-size: 10px; letter-spacing: 0.1em;">7J</div>
+                <div style="padding: 8px; text-align: center; color: white; font-family: var(--font-display); font-size: 10px; letter-spacing: 0.1em; background: var(--forge-dark); font-weight: 700;">30J</div>
+                <div style="padding: 8px; text-align: center; color: var(--ash); font-family: var(--font-display); font-size: 10px; letter-spacing: 0.1em;">3M</div>
+                <div style="padding: 8px; text-align: center; color: var(--ash); font-family: var(--font-display); font-size: 10px; letter-spacing: 0.1em;">1A</div>
+              </div>
+
+              <svg width="100%" height="120" viewBox="0 0 260 120">
+                <line x1="0" y1="20" x2="260" y2="20" stroke="var(--iron-line)" stroke-dasharray="2,2"/>
+                <line x1="0" y1="60" x2="260" y2="60" stroke="var(--iron-line)" stroke-dasharray="2,2"/>
+                <line x1="0" y1="100" x2="260" y2="100" stroke="var(--iron-line)" stroke-dasharray="2,2"/>
+                <text x="2" y="14" fill="var(--ash)" font-family="JetBrains Mono" font-size="10">76.0</text>
+                <text x="2" y="56" fill="var(--ash)" font-family="JetBrains Mono" font-size="10">75.8</text>
+                <text x="2" y="96" fill="var(--ash)" font-family="JetBrains Mono" font-size="10">75.5</text>
+                <line x1="35" y1="20" x2="240" y2="100" stroke="var(--forge-dark)" stroke-width="2.5" fill="none"/>
+                <circle cx="240" cy="100" r="5" fill="var(--forge-dark)"/>
+                <path d="M 35 20 L 240 100 L 240 110 L 35 110 Z" fill="rgba(255,45,63,0.08)"/>
+              </svg>
+
+              <div style="display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--iron-line); margin-top: 20px;">
+                <div style="padding: 12px; text-align: center; border-right: 0.5px solid var(--iron-line);">
+                  <div style="font-family: var(--font-display); font-size: 18px; font-weight: 900; color: var(--green-pr);">75,5</div>
+                  <div style="font-family: var(--font-mono); font-size: 8px; color: var(--ash); letter-spacing: 0.15em; margin-top: 2px;">MIN</div>
+                </div>
+                <div style="padding: 12px; text-align: center; border-right: 0.5px solid var(--iron-line);">
+                  <div style="font-family: var(--font-display); font-size: 18px; font-weight: 900; color: white;">75,8</div>
+                  <div style="font-family: var(--font-mono); font-size: 8px; color: var(--ash); letter-spacing: 0.15em; margin-top: 2px;">MOY.</div>
+                </div>
+                <div style="padding: 12px; text-align: center;">
+                  <div style="font-family: var(--font-display); font-size: 18px; font-weight: 900; color: var(--amber);">76,0</div>
+                  <div style="font-family: var(--font-mono); font-size: 8px; color: var(--ash); letter-spacing: 0.15em; margin-top: 2px;">MAX</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="feature-card-num">3.3</div>
+      <h3 class="feature-card-title">Suivi du poids — courbe + min/moy/max</h3>
+      <p class="feature-card-body">Tu pèses, l'app trace. Le delta sur 30 jours en vert quand tu vas dans la bonne direction. Min, moyenne, max — pour comprendre vraiment ta tendance.</p>
+    </div>
+
+    <!-- 3.4 — ÉVOLUTION PHOTOS -->
+    <div class="feature-card">
+      <div class="feature-phone-wrap">
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <div class="phone-statusbar"><span>11:44</span><div class="phone-statusbar-icons">···· 􀙇 ▮</div></div>
+            <div style="padding: 14px 18px;">
+              <div style="display: flex; justify-content: space-between; margin-bottom: 18px;">
+                <span style="font-family: var(--font-mono); font-size: 11px; color: var(--forge-dark); letter-spacing: 0.15em;"><strong>‹ BACK</strong> ÉVOLUTION</span>
+                <span style="font-family: var(--font-mono); font-size: 11px; color: var(--forge-dark); letter-spacing: 0.15em;">+ AJOUTER</span>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--iron-line); margin-bottom: 14px;">
+                <div style="padding: 12px; text-align: center; border-right: 0.5px solid var(--iron-line);">
+                  <div style="font-family: var(--font-display); font-size: 26px; font-weight: 900; color: white; line-height: 1;">2</div>
+                  <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ash); letter-spacing: 0.15em; margin-top: 2px;">PHOTOS</div>
+                </div>
+                <div style="padding: 12px; text-align: center;">
+                  <div style="font-family: var(--font-display); font-size: 26px; font-weight: 900; color: var(--forge-dark); line-height: 1;">-20 kg</div>
+                  <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ash); letter-spacing: 0.15em; margin-top: 2px;">DEPUIS LE DÉBUT</div>
+                </div>
+              </div>
+
+              <div style="border: 1px solid var(--forge-dark); padding: 8px 10px; display: flex; gap: 10px; align-items: center; margin-bottom: 14px;">
+                <div style="display: flex; gap: 2px;">
+                  <div style="width: 24px; height: 24px; background: linear-gradient(135deg, #5a4a3a, #2a2018);"></div>
+                  <div style="width: 24px; height: 24px; background: linear-gradient(135deg, #4a3a2a, #1a1208);"></div>
+                </div>
+                <div style="flex: 1;">
+                  <div style="font-family: var(--font-display); font-size: 11px; font-weight: 700; color: white; text-transform: capitalize;">Comparer & partager</div>
+                  <div style="font-size: 9px; color: var(--ash);">Avant / après en un tap</div>
+                </div>
+                <span style="color: var(--forge-dark); font-size: 12px;">›</span>
+              </div>
+
+              <div style="display: flex; gap: 4px; margin-bottom: 14px;">
+                <span style="background: var(--forge-dark); color: white; padding: 5px 12px; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;">TOUT</span>
+                <span style="border: 1px solid var(--iron-line); color: var(--ash); padding: 5px 12px; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;">FACE</span>
+                <span style="border: 1px solid var(--iron-line); color: var(--ash); padding: 5px 12px; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;">PROFIL</span>
+                <span style="border: 1px solid var(--iron-line); color: var(--ash); padding: 5px 12px; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;">DOS</span>
+              </div>
+
+              <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ash); letter-spacing: 0.15em; margin-bottom: 6px;">MAI 2026 · 70 KG</div>
+              <div style="position: relative; aspect-ratio: 1; background: linear-gradient(135deg, #4a3a2a, #1a1208); margin-bottom: 14px;">
+                <div style="position: absolute; inset: 0; background: radial-gradient(circle at 50% 35%, #c8a07a 0%, #6b4c34 40%, #1a1208 80%);"></div>
+                <span style="position: absolute; top: 6px; left: 6px; background: var(--forge-dark); color: white; padding: 2px 6px; font-family: var(--font-display); font-size: 8px; font-weight: 700; letter-spacing: 0.1em;">FACE</span>
+                <span style="position: absolute; bottom: 6px; left: 6px; font-family: var(--font-display); font-size: 9px; font-weight: 700; color: white; letter-spacing: 0.1em;">06 MAI</span>
+              </div>
+
+              <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ash); letter-spacing: 0.15em; margin-bottom: 6px;">MARS 2026 · 90 KG</div>
+              <div style="position: relative; aspect-ratio: 1; background: linear-gradient(135deg, #5a4a3a, #2a2018); margin-bottom: 14px;">
+                <div style="position: absolute; inset: 0; background: radial-gradient(circle at 35% 40%, #d4b896 0%, #8a6f56 35%, #2a2018 80%);"></div>
+                <span style="position: absolute; top: 6px; left: 6px; background: var(--forge-dark); color: white; padding: 2px 6px; font-family: var(--font-display); font-size: 8px; font-weight: 700; letter-spacing: 0.1em;">FACE</span>
+                <span style="position: absolute; bottom: 6px; left: 6px; font-family: var(--font-display); font-size: 9px; font-weight: 700; color: white; letter-spacing: 0.1em;">05 MARS</span>
+              </div>
+
+              <ul style="list-style: none; font-size: 10px; color: var(--ash); line-height: 1.6;">
+                <li>· Stockées uniquement sur ton téléphone</li>
+                <li>· Jamais envoyées à nos serveurs</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="feature-card-num">3.4</div>
+      <h3 class="feature-card-title">Galerie évolution photos</h3>
+      <p class="feature-card-body">Tes photos avant/profil/dos, groupées par mois. <strong style="color: white;">Stockées uniquement sur ton téléphone</strong>, jamais sur nos serveurs.</p>
+    </div>
+
+  </div>
+</section>
+<hr class="section-divider">
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECTION 04 — NUTRITION
+     ═══════════════════════════════════════════════════════════ -->
+<section class="section" id="nutrition">
+  <div class="kanji-watermark" style="top: 60px; right: 0; font-size: 280px;">鍛</div>
+
+  <div class="section-num">04 · Ta nutrition complète</div>
+  <h2 class="section-title">Plan, recettes,<br><span class="italic">liste de</span> <span class="accent">courses.</span></h2>
+  <p class="section-lede">Pas un compteur de calories de plus. Un plan hebdo cohérent avec ton entraînement, des recettes à 4 étapes, et la liste de courses générée automatiquement.</p>
+
+  <div class="feature-grid-3">
+
+    <!-- 4.1 — NUTRITION JOUR -->
+    <div class="feature-card">
+      <div class="feature-phone-wrap">
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <div class="phone-statusbar"><span>12:02</span><div class="phone-statusbar-icons">···· 􀙇 ▮</div></div>
+            <div style="padding: 14px 18px; position: relative;">
+              <div style="position: absolute; top: 60px; right: 0; font-family: var(--font-kanji); font-size: 100px; color: var(--forge-dark); opacity: 0.06; font-weight: 900;">鍛</div>
+
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                <h3 style="font-family: var(--font-display); font-size: 24px; font-weight: 900; text-transform: uppercase; color: white;">Nutrition</h3>
+                <span style="font-family: var(--font-mono); font-size: 11px; color: var(--forge-dark); letter-spacing: 0.15em;">PLAN ›</span>
+              </div>
+
+              <!-- 7-day grid -->
+              <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; margin-bottom: 14px;">
+                <div style="border: 0.5px solid var(--iron-line); padding: 6px 2px; text-align: center;">
+                  <div style="font-family: var(--font-mono); font-size: 7px; color: var(--ash); letter-spacing: 0.1em;">LUN</div>
+                  <div style="font-family: var(--font-display); font-size: 14px; font-weight: 900; color: white;">4</div>
+                  <div style="font-family: var(--font-mono); font-size: 7px; color: var(--ash);">1510</div>
+                </div>
+                <div style="border: 0.5px solid var(--iron-line); padding: 6px 2px; text-align: center;">
+                  <div style="font-family: var(--font-mono); font-size: 7px; color: var(--ash); letter-spacing: 0.1em;">MAR</div>
+                  <div style="font-family: var(--font-display); font-size: 14px; font-weight: 900; color: white;">5</div>
+                  <div style="font-family: var(--font-mono); font-size: 7px; color: var(--ash);">1590</div>
+                </div>
+                <div style="background: var(--forge-dark); padding: 6px 2px; text-align: center;">
+                  <div style="font-family: var(--font-mono); font-size: 7px; color: white; letter-spacing: 0.1em; font-weight: 700;">MER</div>
+                  <div style="font-family: var(--font-display); font-size: 14px; font-weight: 900; color: white;">6</div>
+                  <div style="font-family: var(--font-mono); font-size: 7px; color: rgba(255,255,255,0.7);">1610</div>
+                </div>
+                <div style="border: 0.5px solid var(--iron-line); padding: 6px 2px; text-align: center;">
+                  <div style="font-family: var(--font-mono); font-size: 7px; color: var(--ash); letter-spacing: 0.1em;">JEU</div>
+                  <div style="font-family: var(--font-display); font-size: 14px; font-weight: 900; color: white;">7</div>
+                  <div style="font-family: var(--font-mono); font-size: 7px; color: var(--ash);">1555</div>
+                </div>
+                <div style="border: 0.5px solid var(--iron-line); padding: 6px 2px; text-align: center;">
+                  <div style="font-family: var(--font-mono); font-size: 7px; color: var(--ash); letter-spacing: 0.1em;">VEN</div>
+                  <div style="font-family: var(--font-display); font-size: 14px; font-weight: 900; color: white;">8</div>
+                  <div style="font-family: var(--font-mono); font-size: 7px; color: var(--ash);">1595</div>
+                </div>
+                <div style="border: 0.5px solid var(--iron-line); padding: 6px 2px; text-align: center;">
+                  <div style="font-family: var(--font-mono); font-size: 7px; color: var(--ash); letter-spacing: 0.1em;">SAM</div>
+                  <div style="font-family: var(--font-display); font-size: 14px; font-weight: 900; color: white;">9</div>
+                  <div style="font-family: var(--font-mono); font-size: 7px; color: var(--ash);">1635</div>
+                </div>
+                <div style="border: 0.5px solid var(--iron-line); padding: 6px 2px; text-align: center;">
+                  <div style="font-family: var(--font-mono); font-size: 7px; color: var(--ash); letter-spacing: 0.1em;">DIM</div>
+                  <div style="font-family: var(--font-display); font-size: 14px; font-weight: 900; color: white;">10</div>
+                  <div style="font-family: var(--font-mono); font-size: 7px; color: var(--ash);">1615</div>
+                </div>
+              </div>
+
+              <!-- Liste de courses link -->
+              <div style="border: 1px solid var(--iron-line); padding: 8px 12px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-family: var(--font-mono); font-size: 10px; color: var(--ash); letter-spacing: 0.15em;">LISTE DE COURSES</span>
+                <span style="font-family: var(--font-mono); font-size: 10px; color: var(--forge-dark);">0/64 ›</span>
+              </div>
+
+              <!-- Theme du jour -->
+              <div style="border-left: 3px solid var(--forge-dark); background: rgba(255,45,63,0.06); padding: 10px 12px; margin-bottom: 14px;">
+                <div style="font-family: var(--font-mono); font-size: 9px; color: var(--forge-dark); letter-spacing: 0.15em; margin-bottom: 4px;">MER · THÈME DU JOUR</div>
+                <div style="font-family: var(--font-display); font-size: 12px; font-weight: 900; text-transform: uppercase; color: white; line-height: 1.1;">🐟 Mercredi poisson — la mer dans l'assiette</div>
+              </div>
+
+              <!-- Cible du jour -->
+              <div style="border: 1px solid var(--iron-line); padding: 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: baseline;">
+                <span style="font-family: var(--font-mono); font-size: 10px; color: var(--ash); letter-spacing: 0.15em;">CIBLE DU JOUR</span>
+                <span style="font-family: var(--font-display); font-size: 22px; font-weight: 900; color: white;">1 610<span style="font-size: 10px; color: var(--ash); font-weight: 400;"> kcal</span></span>
+              </div>
+
+              <!-- Macros -->
+              <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-bottom: 12px;">
+                <div style="border: 1px solid var(--iron-line); border-top: 2px solid var(--forge-dark); padding: 8px; text-align: center;">
+                  <div style="font-family: var(--font-mono); font-size: 8px; color: var(--ash); letter-spacing: 0.15em;">PROT.</div>
+                  <div style="font-family: var(--font-display); font-size: 17px; font-weight: 900; color: var(--forge-dark);">143<span style="font-size: 9px; color: var(--ash); font-weight: 400;">g</span></div>
+                </div>
+                <div style="border: 1px solid var(--iron-line); border-top: 2px solid var(--amber); padding: 8px; text-align: center;">
+                  <div style="font-family: var(--font-mono); font-size: 8px; color: var(--ash); letter-spacing: 0.15em;">GLUC.</div>
+                  <div style="font-family: var(--font-display); font-size: 17px; font-weight: 900; color: var(--amber);">116<span style="font-size: 9px; color: var(--ash); font-weight: 400;">g</span></div>
+                </div>
+                <div style="border: 1px solid var(--iron-line); border-top: 2px solid var(--green-pr); padding: 8px; text-align: center;">
+                  <div style="font-family: var(--font-mono); font-size: 8px; color: var(--ash); letter-spacing: 0.15em;">LIP.</div>
+                  <div style="font-family: var(--font-display); font-size: 17px; font-weight: 900; color: var(--green-pr);">56<span style="font-size: 9px; color: var(--ash); font-weight: 400;">g</span></div>
+                </div>
+              </div>
+
+              <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ash); letter-spacing: 0.15em; margin-bottom: 6px;">REPAS</div>
+              <div style="border-left: 3px solid var(--forge-dark); background: rgba(255,45,63,0.04); padding: 8px 10px;">
+                <div style="display: flex; justify-content: space-between;">
+                  <span style="font-family: var(--font-mono); font-size: 8px; color: var(--ash); letter-spacing: 0.15em;">PETIT-DÉJ · 07H30</span>
+                  <span style="font-family: var(--font-display); font-size: 11px; font-weight: 700; color: white;">310<span style="font-size: 7px; color: var(--ash);">kcal</span></span>
+                </div>
+                <div style="font-family: var(--font-display); font-size: 10px; font-weight: 900; text-transform: uppercase; color: white; margin-top: 2px;">Œufs brouillés au saumon fumé</div>
+                <div style="display: flex; gap: 3px; margin-top: 4px;">
+                  <span style="border: 1px solid var(--forge-dark); color: var(--forge-dark); padding: 1px 4px; font-family: var(--font-mono); font-size: 8px;">P 32</span>
+                  <span style="border: 1px solid var(--amber); color: var(--amber); padding: 1px 4px; font-family: var(--font-mono); font-size: 8px;">G 2</span>
+                  <span style="border: 1px solid var(--green-pr); color: var(--green-pr); padding: 1px 4px; font-family: var(--font-mono); font-size: 8px;">L 19</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="feature-card-num">4.1</div>
+      <h3 class="feature-card-title">Plan nutrition 7 jours</h3>
+      <p class="feature-card-body">Cible kcal et macros par jour, repas thématisés (mercredi poisson, vendredi pâtes…). Tout en cohérence avec ton plan d'entraînement.</p>
+    </div>
+
+    <!-- 4.2 — RECETTE -->
+    <div class="feature-card">
+      <div class="feature-phone-wrap">
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <div class="phone-statusbar"><span>12:02</span><div class="phone-statusbar-icons">···· 􀙇 ▮</div></div>
+            <div style="padding: 14px 18px; position: relative;">
+              <div style="font-family: var(--font-mono); font-size: 11px; color: var(--forge-dark); letter-spacing: 0.15em; margin-bottom: 22px;">‹ BACK</div>
+              <div style="font-family: var(--font-mono); font-size: 9px; color: var(--forge-dark); letter-spacing: 0.2em; margin-bottom: 6px;">DÎNER · 19H30 · 30 MIN</div>
+              <h3 style="font-family: var(--font-display); font-size: 18px; font-weight: 900; line-height: 1.05; text-transform: uppercase; color: white; margin-bottom: 14px;">Saumon poêlé,<br>patates douces rôties</h3>
+
+              <div style="display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--iron-line); margin-bottom: 14px;">
+                <div style="padding: 8px 6px; text-align: center; border-right: 0.5px solid var(--iron-line);">
+                  <div style="font-family: var(--font-mono); font-size: 8px; color: var(--ash); letter-spacing: 0.15em;">CAL</div>
+                  <div style="font-family: var(--font-display); font-size: 16px; font-weight: 900; color: white;">520</div>
+                </div>
+                <div style="padding: 8px 6px; text-align: center; border-right: 0.5px solid var(--iron-line);">
+                  <div style="font-family: var(--font-mono); font-size: 8px; color: var(--ash); letter-spacing: 0.15em;">PROT</div>
+                  <div style="font-family: var(--font-display); font-size: 16px; font-weight: 900; color: var(--forge-dark);">38<span style="font-size: 9px; color: var(--ash);">g</span></div>
+                </div>
+                <div style="padding: 8px 6px; text-align: center; border-right: 0.5px solid var(--iron-line);">
+                  <div style="font-family: var(--font-mono); font-size: 8px; color: var(--ash); letter-spacing: 0.15em;">GLUC</div>
+                  <div style="font-family: var(--font-display); font-size: 16px; font-weight: 900; color: var(--amber);">44<span style="font-size: 9px; color: var(--ash);">g</span></div>
+                </div>
+                <div style="padding: 8px 6px; text-align: center;">
+                  <div style="font-family: var(--font-mono); font-size: 8px; color: var(--ash); letter-spacing: 0.15em;">LIP</div>
+                  <div style="font-family: var(--font-display); font-size: 16px; font-weight: 900; color: var(--green-pr);">18<span style="font-size: 9px; color: var(--ash);">g</span></div>
+                </div>
+              </div>
+
+              <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ash); letter-spacing: 0.15em; margin-bottom: 8px;">INGRÉDIENTS · 1 PERS.</div>
+              <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 0.5px solid var(--border-dark); font-size: 11px; color: white;">
+                <span>Pavé de saumon</span><span style="color: var(--ash);">160 g</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 0.5px solid var(--border-dark); font-size: 11px; color: white;">
+                <span>Patate douce</span><span style="color: var(--ash);">200 g</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 0.5px solid var(--border-dark); font-size: 11px; color: white;">
+                <span>Huile d'olive</span><span style="color: var(--ash);">1 c. à soupe</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 0.5px solid var(--border-dark); font-size: 11px; color: white;">
+                <span>Paprika fumé</span><span style="color: var(--ash);">1 c. à café</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 0.5px solid var(--border-dark); font-size: 11px; color: white;">
+                <span>Sel, poivre, ail</span><span style="color: var(--ash);">1 pincée</span>
+              </div>
+
+              <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ash); letter-spacing: 0.15em; margin: 14px 0 8px;">PRÉPARATION</div>
+              <div style="display: flex; gap: 10px; padding: 4px 0; font-size: 10px; line-height: 1.5;">
+                <span style="font-family: var(--font-display); font-size: 13px; font-weight: 900; color: var(--forge-dark); flex-shrink: 0; min-width: 16px;">01</span>
+                <span style="color: white;">Préchauffe le four à 200°C. Coupe la patate douce.</span>
+              </div>
+              <div style="display: flex; gap: 10px; padding: 4px 0; font-size: 10px; line-height: 1.5;">
+                <span style="font-family: var(--font-display); font-size: 13px; font-weight: 900; color: var(--forge-dark); flex-shrink: 0; min-width: 16px;">02</span>
+                <span style="color: white;">Étale les cubes, enfourne 20-25 min.</span>
+              </div>
+              <div style="display: flex; gap: 10px; padding: 4px 0; font-size: 10px; line-height: 1.5;">
+                <span style="font-family: var(--font-display); font-size: 13px; font-weight: 900; color: var(--forge-dark); flex-shrink: 0; min-width: 16px;">03</span>
+                <span style="color: white;">5 min avant la fin, fais revenir le saumon.</span>
+              </div>
+              <div style="display: flex; gap: 10px; padding: 4px 0; font-size: 10px; line-height: 1.5;">
+                <span style="font-family: var(--font-display); font-size: 13px; font-weight: 900; color: var(--forge-dark); flex-shrink: 0; min-width: 16px;">04</span>
+                <span style="color: white;">Sers avec un filet de citron.</span>
+              </div>
+
+              <div style="border-left: 3px solid var(--forge-dark); padding: 8px 10px; margin-top: 12px; display: flex; gap: 8px; align-items: center;">
+                <span style="background: red; color: white; padding: 2px 5px; font-size: 9px; font-weight: 700;">▶</span>
+                <span style="font-family: var(--font-display); font-size: 10px; color: white; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;">Voir un exemple sur YouTube</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="feature-card-num">4.2</div>
+      <h3 class="feature-card-title">Recettes détaillées avec macros</h3>
+      <p class="feature-card-body">Ingrédients précis, préparation en 4 étapes, vidéo YouTube en backup. Tout pour pas réfléchir à 19h30.</p>
+    </div>
+
+    <!-- 4.3 — LISTE DE COURSES -->
+    <div class="feature-card">
+      <div class="feature-phone-wrap">
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <div class="phone-statusbar"><span>12:03</span><div class="phone-statusbar-icons">···· 􀙇 ▮</div></div>
+            <div style="padding: 14px 18px; position: relative;">
+              <div style="position: absolute; top: 30px; right: -10px; font-family: var(--font-kanji); font-size: 110px; color: var(--forge-dark); opacity: 0.06; font-weight: 900;">鍛</div>
+
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;">
+                <span style="font-family: var(--font-mono); font-size: 11px; color: var(--forge-dark); letter-spacing: 0.15em;"><strong>‹ BACK</strong> COURSES</span>
+                <span style="font-family: var(--font-mono); font-size: 11px; color: var(--forge-dark); letter-spacing: 0.15em;">PARTAGER</span>
+              </div>
+
+              <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ash); letter-spacing: 0.15em; margin-bottom: 4px;">SEMAINE EN COURS</div>
+              <div style="display: flex; align-items: baseline; gap: 8px; margin-bottom: 8px;">
+                <span style="font-family: var(--font-display); font-size: 36px; font-weight: 900; color: white; line-height: 1;">0</span>
+                <span style="font-family: var(--font-mono); font-size: 11px; color: var(--ash);">/ 64 articles cochés</span>
+              </div>
+              <div style="height: 2px; background: var(--iron-line); margin-bottom: 18px;"></div>
+
+              <div style="display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 9px; color: var(--ash); letter-spacing: 0.15em; margin-bottom: 8px;">
+                <span>ÉPICERIE 0/23</span>
+                <span style="color: var(--forge-dark);">‹</span>
+              </div>
+
+              <div style="display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 0.5px solid var(--border-dark);">
+                <div style="width: 14px; height: 14px; border: 1px solid var(--ash); flex-shrink: 0;"></div>
+                <span style="font-size: 11px; color: white; flex: 1;">Sauce soja légère</span>
+                <span style="font-family: var(--font-mono); font-size: 9px; color: var(--ash);">1 bouteille (250 ml)</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 0.5px solid var(--border-dark);">
+                <div style="width: 14px; height: 14px; border: 1px solid var(--ash); flex-shrink: 0;"></div>
+                <span style="font-size: 11px; color: white; flex: 1;">Moutarde de Dijon</span>
+                <span style="font-family: var(--font-mono); font-size: 9px; color: var(--ash);">1 pot</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 0.5px solid var(--border-dark);">
+                <div style="width: 14px; height: 14px; border: 1px solid var(--ash); flex-shrink: 0;"></div>
+                <span style="font-size: 11px; color: white; flex: 1;">Huile d'olive</span>
+                <span style="font-family: var(--font-mono); font-size: 9px; color: var(--ash);">1 bouteille (500 ml)</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 0.5px solid var(--border-dark);">
+                <div style="width: 14px; height: 14px; border: 1px solid var(--ash); flex-shrink: 0;"></div>
+                <span style="font-size: 11px; color: white; flex: 1;">Vinaigre de riz</span>
+                <span style="font-family: var(--font-mono); font-size: 9px; color: var(--ash);">1 bouteille</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 0.5px solid var(--border-dark);">
+                <div style="width: 14px; height: 14px; border: 1px solid var(--ash); flex-shrink: 0;"></div>
+                <span style="font-size: 11px; color: white; flex: 1;">Cacao pur non sucré</span>
+                <span style="font-family: var(--font-mono); font-size: 9px; color: var(--ash);">1 boîte (250 g)</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 0.5px solid var(--border-dark);">
+                <div style="width: 14px; height: 14px; border: 1px solid var(--ash); flex-shrink: 0;"></div>
+                <span style="font-size: 11px; color: white; flex: 1;">Whey protéine</span>
+                <span style="font-family: var(--font-mono); font-size: 9px; color: var(--ash);">1 kg</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 0.5px solid var(--border-dark);">
+                <div style="width: 14px; height: 14px; border: 1px solid var(--ash); flex-shrink: 0;"></div>
+                <span style="font-size: 11px; color: white; flex: 1;">Amandes effilées</span>
+                <span style="font-family: var(--font-mono); font-size: 9px; color: var(--ash);">100 g</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 0.5px solid var(--border-dark);">
+                <div style="width: 14px; height: 14px; border: 1px solid var(--ash); flex-shrink: 0;"></div>
+                <span style="font-size: 11px; color: white; flex: 1;">Noix</span>
+                <span style="font-family: var(--font-mono); font-size: 9px; color: var(--ash);">100 g</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 0.5px solid var(--border-dark);">
+                <div style="width: 14px; height: 14px; border: 1px solid var(--ash); flex-shrink: 0;"></div>
+                <span style="font-size: 11px; color: white; flex: 1;">Graines de sésame</span>
+                <span style="font-family: var(--font-mono); font-size: 9px; color: var(--ash);">50 g</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="feature-card-num">4.3</div>
+      <h3 class="feature-card-title">Liste de courses auto-générée</h3>
+      <p class="feature-card-body">Toutes les recettes de la semaine, agrégées en une liste rangée par rayons. Tu coches au supermarché, tu partages au conjoint.</p>
+    </div>
+
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECTION 05 — PARTAGE
+     ═══════════════════════════════════════════════════════════ -->
+<section class="section">
+  <div class="kanji-watermark" style="top: 80px; left: -40px; font-size: 320px;">錬</div>
+
+  <div class="section-num">05 · Quand tu veux partager</div>
+  <h2 class="section-title">Tes records,<br><span class="italic">ta</span> <span class="accent">transformation.</span></h2>
+  <p class="section-lede">Pour les jours où ce que tu as fait mérite plus qu'une ligne dans l'historique. Cartes 9:16 prêtes pour Instagram, TikTok, ou la conv WhatsApp avec tes potes de salle.</p>
+
+  <div class="feature-grid-2">
+
+    <!-- 5.1 — PARTAGE SÉANCE -->
+    <div class="feature-card">
+      <div class="feature-phone-wrap">
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <div class="phone-statusbar"><span>11:41</span><div class="phone-statusbar-icons">···· 􀙇 ▮</div></div>
+            <div style="padding: 30px 24px 16px; text-align: center;">
+              <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ash); letter-spacing: 0.2em; margin-bottom: 4px;">APERÇU 9:16</div>
+              <h3 style="font-family: var(--font-display); font-size: 16px; font-weight: 900; text-transform: uppercase; color: white; margin-bottom: 16px;">Partager ta séance</h3>
+
+              <div style="display: flex; justify-content: center; gap: 6px; margin-bottom: 18px;">
+                <span style="background: var(--forge-dark); color: white; padding: 5px 14px; font-family: var(--font-display); font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;">PHOTO</span>
+                <span style="border: 1px solid var(--iron-line); color: white; padding: 5px 14px; font-family: var(--font-display); font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;">CAMÉRA</span>
+                <span style="border: 1px solid var(--iron-line); color: white; padding: 5px 14px; font-family: var(--font-display); font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;">RETIRER</span>
+              </div>
+
+              <!-- Aperçu 9:16 share card -->
+              <div style="border: 1px solid var(--iron-line); aspect-ratio: 9/16; max-height: 320px; margin: 0 auto 14px; position: relative; overflow: hidden; background: linear-gradient(180deg, #0a0a0a 0%, #2a1a1a 100%);">
+                <!-- Athletic body imagery via gradient -->
+                <div style="position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 60%, rgba(140,80,60,0.4) 0%, rgba(20,15,10,0.95) 75%);"></div>
+
+                <div style="position: absolute; top: 12px; left: 14px; font-family: var(--font-kanji); font-size: 13px; color: var(--forge-dark); font-weight: 900; letter-spacing: 0.4em;">鍛 錬</div>
+
+                <div style="position: absolute; top: 36px; left: 14px; right: 14px;">
+                  <div style="font-family: var(--font-display); font-size: 13px; font-weight: 900; text-transform: uppercase; color: white; letter-spacing: 0.02em; line-height: 1;">Curls Marteau Debout</div>
+                  <div style="font-family: var(--font-mono); font-size: 8px; color: var(--ash); letter-spacing: 0.15em; margin-top: 2px;">MER 6 MAI · 0MIN</div>
+                </div>
+
+                <div style="position: absolute; bottom: 36px; left: 14px; right: 14px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; padding-bottom: 8px; border-bottom: 0.5px solid rgba(255,255,255,0.2);">
+                  <div style="text-align: left;">
+                    <div style="font-family: var(--font-mono); font-size: 7px; color: var(--ash); letter-spacing: 0.15em;">VOLUME</div>
+                    <div style="font-family: var(--font-display); font-size: 14px; font-weight: 900; color: white;">1000<span style="font-size: 8px; color: var(--ash); font-weight: 400;">kg</span></div>
+                  </div>
+                  <div style="text-align: center;">
+                    <div style="font-family: var(--font-mono); font-size: 7px; color: var(--ash); letter-spacing: 0.15em;">SÉRIES</div>
+                    <div style="font-family: var(--font-display); font-size: 14px; font-weight: 900; color: white;">4</div>
+                  </div>
+                  <div style="text-align: right;">
+                    <div style="font-family: var(--font-mono); font-size: 7px; color: var(--ash); letter-spacing: 0.15em;">RECORDS</div>
+                    <div style="font-family: var(--font-display); font-size: 14px; font-weight: 900; color: var(--forge-dark);">1</div>
+                  </div>
+                </div>
+
+                <div style="position: absolute; bottom: 10px; left: 14px; right: 14px; display: flex; justify-content: space-between; align-items: baseline;">
+                  <span style="font-family: var(--font-display); font-size: 9px; font-weight: 700; color: white; letter-spacing: 0.2em;">TANREN</span>
+                  <span style="font-family: var(--font-mono); font-size: 7px; color: var(--ash); letter-spacing: 0.1em;">tanren.fr</span>
+                </div>
+              </div>
+
+              <div style="font-size: 10px; color: var(--ash); margin-bottom: 14px;">Déplace les blocs pour les repositionner</div>
+
+              <button style="width: 100%; background: var(--forge-dark); color: white; padding: 14px; border: none; font-family: var(--font-display); font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;">Partager</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="feature-card-num">5.1</div>
+      <h3 class="feature-card-title">Partager ta séance — overlay sur ta photo</h3>
+      <p class="feature-card-body">Le volume, le nombre de séries, tes PR — superposés sur la photo de toi à la salle, ou sur une photo gym de la galerie. Format 9:16, prêt pour Stories.</p>
+    </div>
+
+    <!-- 5.2 — COMPARAISON IN-APP -->
+    <div class="feature-card">
+      <div class="feature-phone-wrap">
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <div class="phone-statusbar"><span>11:44</span><div class="phone-statusbar-icons">···· 􀙇 ▮</div></div>
+            <div style="padding: 14px 18px; position: relative;">
+              <div style="position: absolute; top: 60px; right: 0; font-family: var(--font-kanji); font-size: 80px; color: var(--forge-dark); opacity: 0.06; font-weight: 900;">鍛</div>
+
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px;">
+                <span style="font-family: var(--font-mono); font-size: 11px; color: var(--forge-dark); letter-spacing: 0.15em;"><strong>‹ BACK</strong></span>
+                <h3 style="font-family: var(--font-display); font-size: 20px; font-weight: 900; text-transform: uppercase; color: white;">Comparaison</h3>
+                <span></span>
+              </div>
+
+              <div style="border: 1px solid var(--iron-line); padding: 12px; margin-bottom: 14px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                  <span style="font-family: var(--font-mono); font-size: 9px; color: var(--ash); letter-spacing: 0.2em;">A V A N T</span>
+                  <span style="font-family: var(--font-mono); font-size: 9px; color: var(--ash); letter-spacing: 0.2em;">A P R È S</span>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+                  <div style="aspect-ratio: 1; background: linear-gradient(135deg, #5a4a3a, #2a2018); position: relative;">
+                    <div style="position: absolute; inset: 0; background: radial-gradient(circle at 35% 40%, #d4b896 0%, #8a6f56 35%, #2a2018 80%);"></div>
+                  </div>
+                  <div style="aspect-ratio: 1; background: linear-gradient(135deg, #4a3a2a, #1a1208); position: relative;">
+                    <div style="position: absolute; inset: 0; background: radial-gradient(circle at 50% 35%, #c8a07a 0%, #6b4c34 40%, #1a1208 80%);"></div>
+                  </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px;">
+                  <div>
+                    <span style="background: var(--forge-dark); color: white; padding: 2px 6px; font-family: var(--font-display); font-size: 8px; font-weight: 700; letter-spacing: 0.1em;">FACE</span>
+                    <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ash); margin-top: 6px;">05 mars 2026</div>
+                    <div style="font-family: var(--font-mono); font-size: 12px; color: white; font-weight: 500;">90 kg</div>
+                  </div>
+                  <div>
+                    <span style="background: var(--forge-dark); color: white; padding: 2px 6px; font-family: var(--font-display); font-size: 8px; font-weight: 700; letter-spacing: 0.1em;">FACE</span>
+                    <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ash); margin-top: 6px;">06 mai 2026</div>
+                    <div style="font-family: var(--font-mono); font-size: 12px; color: white; font-weight: 500;">70 kg</div>
+                  </div>
+                </div>
+              </div>
+
+              <div style="border: 1px solid var(--iron-line); display: grid; grid-template-columns: 1fr 1fr; margin-bottom: 14px;">
+                <div style="padding: 14px; text-align: center; border-right: 0.5px solid var(--iron-line);">
+                  <div style="font-family: var(--font-display); font-size: 22px; font-weight: 900; color: white; line-height: 1;">62 jours</div>
+                  <div style="font-family: var(--font-mono); font-size: 8px; color: var(--ash); letter-spacing: 0.15em; margin-top: 2px;">ÉCART</div>
+                </div>
+                <div style="padding: 14px; text-align: center;">
+                  <div style="font-family: var(--font-display); font-size: 22px; font-weight: 900; color: var(--forge-dark); line-height: 1;">-20 kg</div>
+                  <div style="font-family: var(--font-mono); font-size: 8px; color: var(--ash); letter-spacing: 0.15em; margin-top: 2px;">DELTA POIDS</div>
+                </div>
+              </div>
+
+              <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ash); letter-spacing: 0.15em; margin-bottom: 8px;">CHANGER LES PHOTOS</div>
+              <div style="border: 1px solid var(--iron-line); padding: 6px; display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #5a4a3a, #2a2018);"></div>
+                <div style="flex: 1;">
+                  <div style="font-family: var(--font-display); font-size: 10px; font-weight: 700; color: white; letter-spacing: 0.05em;">AVANT</div>
+                  <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ash);">05 mars 2026</div>
+                </div>
+                <span style="color: var(--forge-dark);">›</span>
+              </div>
+              <div style="border: 1px solid var(--iron-line); padding: 6px; display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #4a3a2a, #1a1208);"></div>
+                <div style="flex: 1;">
+                  <div style="font-family: var(--font-display); font-size: 10px; font-weight: 700; color: white; letter-spacing: 0.05em;">APRÈS</div>
+                  <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ash);">06 mai 2026</div>
+                </div>
+                <span style="color: var(--forge-dark);">›</span>
+              </div>
+
+              <button style="width: calc(100% + 36px); margin: 0 -18px -16px; background: var(--forge-dark); color: white; padding: 13px; border: none; font-family: var(--font-display); font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;">Partager</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="feature-card-num">5.2</div>
+      <h3 class="feature-card-title">Avant / Après — comparaison + delta</h3>
+      <p class="feature-card-body">Tu choisis 2 photos, l'app calcule l'écart en jours et le delta de poids. Un tap pour générer la carte 9:16 partageable. Le watermark Tanren reste, le reste est à toi.</p>
+    </div>
+
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECTION 06 — RAPPELS
+     ═══════════════════════════════════════════════════════════ -->
+<section class="section" style="padding-bottom: 120px;">
+  <div class="section-num">06 · L'app te tient en main</div>
+  <h2 class="section-title">Rappels.<br><span class="italic">Discipline</span> <span class="accent">silencieuse.</span></h2>
+  <p class="section-lede">Pas de notifications gamifiées débiles. Trois rappels que tu paramètres une fois — entraînement, repas, hydratation — et l'app se rappelle à toi quand il faut. Pas plus.</p>
+
+  <div style="display: grid; grid-template-columns: 1fr 1.4fr; gap: 64px; align-items: center;">
+
+    <div class="feature-phone-wrap" style="margin-bottom: 0;">
+      <div class="phone">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="phone-statusbar"><span>12:03</span><div class="phone-statusbar-icons">···· 􀙇 ▮</div></div>
+          <div style="padding: 14px 18px;">
+            <div style="margin-bottom: 22px;">
+              <span style="font-family: var(--font-mono); font-size: 11px; color: var(--forge-dark); letter-spacing: 0.15em; margin-right: 10px;"><strong>‹ BACK</strong></span>
+              <span style="font-family: var(--font-display); font-size: 22px; font-weight: 900; text-transform: uppercase; color: white; letter-spacing: -0.01em;">Rappels</span>
+            </div>
+
+            <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ash); letter-spacing: 0.15em; margin-bottom: 8px;">ENTRAÎNEMENT</div>
+
+            <div style="border: 1px solid var(--iron-line); margin-bottom: 18px;">
+              <div style="padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; border-bottom: 0.5px solid var(--iron-line);">
+                <span style="font-size: 12px; color: white;">Activer les rappels d'entraînement</span>
+                <div style="width: 32px; height: 18px; background: var(--forge-dark); border-radius: 9px; position: relative;">
+                  <div style="position: absolute; right: 2px; top: 2px; width: 14px; height: 14px; background: white; border-radius: 50%;"></div>
+                </div>
+              </div>
+              <div style="padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; border-bottom: 0.5px solid var(--iron-line);">
+                <span style="font-size: 12px; color: white;">Heure d'entraînement</span>
+                <span style="font-family: var(--font-mono); font-size: 12px; color: white; border: 1px solid var(--iron-line); padding: 4px 8px;">18:00</span>
+              </div>
+              <div style="padding: 12px 14px; border-bottom: 0.5px solid var(--iron-line);">
+                <div style="font-size: 11px; color: white; margin-bottom: 6px;">Rappel</div>
+                <div style="display: flex; gap: 4px;">
+                  <span style="border: 1px solid var(--iron-line); padding: 5px 8px; font-family: var(--font-display); font-size: 9px; color: var(--ash); text-transform: uppercase; letter-spacing: 0.05em;">À L'HEURE</span>
+                  <span style="border: 1px solid var(--iron-line); padding: 5px 8px; font-family: var(--font-display); font-size: 9px; color: var(--ash); text-transform: uppercase; letter-spacing: 0.05em;">15 MIN AVANT</span>
+                  <span style="background: var(--forge-dark); color: white; padding: 5px 8px; font-family: var(--font-display); font-size: 9px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700;">30 MIN AVANT</span>
+                </div>
+              </div>
+              <div style="padding: 12px 14px;">
+                <div style="font-size: 11px; color: white; margin-bottom: 6px;">Jours actifs</div>
+                <div style="display: flex; gap: 4px;">
+                  <span style="background: var(--forge-dark); color: white; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 11px; font-weight: 700;">L</span>
+                  <span style="background: var(--forge-dark); color: white; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 11px; font-weight: 700;">M</span>
+                  <span style="border: 1px solid var(--iron-line); color: var(--ash); width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 11px;">M</span>
+                  <span style="border: 1px solid var(--iron-line); color: var(--ash); width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 11px;">J</span>
+                  <span style="background: var(--forge-dark); color: white; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 11px; font-weight: 700;">V</span>
+                  <span style="background: var(--forge-dark); color: white; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 11px; font-weight: 700;">S</span>
+                  <span style="border: 1px solid var(--iron-line); color: var(--ash); width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 11px;">D</span>
+                </div>
+              </div>
+            </div>
+
+            <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ash); letter-spacing: 0.15em; margin-bottom: 8px;">REPAS</div>
+            <div style="border: 1px solid var(--iron-line); margin-bottom: 14px;">
+              <div style="padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; border-bottom: 0.5px solid var(--iron-line);">
+                <span style="font-size: 12px; color: white;">Petit-déjeuner</span>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                  <span style="font-family: var(--font-mono); font-size: 11px; color: white; border: 1px solid var(--iron-line); padding: 3px 6px;">08:00</span>
+                  <div style="width: 26px; height: 14px; background: var(--forge-dark); border-radius: 7px; position: relative;"><div style="position: absolute; right: 2px; top: 2px; width: 10px; height: 10px; background: white; border-radius: 50%;"></div></div>
+                </div>
+              </div>
+              <div style="padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; border-bottom: 0.5px solid var(--iron-line);">
+                <span style="font-size: 12px; color: white;">Déjeuner</span>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                  <span style="font-family: var(--font-mono); font-size: 11px; color: white; border: 1px solid var(--iron-line); padding: 3px 6px;">12:30</span>
+                  <div style="width: 26px; height: 14px; background: var(--forge-dark); border-radius: 7px; position: relative;"><div style="position: absolute; right: 2px; top: 2px; width: 10px; height: 10px; background: white; border-radius: 50%;"></div></div>
+                </div>
+              </div>
+              <div style="padding: 10px 14px; display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 12px; color: white;">Dîner</span>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                  <span style="font-family: var(--font-mono); font-size: 11px; color: white; border: 1px solid var(--iron-line); padding: 3px 6px;">20:00</span>
+                  <div style="width: 26px; height: 14px; background: var(--forge-dark); border-radius: 7px; position: relative;"><div style="position: absolute; right: 2px; top: 2px; width: 10px; height: 10px; background: white; border-radius: 50%;"></div></div>
+                </div>
+              </div>
+            </div>
+
+            <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ash); letter-spacing: 0.15em; margin-bottom: 8px;">HYDRATATION</div>
+            <div style="border: 1px solid var(--iron-line);">
+              <div style="padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; border-bottom: 0.5px solid var(--iron-line);">
+                <span style="font-size: 11px; color: white;">Activer les rappels d'eau</span>
+                <div style="width: 26px; height: 14px; background: var(--forge-dark); border-radius: 7px; position: relative;"><div style="position: absolute; right: 2px; top: 2px; width: 10px; height: 10px; background: white; border-radius: 50%;"></div></div>
+              </div>
+              <div style="padding: 10px 14px;">
+                <div style="font-size: 11px; color: white; margin-bottom: 6px;">Toutes les</div>
+                <div style="display: flex; gap: 4px;">
+                  <span style="border: 1px solid var(--iron-line); padding: 4px 10px; font-family: var(--font-display); font-size: 9px; color: var(--ash); text-transform: uppercase;">1H</span>
+                  <span style="background: var(--forge-dark); color: white; padding: 4px 10px; font-family: var(--font-display); font-size: 9px; text-transform: uppercase; font-weight: 700;">1.5H</span>
+                  <span style="border: 1px solid var(--iron-line); padding: 4px 10px; font-family: var(--font-display); font-size: 9px; color: var(--ash); text-transform: uppercase;">2H</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="feature-card-num">6.1</div>
+      <h3 class="feature-card-title" style="font-size: 36px; line-height: 1; margin-bottom: 16px;">Trois rappels.<br>Pas un de plus.</h3>
+      <p class="feature-card-body" style="font-size: 16px; line-height: 1.6; margin-bottom: 20px;">L'entraînement avec la fréquence de tes jours actifs. Les repas avec les heures que tu choisis. L'hydratation toutes les 1h, 1h30 ou 2h pendant tes heures actives. Réglé une fois, oublié pour toujours.</p>
+      <p class="feature-card-body" style="font-size: 16px; line-height: 1.6; color: var(--anvil); border-left: 2px solid var(--forge-dark); padding-left: 16px;">Aucun streak, aucun shame, aucune notification "tu nous manques". On te respecte trop pour ça.</p>
+    </div>
+
+  </div>
+</section>
+<hr class="section-divider">
+
+<!-- ═══════════════════════════════════════════════════════════
+     POURQUOI TANREN — 4 CARDS
+     ═══════════════════════════════════════════════════════════ -->
+<section class="section" id="manifesto">
+  <div class="section-num">07 · Pourquoi Tanren</div>
+  <h2 class="section-title">Pas une app de fitness.<br><span class="italic">Une</span> <span class="accent">forge.</span></h2>
+
+  <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; margin-top: 64px;">
+
+    <div style="border: 1px solid var(--iron-line); padding: 32px 24px; position: relative; min-height: 320px;">
+      <div class="corner-accent corner-tl" style="width: 18px; height: 18px;"></div>
+      <div style="font-family: var(--font-mono); font-size: 11px; color: var(--forge-dark); letter-spacing: 0.2em; margin-bottom: 16px;">01 / IA-NATIVE</div>
+      <div style="font-family: var(--font-display); font-size: 24px; font-weight: 900; text-transform: uppercase; line-height: 1.05; margin-bottom: 14px;">Pas un quiz.<br>Tu écris,<br>l'IA construit.</div>
+      <p style="font-size: 13px; color: var(--ash); line-height: 1.6;">Décris ton objectif, tes contraintes, tes blessures. L'IA croise avec ton profil. Sortie : ton plan, modifiable.</p>
+    </div>
+
+    <div style="border: 1px solid var(--iron-line); padding: 32px 24px; position: relative; min-height: 320px;">
+      <div class="corner-accent corner-tl" style="width: 18px; height: 18px;"></div>
+      <div style="font-family: var(--font-mono); font-size: 11px; color: var(--forge-dark); letter-spacing: 0.2em; margin-bottom: 16px;">02 / SANS PUB</div>
+      <div style="font-family: var(--font-display); font-size: 24px; font-weight: 900; text-transform: uppercase; line-height: 1.05; margin-bottom: 14px;">Tes données<br>te restent.</div>
+      <p style="font-size: 13px; color: var(--ash); line-height: 1.6;">Hébergé en France. RGPD-natif. Tes photos d'évolution restent sur ton téléphone. Aucun tracker tiers.</p>
+    </div>
+
+    <div style="border: 1px solid var(--iron-line); padding: 32px 24px; position: relative; min-height: 320px;">
+      <div class="corner-accent corner-tl" style="width: 18px; height: 18px;"></div>
+      <div style="font-family: var(--font-mono); font-size: 11px; color: var(--forge-dark); letter-spacing: 0.2em; margin-bottom: 16px;">03 / SANS FRICTION</div>
+      <div style="font-family: var(--font-display); font-size: 24px; font-weight: 900; text-transform: uppercase; line-height: 1.05; margin-bottom: 14px;">Validation<br>en un tap.</div>
+      <p style="font-size: 13px; color: var(--ash); line-height: 1.6;">Tu fais ta série, tu valides, le timer démarre. Pas de menus, pas de boutons cachés. Pendant l'effort, tu ne lis pas — tu pousses.</p>
+    </div>
+
+    <div style="border: 1px solid var(--iron-line); padding: 32px 24px; position: relative; min-height: 320px;">
+      <div class="corner-accent corner-tl" style="width: 18px; height: 18px;"></div>
+      <div style="font-family: var(--font-mono); font-size: 11px; color: var(--forge-dark); letter-spacing: 0.2em; margin-bottom: 16px;">04 / DISCIPLINE</div>
+      <div style="font-family: var(--font-display); font-size: 24px; font-weight: 900; text-transform: uppercase; line-height: 1.05; margin-bottom: 14px;">Aucun streak.<br>Aucun shame.</div>
+      <p style="font-size: 13px; color: var(--ash); line-height: 1.6;">Pas de gamification débile. Tu progresses parce que tu reviens, pas parce qu'on te culpabilise. Trois rappels, c'est tout.</p>
+    </div>
+
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- ═══════════════════════════════════════════════════════════
+     ÉTYMOLOGIE 鍛錬
+     ═══════════════════════════════════════════════════════════ -->
+<section class="section" style="text-align: center;">
+  <div class="section-num" style="margin-bottom: 32px;">Étymologie</div>
+
+  <div style="font-family: var(--font-kanji); font-size: 280px; line-height: 1; color: var(--forge-dark); font-weight: 900; letter-spacing: 0.1em; margin-bottom: 24px;">鍛 錬</div>
+
+  <div style="font-family: var(--font-display); font-size: 18px; font-weight: 500; letter-spacing: 0.4em; color: var(--ash); margin-bottom: 8px; text-transform: uppercase;">T A N · R E N</div>
+
+  <h2 style="font-family: var(--font-display); font-size: 56px; font-weight: 900; line-height: 1; letter-spacing: -0.02em; text-transform: uppercase; margin-bottom: 32px;">Forger.<br><span style="font-style: italic; font-weight: 400;">Discipliner</span> <span style="color: var(--forge-dark);">par la répétition.</span></h2>
+
+  <p style="font-size: 17px; color: var(--ash); max-width: 580px; margin: 0 auto 48px; line-height: 1.6;">
+    Dans les arts martiaux, <strong style="color: var(--anvil); font-weight: 700;">鍛 (tan)</strong> est l'acte de forger le métal — chaleur, marteau, pression. <strong style="color: var(--anvil); font-weight: 700;">錬 (ren)</strong> est le raffinage, la répétition, le polissage. Ensemble, 鍛錬 décrit ce qu'il faut pour devenir fort : pas un éclair de génie, mais des milliers de répétitions.
+  </p>
+
+  <div style="display: flex; justify-content: center; gap: 64px; max-width: 600px; margin: 0 auto;">
+    <div style="text-align: center;">
+      <div style="font-family: var(--font-kanji); font-size: 64px; color: var(--forge-dark); font-weight: 900; line-height: 1;">鍛</div>
+      <div style="font-family: var(--font-mono); font-size: 11px; color: var(--ash); letter-spacing: 0.2em; margin-top: 8px;">TAN · FORGER</div>
+      <div style="font-size: 12px; color: var(--ash); margin-top: 4px;">La séance, l'effort.</div>
+    </div>
+    <div style="font-family: var(--font-display); font-size: 80px; color: var(--iron-line); line-height: 1;">×</div>
+    <div style="text-align: center;">
+      <div style="font-family: var(--font-kanji); font-size: 64px; color: var(--forge-dark); font-weight: 900; line-height: 1;">錬</div>
+      <div style="font-family: var(--font-mono); font-size: 11px; color: var(--ash); letter-spacing: 0.2em; margin-top: 8px;">REN · RAFFINER</div>
+      <div style="font-size: 12px; color: var(--ash); margin-top: 4px;">La répétition, le temps.</div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- ═══════════════════════════════════════════════════════════
+     WAITLIST
+     ═══════════════════════════════════════════════════════════ -->
+<section class="section" id="waitlist" style="text-align: center; max-width: 720px;">
+  <div class="section-num">Beta fermée · Sur invitation</div>
+
+  <h2 class="section-title" style="font-size: 80px;">Rejoins<br>la <span class="accent">waitlist.</span></h2>
+
+  <p class="section-lede" style="margin: 0 auto 48px;">Tanren est en beta fermée Android. iOS arrive. Inscris-toi pour recevoir une invitation et l'accès anticipé.</p>
+
+  <form style="display: flex; gap: 0; border: 1px solid var(--iron-line); max-width: 480px; margin: 0 auto 16px;">
+    <input type="email" placeholder="ton@email.com" style="flex: 1; padding: 18px 20px; background: transparent; border: none; color: white; font-family: var(--font-mono); font-size: 14px; outline: none;" />
+    <button type="submit" style="background: var(--forge-dark); color: white; padding: 18px 28px; border: none; font-family: var(--font-display); font-size: 14px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer;">Forger</button>
+  </form>
+
+  <p style="font-size: 11px; color: var(--ash); letter-spacing: 0.05em;">Aucun spam. Désinscription en un clic. Données stockées chez Resend (Europe).</p>
+
+  <div style="display: flex; justify-content: center; gap: 32px; margin-top: 64px; padding-top: 48px; border-top: 0.5px solid var(--border-dark);">
+    <div>
+      <div style="font-family: var(--font-display); font-size: 32px; font-weight: 900; color: var(--forge-dark); line-height: 1;">Android</div>
+      <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ash); letter-spacing: 0.15em; margin-top: 4px;">BETA FERMÉE · PLAY STORE</div>
+    </div>
+    <div style="width: 1px; background: var(--iron-line);"></div>
+    <div>
+      <div style="font-family: var(--font-display); font-size: 32px; font-weight: 900; color: var(--ash); line-height: 1;">iOS</div>
+      <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ash); letter-spacing: 0.15em; margin-top: 4px;">BIENTÔT · TESTFLIGHT</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     FOOTER
+     ═══════════════════════════════════════════════════════════ -->
+<footer style="border-top: 0.5px solid var(--border-dark); margin-top: 80px; padding: 64px 48px 48px;">
+  <div style="max-width: 1280px; margin: 0 auto;">
+    <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; margin-bottom: 48px;">
+
+      <div>
+        <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 20px;">
+          <svg style="width: 36px; height: 36px;" viewBox="0 0 200 200">
+            <circle cx="100" cy="100" r="92" stroke="currentColor" stroke-width="6" fill="none"/>
+            <circle cx="100" cy="100" r="38" fill="#FF2D3F"/>
+            <rect x="96" y="40" width="8" height="120" fill="white"/>
+            <rect x="40" y="96" width="120" height="8" fill="white"/>
+            <line x1="155" y1="45" x2="180" y2="20" stroke="#FF2D3F" stroke-width="4" stroke-linecap="round"/>
+            <line x1="160" y1="35" x2="172" y2="22" stroke="#FF2D3F" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+          <span style="font-family: var(--font-display); font-size: 28px; font-weight: 900; letter-spacing: -0.01em; text-transform: uppercase;">Tanren</span>
+          <span style="font-family: var(--font-kanji); font-size: 16px; color: var(--forge-dark); letter-spacing: 0.4em;">鍛 錬</span>
+        </div>
+        <p style="font-size: 13px; color: var(--ash); max-width: 360px; line-height: 1.6;">Forge ta force. Une rep après l'autre.</p>
+        <p style="font-size: 11px; color: var(--ash); margin-top: 16px; font-family: var(--font-mono); letter-spacing: 0.05em;">Made in 🇫🇷 · Hébergé en Europe</p>
+      </div>
+
+      <div>
+        <div style="font-family: var(--font-mono); font-size: 11px; color: var(--forge-dark); letter-spacing: 0.2em; margin-bottom: 16px; text-transform: uppercase;">Produit</div>
+        <ul style="list-style: none; font-size: 13px; line-height: 2;">
+          <li><a href="#features" style="color: var(--ash); text-decoration: none;">Fonctionnalités</a></li>
+          <li><a href="#progression" style="color: var(--ash); text-decoration: none;">Progression</a></li>
+          <li><a href="#nutrition" style="color: var(--ash); text-decoration: none;">Nutrition</a></li>
+          <li><a href="#waitlist" style="color: var(--ash); text-decoration: none;">Waitlist beta</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <div style="font-family: var(--font-mono); font-size: 11px; color: var(--forge-dark); letter-spacing: 0.2em; margin-bottom: 16px; text-transform: uppercase;">Légal</div>
+        <ul style="list-style: none; font-size: 13px; line-height: 2;">
+          <li><a href="/cgu" style="color: var(--ash); text-decoration: none;">CGU</a></li>
+          <li><a href="/confidentialite" style="color: var(--ash); text-decoration: none;">Confidentialité</a></li>
+          <li><a href="/mentions-legales" style="color: var(--ash); text-decoration: none;">Mentions légales</a></li>
+          <li><a href="/cookies" style="color: var(--ash); text-decoration: none;">Cookies</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <div style="font-family: var(--font-mono); font-size: 11px; color: var(--forge-dark); letter-spacing: 0.2em; margin-bottom: 16px; text-transform: uppercase;">Contact</div>
+        <ul style="list-style: none; font-size: 13px; line-height: 2;">
+          <li><a href="mailto:contact@tanren.fr" style="color: var(--ash); text-decoration: none;">contact@tanren.fr</a></li>
+          <li><a href="mailto:support@tanren.fr" style="color: var(--ash); text-decoration: none;">support@tanren.fr</a></li>
+          <li><a href="https://instagram.com/tanrenapp" style="color: var(--ash); text-decoration: none;">@tanrenapp</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div style="border-top: 0.5px solid var(--border-dark); padding-top: 24px; display: flex; justify-content: space-between; align-items: center;">
+      <span style="font-family: var(--font-mono); font-size: 11px; color: var(--ash); letter-spacing: 0.05em;">© 2026 Tanren · Une rep après l'autre.</span>
+      <span style="font-family: var(--font-kanji); font-size: 14px; color: var(--forge-dark); letter-spacing: 0.4em; font-weight: 900;">鍛 錬</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Theme toggle
+function toggleTheme() {
+  const body = document.body;
+  if (body.classList.contains('dark')) {
+    body.classList.remove('dark');
+    body.classList.add('light');
+  } else {
+    body.classList.remove('light');
+    body.classList.add('dark');
+  }
+}
+
+// Smooth section reveal on scroll (subtle)
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.style.opacity = '1';
+      entry.target.style.transform = 'translateY(0)';
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.section').forEach(section => {
+  section.style.opacity = '0';
+  section.style.transform = 'translateY(20px)';
+  section.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+  observer.observe(section);
+});
+</script>
+
+</body>
+</html>

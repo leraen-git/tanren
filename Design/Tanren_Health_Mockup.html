@@ -1,0 +1,1407 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TANREN — Health Integration v2</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;500;700;900&family=Noto+Serif+JP:wght@400;700;900&family=JetBrains+Mono:wght@400;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Barlow Condensed', sans-serif;
+    background: linear-gradient(180deg, #0f0f0f 0%, #050505 100%);
+    color: #FFFFFF;
+    min-height: 100vh;
+    padding: 60px 40px 80px;
+  }
+
+  .page-header { text-align: center; margin: 0 auto 30px; max-width: 900px; }
+  .page-label { font-weight: 500; font-size: 11px; letter-spacing: 0.24em; color: #FF2D3F; text-transform: uppercase; margin-bottom: 12px; }
+  .page-title { font-weight: 900; font-size: 44px; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 14px; line-height: 1; }
+  .page-desc { font-weight: 400; font-size: 14px; color: #999; line-height: 1.5; max-width: 720px; margin: 0 auto; }
+
+  .scope-bar { max-width: 1300px; margin: 0 auto 24px; padding: 14px 24px; background: rgba(255, 45, 63, 0.06); border-left: 3px solid #FF2D3F; }
+  .scope-bar h4 { font-weight: 700; font-size: 11px; letter-spacing: 0.2em; color: #FF2D3F; text-transform: uppercase; margin-bottom: 8px; }
+  .scope-bar p { font-size: 12px; color: #BBB; line-height: 1.5; margin-bottom: 4px; }
+  .scope-bar p:last-child { margin-bottom: 0; }
+  .scope-bar p strong { color: #FFF; font-weight: 700; }
+  .scope-bar code { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #FF2D3F; background: rgba(255,45,63,0.1); padding: 2px 6px; border-radius: 2px; }
+
+  .changes-bar { max-width: 1300px; margin: 0 auto 50px; padding: 14px 24px; background: rgba(43, 174, 67, 0.06); border-left: 3px solid #2BAE43; }
+  .changes-bar h4 { font-weight: 700; font-size: 11px; letter-spacing: 0.2em; color: #2BAE43; text-transform: uppercase; margin-bottom: 8px; }
+  .changes-bar ol { color: #BBB; font-size: 12px; line-height: 1.6; padding-left: 20px; }
+  .changes-bar li { margin-bottom: 4px; }
+  .changes-bar code { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #2BAE43; background: rgba(43,174,67,0.1); padding: 2px 5px; border-radius: 2px; }
+
+  .section-title-row {
+    text-align: center;
+    margin: 60px 0 24px;
+    padding-top: 30px;
+    border-top: 1px solid #2a2a2a;
+  }
+  .section-title-row:first-of-type {
+    border-top: none;
+    padding-top: 0;
+  }
+  .section-title-row .num {
+    font-weight: 900;
+    font-size: 11px;
+    letter-spacing: 0.32em;
+    color: #FF2D3F;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .section-title-row h2 {
+    font-weight: 900;
+    font-size: 24px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #FFF;
+    margin-bottom: 6px;
+  }
+  .section-title-row p {
+    font-size: 13px;
+    color: #888;
+    max-width: 700px;
+    margin: 0 auto;
+    line-height: 1.5;
+  }
+
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; margin: 0 auto 24px; max-width: 900px; align-items: flex-start; justify-items: center; }
+  .col { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .mode-tag { font-weight: 700; font-size: 10px; letter-spacing: 0.32em; text-transform: uppercase; padding: 6px 14px; }
+  .mode-tag.dark { background: #000; color: #FFF; border: 1px solid #333; }
+  .mode-tag.light { background: #FFF; color: #000; border: 1px solid #DDD; }
+  .mockup-caption { font-weight: 700; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; text-align: center; color: #FFF; }
+  .mockup-caption .platform { color: #FF2D3F; }
+
+  .phone-frame { background: #1a1a1a; border-radius: 32px; padding: 5px; box-shadow: 0 20px 40px rgba(0,0,0,0.5), 0 8px 16px rgba(0,0,0,0.3); }
+  .phone-screen { width: 360px; height: 760px; border-radius: 27px; overflow: hidden; position: relative; }
+
+  .dark-tokens {
+    --bg: #000;
+    --text: #FFF;
+    --text-dim: rgba(255,255,255,0.92);
+    --text-mute: rgba(255,255,255,0.55);
+    --text-ghost: rgba(255,255,255,0.4);
+    --accent: #FF2D3F;
+    --green: #2BAE43;
+    --amber: #E8A900;
+    --surface-1: #0A0A0A;
+    --surface-2: #141414;
+    --border: #222;
+    --border-strong: #333;
+    --overlay: rgba(0,0,0,0.72);
+  }
+  .light-tokens {
+    --bg: #FFF;
+    --text: #000;
+    --text-dim: rgba(0,0,0,0.85);
+    --text-mute: rgba(0,0,0,0.55);
+    --text-ghost: rgba(0,0,0,0.45);
+    --accent: #E8192C;
+    --green: #1A7F2C;
+    --amber: #D98E00;
+    --surface-1: #FAFAFA;
+    --surface-2: #F3F3F3;
+    --border: #E5E5E5;
+    --border-strong: #CCC;
+    --overlay: rgba(0,0,0,0.45);
+  }
+
+  .screen { width: 100%; height: 100%; background: var(--bg); color: var(--text); position: relative; overflow: hidden; padding: 50px 0 0; display: flex; flex-direction: column; }
+
+  .screen-header {
+    padding: 8px 20px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .screen-header .back { color: var(--text-mute); font-weight: 500; font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; }
+  .screen-header .title { font-weight: 900; font-size: 16px; letter-spacing: 0.08em; text-transform: uppercase; text-align: center; flex: 1; }
+  .screen-header .right { color: var(--accent); font-weight: 700; font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; min-width: 60px; text-align: right; }
+
+  .content {
+    padding: 0 20px 20px;
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  .session-bg { position: absolute; inset: 0; background: var(--bg); z-index: 1; }
+  .recap-blur {
+    padding: 60px 20px 0;
+    color: var(--text);
+    opacity: 0.3;
+    filter: blur(2px);
+  }
+  .recap-blur-title {
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 900;
+    font-size: 34px;
+    color: var(--accent);
+    margin-bottom: 6px;
+    letter-spacing: 0.04em;
+  }
+  .recap-blur-sub {
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-mute);
+    margin-bottom: 18px;
+  }
+  .recap-blur-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .recap-blur-stat {
+    background: var(--surface-1);
+    padding: 10px;
+    border: 1px solid var(--border);
+  }
+  .recap-blur-stat .v { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 16px; color: var(--text); }
+  .recap-blur-stat .l { font-size: 8px; letter-spacing: 0.14em; color: var(--text-mute); text-transform: uppercase; margin-top: 4px; }
+
+  .modal-overlay {
+    position: absolute; inset: 0;
+    background: var(--overlay);
+    z-index: 50;
+    display: flex; align-items: flex-end;
+  }
+  .modal-card {
+    background: var(--bg);
+    width: 100%;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    padding: 24px 22px 28px;
+    border-top: 1px solid var(--border);
+  }
+  .modal-handle {
+    width: 36px; height: 4px;
+    background: var(--border-strong);
+    margin: 0 auto 18px;
+    border-radius: 2px;
+  }
+
+  .modal-icon-row {
+    display: flex; align-items: center; justify-content: center;
+    gap: 16px; margin-bottom: 18px;
+  }
+  .modal-icon {
+    width: 50px; height: 50px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; color: #FFF;
+  }
+  .modal-icon.tanren {
+    background: var(--accent);
+    font-family: 'Noto Serif JP', serif;
+    font-size: 26px;
+  }
+  .modal-icon.apple {
+    background: linear-gradient(135deg, #fc2b5e 0%, #fc2b76 100%);
+    font-size: 26px;
+  }
+  .modal-icon.android {
+    background: linear-gradient(135deg, #00b9f5 0%, #1e88e5 100%);
+    font-size: 22px;
+  }
+  .modal-icon-arrow { color: var(--text-mute); font-size: 22px; font-weight: 300; }
+
+  .modal-title {
+    font-weight: 900;
+    font-size: 22px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    text-align: center;
+    line-height: 1.15;
+    margin-bottom: 10px;
+  }
+  .modal-subtitle {
+    font-size: 13px;
+    color: var(--text-mute);
+    text-align: center;
+    line-height: 1.5;
+    margin-bottom: 18px;
+  }
+  .modal-features {
+    display: flex; flex-direction: column;
+    gap: 10px; margin-bottom: 22px;
+  }
+  .modal-feature {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 10px 12px;
+    background: var(--surface-1);
+    border-left: 2px solid var(--accent);
+  }
+  .modal-feature .check {
+    color: var(--accent);
+    font-size: 14px; font-weight: 700;
+    flex-shrink: 0; margin-top: 1px;
+  }
+  .modal-feature .label {
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+  }
+  .modal-feature .desc {
+    font-size: 11px;
+    color: var(--text-mute);
+    line-height: 1.4;
+  }
+
+  .modal-cta-primary {
+    background: var(--accent);
+    color: #FFF;
+    padding: 14px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    border-radius: 4px;
+    margin-bottom: 8px;
+  }
+  .modal-cta-skip {
+    background: transparent;
+    color: var(--text-mute);
+    padding: 10px;
+    text-align: center;
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  /* CONNEXIONS */
+  .sec-label {
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--text-mute);
+    text-transform: uppercase;
+    margin: 18px 0 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .connexion-card {
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    padding: 14px;
+    margin-bottom: 8px;
+  }
+  .connexion-row {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 12px;
+  }
+  .connexion-icon {
+    width: 38px; height: 38px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; color: #FFF;
+    flex-shrink: 0;
+  }
+  .connexion-icon.apple { background: linear-gradient(135deg, #fc2b5e 0%, #fc2b76 100%); }
+  .connexion-icon.android { background: linear-gradient(135deg, #00b9f5 0%, #1e88e5 100%); }
+  .connexion-icon.unavailable { background: rgba(255,255,255,0.1); color: var(--text-ghost); }
+  .light-tokens .connexion-icon.unavailable { background: rgba(0,0,0,0.05); color: var(--text-ghost); }
+  .connexion-info { flex: 1; }
+  .connexion-name {
+    font-weight: 900;
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    line-height: 1.2;
+    margin-bottom: 2px;
+  }
+  .connexion-status {
+    font-size: 11px;
+    color: var(--text-mute);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .connexion-status.active { color: var(--green); }
+  .connexion-status.inactive { color: var(--text-ghost); }
+  .connexion-status.warning { color: var(--amber); }
+
+  .toggle {
+    width: 44px; height: 26px;
+    border-radius: 13px;
+    background: var(--border-strong);
+    position: relative;
+    flex-shrink: 0;
+    transition: background 0.2s;
+  }
+  .toggle.on { background: var(--green); }
+  .toggle::after {
+    content: '';
+    position: absolute;
+    top: 2px; left: 2px;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: #FFF;
+    transition: transform 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+  .toggle.on::after { transform: translateX(18px); }
+
+  .perms-list {
+    border-top: 1px solid var(--border);
+    padding-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .perm-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0;
+  }
+  .perm-label {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    padding-right: 12px;
+  }
+  .perm-label-main {
+    font-weight: 500;
+    font-size: 12px;
+    color: var(--text);
+  }
+  .perm-label-detail {
+    font-size: 10px;
+    color: var(--text-mute);
+    letter-spacing: 0.04em;
+    line-height: 1.4;
+  }
+  .perm-toggle-mini {
+    width: 36px; height: 22px;
+    border-radius: 11px;
+    background: var(--border-strong);
+    position: relative;
+    flex-shrink: 0;
+    transition: background 0.2s;
+  }
+  .perm-toggle-mini.on { background: var(--green); }
+  .perm-toggle-mini::after {
+    content: '';
+    position: absolute;
+    top: 2px; left: 2px;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: #FFF;
+    transition: transform 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+  .perm-toggle-mini.on::after { transform: translateX(14px); }
+
+  /* iOS settings link replacing read perms */
+  .perm-row.settings-link {
+    background: var(--surface-2);
+    padding: 10px 12px;
+    border-left: 2px solid var(--amber);
+    margin: 0 -2px;
+  }
+  .perm-row.settings-link .perm-label-detail {
+    font-style: italic;
+  }
+  .perm-row.settings-link .chev {
+    color: var(--amber);
+    font-size: 16px;
+    font-weight: 300;
+  }
+
+  .last-sync {
+    font-size: 10px;
+    color: var(--text-ghost);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .sync-now-btn {
+    color: var(--accent);
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .connect-cta {
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    padding: 10px 14px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    border-radius: 4px;
+    margin-top: 4px;
+  }
+
+  .info-block {
+    padding: 12px 14px;
+    background: var(--surface-2);
+    border-left: 2px solid var(--amber);
+    margin-bottom: 10px;
+  }
+  .info-block .label {
+    font-weight: 700;
+    font-size: 9px;
+    letter-spacing: 0.32em;
+    color: var(--amber);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .info-block .text {
+    font-size: 11px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  /* Revoke confirmation modal */
+  .revoke-modal {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: var(--bg);
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    padding: 24px 22px 28px;
+    border-top: 1px solid var(--border);
+    z-index: 60;
+  }
+  .revoke-modal-handle {
+    width: 36px; height: 4px;
+    background: var(--border-strong);
+    margin: 0 auto 18px;
+    border-radius: 2px;
+  }
+  .revoke-modal-icon {
+    width: 50px; height: 50px;
+    background: rgba(232,169,0,0.15);
+    color: var(--amber);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    font-size: 22px;
+  }
+  .revoke-modal-title {
+    font-weight: 900;
+    font-size: 18px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    text-align: center;
+    margin-bottom: 12px;
+  }
+  .revoke-modal-text {
+    font-size: 13px;
+    color: var(--text-mute);
+    text-align: center;
+    line-height: 1.5;
+    margin-bottom: 22px;
+  }
+  .revoke-modal-text strong { color: var(--text); font-weight: 700; }
+  .revoke-modal-cta {
+    background: var(--accent);
+    color: #FFF;
+    padding: 14px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    border-radius: 4px;
+    margin-bottom: 8px;
+  }
+  .revoke-modal-cancel {
+    background: transparent;
+    color: var(--text-mute);
+    padding: 10px;
+    text-align: center;
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .design-notes { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); padding: 22px 26px; margin: 50px auto; max-width: 1100px; }
+  .design-notes h4 { font-weight: 700; font-size: 11px; letter-spacing: 0.2em; color: #FF2D3F; text-transform: uppercase; margin-bottom: 10px; }
+  .design-notes p { font-size: 13px; color: #BBB; line-height: 1.55; margin-bottom: 8px; }
+  .design-notes p:last-child { margin-bottom: 0; }
+  .design-notes p strong { color: #FFF; font-weight: 700; }
+  .design-notes code { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #FF2D3F; background: rgba(255,45,63,0.1); padding: 2px 5px; border-radius: 2px; }
+  .design-notes table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
+  .design-notes table th, .design-notes table td { padding: 8px 10px; border-bottom: 1px solid rgba(255,255,255,0.08); text-align: left; }
+  .design-notes table th { color: #FF2D3F; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; font-size: 10px; }
+  .design-notes table td { color: #BBB; }
+  .design-notes table td code { font-size: 10px; }
+
+  .footer-tagline { max-width: 900px; margin: 60px auto 0; text-align: center; padding-top: 30px; border-top: 1px solid #2a2a2a; }
+  .footer-tagline .k { font-family: 'Noto Serif JP', serif; font-weight: 900; font-size: 22px; color: #FF2D3F; letter-spacing: 0.4em; margin-bottom: 6px; }
+  .footer-tagline .t { font-weight: 900; font-size: 18px; letter-spacing: 0.16em; margin-bottom: 4px; }
+  .footer-tagline .d { font-style: italic; color: #FF2D3F; font-size: 13px; margin-bottom: 10px; font-family: 'EB Garamond', serif; }
+  .footer-tagline .meta { font-size: 11px; color: #888; letter-spacing: 0.2em; }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="page-label">Tanren · Health Integration v2</div>
+  <div class="page-title">Apple Santé & Health Connect</div>
+  <div class="page-desc">
+    Mockup unifié corrigé selon les 7 limitations techniques identifiées. iOS read permissions ne sont plus affichées comme toggles (Apple ne les expose pas). État "indisponible" géré explicitement. Révocation via redirection settings système.
+  </div>
+</div>
+
+<div class="changes-bar">
+  <h4>✅ Corrections vs v1</h4>
+  <ol>
+    <li><strong>Read permissions iOS</strong> ne sont plus des toggles → bloc "Permissions à gérer dans Réglages" (Apple n'expose pas l'état de read auth fiablement)</li>
+    <li><strong>État "Apps santé indisponibles"</strong> ajouté pour Android sans Health Connect / iOS sans HealthKit</li>
+    <li><strong>Révocation</strong> via modal explicative + <code>Linking.openSettings()</code>, plus de fake toggle off qui ne fait rien</li>
+    <li><strong>Bloc d'info HealthKit</strong> pour expliquer les limitations Apple à l'user de façon transparente</li>
+    <li>Compatible avec <code>useTheme()</code> existant (pas de tokens hardcodés)</li>
+  </ol>
+</div>
+
+<div class="scope-bar">
+  <h4>Architecture</h4>
+  <p>Une seule UX, deux providers selon plateforme : <code>Platform.OS === 'ios'</code> → Apple Santé via <code>@kingstinct/react-native-healthkit</code> · <code>'android'</code> → Health Connect via <code>react-native-health-connect</code>.</p>
+  <p><strong>Trigger</strong> : modal présentée après la 1ère séance complétée (flag MMKV <code>tanren-health-prompted-v1</code>).</p>
+  <p><strong>Permissions iOS</strong> : seul <code>write_workouts</code> a un état détectable. Read permissions sont déléguées aux Réglages système.</p>
+  <p><strong>Permissions Android</strong> : Health Connect expose toutes les perms via <code>getGrantedPermissions()</code>, donc UI complète avec toggles individuels.</p>
+</div>
+
+<!-- ===== ÉCRAN 1 : MODAL DEMANDE (POST-SÉANCE) ===== -->
+
+<div class="section-title-row">
+  <div class="num">Écran 1</div>
+  <h2>Modal de demande post-séance</h2>
+  <p>Apparaît après la 1ère séance complétée. Recap floutée derrière. Copy adapté selon plateforme. <strong style="color: #FFF;">Identique à v1</strong>.</p>
+</div>
+
+<div class="row">
+
+  <div class="col">
+    <div class="phone-frame"><div class="phone-screen">
+      <div class="screen dark-tokens">
+        <div class="session-bg"></div>
+        <div class="recap-blur">
+          <div class="recap-blur-title">Bien joué</div>
+          <div class="recap-blur-sub">PUSH · PEC & TRICEPS</div>
+          <div class="recap-blur-stats">
+            <div class="recap-blur-stat"><div class="v">12</div><div class="l">Séries</div></div>
+            <div class="recap-blur-stat"><div class="v">58:24</div><div class="l">Durée</div></div>
+            <div class="recap-blur-stat"><div class="v">8 450</div><div class="l">Volume</div></div>
+          </div>
+        </div>
+        <div class="modal-overlay">
+          <div class="modal-card">
+            <div class="modal-handle"></div>
+            <div class="modal-icon-row">
+              <div class="modal-icon tanren">鍛</div>
+              <div class="modal-icon-arrow">⇄</div>
+              <div class="modal-icon apple">♥</div>
+            </div>
+            <div class="modal-title">Connecte<br>Apple Santé</div>
+            <div class="modal-subtitle">Garde tout ton historique sportif au même endroit. Tes séances Tanren apparaîtront automatiquement dans Apple Santé.</div>
+            <div class="modal-features">
+              <div class="modal-feature">
+                <div class="check">›</div>
+                <div>
+                  <div class="label">Tes séances dans Santé</div>
+                  <div class="desc">Chaque entraînement complet apparaît dans l'app Santé d'Apple</div>
+                </div>
+              </div>
+              <div class="modal-feature">
+                <div class="check">›</div>
+                <div>
+                  <div class="label">Ton poids synchronisé</div>
+                  <div class="desc">Plus besoin de noter ton poids 2 fois (optionnel)</div>
+                </div>
+              </div>
+            </div>
+            <div class="modal-cta-primary">Activer la synchronisation</div>
+            <div class="modal-cta-skip">Plus tard</div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+    <div class="mockup-caption">Dark — <span class="platform">iOS · Apple Santé</span></div>
+  </div>
+
+  <div class="col">
+    <div class="phone-frame"><div class="phone-screen">
+      <div class="screen light-tokens">
+        <div class="session-bg"></div>
+        <div class="recap-blur">
+          <div class="recap-blur-title">Bien joué</div>
+          <div class="recap-blur-sub">PUSH · PEC & TRICEPS</div>
+          <div class="recap-blur-stats">
+            <div class="recap-blur-stat"><div class="v">12</div><div class="l">Séries</div></div>
+            <div class="recap-blur-stat"><div class="v">58:24</div><div class="l">Durée</div></div>
+            <div class="recap-blur-stat"><div class="v">8 450</div><div class="l">Volume</div></div>
+          </div>
+        </div>
+        <div class="modal-overlay">
+          <div class="modal-card">
+            <div class="modal-handle"></div>
+            <div class="modal-icon-row">
+              <div class="modal-icon tanren">鍛</div>
+              <div class="modal-icon-arrow">⇄</div>
+              <div class="modal-icon apple">♥</div>
+            </div>
+            <div class="modal-title">Connecte<br>Apple Santé</div>
+            <div class="modal-subtitle">Garde tout ton historique sportif au même endroit. Tes séances Tanren apparaîtront automatiquement dans Apple Santé.</div>
+            <div class="modal-features">
+              <div class="modal-feature">
+                <div class="check">›</div>
+                <div>
+                  <div class="label">Tes séances dans Santé</div>
+                  <div class="desc">Chaque entraînement complet apparaît dans l'app Santé d'Apple</div>
+                </div>
+              </div>
+              <div class="modal-feature">
+                <div class="check">›</div>
+                <div>
+                  <div class="label">Ton poids synchronisé</div>
+                  <div class="desc">Plus besoin de noter ton poids 2 fois (optionnel)</div>
+                </div>
+              </div>
+            </div>
+            <div class="modal-cta-primary">Activer la synchronisation</div>
+            <div class="modal-cta-skip">Plus tard</div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+    <div class="mockup-caption">Light — <span class="platform">iOS · Apple Santé</span></div>
+  </div>
+
+</div>
+
+<div class="row">
+
+  <div class="col">
+    <div class="phone-frame"><div class="phone-screen">
+      <div class="screen dark-tokens">
+        <div class="session-bg"></div>
+        <div class="recap-blur">
+          <div class="recap-blur-title">Bien joué</div>
+          <div class="recap-blur-sub">PUSH · PEC & TRICEPS</div>
+          <div class="recap-blur-stats">
+            <div class="recap-blur-stat"><div class="v">12</div><div class="l">Séries</div></div>
+            <div class="recap-blur-stat"><div class="v">58:24</div><div class="l">Durée</div></div>
+            <div class="recap-blur-stat"><div class="v">8 450</div><div class="l">Volume</div></div>
+          </div>
+        </div>
+        <div class="modal-overlay">
+          <div class="modal-card">
+            <div class="modal-handle"></div>
+            <div class="modal-icon-row">
+              <div class="modal-icon tanren">鍛</div>
+              <div class="modal-icon-arrow">⇄</div>
+              <div class="modal-icon android">+</div>
+            </div>
+            <div class="modal-title">Connecte<br>Health Connect</div>
+            <div class="modal-subtitle">Centralise tes données de santé sur Android. Tes séances Tanren se synchronisent avec l'app Health Connect de Google.</div>
+            <div class="modal-features">
+              <div class="modal-feature">
+                <div class="check">›</div>
+                <div>
+                  <div class="label">Tes séances partagées</div>
+                  <div class="desc">Visible dans Health Connect et toutes les apps compatibles (Samsung Health, Fitbit...)</div>
+                </div>
+              </div>
+              <div class="modal-feature">
+                <div class="check">›</div>
+                <div>
+                  <div class="label">Ton poids synchronisé</div>
+                  <div class="desc">Plus besoin de noter ton poids 2 fois (optionnel)</div>
+                </div>
+              </div>
+            </div>
+            <div class="modal-cta-primary">Activer la synchronisation</div>
+            <div class="modal-cta-skip">Plus tard</div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+    <div class="mockup-caption">Dark — <span class="platform">Android · Health Connect</span></div>
+  </div>
+
+  <div class="col">
+    <div class="phone-frame"><div class="phone-screen">
+      <div class="screen light-tokens">
+        <div class="session-bg"></div>
+        <div class="recap-blur">
+          <div class="recap-blur-title">Bien joué</div>
+          <div class="recap-blur-sub">PUSH · PEC & TRICEPS</div>
+          <div class="recap-blur-stats">
+            <div class="recap-blur-stat"><div class="v">12</div><div class="l">Séries</div></div>
+            <div class="recap-blur-stat"><div class="v">58:24</div><div class="l">Durée</div></div>
+            <div class="recap-blur-stat"><div class="v">8 450</div><div class="l">Volume</div></div>
+          </div>
+        </div>
+        <div class="modal-overlay">
+          <div class="modal-card">
+            <div class="modal-handle"></div>
+            <div class="modal-icon-row">
+              <div class="modal-icon tanren">鍛</div>
+              <div class="modal-icon-arrow">⇄</div>
+              <div class="modal-icon android">+</div>
+            </div>
+            <div class="modal-title">Connecte<br>Health Connect</div>
+            <div class="modal-subtitle">Centralise tes données de santé sur Android. Tes séances Tanren se synchronisent avec l'app Health Connect de Google.</div>
+            <div class="modal-features">
+              <div class="modal-feature">
+                <div class="check">›</div>
+                <div>
+                  <div class="label">Tes séances partagées</div>
+                  <div class="desc">Visible dans Health Connect et toutes les apps compatibles (Samsung Health, Fitbit...)</div>
+                </div>
+              </div>
+              <div class="modal-feature">
+                <div class="check">›</div>
+                <div>
+                  <div class="label">Ton poids synchronisé</div>
+                  <div class="desc">Plus besoin de noter ton poids 2 fois (optionnel)</div>
+                </div>
+              </div>
+            </div>
+            <div class="modal-cta-primary">Activer la synchronisation</div>
+            <div class="modal-cta-skip">Plus tard</div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+    <div class="mockup-caption">Light — <span class="platform">Android · Health Connect</span></div>
+  </div>
+
+</div>
+
+<!-- ===== ÉCRAN 2 : PROFILE → CONNEXIONS · iOS CONNECTÉ (changements UX importants) ===== -->
+
+<div class="section-title-row">
+  <div class="num">Écran 2 · iOS</div>
+  <h2>Connexions iOS — connecté</h2>
+  <p>iOS ne fournit pas l'état des read permissions de manière fiable (Apple privacy). On affiche donc <strong style="color: #FFF;">uniquement le toggle de write_workouts</strong> + un bloc info qui redirige vers Réglages > Santé pour les autres permissions. C'est honnête et techniquement correct.</p>
+</div>
+
+<div class="row">
+
+  <div class="col">
+    <div class="phone-frame"><div class="phone-screen">
+      <div class="screen dark-tokens">
+        <div class="screen-header">
+          <div class="back">‹ Profil</div>
+          <div class="title">Connexions</div>
+          <div class="right"></div>
+        </div>
+        <div class="content">
+          <div class="sec-label">Apps de santé</div>
+          <div class="connexion-card">
+            <div class="connexion-row">
+              <div class="connexion-icon apple">♥</div>
+              <div class="connexion-info">
+                <div class="connexion-name">Apple Santé</div>
+                <div class="connexion-status active">● Connecté</div>
+              </div>
+              <div class="toggle on"></div>
+            </div>
+            <div class="perms-list">
+              <div class="perm-row">
+                <div class="perm-label">
+                  <span class="perm-label-main">Écrire mes séances</span>
+                  <span class="perm-label-detail">Type · Durée · Calories estimées</span>
+                </div>
+                <div class="perm-toggle-mini on"></div>
+              </div>
+              <div class="perm-row settings-link">
+                <div class="perm-label">
+                  <span class="perm-label-main">Lecture poids et taille</span>
+                  <span class="perm-label-detail">Géré dans Réglages > Confidentialité > Santé</span>
+                </div>
+                <div class="chev">›</div>
+              </div>
+            </div>
+            <div class="last-sync">
+              <span>Dernière sync · il y a 2 min</span>
+              <span class="sync-now-btn">Sync maintenant</span>
+            </div>
+          </div>
+
+          <div class="info-block">
+            <div class="label">À savoir</div>
+            <div class="text">Apple ne nous communique pas l'état de tes permissions de lecture. Pour les modifier, ouvre Réglages > Santé > Apps connectées > Tanren.</div>
+          </div>
+
+          <div class="sec-label">À venir</div>
+          <div class="connexion-card" style="opacity: 0.5;">
+            <div class="connexion-row">
+              <div class="connexion-icon" style="background: linear-gradient(135deg, #007cc3 0%, #003a70 100%);">⌚</div>
+              <div class="connexion-info">
+                <div class="connexion-name">Garmin Connect</div>
+                <div class="connexion-status">Bientôt disponible</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+    <div class="mockup-caption">Dark — <span class="platform">iOS connecté</span></div>
+  </div>
+
+  <div class="col">
+    <div class="phone-frame"><div class="phone-screen">
+      <div class="screen light-tokens">
+        <div class="screen-header">
+          <div class="back">‹ Profil</div>
+          <div class="title">Connexions</div>
+          <div class="right"></div>
+        </div>
+        <div class="content">
+          <div class="sec-label">Apps de santé</div>
+          <div class="connexion-card">
+            <div class="connexion-row">
+              <div class="connexion-icon apple">♥</div>
+              <div class="connexion-info">
+                <div class="connexion-name">Apple Santé</div>
+                <div class="connexion-status active">● Connecté</div>
+              </div>
+              <div class="toggle on"></div>
+            </div>
+            <div class="perms-list">
+              <div class="perm-row">
+                <div class="perm-label">
+                  <span class="perm-label-main">Écrire mes séances</span>
+                  <span class="perm-label-detail">Type · Durée · Calories estimées</span>
+                </div>
+                <div class="perm-toggle-mini on"></div>
+              </div>
+              <div class="perm-row settings-link">
+                <div class="perm-label">
+                  <span class="perm-label-main">Lecture poids et taille</span>
+                  <span class="perm-label-detail">Géré dans Réglages > Confidentialité > Santé</span>
+                </div>
+                <div class="chev">›</div>
+              </div>
+            </div>
+            <div class="last-sync">
+              <span>Dernière sync · il y a 2 min</span>
+              <span class="sync-now-btn">Sync maintenant</span>
+            </div>
+          </div>
+
+          <div class="info-block">
+            <div class="label">À savoir</div>
+            <div class="text">Apple ne nous communique pas l'état de tes permissions de lecture. Pour les modifier, ouvre Réglages > Santé > Apps connectées > Tanren.</div>
+          </div>
+
+          <div class="sec-label">À venir</div>
+          <div class="connexion-card" style="opacity: 0.5;">
+            <div class="connexion-row">
+              <div class="connexion-icon" style="background: linear-gradient(135deg, #007cc3 0%, #003a70 100%);">⌚</div>
+              <div class="connexion-info">
+                <div class="connexion-name">Garmin Connect</div>
+                <div class="connexion-status">Bientôt disponible</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+    <div class="mockup-caption">Light — <span class="platform">iOS connecté</span></div>
+  </div>
+
+</div>
+
+<!-- ===== ÉCRAN 3 : ANDROID CONNECTÉ (perms granulaires complètes) ===== -->
+
+<div class="section-title-row">
+  <div class="num">Écran 3 · Android</div>
+  <h2>Connexions Android — connecté</h2>
+  <p>Health Connect expose <code>getGrantedPermissions()</code>, donc on peut afficher un état réel pour <strong style="color: #FFF;">les 3 permissions individuelles</strong>. UI plus riche que iOS sur ce point.</p>
+</div>
+
+<div class="row">
+
+  <div class="col">
+    <div class="phone-frame"><div class="phone-screen">
+      <div class="screen dark-tokens">
+        <div class="screen-header">
+          <div class="back">‹ Profil</div>
+          <div class="title">Connexions</div>
+          <div class="right"></div>
+        </div>
+        <div class="content">
+          <div class="sec-label">Apps de santé</div>
+          <div class="connexion-card">
+            <div class="connexion-row">
+              <div class="connexion-icon android">+</div>
+              <div class="connexion-info">
+                <div class="connexion-name">Health Connect</div>
+                <div class="connexion-status active">● Connecté</div>
+              </div>
+              <div class="toggle on"></div>
+            </div>
+            <div class="perms-list">
+              <div class="perm-row">
+                <div class="perm-label">
+                  <span class="perm-label-main">Écrire mes séances</span>
+                  <span class="perm-label-detail">Type · Durée · Calories estimées</span>
+                </div>
+                <div class="perm-toggle-mini on"></div>
+              </div>
+              <div class="perm-row">
+                <div class="perm-label">
+                  <span class="perm-label-main">Lire mon poids</span>
+                  <span class="perm-label-detail">Synchroniser depuis Health Connect</span>
+                </div>
+                <div class="perm-toggle-mini on"></div>
+              </div>
+              <div class="perm-row">
+                <div class="perm-label">
+                  <span class="perm-label-main">Lire ma taille</span>
+                  <span class="perm-label-detail">Pré-remplir le profil</span>
+                </div>
+                <div class="perm-toggle-mini"></div>
+              </div>
+            </div>
+            <div class="last-sync">
+              <span>Dernière sync · il y a 2 min</span>
+              <span class="sync-now-btn">Sync maintenant</span>
+            </div>
+          </div>
+
+          <div class="sec-label">À venir</div>
+          <div class="connexion-card" style="opacity: 0.5;">
+            <div class="connexion-row">
+              <div class="connexion-icon" style="background: linear-gradient(135deg, #007cc3 0%, #003a70 100%);">⌚</div>
+              <div class="connexion-info">
+                <div class="connexion-name">Garmin Connect</div>
+                <div class="connexion-status">Bientôt disponible</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+    <div class="mockup-caption">Dark — <span class="platform">Android connecté</span></div>
+  </div>
+
+  <div class="col">
+    <div class="phone-frame"><div class="phone-screen">
+      <div class="screen light-tokens">
+        <div class="screen-header">
+          <div class="back">‹ Profil</div>
+          <div class="title">Connexions</div>
+          <div class="right"></div>
+        </div>
+        <div class="content">
+          <div class="sec-label">Apps de santé</div>
+          <div class="connexion-card">
+            <div class="connexion-row">
+              <div class="connexion-icon android">+</div>
+              <div class="connexion-info">
+                <div class="connexion-name">Health Connect</div>
+                <div class="connexion-status active">● Connecté</div>
+              </div>
+              <div class="toggle on"></div>
+            </div>
+            <div class="perms-list">
+              <div class="perm-row">
+                <div class="perm-label">
+                  <span class="perm-label-main">Écrire mes séances</span>
+                  <span class="perm-label-detail">Type · Durée · Calories estimées</span>
+                </div>
+                <div class="perm-toggle-mini on"></div>
+              </div>
+              <div class="perm-row">
+                <div class="perm-label">
+                  <span class="perm-label-main">Lire mon poids</span>
+                  <span class="perm-label-detail">Synchroniser depuis Health Connect</span>
+                </div>
+                <div class="perm-toggle-mini on"></div>
+              </div>
+              <div class="perm-row">
+                <div class="perm-label">
+                  <span class="perm-label-main">Lire ma taille</span>
+                  <span class="perm-label-detail">Pré-remplir le profil</span>
+                </div>
+                <div class="perm-toggle-mini"></div>
+              </div>
+            </div>
+            <div class="last-sync">
+              <span>Dernière sync · il y a 2 min</span>
+              <span class="sync-now-btn">Sync maintenant</span>
+            </div>
+          </div>
+
+          <div class="sec-label">À venir</div>
+          <div class="connexion-card" style="opacity: 0.5;">
+            <div class="connexion-row">
+              <div class="connexion-icon" style="background: linear-gradient(135deg, #007cc3 0%, #003a70 100%);">⌚</div>
+              <div class="connexion-info">
+                <div class="connexion-name">Garmin Connect</div>
+                <div class="connexion-status">Bientôt disponible</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+    <div class="mockup-caption">Light — <span class="platform">Android connecté</span></div>
+  </div>
+
+</div>
+
+<!-- ===== ÉCRAN 4 : NON CONNECTÉ ===== -->
+
+<div class="section-title-row">
+  <div class="num">Écran 4</div>
+  <h2>Non connecté — état initial</h2>
+  <p>Avant que l'user ait activé. Provider unique selon plateforme. CTA Connecter centré sur l'action.</p>
+</div>
+
+<div class="row">
+
+  <div class="col">
+    <div class="phone-frame"><div class="phone-screen">
+      <div class="screen dark-tokens">
+        <div class="screen-header">
+          <div class="back">‹ Profil</div>
+          <div class="title">Connexions</div>
+          <div class="right"></div>
+        </div>
+        <div class="content">
+          <div class="sec-label">Apps de santé</div>
+          <div class="connexion-card">
+            <div class="connexion-row">
+              <div class="connexion-icon apple">♥</div>
+              <div class="connexion-info">
+                <div class="connexion-name">Apple Santé</div>
+                <div class="connexion-status inactive">● Non connecté</div>
+              </div>
+            </div>
+            <div style="font-size: 12px; color: var(--text-mute); line-height: 1.5; margin-bottom: 12px; padding: 0 2px;">
+              Synchronise tes séances et ton poids avec l'app Santé d'Apple.
+            </div>
+            <div class="connect-cta">Connecter</div>
+          </div>
+
+          <div class="sec-label">À venir</div>
+          <div class="connexion-card" style="opacity: 0.5;">
+            <div class="connexion-row">
+              <div class="connexion-icon" style="background: linear-gradient(135deg, #007cc3 0%, #003a70 100%);">⌚</div>
+              <div class="connexion-info">
+                <div class="connexion-name">Garmin Connect</div>
+                <div class="connexion-status">Bientôt disponible</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+    <div class="mockup-caption">Dark — <span class="platform">iOS non connecté</span></div>
+  </div>
+
+  <div class="col">
+    <div class="phone-frame"><div class="phone-screen">
+      <div class="screen light-tokens">
+        <div class="screen-header">
+          <div class="back">‹ Profil</div>
+          <div class="title">Connexions</div>
+          <div class="right"></div>
+        </div>
+        <div class="content">
+          <div class="sec-label">Apps de santé</div>
+          <div class="connexion-card">
+            <div class="connexion-row">
+              <div class="connexion-icon apple">♥</div>
+              <div class="connexion-info">
+                <div class="connexion-name">Apple Santé</div>
+                <div class="connexion-status inactive">● Non connecté</div>
+              </div>
+            </div>
+            <div style="font-size: 12px; color: var(--text-mute); line-height: 1.5; margin-bottom: 12px; padding: 0 2px;">
+              Synchronise tes séances et ton poids avec l'app Santé d'Apple.
+            </div>
+            <div class="connect-cta">Connecter</div>
+          </div>
+
+          <div class="sec-label">À venir</div>
+          <div class="connexion-card" style="opacity: 0.5;">
+            <div class="connexion-row">
+              <div class="connexion-icon" style="background: linear-gradient(135deg, #007cc3 0%, #003a70 100%);">⌚</div>
+              <div class="connexion-info">
+                <div class="connexion-name">Garmin Connect</div>
+                <div class="connexion-status">Bientôt disponible</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+    <div class="mockup-caption">Light — <span class="platform">iOS non connecté</span></div>
+  </div>
+
+</div>
+
+<!-- ===== ÉCRAN 5 : ÉTAT INDISPONIBLE ===== -->
+
+<div class="section-title-row">
+  <div class="num">Écran 5</div>
+  <h2>État indisponible</h2>
+  <p>Health Connect n'est pas disponible (Android sans GMS, ROM custom, vieille version). Sur iOS, ce cas est plus rare mais possible (iOS &lt; 8 ou device sans HealthKit). Card explicite, CTA "Installer Health Connect" si Play Store accessible.</p>
+</div>
+
+<div class="row">
+
+  <div class="col">
+    <div class="phone-frame"><div class="phone-screen">
+      <div class="screen dark-tokens">
+        <div class="screen-header">
+          <div class="back">‹ Profil</div>
+          <div class="title">Connexions</div>
+          <div class="right"></div>
+        </div>
+        <div class="content">
+          <div class="sec-label">Apps de santé</div>
+          <div class="connexion-card">
+            <div class="connexion-row">
+              <div class="connexion-icon unavailable">×</div>
+              <div class="connexion-info">
+                <div class="connexion-name">Health Connect</div>
+                <div class="connexion-status warning">⚠ Indisponible</div>
+              </div>
+            </div>
+            <div style="font-size: 12px; color: var(--text-mute); line-height: 1.5; margin-bottom: 12px; padding: 0 2px;">
+              Health Connect n'est pas installé sur ton appareil. Si tu utilises Android 14+, c'est inclus par défaut. Sinon, installe-le depuis le Play Store.
+            </div>
+            <div class="connect-cta">Installer Health Connect</div>
+          </div>
+
+          <div class="info-block">
+            <div class="label">Compatibilité</div>
+            <div class="text">Health Connect requiert Android 8+ et Google Play Services. Certains appareils sans GMS (Huawei récents, ROMs custom) ne peuvent pas l'installer.</div>
+          </div>
+
+          <div class="sec-label">À venir</div>
+          <div class="connexion-card" style="opacity: 0.5;">
+            <div class="connexion-row">
+              <div class="connexion-icon" style="background: linear-gradient(135deg, #007cc3 0%, #003a70 100%);">⌚</div>
+              <div class="connexion-info">
+                <div class="connexion-name">Garmin Connect</div>
+                <div class="connexion-status">Bientôt disponible</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+    <div class="mockup-caption">Dark — <span class="platform">Android sans HC</span></div>
+  </div>
+
+  <div class="col">
+    <div class="phone-frame"><div class="phone-screen">
+      <div class="screen light-tokens">
+        <div class="screen-header">
+          <div class="back">‹ Profil</div>
+          <div class="title">Connexions</div>
+          <div class="right"></div>
+        </div>
+        <div class="content">
+          <div class="sec-label">Apps de santé</div>
+          <div class="connexion-card">
+            <div class="connexion-row">
+              <div class="connexion-icon unavailable">×</div>
+              <div class="connexion-info">
+                <div class="connexion-name">Health Connect</div>
+                <div class="connexion-status warning">⚠ Indisponible</div>
+              </div>
+            </div>
+            <div style="font-size: 12px; color: var(--text-mute); line-height: 1.5; margin-bottom: 12px; padding: 0 2px;">
+              Health Connect n'est pas installé sur ton appareil. Si tu utilises Android 14+, c'est inclus par défaut. Sinon, installe-le depuis le Play Store.
+            </div>
+            <div class="connect-cta">Installer Health Connect</div>
+          </div>
+
+          <div class="info-block">
+            <div class="label">Compatibilité</div>
+            <div class="text">Health Connect requiert Android 8+ et Google Play Services. Certains appareils sans GMS (Huawei récents, ROMs custom) ne peuvent pas l'installer.</div>
+          </div>
+
+          <div class="sec-label">À venir</div>
+          <div class="connexion-card" style="opacity: 0.5;">
+            <div class="connexion-row">
+              <div class="connexion-icon" style="background: linear-gradient(135deg, #007cc3 0%, #003a70 100%);">⌚</div>
+              <div class="connexion-info">
+                <div class="connexion-name">Garmin Connect</div>
+                <div class="connexion-status">Bientôt disponible</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+    <div class="mockup-caption">Light — <span class="platform">Android sans HC</span></div>
+  </div>
+
+</div>
+
+<!-- ===== ÉCRAN 6 : MODAL DE RÉVOCATION (REDIRECTION SETTINGS) ===== -->
+
+<div class="section-title-row">
+  <div class="num">Écran 6</div>
+  <h2>Modal de révocation</h2>
+  <p>Apparaît au tap sur "Désactiver". On ne peut pas révoquer les permissions Apple Santé / Health Connect programmatiquement. La modal explique honnêtement et redirige vers les Réglages système via <code>Linking.openSettings()</code>.</p>
+</div>
+
+<div class="row">
+
+  <div class="col">
+    <div class="phone-frame"><div class="phone-screen">
+      <div class="screen dark-tokens">
+        <div class="screen-header">
+          <div class="back">‹ Profil</div>
+          <div class="title">Connexions</div>
+          <div class="right"></div>
+        </div>
+        <div class="content" style="opacity: 0.5; filter: blur(2px);">
+          <div class="sec-label">Apps de santé</div>
+          <div class="connexion-card">
+            <div class="connexion-row">
+              <div class="connexion-icon apple">♥</div>
+              <div class="connexion-info">
+                <div class="connexion-name">Apple Santé</div>
+                <div class="connexion-status active">● Connecté</div>
+              </div>
+              <div class="toggle on"></div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-overlay" style="background: var(--overlay);">
+          <div class="revoke-modal">
+            <div class="revoke-modal-handle"></div>
+            <div class="revoke-modal-icon">⚠</div>
+            <div class="revoke-modal-title">Révoquer<br>les permissions ?</div>
+            <div class="revoke-modal-text">
+              Pour des raisons de confidentialité, <strong>Apple gère les permissions Santé séparément</strong>. Tu vas être redirigé vers Réglages > Confidentialité > Santé > Tanren pour les modifier.
+            </div>
+            <div class="revoke-modal-cta">Ouvrir Réglages</div>
+            <div class="revoke-modal-cancel">Annuler</div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+    <div class="mockup-caption">Dark — <span class="platform">Modal révocation iOS</span></div>
+  </div>
+
+  <div class="col">
+    <div class="phone-frame"><div class="phone-screen">
+      <div class="screen light-tokens">
+        <div class="screen-header">
+          <div class="back">‹ Profil</div>
+          <div class="title">Connexions</div>
+          <div class="right"></div>
+        </div>
+        <div class="content" style="opacity: 0.5; filter: blur(2px);">
+          <div class="sec-label">Apps de santé</div>
+          <div class="connexion-card">
+            <div class="connexion-row">
+              <div class="connexion-icon apple">♥</div>
+              <div class="connexion-info">
+                <div class="connexion-name">Apple Santé</div>
+                <div class="connexion-status active">● Connecté</div>
+              </div>
+              <div class="toggle on"></div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-overlay" style="background: var(--overlay);">
+          <div class="revoke-modal">
+            <div class="revoke-modal-handle"></div>
+            <div class="revoke-modal-icon">⚠</div>
+            <div class="revoke-modal-title">Révoquer<br>les permissions ?</div>
+            <div class="revoke-modal-text">
+              Pour des raisons de confidentialité, <strong>Apple gère les permissions Santé séparément</strong>. Tu vas être redirigé vers Réglages > Confidentialité > Santé > Tanren pour les modifier.
+            </div>
+            <div class="revoke-modal-cta">Ouvrir Réglages</div>
+            <div class="revoke-modal-cancel">Annuler</div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+    <div class="mockup-caption">Light — <span class="platform">Modal révocation iOS</span></div>
+  </div>
+
+</div>
+
+<!-- ===== Design notes ===== -->
+
+<div class="design-notes">
+  <h4>Différences UX iOS vs Android (intentionnelles)</h4>
+  <table>
+    <thead>
+      <tr><th>Aspect</th><th>iOS (Apple Santé)</th><th>Android (Health Connect)</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Toggle write_workouts</td><td>Affiché et fonctionnel</td><td>Affiché et fonctionnel</td></tr>
+      <tr><td>Toggle read_weight</td><td><strong style="color:#FFF">Remplacé par bloc "Settings"</strong></td><td>Affiché et fonctionnel</td></tr>
+      <tr><td>Toggle read_height</td><td><strong style="color:#FFF">Remplacé par bloc "Settings"</strong></td><td>Affiché et fonctionnel</td></tr>
+      <tr><td>Détection état perms read</td><td>Impossible (Apple privacy)</td><td>Via <code>getGrantedPermissions()</code></td></tr>
+      <tr><td>Révocation</td><td>Modal + <code>Linking.openSettings()</code></td><td>Modal + <code>Linking.openSettings()</code></td></tr>
+      <tr><td>Indispo possible ?</td><td>Très rare (iPad sans HK)</td><td>Fréquent (Android sans GMS)</td></tr>
+    </tbody>
+  </table>
+  <p style="margin-top: 12px;">Cette divergence est <strong>volontaire</strong> et reflète la réalité des plateformes. Une UX strictement identique mentirait sur l'état réel des permissions iOS.</p>
+</div>
+
+<div class="design-notes">
+  <h4>Theme system — IMPORTANT</h4>
+  <p>Tous les composants doivent consommer le hook <code>useTheme()</code> existant de l'app, <strong>pas</strong> les tokens inline du mockup HTML. Les valeurs CSS variables ci-dessus (<code>--bg</code>, <code>--accent</code>, etc.) sont des indicateurs visuels — l'implémentation React Native doit puiser dans le ThemeContext.</p>
+  <p>Avant toute UI, lire : <code>grep -rn "useTheme\|ThemeContext\|ThemeProvider" apps/mobile/src</code> et utiliser les tokens trouvés.</p>
+</div>
+
+<div class="design-notes">
+  <h4>Transitions et états</h4>
+  <p><strong>Tap sur "Activer la synchronisation"</strong> :</p>
+  <p style="margin-left: 12px;">
+    iOS → modal Tanren se ferme → iOS native sheet apparaît (gérée par OS, pas Tanren) → user accepte/refuse → retour au screen précédent → état "Connecté" si write_workouts granted.<br>
+    Android → modal Tanren se ferme → Health Connect ouvre son propre activity → user accepte/refuse → callback Tanren → état mis à jour.
+  </p>
+  <p><strong>Tap sur le toggle principal "off"</strong> sur l'écran connecté :</p>
+  <p style="margin-left: 12px;">
+    Affiche la modal de révocation (écran 6). User tape "Ouvrir Réglages" → <code>Linking.openSettings()</code>. À son retour dans Tanren, le service refait <code>getPermissionState()</code> et met à jour l'UI.
+  </p>
+  <p><strong>Tap sur "Sync maintenant"</strong> :</p>
+  <p style="margin-left: 12px;">
+    Spinner remplace le label le temps de la sync (1-3s typique). Met à jour la timestamp "Dernière sync".
+  </p>
+</div>
+
+<div class="footer-tagline">
+  <div class="k">鍛 錬</div>
+  <div class="t">TANREN</div>
+  <div class="d">Une rep après l'autre.</div>
+  <div class="meta">HEALTH INTEGRATION v2 · iOS + ANDROID · 2026</div>
+</div>
+
+</body>
+</html>

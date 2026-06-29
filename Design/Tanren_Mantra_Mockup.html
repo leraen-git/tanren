@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TANREN — Notre Mantra</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;500;700;900&family=Noto+Serif+JP:wght@400;700;900&family=JetBrains+Mono:wght@400;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Barlow Condensed', sans-serif;
+    background: linear-gradient(180deg, #0f0f0f 0%, #050505 100%);
+    color: #FFFFFF;
+    min-height: 100vh;
+    padding: 60px 40px 80px;
+  }
+
+  .page-header { text-align: center; margin: 0 auto 30px; max-width: 900px; }
+  .page-label { font-weight: 500; font-size: 11px; letter-spacing: 0.24em; color: #FF2D3F; text-transform: uppercase; margin-bottom: 12px; }
+  .page-title { font-weight: 900; font-size: 44px; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 14px; line-height: 1; }
+  .page-desc { font-weight: 400; font-size: 14px; color: #999; line-height: 1.5; max-width: 720px; margin: 0 auto; }
+
+  .scope-bar { max-width: 1300px; margin: 0 auto 50px; padding: 14px 24px; background: rgba(255, 45, 63, 0.06); border-left: 3px solid #FF2D3F; }
+  .scope-bar h4 { font-weight: 700; font-size: 11px; letter-spacing: 0.2em; color: #FF2D3F; text-transform: uppercase; margin-bottom: 8px; }
+  .scope-bar p { font-size: 12px; color: #BBB; line-height: 1.5; margin-bottom: 4px; }
+  .scope-bar p:last-child { margin-bottom: 0; }
+  .scope-bar p strong { color: #FFF; font-weight: 700; }
+  .scope-bar code { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #FF2D3F; background: rgba(255,45,63,0.1); padding: 2px 6px; border-radius: 2px; }
+
+  .row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin: 0 auto 24px; max-width: 1300px; align-items: flex-start; justify-items: center; }
+  .col { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .mode-tag { font-weight: 700; font-size: 10px; letter-spacing: 0.32em; text-transform: uppercase; padding: 6px 14px; }
+  .mode-tag.dark { background: #000; color: #FFF; border: 1px solid #333; }
+  .mode-tag.light { background: #FFF; color: #000; border: 1px solid #DDD; }
+  .mockup-caption { font-weight: 700; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; text-align: center; color: #FFF; }
+
+  .phone-frame { background: #1a1a1a; border-radius: 32px; padding: 5px; box-shadow: 0 20px 40px rgba(0,0,0,0.5), 0 8px 16px rgba(0,0,0,0.3); }
+  .phone-screen { width: 360px; height: 760px; border-radius: 27px; overflow: hidden; position: relative; }
+
+  .dark-tokens {
+    --bg: #000;
+    --text: #FFF;
+    --text-dim: rgba(255,255,255,0.92);
+    --text-mute: rgba(255,255,255,0.55);
+    --text-ghost: rgba(255,255,255,0.5);
+    --accent: #FF2D3F;
+    --vignette-color: rgba(255,45,63,0.05);
+    --glyph-opacity: 0.08;
+    --btn-prev-border: rgba(255,255,255,0.2);
+    --btn-prev-text: rgba(255,255,255,0.7);
+    --tradition-bg: rgba(255,45,63,0.05);
+    --tradition-border: rgba(255,45,63,0.4);
+  }
+  .light-tokens {
+    --bg: #FFF;
+    --text: #000;
+    --text-dim: rgba(0,0,0,0.85);
+    --text-mute: rgba(0,0,0,0.55);
+    --text-ghost: rgba(0,0,0,0.5);
+    --accent: #E8192C;
+    --vignette-color: rgba(232,25,44,0.04);
+    --glyph-opacity: 0.08;
+    --btn-prev-border: rgba(0,0,0,0.2);
+    --btn-prev-text: rgba(0,0,0,0.7);
+    --tradition-bg: rgba(232,25,44,0.04);
+    --tradition-border: rgba(232,25,44,0.4);
+  }
+
+  /* ===== SCREEN GLOBAL LAYOUT ===== */
+  .screen {
+    width: 100%; height: 100%;
+    background: var(--bg); color: var(--text);
+    position: relative; overflow: hidden;
+    padding: 50px 26px 24px;
+    display: flex; flex-direction: column;
+  }
+
+  .vignette {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at top, var(--vignette-color) 0%, transparent 65%);
+    pointer-events: none; z-index: 1;
+  }
+
+  .glyph-bg {
+    position: absolute;
+    right: -90px;
+    bottom: 80px;
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 900;
+    font-size: 250px;
+    line-height: 0.85;
+    letter-spacing: 0.05em;
+    color: var(--accent);
+    opacity: var(--glyph-opacity);
+    pointer-events: none;
+    z-index: 1;
+    white-space: nowrap;
+  }
+
+  /* Stepper at the top */
+  .stepper {
+    display: flex; gap: 4px;
+    margin-bottom: 18px;
+    z-index: 5; position: relative;
+  }
+  .step-bar {
+    flex: 1; height: 2px;
+    background: rgba(255,255,255,0.15);
+  }
+  .light-tokens .step-bar { background: rgba(0,0,0,0.12); }
+  .step-bar.active { background: var(--accent); }
+
+  /* Eyebrow line */
+  .eyebrow {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 14px;
+    z-index: 5; position: relative;
+  }
+  .eyebrow .kanji-mini {
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+  }
+  .eyebrow .dot { color: var(--text-ghost); font-size: 11px; }
+  .eyebrow .label {
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+
+  /* Main heading */
+  .heading {
+    font-family: 'EB Garamond', serif;
+    font-weight: 700;
+    font-size: 38px;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+    color: var(--text);
+    margin-bottom: 18px;
+    z-index: 5; position: relative;
+  }
+  .heading .accent { color: var(--accent); }
+
+  /* Body content area - flex 1 to fill space, but allow scroll if overflow */
+  .body-area {
+    flex: 1;
+    overflow: hidden;
+    z-index: 5; position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .body-text {
+    font-family: 'EB Garamond', serif;
+    font-weight: 400;
+    font-size: 15.5px;
+    line-height: 1.5;
+    color: var(--text-dim);
+  }
+  .body-text strong {
+    font-weight: 700;
+    color: var(--text);
+  }
+  .body-text .accent {
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  /* "Étymologie" / "Dans la tradition" block */
+  .info-block {
+    padding: 12px 14px;
+    background: var(--tradition-bg);
+    border-left: 2px solid var(--tradition-border);
+    margin-top: auto;
+  }
+  .info-block .label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 9px;
+    letter-spacing: 0.32em;
+    color: var(--text-mute);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .info-block .text {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--text-dim);
+  }
+  .info-block .text.ety-line {
+    font-style: normal;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    line-height: 1.7;
+  }
+  .info-block .text.ety-line .kj {
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 700;
+    color: var(--accent);
+    margin-right: 4px;
+  }
+
+  /* Closing question for screen 3 */
+  .closing-question {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 17px;
+    color: var(--accent);
+    margin-top: 14px;
+  }
+
+  /* Bottom navigation */
+  .nav-row {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 10px;
+    margin-top: 16px;
+    z-index: 5; position: relative;
+  }
+  .nav-row.first {
+    grid-template-columns: 1fr;
+  }
+
+  .btn-prev {
+    background: transparent;
+    border: 1px solid var(--btn-prev-border);
+    color: var(--btn-prev-text);
+    width: 56px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 16px;
+    letter-spacing: 0;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Barlow Condensed', sans-serif;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .btn-next, .btn-finish {
+    background: var(--accent);
+    color: #FFF;
+    padding: 16px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Barlow Condensed', sans-serif;
+  }
+
+  .design-notes { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); padding: 22px 26px; margin: 50px auto; max-width: 1100px; }
+  .design-notes h4 { font-weight: 700; font-size: 11px; letter-spacing: 0.2em; color: #FF2D3F; text-transform: uppercase; margin-bottom: 10px; }
+  .design-notes p { font-size: 13px; color: #BBB; line-height: 1.55; margin-bottom: 8px; }
+  .design-notes p:last-child { margin-bottom: 0; }
+  .design-notes p strong { color: #FFF; font-weight: 700; }
+  .design-notes code { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #FF2D3F; background: rgba(255,45,63,0.1); padding: 2px 5px; border-radius: 2px; }
+
+  .section-divider {
+    text-align: center;
+    margin: 50px 0 24px;
+  }
+
+  .footer-tagline { max-width: 900px; margin: 60px auto 0; text-align: center; padding-top: 30px; border-top: 1px solid #2a2a2a; }
+  .footer-tagline .k { font-family: 'Noto Serif JP', serif; font-weight: 900; font-size: 22px; color: #FF2D3F; letter-spacing: 0.4em; margin-bottom: 6px; }
+  .footer-tagline .t { font-weight: 900; font-size: 18px; letter-spacing: 0.16em; margin-bottom: 4px; }
+  .footer-tagline .d { font-style: italic; color: #FF2D3F; font-size: 13px; margin-bottom: 10px; font-family: 'EB Garamond', serif; }
+  .footer-tagline .meta { font-size: 11px; color: #888; letter-spacing: 0.2em; }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="page-label">Tanren · Notre Mantra</div>
+  <div class="page-title">Notre Mantra</div>
+  <div class="page-desc">
+    3 écrans qui racontent l'origine et le sens de Tanren. Pleine hauteur sans débordement, navigation Précédent/Suivant en bas, "Compris" sur le dernier écran.
+  </div>
+</div>
+
+<div class="scope-bar">
+  <h4>Specs verrouillées</h4>
+  <p><strong>Écran 1 — L'origine</strong> : "Tanren, deux kanji pour un mot" + bloc Étymologie</p>
+  <p><strong>Écran 2 — La philosophie</strong> : "Le corps comme une lame" + bloc Tradition</p>
+  <p><strong>Écran 3 — L'application</strong> : "Ton corps, ta forge" + question de clôture + CTA <code>Compris</code></p>
+  <p><strong>Navigation</strong> : pas de Précédent sur écran 1 (juste Suivant pleine largeur). Précédent + Suivant sur 2. Précédent + Compris sur 3.</p>
+  <p><strong>Pleine hauteur</strong> : <code>flex: 1</code> sur la zone de contenu, <code>overflow: hidden</code> pour empêcher le scroll, <code>info-block</code> sticky en bas via <code>margin-top: auto</code>.</p>
+</div>
+
+<!-- ===== DARK MODE ===== -->
+
+<div class="section-divider">
+  <div class="mode-tag dark" style="display: inline-block;">Dark mode</div>
+</div>
+
+<div class="row">
+
+  <!-- Écran 1 -->
+  <div class="col">
+    <div class="phone-frame"><div class="phone-screen">
+      <div class="screen dark-tokens">
+        <div class="vignette"></div>
+        <div class="glyph-bg">鍛 錬</div>
+        <div class="stepper">
+          <div class="step-bar active"></div>
+          <div class="step-bar"></div>
+          <div class="step-bar"></div>
+        </div>
+        <div class="eyebrow">
+          <span class="kanji-mini">鍛 錬</span>
+          <span class="dot">·</span>
+          <span class="label">L'origine</span>
+        </div>
+        <div class="heading">
+          Tanren,<br>
+          <span class="accent">deux kanji</span><br>
+          pour un mot
+        </div>
+        <div class="body-area">
+          <div class="body-text">
+            <strong>Tanren (鍛錬)</strong> est un mot japonais qui désigne la pratique de la forge.
+          </div>
+          <div class="body-text">
+            Au Japon ancien, c'est ainsi qu'on travaillait l'acier des sabres : par <strong>la chauffe et la frappe répétées</strong>, jour après jour, pendant des années.
+          </div>
+          <div class="info-block">
+            <div class="label">Étymologie</div>
+            <div class="text ety-line">
+              <span class="kj">鍛</span>(tan) = forger<br>
+              <span class="kj">錬</span>(ren) = affiner
+            </div>
+          </div>
+        </div>
+        <div class="nav-row first">
+          <div class="btn-next">Suivant</div>
+        </div>
+      </div>
+    </div></div>
+    <div class="mockup-caption">1/3 — L'origine</div>
+  </div>
+
+  <!-- Écran 2 -->
+  <div class="col">
+    <div class="phone-frame"><div class="phone-screen">
+      <div class="screen dark-tokens">
+        <div class="vignette"></div>
+        <div class="glyph-bg">鍛 錬</div>
+        <div class="stepper">
+          <div class="step-bar"></div>
+          <div class="step-bar active"></div>
+          <div class="step-bar"></div>
+        </div>
+        <div class="eyebrow">
+          <span class="kanji-mini">鍛 錬</span>
+          <span class="dot">·</span>
+          <span class="label">La philosophie</span>
+        </div>
+        <div class="heading">
+          Le corps<br>
+          comme<br>
+          une <span class="accent">lame</span>
+        </div>
+        <div class="body-area">
+          <div class="body-text">
+            Les arts martiaux japonais ont étendu le mot au-delà du métal.
+          </div>
+          <div class="body-text">
+            <strong>Tanren</strong>, c'est la discipline qui transforme un corps ordinaire en outil précis. Par la répétition. Par la patience. Par <strong>l'effort soutenu sur le long terme</strong>.
+          </div>
+          <div class="info-block">
+            <div class="label">Dans la tradition</div>
+            <div class="text">"Forger le corps avec la même rigueur que l'acier."</div>
+          </div>
+        </div>
+        <div class="nav-row">
+          <div class="btn-prev">‹</div>
+          <div class="btn-next">Suivant</div>
+        </div>
+      </div>
+    </div></div>
+    <div class="mockup-caption">2/3 — La philosophie</div>
+  </div>
+
+  <!-- Écran 3 -->
+  <div class="col">
+    <div class="phone-frame"><div class="phone-screen">
+      <div class="screen dark-tokens">
+        <div class="vignette"></div>
+        <div class="glyph-bg">鍛 錬</div>
+        <div class="stepper">
+          <div class="step-bar"></div>
+          <div class="step-bar"></div>
+          <div class="step-bar active"></div>
+        </div>
+        <div class="eyebrow">
+          <span class="kanji-mini">鍛 錬</span>
+          <span class="dot">·</span>
+          <span class="label">L'application</span>
+        </div>
+        <div class="heading">
+          Ton corps,<br>
+          ta <span class="accent">forge</span>
+        </div>
+        <div class="body-area">
+          <div class="body-text">
+            Tanren n'est pas une app de fitness. C'est une <strong>application de forgeage</strong>.
+          </div>
+          <div class="body-text">
+            Chaque séance enregistrée, chaque rep loggée, chaque kilo soulevé est <strong>un coup de marteau</strong>. Le résultat n'apparaît pas en 10 jours. Il apparaît dans 10 ans.
+          </div>
+          <div class="closing-question">Tu es prêt à commencer ?</div>
+        </div>
+        <div class="nav-row">
+          <div class="btn-prev">‹</div>
+          <div class="btn-finish">Compris</div>
+        </div>
+      </div>
+    </div></div>
+    <div class="mockup-caption">3/3 — L'application</div>
+  </div>
+
+</div>
+
+<!-- ===== LIGHT MODE ===== -->
+
+<div class="section-divider">
+  <div class="mode-tag light" style="display: inline-block;">Light mode</div>
+</div>
+
+<div class="row">
+
+  <!-- Écran 1 light -->
+  <div class="col">
+    <div class="phone-frame"><div class="phone-screen">
+      <div class="screen light-tokens">
+        <div class="vignette"></div>
+        <div class="glyph-bg">鍛 錬</div>
+        <div class="stepper">
+          <div class="step-bar active"></div>
+          <div class="step-bar"></div>
+          <div class="step-bar"></div>
+        </div>
+        <div class="eyebrow">
+          <span class="kanji-mini">鍛 錬</span>
+          <span class="dot">·</span>
+          <span class="label">L'origine</span>
+        </div>
+        <div class="heading">
+          Tanren,<br>
+          <span class="accent">deux kanji</span><br>
+          pour un mot
+        </div>
+        <div class="body-area">
+          <div class="body-text">
+            <strong>Tanren (鍛錬)</strong> est un mot japonais qui désigne la pratique de la forge.
+          </div>
+          <div class="body-text">
+            Au Japon ancien, c'est ainsi qu'on travaillait l'acier des sabres : par <strong>la chauffe et la frappe répétées</strong>, jour après jour, pendant des années.
+          </div>
+          <div class="info-block">
+            <div class="label">Étymologie</div>
+            <div class="text ety-line">
+              <span class="kj">鍛</span>(tan) = forger<br>
+              <span class="kj">錬</span>(ren) = affiner
+            </div>
+          </div>
+        </div>
+        <div class="nav-row first">
+          <div class="btn-next">Suivant</div>
+        </div>
+      </div>
+    </div></div>
+    <div class="mockup-caption">1/3 — L'origine</div>
+  </div>
+
+  <!-- Écran 2 light -->
+  <div class="col">
+    <div class="phone-frame"><div class="phone-screen">
+      <div class="screen light-tokens">
+        <div class="vignette"></div>
+        <div class="glyph-bg">鍛 錬</div>
+        <div class="stepper">
+          <div class="step-bar"></div>
+          <div class="step-bar active"></div>
+          <div class="step-bar"></div>
+        </div>
+        <div class="eyebrow">
+          <span class="kanji-mini">鍛 錬</span>
+          <span class="dot">·</span>
+          <span class="label">La philosophie</span>
+        </div>
+        <div class="heading">
+          Le corps<br>
+          comme<br>
+          une <span class="accent">lame</span>
+        </div>
+        <div class="body-area">
+          <div class="body-text">
+            Les arts martiaux japonais ont étendu le mot au-delà du métal.
+          </div>
+          <div class="body-text">
+            <strong>Tanren</strong>, c'est la discipline qui transforme un corps ordinaire en outil précis. Par la répétition. Par la patience. Par <strong>l'effort soutenu sur le long terme</strong>.
+          </div>
+          <div class="info-block">
+            <div class="label">Dans la tradition</div>
+            <div class="text">"Forger le corps avec la même rigueur que l'acier."</div>
+          </div>
+        </div>
+        <div class="nav-row">
+          <div class="btn-prev">‹</div>
+          <div class="btn-next">Suivant</div>
+        </div>
+      </div>
+    </div></div>
+    <div class="mockup-caption">2/3 — La philosophie</div>
+  </div>
+
+  <!-- Écran 3 light -->
+  <div class="col">
+    <div class="phone-frame"><div class="phone-screen">
+      <div class="screen light-tokens">
+        <div class="vignette"></div>
+        <div class="glyph-bg">鍛 錬</div>
+        <div class="stepper">
+          <div class="step-bar"></div>
+          <div class="step-bar"></div>
+          <div class="step-bar active"></div>
+        </div>
+        <div class="eyebrow">
+          <span class="kanji-mini">鍛 錬</span>
+          <span class="dot">·</span>
+          <span class="label">L'application</span>
+        </div>
+        <div class="heading">
+          Ton corps,<br>
+          ta <span class="accent">forge</span>
+        </div>
+        <div class="body-area">
+          <div class="body-text">
+            Tanren n'est pas une app de fitness. C'est une <strong>application de forgeage</strong>.
+          </div>
+          <div class="body-text">
+            Chaque séance enregistrée, chaque rep loggée, chaque kilo soulevé est <strong>un coup de marteau</strong>. Le résultat n'apparaît pas en 10 jours. Il apparaît dans 10 ans.
+          </div>
+          <div class="closing-question">Tu es prêt à commencer ?</div>
+        </div>
+        <div class="nav-row">
+          <div class="btn-prev">‹</div>
+          <div class="btn-finish">Compris</div>
+        </div>
+      </div>
+    </div></div>
+    <div class="mockup-caption">3/3 — L'application</div>
+  </div>
+
+</div>
+
+<!-- ===== Design notes ===== -->
+
+<div class="design-notes">
+  <h4>Layout structure — pleine hauteur sans débordement</h4>
+  <p>De haut en bas, le screen est divisé en 5 zones :</p>
+  <p style="margin-left: 12px;">
+    <strong>1.</strong> Stepper (3 bars) — fixé en haut<br>
+    <strong>2.</strong> Eyebrow (kanji · LABEL) — eyebrow line<br>
+    <strong>3.</strong> Heading (titre H1 du screen)<br>
+    <strong>4.</strong> Body area — <code>flex: 1</code>, contient les paragraphes et le <code>info-block</code> qui se cale en bas via <code>margin-top: auto</code><br>
+    <strong>5.</strong> Nav row — boutons Précédent/Suivant ou Précédent/Compris
+  </p>
+  <p>Sur l'écran 3, le bloc <code>info-block</code> est remplacé par <code>closing-question</code> ("Tu es prêt à commencer ?") en italique accent.</p>
+</div>
+
+<div class="design-notes">
+  <h4>Typography</h4>
+  <p><code>Heading</code> : <strong>EB Garamond 700, 38px</strong>, line-height 1.05, uppercase. Mots en accent rouge pour ponctuer.</p>
+  <p><code>Body text</code> : <strong>EB Garamond 400, 15.5px</strong>, line-height 1.5. Mots clés en <code>strong</code> (700, blanc/noir plein).</p>
+  <p><code>Eyebrow label</code> : <strong>Barlow Condensed 700, 11px</strong>, letter-spacing 0.25em, uppercase, accent color.</p>
+  <p><code>Info-block label</code> : <strong>Barlow Condensed 700, 9px</strong>, letter-spacing 0.32em, uppercase, mute.</p>
+  <p><code>Info-block text</code> : <strong>EB Garamond 400 italic, 13px</strong>, line-height 1.5.</p>
+  <p><code>Étymologie kanji line</code> : <strong>JetBrains Mono 400, 12px</strong>, kanji en NotoSerifJP accent.</p>
+  <p><code>Closing question</code> : <strong>EB Garamond 500 italic, 17px</strong>, accent color.</p>
+  <p><code>Nav buttons</code> : <strong>Barlow Condensed 700, 13px</strong>, letter-spacing 0.28em, uppercase. Précédent en outline, Suivant/Compris en accent fill.</p>
+</div>
+
+<div class="design-notes">
+  <h4>Couleurs — tokens dark / light</h4>
+  <p>Background : <code>#000</code> / <code>#FFF</code></p>
+  <p>Accent : <code>#FF2D3F</code> / <code>#E8192C</code></p>
+  <p>Text dim : <code>rgba(255,255,255,0.92)</code> / <code>rgba(0,0,0,0.85)</code></p>
+  <p>Step bar inactive : <code>rgba(255,255,255,0.15)</code> / <code>rgba(0,0,0,0.12)</code></p>
+  <p>Info-block bg : <code>rgba(accent, 0.05)</code> · border-left <code>rgba(accent, 0.4)</code></p>
+  <p>Glyph BG opacity : <code>0.08</code> les deux modes</p>
+</div>
+
+<div class="design-notes">
+  <h4>Comportement boutons</h4>
+  <p><strong>Écran 1</strong> : <code>nav-row.first</code> avec <code>grid-template-columns: 1fr</code> — un seul bouton Suivant pleine largeur, pas de Précédent.</p>
+  <p><strong>Écran 2</strong> : <code>nav-row</code> avec Précédent (56px largeur fixe) + Suivant (flex 1).</p>
+  <p><strong>Écran 3</strong> : même structure que 2, mais le bouton de droite affiche <code>Compris</code> au lieu de <code>Suivant</code>. Au tap, set MMKV flag <code>tanren-mantra-seen-v1 = true</code> et redirect vers onboarding (ou back si reskippé depuis Profile).</p>
+  <p><strong>Bouton Passer</strong> top-right : retiré dans cette version (l'user navigue page par page, le mantra est court).</p>
+</div>
+
+<div class="footer-tagline">
+  <div class="k">鍛 錬</div>
+  <div class="t">TANREN</div>
+  <div class="d">Une rep après l'autre.</div>
+  <div class="meta">NOTRE MANTRA · 3 ÉCRANS · 2026</div>
+</div>
+
+</body>
+</html>

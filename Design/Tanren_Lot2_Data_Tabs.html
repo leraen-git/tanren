@@ -1,0 +1,2006 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TANREN — Lot 2 · Data & Tabs (Dark + Light)</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,300;0,400;0,500;0,700;0,900;1,400&family=Noto+Serif+JP:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  /* ===== GLOBAL ===== */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Barlow Condensed', sans-serif;
+    background: linear-gradient(180deg, #0f0f0f 0%, #050505 100%);
+    color: #FFFFFF;
+    min-height: 100vh;
+    padding: 60px 40px 100px;
+  }
+
+  .page-header {
+    text-align: center;
+    margin: 0 auto 80px;
+    max-width: 900px;
+  }
+  .page-label {
+    font-weight: 500;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    color: #FF2D3F;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .page-title {
+    font-weight: 900;
+    font-size: 56px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    line-height: 1;
+  }
+  .page-desc {
+    font-weight: 400;
+    font-size: 17px;
+    color: #999;
+    max-width: 680px;
+    margin: 0 auto;
+    line-height: 1.5;
+  }
+
+  .section {
+    max-width: 1600px;
+    margin: 0 auto 100px;
+  }
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 20px;
+    margin-bottom: 40px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #2a2a2a;
+  }
+  .section-number {
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 900;
+    font-size: 64px;
+    color: #FF2D3F;
+    line-height: 0.85;
+    letter-spacing: -0.02em;
+  }
+  .section-title-block h2 {
+    font-weight: 900;
+    font-size: 32px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .section-title-block p {
+    font-weight: 400;
+    font-size: 14px;
+    color: #888;
+    max-width: 700px;
+    line-height: 1.5;
+  }
+
+  .compare-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    margin-bottom: 48px;
+    align-items: flex-start;
+  }
+  .compare-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+  .mode-tag {
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border-radius: 2px;
+  }
+  .mode-tag.dark { background: #000; color: #FFF; border: 1px solid #333; }
+  .mode-tag.light { background: #FFF; color: #000; border: 1px solid #DDD; }
+  .mockup-caption {
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    text-align: center;
+    color: #FFF;
+  }
+
+  .phone-frame {
+    background: #1a1a1a;
+    border-radius: 52px;
+    padding: 12px;
+    box-shadow:
+      0 40px 80px rgba(0,0,0,0.5),
+      0 12px 24px rgba(0,0,0,0.3),
+      inset 0 0 0 1px rgba(255,255,255,0.05);
+  }
+  .phone-screen {
+    width: 340px;
+    height: 734px;
+    border-radius: 40px;
+    overflow: hidden;
+    position: relative;
+  }
+  .phone-notch {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 28px;
+    background: #000;
+    border-radius: 16px;
+    z-index: 100;
+  }
+
+  .status-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 44px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 24px 0;
+    z-index: 50;
+    font-family: -apple-system, sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  /* ===== THEMES ===== */
+  .dark {
+    --bg: #000000;
+    --text: #FFFFFF;
+    --text-dim: #aaaaaa;
+    --text-mute: #888888;
+    --text-ghost: #555555;
+    --accent: #FF2D3F;
+    --border: #222222;
+    --border-strong: #333333;
+    --surface-1: #0A0A0A;
+    --surface-2: #141414;
+    --vignette: radial-gradient(ellipse at top, rgba(255,45,63,0.04) 0%, transparent 60%);
+    --kanji-opacity: 0.04;
+    --ghost-bg: rgba(255,255,255,0.03);
+    --green: #2BAE43;
+    --amber: #E8A900;
+  }
+
+  .light {
+    --bg: #FFFFFF;
+    --text: #000000;
+    --text-dim: #555555;
+    --text-mute: #888888;
+    --text-ghost: #BBBBBB;
+    --accent: #E8192C;
+    --border: #E5E5E5;
+    --border-strong: #CCCCCC;
+    --surface-1: #FAFAFA;
+    --surface-2: #F3F3F3;
+    --vignette: radial-gradient(ellipse at top, rgba(232,25,44,0.03) 0%, transparent 60%);
+    --kanji-opacity: 0.05;
+    --ghost-bg: rgba(0,0,0,0.025);
+    --green: #1A7F2C;
+    --amber: #D98E00;
+  }
+
+  .screen {
+    width: 100%;
+    height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    position: relative;
+    overflow: hidden;
+    padding-top: 54px;
+  }
+  .screen .status-bar { color: var(--text); }
+
+  .vignette {
+    position: absolute;
+    inset: 0;
+    background: var(--vignette);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .corner-kanji {
+    position: absolute;
+    top: 60px;
+    right: 20px;
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 900;
+    font-size: 48px;
+    color: var(--text);
+    opacity: var(--kanji-opacity);
+    line-height: 1;
+    letter-spacing: -0.05em;
+    z-index: 1;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .content {
+    position: relative;
+    z-index: 10;
+    padding: 0 20px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Screen header (commune à plusieurs tabs) */
+  .screen-header {
+    padding: 8px 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  .screen-header .title {
+    font-weight: 900;
+    font-size: 26px;
+    letter-spacing: 0.01em;
+    line-height: 1;
+  }
+  .screen-header .action-btn {
+    background: var(--accent);
+    color: #FFF;
+    border: none;
+    padding: 8px 14px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  /* Tab bar bottom */
+  .tab-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--surface-1);
+    border-top: 1px solid var(--border);
+    padding: 10px 0 24px;
+    display: flex;
+    justify-content: space-around;
+    z-index: 20;
+  }
+  .tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+  }
+  .tab svg { width: 20px; height: 20px; color: var(--text-mute); }
+  .tab.active svg { color: var(--accent); }
+  .tab-label {
+    font-weight: 500;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-mute);
+  }
+  .tab.active .tab-label { color: var(--accent); }
+
+  /* Segment control (top of tab) */
+  .segment {
+    display: flex;
+    border: 1px solid var(--border-strong);
+    margin-bottom: 20px;
+  }
+  .segment-item {
+    flex: 1;
+    padding: 10px 8px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    color: var(--text-mute);
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .segment-item.active {
+    background: var(--accent);
+    color: #FFF;
+  }
+
+  /* Section labels */
+  .sec-label {
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--text-mute);
+    text-transform: uppercase;
+    margin: 16px 0 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .sec-label .add-link {
+    color: var(--accent);
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    cursor: pointer;
+  }
+
+  /* ============================================= */
+  /*  WORKOUTS TAB                                 */
+  /* ============================================= */
+  .active-plan {
+    border: 1px solid var(--accent);
+    padding: 16px;
+    margin-bottom: 14px;
+    position: relative;
+    background: var(--bg);
+  }
+  .active-plan::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    width: 12px;
+    height: 12px;
+    background: var(--accent);
+  }
+  .active-plan-badge {
+    display: inline-block;
+    font-weight: 700;
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    background: var(--accent);
+    color: #FFF;
+    padding: 3px 8px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .active-plan-name {
+    font-weight: 900;
+    font-size: 20px;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    line-height: 1.1;
+  }
+  .active-plan-meta {
+    font-weight: 400;
+    font-size: 11px;
+    color: var(--text-mute);
+    letter-spacing: 0.04em;
+    margin-bottom: 14px;
+  }
+  .day-breakdown {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 3px;
+  }
+  .day-cell {
+    aspect-ratio: 1;
+    border: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 2px;
+  }
+  .day-cell .d {
+    font-weight: 700;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    color: var(--text-mute);
+    text-transform: uppercase;
+    margin-bottom: 2px;
+  }
+  .day-cell .v {
+    font-weight: 700;
+    font-size: 9px;
+    color: var(--text-dim);
+    letter-spacing: 0.02em;
+    text-align: center;
+    line-height: 1;
+  }
+  .day-cell.done {
+    background: var(--ghost-bg);
+    border-color: var(--green);
+  }
+  .day-cell.done .d { color: var(--green); }
+  .day-cell.done .v { color: var(--green); font-weight: 700; }
+  .day-cell.today {
+    border-color: var(--accent);
+    background: rgba(255,45,63,0.08);
+  }
+  .dark .day-cell.today { background: rgba(255,45,63,0.1); }
+  .day-cell.today .d { color: var(--accent); }
+  .day-cell.today .v { color: var(--accent); font-weight: 700; }
+  .day-cell.rest .v { color: var(--text-ghost); font-style: italic; }
+
+  .inactive-plan {
+    padding: 14px 16px;
+    border: 1px solid var(--border);
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .inactive-plan .info .name {
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+  }
+  .inactive-plan .info .meta {
+    font-size: 11px;
+    color: var(--text-mute);
+    letter-spacing: 0.04em;
+  }
+  .inactive-plan .activate {
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 6px 10px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  .workout-card {
+    padding: 14px 16px;
+    border: 1px solid var(--border);
+    margin-bottom: 8px;
+  }
+  .workout-card .top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 8px;
+  }
+  .workout-card .name {
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    line-height: 1.1;
+  }
+  .workout-card .duration {
+    font-weight: 500;
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    color: var(--text-mute);
+    text-transform: uppercase;
+    flex-shrink: 0;
+    margin-left: 8px;
+  }
+  .muscle-chips {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+  .muscle-chip {
+    font-weight: 700;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    padding: 3px 6px;
+    background: var(--surface-2);
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+
+  /* ============================================= */
+  /*  HISTORY TAB                                  */
+  /* ============================================= */
+  .filter-row {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 10px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+  .filter-chip {
+    padding: 7px 12px;
+    border: 1px solid var(--border-strong);
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .filter-chip.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #FFF;
+  }
+
+  .summary-strip {
+    padding: 14px 0;
+    margin: 14px 0 20px;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-around;
+  }
+  .summary-item {
+    text-align: center;
+    flex: 1;
+  }
+  .summary-item .v {
+    font-weight: 900;
+    font-size: 22px;
+    letter-spacing: 0.02em;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .summary-item .v .u {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-mute);
+  }
+  .summary-item .l {
+    font-weight: 500;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--text-mute);
+    text-transform: uppercase;
+  }
+
+  .session-card {
+    padding: 14px;
+    border: 1px solid var(--border);
+    margin-bottom: 8px;
+  }
+  .session-card .top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 6px;
+  }
+  .session-card .name {
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+  .session-card .date {
+    font-weight: 500;
+    font-size: 10px;
+    color: var(--text-mute);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .session-meta {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 8px;
+    font-size: 11px;
+  }
+  .session-meta .m {
+    color: var(--text-mute);
+    letter-spacing: 0.04em;
+  }
+  .session-meta .m strong {
+    color: var(--text);
+    font-weight: 700;
+  }
+  .session-status {
+    display: inline-block;
+    font-weight: 700;
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    padding: 2px 6px;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+  .session-status.done {
+    background: rgba(26,127,44,0.12);
+    color: var(--green);
+    border: 1px solid var(--green);
+  }
+  .session-status.incomplete {
+    background: rgba(217,142,0,0.12);
+    color: var(--amber);
+    border: 1px solid var(--amber);
+  }
+
+  /* ============================================= */
+  /*  EXERCISE LIBRARY                             */
+  /* ============================================= */
+  .search-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border: 1px solid var(--border-strong);
+    margin-bottom: 12px;
+  }
+  .search-bar svg {
+    color: var(--text-mute);
+    flex-shrink: 0;
+  }
+  .search-bar input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    outline: none;
+  }
+  .search-bar input::placeholder { color: var(--text-mute); }
+
+  .exercise-count {
+    font-weight: 500;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--text-mute);
+    text-transform: uppercase;
+    margin: 12px 0 10px;
+  }
+
+  .exercise-item {
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    margin-bottom: 6px;
+  }
+  .exercise-item .top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 4px;
+  }
+  .exercise-item .name {
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+  .exercise-item .diff {
+    font-weight: 700;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    padding: 2px 6px;
+    text-transform: uppercase;
+    flex-shrink: 0;
+    margin-left: 8px;
+  }
+  .exercise-item .diff.beg {
+    color: var(--green);
+    border: 1px solid var(--green);
+  }
+  .exercise-item .diff.int {
+    color: var(--amber);
+    border: 1px solid var(--amber);
+  }
+  .exercise-item .diff.adv {
+    color: var(--accent);
+    border: 1px solid var(--accent);
+  }
+  .exercise-item .meta {
+    display: flex;
+    gap: 10px;
+    font-size: 10px;
+    color: var(--text-mute);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .exercise-item .meta span strong {
+    color: var(--text-dim);
+  }
+
+  /* EXERCISE DETAIL */
+  .exd-back {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 0;
+    color: var(--text-mute);
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    cursor: pointer;
+  }
+  .exd-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 6px;
+  }
+  .exd-name {
+    font-weight: 900;
+    font-size: 24px;
+    letter-spacing: 0.01em;
+    line-height: 1.1;
+    text-transform: uppercase;
+    flex: 1;
+  }
+  .exd-tags {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+  .exd-tag {
+    font-weight: 700;
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    padding: 3px 7px;
+    background: var(--surface-2);
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+  .exd-tag.primary {
+    background: var(--accent);
+    color: #FFF;
+  }
+
+  .exd-chart-tabs {
+    display: flex;
+    gap: 2px;
+    border: 1px solid var(--border-strong);
+    margin-bottom: 12px;
+  }
+  .exd-chart-tab {
+    flex: 1;
+    padding: 7px 6px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    color: var(--text-mute);
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .exd-chart-tab.active {
+    background: var(--accent);
+    color: #FFF;
+  }
+
+  .exd-chart {
+    height: 140px;
+    margin-bottom: 16px;
+    position: relative;
+    border-bottom: 1px solid var(--border);
+    border-left: 1px solid var(--border);
+    padding: 10px 0 0 4px;
+  }
+  .exd-chart-value {
+    position: absolute;
+    top: 0;
+    left: 8px;
+  }
+  .exd-chart-value .v {
+    font-weight: 900;
+    font-size: 24px;
+    line-height: 1;
+    color: var(--accent);
+  }
+  .exd-chart-value .v .u {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-mute);
+    margin-left: 2px;
+  }
+  .exd-chart-value .l {
+    font-weight: 500;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--text-mute);
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  .exd-coach {
+    padding: 12px 14px;
+    border: 1px dashed var(--accent);
+    margin-bottom: 12px;
+    display: flex;
+    gap: 10px;
+  }
+  .exd-coach .kanji {
+    color: var(--accent);
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 900;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .exd-coach .t {
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 2px;
+  }
+  .exd-coach .b {
+    font-size: 11px;
+    color: var(--text-dim);
+    line-height: 1.4;
+  }
+
+  /* ============================================= */
+  /*  PROFILE                                      */
+  /* ============================================= */
+  .profile-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 8px 0 20px;
+  }
+  .profile-avatar {
+    width: 56px;
+    height: 56px;
+    border: 2px solid var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 22px;
+    letter-spacing: 0.04em;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .profile-avatar::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    width: 10px;
+    height: 10px;
+    background: var(--accent);
+  }
+  .profile-info .name {
+    font-weight: 900;
+    font-size: 20px;
+    letter-spacing: 0.01em;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .profile-info .email {
+    font-size: 11px;
+    color: var(--text-mute);
+    letter-spacing: 0.04em;
+  }
+  .profile-info .provider {
+    display: inline-block;
+    font-weight: 700;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  .profile-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    margin-bottom: 16px;
+  }
+  .profile-stat {
+    background: var(--bg);
+    padding: 14px 8px;
+    text-align: center;
+  }
+  .profile-stat .v {
+    font-weight: 900;
+    font-size: 20px;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .profile-stat .v .u {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--text-mute);
+  }
+  .profile-stat .l {
+    font-weight: 500;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--text-mute);
+    text-transform: uppercase;
+  }
+  .profile-stat .v.highlight { color: var(--accent); }
+
+  .row-item {
+    padding: 12px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+  }
+  .row-item .l {
+    font-weight: 500;
+    font-size: 13px;
+    color: var(--text);
+    letter-spacing: 0.02em;
+  }
+  .row-item .v {
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--text);
+    letter-spacing: 0.02em;
+  }
+  .row-item .v.muted {
+    color: var(--text-mute);
+    font-weight: 500;
+  }
+  .row-item .chev {
+    color: var(--text-mute);
+    font-size: 14px;
+    margin-left: 8px;
+  }
+
+  .row-item.danger .l {
+    color: var(--accent);
+  }
+
+  /* ===== DESIGN NOTES ===== */
+  .design-notes {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 24px 28px;
+    margin: 48px auto;
+    max-width: 900px;
+  }
+  .design-notes h4 {
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: #FF2D3F;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .design-notes p {
+    font-size: 14px;
+    color: #BBB;
+    line-height: 1.6;
+    margin-bottom: 10px;
+  }
+  .design-notes p:last-child { margin-bottom: 0; }
+  .design-notes p strong { color: #FFF; font-weight: 700; }
+  .design-notes code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    background: rgba(0,0,0,0.4);
+    padding: 2px 6px;
+    border-radius: 3px;
+    color: #FF2D3F;
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<div class="page-header">
+  <div class="page-label">Tanren · Lot 2 / 3</div>
+  <div class="page-title">Data & Tabs</div>
+  <div class="page-desc">Les écrans de consultation et navigation : Workouts (plans + templates), History (sessions passées avec filtres), Exercise Library (685+ exercices avec détail et progression), Profile (stats + settings).</div>
+</div>
+
+<!-- ============================================= -->
+<!-- SECTION 05 - WORKOUTS TAB                     -->
+<!-- ============================================= -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-number">05</div>
+    <div class="section-title-block">
+      <h2>Workouts Tab</h2>
+      <p>Deux sections via segment control en haut : <strong style="color:#fff;">My Plan</strong> (plan actif + inactifs) et <strong style="color:#fff;">Workouts</strong> (templates de séances). Le plan actif est mis en avant avec une grille 7 jours montrant le rythme hebdo et le jour courant.</p>
+    </div>
+  </div>
+
+  <div class="compare-row">
+
+    <!-- DARK -->
+    <div class="compare-col">
+      <div class="mode-tag dark">Dark mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen dark">
+          <div class="vignette"></div>
+          <div class="corner-kanji">鍛</div>
+          <div class="status-bar"><span>08:12</span><span>●●●●</span></div>
+          <div class="content" style="padding-bottom: 80px;">
+
+            <div class="screen-header">
+              <div class="title">Séances</div>
+              <button class="action-btn">+ Nouveau</button>
+            </div>
+
+            <div class="segment">
+              <div class="segment-item active">Mon plan</div>
+              <div class="segment-item">Séances</div>
+            </div>
+
+            <div class="active-plan">
+              <div class="active-plan-badge">Actif</div>
+              <div class="active-plan-name">PPL 4x</div>
+              <div class="active-plan-meta">4 séances par semaine · 6 exercices en moyenne</div>
+
+              <div class="day-breakdown">
+                <div class="day-cell done"><div class="d">Lun</div><div class="v">Push</div></div>
+                <div class="day-cell done"><div class="d">Mar</div><div class="v">Pull</div></div>
+                <div class="day-cell rest"><div class="d">Mer</div><div class="v">—</div></div>
+                <div class="day-cell done"><div class="d">Jeu</div><div class="v">Leg</div></div>
+                <div class="day-cell today"><div class="d">Ven</div><div class="v">Push</div></div>
+                <div class="day-cell"><div class="d">Sam</div><div class="v">Pull</div></div>
+                <div class="day-cell rest"><div class="d">Dim</div><div class="v">—</div></div>
+              </div>
+            </div>
+
+            <div class="sec-label">Autres plans</div>
+            <div class="inactive-plan">
+              <div class="info">
+                <div class="name">Upper / Lower 4x</div>
+                <div class="meta">4 jours · 8 exercices/séance</div>
+              </div>
+              <button class="activate">Activer</button>
+            </div>
+            <div class="inactive-plan">
+              <div class="info">
+                <div class="name">Full Body 3x</div>
+                <div class="meta">3 jours · 7 exercices/séance</div>
+              </div>
+              <button class="activate">Activer</button>
+            </div>
+
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12 L12 3 L21 12 M5 10 V21 H19 V10"/></svg><div class="tab-label">Home</div></div>
+            <div class="tab active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="7" width="4" height="10"/><rect x="17" y="7" width="4" height="10"/><line x1="7" y1="12" x2="17" y2="12"/></svg><div class="tab-label">Training</div></div>
+            <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><div class="tab-label">Historique</div></div>
+            <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 C8 2 5 5 5 9 C5 12 7 14 12 22 C17 14 19 12 19 9 C19 5 16 2 12 2 Z"/></svg><div class="tab-label">Diet</div></div>
+            <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 22 C4 16 8 14 12 14 C16 14 20 16 20 22"/></svg><div class="tab-label">Profil</div></div>
+          </div>
+        </div>
+      </div></div>
+      <div class="mockup-caption">Workouts · My Plan — Dark</div>
+    </div>
+
+    <!-- LIGHT -->
+    <div class="compare-col">
+      <div class="mode-tag light">Light mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen light">
+          <div class="vignette"></div>
+          <div class="corner-kanji">鍛</div>
+          <div class="status-bar"><span>08:12</span><span>●●●●</span></div>
+          <div class="content" style="padding-bottom: 80px;">
+
+            <div class="screen-header">
+              <div class="title">Séances</div>
+              <button class="action-btn">+ Nouveau</button>
+            </div>
+
+            <div class="segment">
+              <div class="segment-item active">Mon plan</div>
+              <div class="segment-item">Séances</div>
+            </div>
+
+            <div class="active-plan">
+              <div class="active-plan-badge">Actif</div>
+              <div class="active-plan-name">PPL 4x</div>
+              <div class="active-plan-meta">4 séances par semaine · 6 exercices en moyenne</div>
+
+              <div class="day-breakdown">
+                <div class="day-cell done"><div class="d">Lun</div><div class="v">Push</div></div>
+                <div class="day-cell done"><div class="d">Mar</div><div class="v">Pull</div></div>
+                <div class="day-cell rest"><div class="d">Mer</div><div class="v">—</div></div>
+                <div class="day-cell done"><div class="d">Jeu</div><div class="v">Leg</div></div>
+                <div class="day-cell today"><div class="d">Ven</div><div class="v">Push</div></div>
+                <div class="day-cell"><div class="d">Sam</div><div class="v">Pull</div></div>
+                <div class="day-cell rest"><div class="d">Dim</div><div class="v">—</div></div>
+              </div>
+            </div>
+
+            <div class="sec-label">Autres plans</div>
+            <div class="inactive-plan">
+              <div class="info">
+                <div class="name">Upper / Lower 4x</div>
+                <div class="meta">4 jours · 8 exercices/séance</div>
+              </div>
+              <button class="activate">Activer</button>
+            </div>
+            <div class="inactive-plan">
+              <div class="info">
+                <div class="name">Full Body 3x</div>
+                <div class="meta">3 jours · 7 exercices/séance</div>
+              </div>
+              <button class="activate">Activer</button>
+            </div>
+
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12 L12 3 L21 12 M5 10 V21 H19 V10"/></svg><div class="tab-label">Home</div></div>
+            <div class="tab active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="7" width="4" height="10"/><rect x="17" y="7" width="4" height="10"/><line x1="7" y1="12" x2="17" y2="12"/></svg><div class="tab-label">Training</div></div>
+            <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><div class="tab-label">Historique</div></div>
+            <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 C8 2 5 5 5 9 C5 12 7 14 12 22 C17 14 19 12 19 9 C19 5 16 2 12 2 Z"/></svg><div class="tab-label">Diet</div></div>
+            <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 22 C4 16 8 14 12 14 C16 14 20 16 20 22"/></svg><div class="tab-label">Profil</div></div>
+          </div>
+        </div>
+      </div></div>
+      <div class="mockup-caption">Workouts · My Plan — Light</div>
+    </div>
+  </div>
+
+  <div class="design-notes">
+    <h4>Day-breakdown grid — clé de lecture</h4>
+    <p>La grille 7 jours raconte le rythme hebdo en un coup d'œil. <strong>Vert</strong> = séance faite (volume logged), <strong>rouge avec fond teinté</strong> = aujourd'hui, <strong>gris transparent</strong> = à venir ou repos. Le nom de la séance (Push, Pull, Leg) tient dans la cellule en typo minuscule bold. Pas d'overflow : si le nom est trop long, l'app tronque à 4 caractères + ellipse.</p>
+  </div>
+</div>
+
+<!-- ============================================= -->
+<!-- SECTION 14 - HISTORY TAB                      -->
+<!-- ============================================= -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-number">14</div>
+    <div class="section-title-block">
+      <h2>History Tab</h2>
+      <p>Filtres double niveau (période + groupe musculaire), summary strip qui reflète le filtre actif, puis liste des sessions passées en cards. Volume total en gros pour donner le sens du travail accumulé.</p>
+    </div>
+  </div>
+
+  <div class="compare-row">
+
+    <!-- DARK -->
+    <div class="compare-col">
+      <div class="mode-tag dark">Dark mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen dark">
+          <div class="vignette"></div>
+          <div class="corner-kanji">錬</div>
+          <div class="status-bar"><span>14:28</span><span>●●●●</span></div>
+          <div class="content" style="padding-bottom: 80px;">
+
+            <div class="screen-header">
+              <div class="title">Historique</div>
+            </div>
+
+            <div class="filter-row">
+              <div class="filter-chip">1 sem.</div>
+              <div class="filter-chip active">1 mois</div>
+              <div class="filter-chip">3 mois</div>
+              <div class="filter-chip">Tout</div>
+            </div>
+
+            <div class="filter-row" style="margin-bottom: 0;">
+              <div class="filter-chip active">Tous</div>
+              <div class="filter-chip">Pectoraux</div>
+              <div class="filter-chip">Dos</div>
+              <div class="filter-chip">Épaules</div>
+            </div>
+
+            <div class="summary-strip">
+              <div class="summary-item">
+                <div class="v">12</div>
+                <div class="l">Séances</div>
+              </div>
+              <div class="summary-item">
+                <div class="v">148 320<span class="u"> kg</span></div>
+                <div class="l">Volume total</div>
+              </div>
+            </div>
+
+            <div class="session-card">
+              <div class="top">
+                <div class="name">Push Day</div>
+                <div class="date">Ven 18 avr</div>
+              </div>
+              <div class="session-meta">
+                <div class="m"><strong>1h12</strong></div>
+                <div class="m"><strong>12 450 kg</strong></div>
+                <div class="m">18 séries</div>
+              </div>
+              <div class="muscle-chips">
+                <span class="muscle-chip">Pectoraux</span>
+                <span class="muscle-chip">Épaules</span>
+                <span class="muscle-chip">Triceps</span>
+              </div>
+              <div class="session-status done">Terminée</div>
+            </div>
+
+            <div class="session-card">
+              <div class="top">
+                <div class="name">Leg Day</div>
+                <div class="date">Jeu 17 avr</div>
+              </div>
+              <div class="session-meta">
+                <div class="m"><strong>1h04</strong></div>
+                <div class="m"><strong>14 820 kg</strong></div>
+                <div class="m">16 séries</div>
+              </div>
+              <div class="muscle-chips">
+                <span class="muscle-chip">Quadriceps</span>
+                <span class="muscle-chip">Ischios</span>
+                <span class="muscle-chip">Fessiers</span>
+              </div>
+              <div class="session-status done">Terminée</div>
+            </div>
+
+            <div class="session-card">
+              <div class="top">
+                <div class="name">Pull Day</div>
+                <div class="date">Mar 15 avr</div>
+              </div>
+              <div class="session-meta">
+                <div class="m"><strong>0h48</strong></div>
+                <div class="m"><strong>8 420 kg</strong></div>
+                <div class="m">12 séries</div>
+              </div>
+              <div class="muscle-chips">
+                <span class="muscle-chip">Dos</span>
+                <span class="muscle-chip">Biceps</span>
+              </div>
+              <div class="session-status incomplete">Incomplète</div>
+            </div>
+
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12 L12 3 L21 12 M5 10 V21 H19 V10"/></svg><div class="tab-label">Home</div></div>
+            <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="7" width="4" height="10"/><rect x="17" y="7" width="4" height="10"/><line x1="7" y1="12" x2="17" y2="12"/></svg><div class="tab-label">Training</div></div>
+            <div class="tab active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><div class="tab-label">Historique</div></div>
+            <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 C8 2 5 5 5 9 C5 12 7 14 12 22 C17 14 19 12 19 9 C19 5 16 2 12 2 Z"/></svg><div class="tab-label">Diet</div></div>
+            <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 22 C4 16 8 14 12 14 C16 14 20 16 20 22"/></svg><div class="tab-label">Profil</div></div>
+          </div>
+        </div>
+      </div></div>
+      <div class="mockup-caption">History — Dark</div>
+    </div>
+
+    <!-- LIGHT -->
+    <div class="compare-col">
+      <div class="mode-tag light">Light mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen light">
+          <div class="vignette"></div>
+          <div class="corner-kanji">錬</div>
+          <div class="status-bar"><span>14:28</span><span>●●●●</span></div>
+          <div class="content" style="padding-bottom: 80px;">
+
+            <div class="screen-header">
+              <div class="title">Historique</div>
+            </div>
+
+            <div class="filter-row">
+              <div class="filter-chip">1 sem.</div>
+              <div class="filter-chip active">1 mois</div>
+              <div class="filter-chip">3 mois</div>
+              <div class="filter-chip">Tout</div>
+            </div>
+
+            <div class="filter-row" style="margin-bottom: 0;">
+              <div class="filter-chip active">Tous</div>
+              <div class="filter-chip">Pectoraux</div>
+              <div class="filter-chip">Dos</div>
+              <div class="filter-chip">Épaules</div>
+            </div>
+
+            <div class="summary-strip">
+              <div class="summary-item">
+                <div class="v">12</div>
+                <div class="l">Séances</div>
+              </div>
+              <div class="summary-item">
+                <div class="v">148 320<span class="u"> kg</span></div>
+                <div class="l">Volume total</div>
+              </div>
+            </div>
+
+            <div class="session-card">
+              <div class="top">
+                <div class="name">Push Day</div>
+                <div class="date">Ven 18 avr</div>
+              </div>
+              <div class="session-meta">
+                <div class="m"><strong>1h12</strong></div>
+                <div class="m"><strong>12 450 kg</strong></div>
+                <div class="m">18 séries</div>
+              </div>
+              <div class="muscle-chips">
+                <span class="muscle-chip">Pectoraux</span>
+                <span class="muscle-chip">Épaules</span>
+                <span class="muscle-chip">Triceps</span>
+              </div>
+              <div class="session-status done">Terminée</div>
+            </div>
+
+            <div class="session-card">
+              <div class="top">
+                <div class="name">Leg Day</div>
+                <div class="date">Jeu 17 avr</div>
+              </div>
+              <div class="session-meta">
+                <div class="m"><strong>1h04</strong></div>
+                <div class="m"><strong>14 820 kg</strong></div>
+                <div class="m">16 séries</div>
+              </div>
+              <div class="muscle-chips">
+                <span class="muscle-chip">Quadriceps</span>
+                <span class="muscle-chip">Ischios</span>
+                <span class="muscle-chip">Fessiers</span>
+              </div>
+              <div class="session-status done">Terminée</div>
+            </div>
+
+            <div class="session-card">
+              <div class="top">
+                <div class="name">Pull Day</div>
+                <div class="date">Mar 15 avr</div>
+              </div>
+              <div class="session-meta">
+                <div class="m"><strong>0h48</strong></div>
+                <div class="m"><strong>8 420 kg</strong></div>
+                <div class="m">12 séries</div>
+              </div>
+              <div class="muscle-chips">
+                <span class="muscle-chip">Dos</span>
+                <span class="muscle-chip">Biceps</span>
+              </div>
+              <div class="session-status incomplete">Incomplète</div>
+            </div>
+
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12 L12 3 L21 12 M5 10 V21 H19 V10"/></svg><div class="tab-label">Home</div></div>
+            <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="7" width="4" height="10"/><rect x="17" y="7" width="4" height="10"/><line x1="7" y1="12" x2="17" y2="12"/></svg><div class="tab-label">Training</div></div>
+            <div class="tab active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><div class="tab-label">Historique</div></div>
+            <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 C8 2 5 5 5 9 C5 12 7 14 12 22 C17 14 19 12 19 9 C19 5 16 2 12 2 Z"/></svg><div class="tab-label">Diet</div></div>
+            <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 22 C4 16 8 14 12 14 C16 14 20 16 20 22"/></svg><div class="tab-label">Profil</div></div>
+          </div>
+        </div>
+      </div></div>
+      <div class="mockup-caption">History — Light</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================= -->
+<!-- SECTION 15 - EXERCISE LIBRARY                 -->
+<!-- ============================================= -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-number">15</div>
+    <div class="section-title-block">
+      <h2>Exercise Library</h2>
+      <p>685+ exercices searchables. Difficulty badge coloré (vert/ambre/rouge pour beg/int/adv). Le détail inclut un chart de progression SVG (Max / Volume / Reps) et des coaching tips pilotés par l'historique perso.</p>
+    </div>
+  </div>
+
+  <!-- LISTE -->
+  <h3 style="font-size: 14px; font-weight: 700; letter-spacing: 0.2em; color: #FF2D3F; text-transform: uppercase; margin-bottom: 24px; padding-left: 12px; border-left: 3px solid #FF2D3F;">Vue liste · recherche et filtres</h3>
+  <div class="compare-row">
+
+    <!-- DARK LIST -->
+    <div class="compare-col">
+      <div class="mode-tag dark">Dark mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen dark">
+          <div class="vignette"></div>
+          <div class="corner-kanji">鍛</div>
+          <div class="status-bar"><span>10:45</span><span>●●●●</span></div>
+          <div class="content" style="padding-bottom: 80px;">
+
+            <div class="screen-header">
+              <div class="title">Bibliothèque</div>
+            </div>
+
+            <div class="search-bar">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+              <input placeholder="Chercher un exercice...">
+            </div>
+
+            <div class="filter-row">
+              <div class="filter-chip active">Tous</div>
+              <div class="filter-chip">Pectoraux</div>
+              <div class="filter-chip">Dos</div>
+              <div class="filter-chip">Épaules</div>
+              <div class="filter-chip">Jambes</div>
+            </div>
+
+            <div class="exercise-count">685 exercices</div>
+
+            <div class="exercise-item">
+              <div class="top">
+                <div class="name">Développé couché</div>
+                <div class="diff int">Inter</div>
+              </div>
+              <div class="meta">
+                <span><strong>Pectoraux</strong></span>
+                <span>Barre</span>
+              </div>
+            </div>
+
+            <div class="exercise-item">
+              <div class="top">
+                <div class="name">Développé militaire</div>
+                <div class="diff int">Inter</div>
+              </div>
+              <div class="meta">
+                <span><strong>Épaules</strong></span>
+                <span>Barre</span>
+              </div>
+            </div>
+
+            <div class="exercise-item">
+              <div class="top">
+                <div class="name">Dips lestés</div>
+                <div class="diff adv">Avancé</div>
+              </div>
+              <div class="meta">
+                <span><strong>Triceps</strong></span>
+                <span>Poids corps +</span>
+              </div>
+            </div>
+
+            <div class="exercise-item">
+              <div class="top">
+                <div class="name">Écarté couché haltères</div>
+                <div class="diff beg">Débutant</div>
+              </div>
+              <div class="meta">
+                <span><strong>Pectoraux</strong></span>
+                <span>Haltères</span>
+              </div>
+            </div>
+
+            <div class="exercise-item">
+              <div class="top">
+                <div class="name">Pompes</div>
+                <div class="diff beg">Débutant</div>
+              </div>
+              <div class="meta">
+                <span><strong>Pectoraux</strong></span>
+                <span>Poids du corps</span>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12 L12 3 L21 12 M5 10 V21 H19 V10"/></svg><div class="tab-label">Home</div></div>
+            <div class="tab active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="7" width="4" height="10"/><rect x="17" y="7" width="4" height="10"/><line x1="7" y1="12" x2="17" y2="12"/></svg><div class="tab-label">Training</div></div>
+            <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><div class="tab-label">Historique</div></div>
+            <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 C8 2 5 5 5 9 C5 12 7 14 12 22 C17 14 19 12 19 9 C19 5 16 2 12 2 Z"/></svg><div class="tab-label">Diet</div></div>
+            <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 22 C4 16 8 14 12 14 C16 14 20 16 20 22"/></svg><div class="tab-label">Profil</div></div>
+          </div>
+        </div>
+      </div></div>
+      <div class="mockup-caption">Library · liste — Dark</div>
+    </div>
+
+    <!-- LIGHT LIST -->
+    <div class="compare-col">
+      <div class="mode-tag light">Light mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen light">
+          <div class="vignette"></div>
+          <div class="corner-kanji">鍛</div>
+          <div class="status-bar"><span>10:45</span><span>●●●●</span></div>
+          <div class="content" style="padding-bottom: 80px;">
+
+            <div class="screen-header">
+              <div class="title">Bibliothèque</div>
+            </div>
+
+            <div class="search-bar">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+              <input placeholder="Chercher un exercice...">
+            </div>
+
+            <div class="filter-row">
+              <div class="filter-chip active">Tous</div>
+              <div class="filter-chip">Pectoraux</div>
+              <div class="filter-chip">Dos</div>
+              <div class="filter-chip">Épaules</div>
+              <div class="filter-chip">Jambes</div>
+            </div>
+
+            <div class="exercise-count">685 exercices</div>
+
+            <div class="exercise-item">
+              <div class="top">
+                <div class="name">Développé couché</div>
+                <div class="diff int">Inter</div>
+              </div>
+              <div class="meta">
+                <span><strong>Pectoraux</strong></span>
+                <span>Barre</span>
+              </div>
+            </div>
+
+            <div class="exercise-item">
+              <div class="top">
+                <div class="name">Développé militaire</div>
+                <div class="diff int">Inter</div>
+              </div>
+              <div class="meta">
+                <span><strong>Épaules</strong></span>
+                <span>Barre</span>
+              </div>
+            </div>
+
+            <div class="exercise-item">
+              <div class="top">
+                <div class="name">Dips lestés</div>
+                <div class="diff adv">Avancé</div>
+              </div>
+              <div class="meta">
+                <span><strong>Triceps</strong></span>
+                <span>Poids corps +</span>
+              </div>
+            </div>
+
+            <div class="exercise-item">
+              <div class="top">
+                <div class="name">Écarté couché haltères</div>
+                <div class="diff beg">Débutant</div>
+              </div>
+              <div class="meta">
+                <span><strong>Pectoraux</strong></span>
+                <span>Haltères</span>
+              </div>
+            </div>
+
+            <div class="exercise-item">
+              <div class="top">
+                <div class="name">Pompes</div>
+                <div class="diff beg">Débutant</div>
+              </div>
+              <div class="meta">
+                <span><strong>Pectoraux</strong></span>
+                <span>Poids du corps</span>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12 L12 3 L21 12 M5 10 V21 H19 V10"/></svg><div class="tab-label">Home</div></div>
+            <div class="tab active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="7" width="4" height="10"/><rect x="17" y="7" width="4" height="10"/><line x1="7" y1="12" x2="17" y2="12"/></svg><div class="tab-label">Training</div></div>
+            <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><div class="tab-label">Historique</div></div>
+            <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 C8 2 5 5 5 9 C5 12 7 14 12 22 C17 14 19 12 19 9 C19 5 16 2 12 2 Z"/></svg><div class="tab-label">Diet</div></div>
+            <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 22 C4 16 8 14 12 14 C16 14 20 16 20 22"/></svg><div class="tab-label">Profil</div></div>
+          </div>
+        </div>
+      </div></div>
+      <div class="mockup-caption">Library · liste — Light</div>
+    </div>
+  </div>
+
+  <!-- DETAIL -->
+  <h3 style="font-size: 14px; font-weight: 700; letter-spacing: 0.2em; color: #FF2D3F; text-transform: uppercase; margin: 60px 0 24px; padding-left: 12px; border-left: 3px solid #FF2D3F;">Vue détail · progression et coaching</h3>
+  <div class="compare-row">
+
+    <!-- DARK DETAIL -->
+    <div class="compare-col">
+      <div class="mode-tag dark">Dark mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen dark">
+          <div class="vignette"></div>
+          <div class="status-bar"><span>10:46</span><span>●●●●</span></div>
+          <div class="content">
+
+            <div class="exd-back">‹ Retour à la bibliothèque</div>
+
+            <div class="exd-title-row">
+              <div class="exd-name">Développé<br>couché</div>
+            </div>
+
+            <div class="exd-tags">
+              <span class="exd-tag primary">Pectoraux</span>
+              <span class="exd-tag">Triceps</span>
+              <span class="exd-tag">Épaules ant.</span>
+              <span class="exd-tag">Barre</span>
+            </div>
+
+            <div class="exd-chart-tabs">
+              <div class="exd-chart-tab active">Charge max</div>
+              <div class="exd-chart-tab">Volume</div>
+              <div class="exd-chart-tab">Reps</div>
+            </div>
+
+            <div class="exd-chart">
+              <div class="exd-chart-value">
+                <div class="v">85<span class="u">kg</span></div>
+                <div class="l">Record · 18 avr</div>
+              </div>
+              <svg width="100%" height="100%" viewBox="0 0 300 140" preserveAspectRatio="none" style="position: absolute; bottom: 0; left: 0;">
+                <!-- grid lines -->
+                <line x1="0" y1="140" x2="300" y2="140" stroke="#222" stroke-width="1"/>
+                <line x1="0" y1="100" x2="300" y2="100" stroke="#222" stroke-width="1" stroke-dasharray="2,3"/>
+                <line x1="0" y1="60" x2="300" y2="60" stroke="#222" stroke-width="1" stroke-dasharray="2,3"/>
+                <line x1="0" y1="20" x2="300" y2="20" stroke="#222" stroke-width="1" stroke-dasharray="2,3"/>
+                <!-- progression line -->
+                <polyline points="10,120 40,110 70,105 100,95 130,90 160,80 190,75 220,65 250,55 280,40"
+                          fill="none" stroke="#FF2D3F" stroke-width="2"/>
+                <!-- data points -->
+                <circle cx="280" cy="40" r="4" fill="#FF2D3F"/>
+                <circle cx="250" cy="55" r="3" fill="#FF2D3F" opacity="0.6"/>
+                <circle cx="220" cy="65" r="3" fill="#FF2D3F" opacity="0.4"/>
+                <!-- area under curve -->
+                <polyline points="10,120 40,110 70,105 100,95 130,90 160,80 190,75 220,65 250,55 280,40 280,140 10,140"
+                          fill="#FF2D3F" opacity="0.08"/>
+              </svg>
+            </div>
+
+            <div class="exd-coach">
+              <div class="kanji">鍛</div>
+              <div>
+                <div class="t">Conseil · Forge +2,5 kg</div>
+                <div class="b">Tu as progressé sur les 3 dernières séances. Tente 87,5 kg × 8 à la prochaine.</div>
+              </div>
+            </div>
+
+            <button style="width: 100%; background: var(--accent); color: #FFF; border: none; padding: 14px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 14px; letter-spacing: 0.12em; text-transform: uppercase; margin-top: auto;">Ajouter à une séance</button>
+            <div style="height: 16px;"></div>
+          </div>
+        </div>
+      </div></div>
+      <div class="mockup-caption">Library · détail — Dark</div>
+    </div>
+
+    <!-- LIGHT DETAIL -->
+    <div class="compare-col">
+      <div class="mode-tag light">Light mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen light">
+          <div class="vignette"></div>
+          <div class="status-bar"><span>10:46</span><span>●●●●</span></div>
+          <div class="content">
+
+            <div class="exd-back">‹ Retour à la bibliothèque</div>
+
+            <div class="exd-title-row">
+              <div class="exd-name">Développé<br>couché</div>
+            </div>
+
+            <div class="exd-tags">
+              <span class="exd-tag primary">Pectoraux</span>
+              <span class="exd-tag">Triceps</span>
+              <span class="exd-tag">Épaules ant.</span>
+              <span class="exd-tag">Barre</span>
+            </div>
+
+            <div class="exd-chart-tabs">
+              <div class="exd-chart-tab active">Charge max</div>
+              <div class="exd-chart-tab">Volume</div>
+              <div class="exd-chart-tab">Reps</div>
+            </div>
+
+            <div class="exd-chart">
+              <div class="exd-chart-value">
+                <div class="v">85<span class="u">kg</span></div>
+                <div class="l">Record · 18 avr</div>
+              </div>
+              <svg width="100%" height="100%" viewBox="0 0 300 140" preserveAspectRatio="none" style="position: absolute; bottom: 0; left: 0;">
+                <line x1="0" y1="140" x2="300" y2="140" stroke="#E5E5E5" stroke-width="1"/>
+                <line x1="0" y1="100" x2="300" y2="100" stroke="#E5E5E5" stroke-width="1" stroke-dasharray="2,3"/>
+                <line x1="0" y1="60" x2="300" y2="60" stroke="#E5E5E5" stroke-width="1" stroke-dasharray="2,3"/>
+                <line x1="0" y1="20" x2="300" y2="20" stroke="#E5E5E5" stroke-width="1" stroke-dasharray="2,3"/>
+                <polyline points="10,120 40,110 70,105 100,95 130,90 160,80 190,75 220,65 250,55 280,40"
+                          fill="none" stroke="#E8192C" stroke-width="2"/>
+                <circle cx="280" cy="40" r="4" fill="#E8192C"/>
+                <circle cx="250" cy="55" r="3" fill="#E8192C" opacity="0.6"/>
+                <circle cx="220" cy="65" r="3" fill="#E8192C" opacity="0.4"/>
+                <polyline points="10,120 40,110 70,105 100,95 130,90 160,80 190,75 220,65 250,55 280,40 280,140 10,140"
+                          fill="#E8192C" opacity="0.08"/>
+              </svg>
+            </div>
+
+            <div class="exd-coach">
+              <div class="kanji">鍛</div>
+              <div>
+                <div class="t">Conseil · Forge +2,5 kg</div>
+                <div class="b">Tu as progressé sur les 3 dernières séances. Tente 87,5 kg × 8 à la prochaine.</div>
+              </div>
+            </div>
+
+            <button style="width: 100%; background: var(--accent); color: #FFF; border: none; padding: 14px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 14px; letter-spacing: 0.12em; text-transform: uppercase; margin-top: auto;">Ajouter à une séance</button>
+            <div style="height: 16px;"></div>
+          </div>
+        </div>
+      </div></div>
+      <div class="mockup-caption">Library · détail — Light</div>
+    </div>
+  </div>
+
+  <div class="design-notes">
+    <h4>Coaching tips — signature Tanren</h4>
+    <p>Les coaching tips du brand book sont ici rendus avec le langage de la forge : "Forge +2,5 kg" quand le user progresse 3 séances d'affilée, "Trempe ton volume" quand il stagne, "Retour à l'enclume" s'il régresse. Max 1 instance par écran comme définit dans CLAUDE.md — ici c'est le call-to-action principal donc ça porte son poids.</p>
+  </div>
+</div>
+
+<!-- ============================================= -->
+<!-- SECTION 19 - PROFILE TAB                      -->
+<!-- ============================================= -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-number">19</div>
+    <div class="section-title-block">
+      <h2>Profile Tab</h2>
+      <p>Avatar avec accent rouge, stats lifetime (sessions, volume, PR), sections personnal / training / settings / privacy. Le compte connecté (Apple, Google, Email, Guest) est visible avec un badge de provider.</p>
+    </div>
+  </div>
+
+  <div class="compare-row">
+
+    <!-- DARK -->
+    <div class="compare-col">
+      <div class="mode-tag dark">Dark mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen dark">
+          <div class="vignette"></div>
+          <div class="corner-kanji">錬</div>
+          <div class="status-bar"><span>21:12</span><span>●●●●</span></div>
+          <div class="content" style="padding-bottom: 80px; overflow-y: auto;">
+
+            <div class="screen-header">
+              <div class="title">Profil</div>
+            </div>
+
+            <div class="profile-header">
+              <div class="profile-avatar">R</div>
+              <div class="profile-info">
+                <div class="name">Ramy</div>
+                <div class="email">ramy@icloud.com</div>
+                <div class="provider">Connecté via Apple</div>
+              </div>
+            </div>
+
+            <div class="profile-stats">
+              <div class="profile-stat">
+                <div class="v">87</div>
+                <div class="l">Séances</div>
+              </div>
+              <div class="profile-stat">
+                <div class="v highlight">1,2<span class="u">M</span></div>
+                <div class="l">Volume kg</div>
+              </div>
+              <div class="profile-stat">
+                <div class="v">34</div>
+                <div class="l">Records</div>
+              </div>
+            </div>
+
+            <div class="sec-label">Personnel</div>
+            <div class="row-item">
+              <div class="l">Prénom</div>
+              <div class="v">Ramy <span class="chev">›</span></div>
+            </div>
+            <div class="row-item">
+              <div class="l">Taille</div>
+              <div class="v">178 cm <span class="chev">›</span></div>
+            </div>
+            <div class="row-item">
+              <div class="l">Poids</div>
+              <div class="v">82,4 kg <span class="chev">›</span></div>
+            </div>
+
+            <div class="sec-label">Entraînement</div>
+            <div class="row-item">
+              <div class="l">Niveau</div>
+              <div class="v">Intermédiaire <span class="chev">›</span></div>
+            </div>
+            <div class="row-item">
+              <div class="l">Objectif</div>
+              <div class="v">Muscle <span class="chev">›</span></div>
+            </div>
+            <div class="row-item">
+              <div class="l">Séances / sem.</div>
+              <div class="v">4 <span class="chev">›</span></div>
+            </div>
+
+            <div class="sec-label">Réglages</div>
+            <div class="row-item">
+              <div class="l">Explorer Tanren</div>
+              <div class="v muted">3 nouvelles <span class="chev">›</span></div>
+            </div>
+            <div class="row-item">
+              <div class="l">Rappels</div>
+              <div class="v muted">Actifs <span class="chev">›</span></div>
+            </div>
+            <div class="row-item">
+              <div class="l">Santé & sync</div>
+              <div class="v muted">Apple Santé <span class="chev">›</span></div>
+            </div>
+
+            <div class="sec-label">Compte & confidentialité</div>
+            <div class="row-item">
+              <div class="l">Politique de confidentialité</div>
+              <div class="v muted"><span class="chev">›</span></div>
+            </div>
+            <div class="row-item">
+              <div class="l">Exporter mes données</div>
+              <div class="v muted"><span class="chev">›</span></div>
+            </div>
+            <div class="row-item">
+              <div class="l">Se déconnecter</div>
+              <div class="v muted"><span class="chev">›</span></div>
+            </div>
+            <div class="row-item danger">
+              <div class="l">Supprimer mon compte</div>
+              <div class="v muted"><span class="chev">›</span></div>
+            </div>
+
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12 L12 3 L21 12 M5 10 V21 H19 V10"/></svg><div class="tab-label">Home</div></div>
+            <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="7" width="4" height="10"/><rect x="17" y="7" width="4" height="10"/><line x1="7" y1="12" x2="17" y2="12"/></svg><div class="tab-label">Training</div></div>
+            <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><div class="tab-label">Historique</div></div>
+            <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 C8 2 5 5 5 9 C5 12 7 14 12 22 C17 14 19 12 19 9 C19 5 16 2 12 2 Z"/></svg><div class="tab-label">Diet</div></div>
+            <div class="tab active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 22 C4 16 8 14 12 14 C16 14 20 16 20 22"/></svg><div class="tab-label">Profil</div></div>
+          </div>
+        </div>
+      </div></div>
+      <div class="mockup-caption">Profile — Dark</div>
+    </div>
+
+    <!-- LIGHT -->
+    <div class="compare-col">
+      <div class="mode-tag light">Light mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen light">
+          <div class="vignette"></div>
+          <div class="corner-kanji">錬</div>
+          <div class="status-bar"><span>21:12</span><span>●●●●</span></div>
+          <div class="content" style="padding-bottom: 80px; overflow-y: auto;">
+
+            <div class="screen-header">
+              <div class="title">Profil</div>
+            </div>
+
+            <div class="profile-header">
+              <div class="profile-avatar">R</div>
+              <div class="profile-info">
+                <div class="name">Ramy</div>
+                <div class="email">ramy@icloud.com</div>
+                <div class="provider">Connecté via Apple</div>
+              </div>
+            </div>
+
+            <div class="profile-stats">
+              <div class="profile-stat">
+                <div class="v">87</div>
+                <div class="l">Séances</div>
+              </div>
+              <div class="profile-stat">
+                <div class="v highlight">1,2<span class="u">M</span></div>
+                <div class="l">Volume kg</div>
+              </div>
+              <div class="profile-stat">
+                <div class="v">34</div>
+                <div class="l">Records</div>
+              </div>
+            </div>
+
+            <div class="sec-label">Personnel</div>
+            <div class="row-item">
+              <div class="l">Prénom</div>
+              <div class="v">Ramy <span class="chev">›</span></div>
+            </div>
+            <div class="row-item">
+              <div class="l">Taille</div>
+              <div class="v">178 cm <span class="chev">›</span></div>
+            </div>
+            <div class="row-item">
+              <div class="l">Poids</div>
+              <div class="v">82,4 kg <span class="chev">›</span></div>
+            </div>
+
+            <div class="sec-label">Entraînement</div>
+            <div class="row-item">
+              <div class="l">Niveau</div>
+              <div class="v">Intermédiaire <span class="chev">›</span></div>
+            </div>
+            <div class="row-item">
+              <div class="l">Objectif</div>
+              <div class="v">Muscle <span class="chev">›</span></div>
+            </div>
+            <div class="row-item">
+              <div class="l">Séances / sem.</div>
+              <div class="v">4 <span class="chev">›</span></div>
+            </div>
+
+            <div class="sec-label">Réglages</div>
+            <div class="row-item">
+              <div class="l">Explorer Tanren</div>
+              <div class="v muted">3 nouvelles <span class="chev">›</span></div>
+            </div>
+            <div class="row-item">
+              <div class="l">Rappels</div>
+              <div class="v muted">Actifs <span class="chev">›</span></div>
+            </div>
+            <div class="row-item">
+              <div class="l">Santé & sync</div>
+              <div class="v muted">Apple Santé <span class="chev">›</span></div>
+            </div>
+
+            <div class="sec-label">Compte & confidentialité</div>
+            <div class="row-item">
+              <div class="l">Politique de confidentialité</div>
+              <div class="v muted"><span class="chev">›</span></div>
+            </div>
+            <div class="row-item">
+              <div class="l">Exporter mes données</div>
+              <div class="v muted"><span class="chev">›</span></div>
+            </div>
+            <div class="row-item">
+              <div class="l">Se déconnecter</div>
+              <div class="v muted"><span class="chev">›</span></div>
+            </div>
+            <div class="row-item danger">
+              <div class="l">Supprimer mon compte</div>
+              <div class="v muted"><span class="chev">›</span></div>
+            </div>
+
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12 L12 3 L21 12 M5 10 V21 H19 V10"/></svg><div class="tab-label">Home</div></div>
+            <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="7" width="4" height="10"/><rect x="17" y="7" width="4" height="10"/><line x1="7" y1="12" x2="17" y2="12"/></svg><div class="tab-label">Training</div></div>
+            <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><div class="tab-label">Historique</div></div>
+            <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 C8 2 5 5 5 9 C5 12 7 14 12 22 C17 14 19 12 19 9 C19 5 16 2 12 2 Z"/></svg><div class="tab-label">Diet</div></div>
+            <div class="tab active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 22 C4 16 8 14 12 14 C16 14 20 16 20 22"/></svg><div class="tab-label">Profil</div></div>
+          </div>
+        </div>
+      </div></div>
+      <div class="mockup-caption">Profile — Light</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== FOOTER ===== -->
+<div style="max-width: 900px; margin: 80px auto 40px; text-align: center; padding-top: 40px; border-top: 1px solid #2a2a2a;">
+  <div style="font-family: 'Noto Serif JP', serif; font-weight: 900; font-size: 24px; color: #FF2D3F; letter-spacing: 0.4em; margin-bottom: 8px;">鍛 錬</div>
+  <div style="font-weight: 900; font-size: 20px; letter-spacing: 0.16em; margin-bottom: 4px;">TANREN</div>
+  <div style="font-style: italic; color: #FF2D3F; font-size: 14px; margin-bottom: 12px;">Une rep après l'autre.</div>
+  <div style="font-size: 11px; color: #888; letter-spacing: 0.2em;">DATA & TABS · DARK + LIGHT · LOT 2/3 · 2026</div>
+</div>
+
+</body>
+</html>

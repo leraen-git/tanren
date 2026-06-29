@@ -1,0 +1,2988 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TANREN — Profile Redesign + Secondary Screens</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,300;0,400;0,500;0,700;0,900;1,400&family=Noto+Serif+JP:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Barlow Condensed', sans-serif;
+    background: linear-gradient(180deg, #0f0f0f 0%, #050505 100%);
+    color: #FFFFFF;
+    min-height: 100vh;
+    padding: 60px 40px 100px;
+  }
+
+  .page-header {
+    text-align: center;
+    margin: 0 auto 60px;
+    max-width: 900px;
+  }
+  .page-label {
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: 0.24em;
+    color: #FF2D3F;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .page-title {
+    font-weight: 900;
+    font-size: 52px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    line-height: 1;
+  }
+  .page-desc {
+    font-weight: 400;
+    font-size: 15px;
+    color: #999;
+    line-height: 1.5;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  .section {
+    max-width: 1600px;
+    margin: 0 auto 100px;
+  }
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 20px;
+    margin-bottom: 40px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #2a2a2a;
+  }
+  .section-number {
+    font-weight: 900;
+    font-size: 64px;
+    color: #FF2D3F;
+    line-height: 0.85;
+    letter-spacing: 0.02em;
+  }
+  .section-title-block h2 {
+    font-weight: 900;
+    font-size: 32px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .section-title-block p {
+    font-weight: 400;
+    font-size: 14px;
+    color: #888;
+    max-width: 760px;
+    line-height: 1.5;
+  }
+
+  .compare-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    margin-bottom: 48px;
+    align-items: flex-start;
+  }
+  .compare-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+  .mode-tag {
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    padding: 6px 14px;
+  }
+  .mode-tag.dark { background: #000; color: #FFF; border: 1px solid #333; }
+  .mode-tag.light { background: #FFF; color: #000; border: 1px solid #DDD; }
+  .mockup-caption {
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    text-align: center;
+    color: #FFF;
+  }
+
+  .phone-frame {
+    background: #1a1a1a;
+    border-radius: 52px;
+    padding: 12px;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.5), 0 12px 24px rgba(0,0,0,0.3);
+  }
+  .phone-screen {
+    width: 340px;
+    height: 734px;
+    border-radius: 40px;
+    overflow: hidden;
+    position: relative;
+  }
+  .phone-notch {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 28px;
+    background: #000;
+    border-radius: 16px;
+    z-index: 100;
+  }
+  .status-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 44px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 24px 0;
+    z-index: 50;
+    font-family: -apple-system, sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  /* ===== THEMES ===== */
+  .dark {
+    --bg: #000000;
+    --text: #FFFFFF;
+    --text-dim: #aaaaaa;
+    --text-mute: #888888;
+    --text-ghost: #555555;
+    --accent: #FF2D3F;
+    --border: #222222;
+    --border-strong: #333333;
+    --surface-1: #0A0A0A;
+    --surface-2: #141414;
+    --vignette: radial-gradient(ellipse at top, rgba(255,45,63,0.04) 0%, transparent 60%);
+    --kanji-opacity: 0.04;
+    --ghost-bg: rgba(255,255,255,0.03);
+    --green: #2BAE43;
+    --amber: #E8A900;
+    --overlay: rgba(0,0,0,0.72);
+  }
+  .light {
+    --bg: #FFFFFF;
+    --text: #000000;
+    --text-dim: #555555;
+    --text-mute: #888888;
+    --text-ghost: #BBBBBB;
+    --accent: #E8192C;
+    --border: #E5E5E5;
+    --border-strong: #CCCCCC;
+    --surface-1: #FAFAFA;
+    --surface-2: #F3F3F3;
+    --vignette: radial-gradient(ellipse at top, rgba(232,25,44,0.03) 0%, transparent 60%);
+    --kanji-opacity: 0.05;
+    --ghost-bg: rgba(0,0,0,0.025);
+    --green: #1A7F2C;
+    --amber: #D98E00;
+    --overlay: rgba(255,255,255,0.85);
+  }
+
+  .screen {
+    width: 100%;
+    height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    position: relative;
+    overflow: hidden;
+    padding-top: 54px;
+  }
+  .screen .status-bar { color: var(--text); }
+
+  .vignette {
+    position: absolute;
+    inset: 0;
+    background: var(--vignette);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .corner-kanji {
+    position: absolute;
+    top: 60px;
+    right: 20px;
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 900;
+    font-size: 48px;
+    color: var(--text);
+    opacity: var(--kanji-opacity);
+    line-height: 1;
+    letter-spacing: -0.05em;
+    z-index: 1;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .content {
+    position: relative;
+    z-index: 10;
+    padding: 0 20px 80px;
+    height: 100%;
+    overflow-y: auto;
+  }
+
+  .screen-header {
+    padding: 8px 0 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .screen-header .back {
+    color: var(--text-mute);
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  .screen-header .title {
+    font-weight: 900;
+    font-size: 16px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-align: center;
+    flex: 1;
+  }
+  .screen-header .right {
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    min-width: 50px;
+    text-align: right;
+  }
+
+  /* Tab Bar */
+  .tab-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--surface-1);
+    border-top: 1px solid var(--border);
+    padding: 10px 0 24px;
+    display: flex;
+    justify-content: space-around;
+    z-index: 20;
+  }
+  .tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+  }
+  .tab svg { width: 20px; height: 20px; color: var(--text-mute); }
+  .tab.active svg { color: var(--accent); }
+  .tab-label {
+    font-weight: 500;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-mute);
+  }
+  .tab.active .tab-label { color: var(--accent); }
+
+  /* Buttons */
+  .btn {
+    width: 100%;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: 4px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: none;
+  }
+  .btn-primary { background: var(--accent); color: #FFF; }
+  .btn-outline {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--text);
+  }
+  .btn-danger {
+    background: var(--accent);
+    color: #FFF;
+  }
+  .btn-ghost {
+    background: transparent;
+    color: var(--text-mute);
+    height: 44px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .sec-label {
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--text-mute);
+    text-transform: uppercase;
+    margin: 20px 0 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* Row items (reused from Profile) */
+  .row-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .row-item .l {
+    font-weight: 500;
+    font-size: 13px;
+    color: var(--text);
+  }
+  .row-item .v {
+    font-weight: 700;
+    font-size: 12px;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .row-item .v.muted { color: var(--text-mute); font-weight: 500; }
+  .row-item .chev {
+    color: var(--text-ghost);
+    font-size: 16px;
+    font-weight: 300;
+  }
+  .row-item.danger .l { color: var(--accent); }
+  .row-item.no-border { border-bottom: none; }
+
+  /* ========================================
+     PROFILE LANDING (redesigned)
+     ======================================== */
+  .profile-header-new {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    padding: 16px 0 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .profile-avatar {
+    width: 60px;
+    height: 60px;
+    background: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #FFF;
+    font-weight: 900;
+    font-size: 26px;
+    letter-spacing: 0.02em;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .profile-avatar::before {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: -3px;
+    width: 8px;
+    height: 8px;
+    background: var(--accent);
+  }
+  .profile-info .name {
+    font-weight: 900;
+    font-size: 20px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .profile-info .email {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+  }
+  .profile-info .provider {
+    font-weight: 700;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--text-mute);
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .profile-info .provider::before {
+    content: '';
+    width: 4px;
+    height: 4px;
+    background: var(--green);
+    display: inline-block;
+  }
+
+  /* Stats strip (3 cells) */
+  .stats-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    margin: 14px 0;
+  }
+  .stat-cell {
+    background: var(--bg);
+    padding: 14px 8px;
+    text-align: center;
+  }
+  .stat-cell .v {
+    font-weight: 900;
+    font-size: 22px;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .stat-cell .v .u {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-mute);
+  }
+  .stat-cell .v.highlight { color: var(--accent); }
+  .stat-cell .l {
+    font-weight: 500;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--text-mute);
+    text-transform: uppercase;
+  }
+
+  /* Body evolution block (new) */
+  .body-evolution {
+    padding: 14px;
+    border: 1px solid var(--border);
+    margin-bottom: 14px;
+    position: relative;
+  }
+  .body-evolution .be-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 12px;
+  }
+  .body-evolution .be-title {
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0.28em;
+    color: var(--text-mute);
+    text-transform: uppercase;
+  }
+  .body-evolution .be-cta {
+    font-weight: 700;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+  .body-evolution .be-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .be-current {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 32px;
+    line-height: 1;
+  }
+  .be-current .u {
+    font-size: 14px;
+    color: var(--text-mute);
+    margin-left: 2px;
+  }
+  .be-trend {
+    text-align: right;
+  }
+  .be-trend .delta {
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.04em;
+  }
+  .be-trend .delta.down { color: var(--green); }
+  .be-trend .delta.up { color: var(--amber); }
+  .be-trend .delta.flat { color: var(--text-mute); }
+  .be-trend .period {
+    font-size: 9px;
+    color: var(--text-mute);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  /* Mini sparkline (svg placeholder) */
+  .be-sparkline {
+    height: 36px;
+    position: relative;
+    margin-top: 6px;
+  }
+  .be-sparkline svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Streak compact banner */
+  .streak-banner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    margin-bottom: 14px;
+  }
+  .streak-banner .k {
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 900;
+    font-size: 20px;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .streak-banner .t {
+    flex: 1;
+  }
+  .streak-banner .t .v {
+    font-weight: 900;
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .streak-banner .t .v .n { color: var(--accent); }
+  .streak-banner .t .d {
+    font-size: 10px;
+    color: var(--text-mute);
+    letter-spacing: 0.08em;
+  }
+
+  /* ========================================
+     MODAL BOTTOM SHEET
+     ======================================== */
+  .bottom-sheet {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--bg);
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    padding: 14px 20px 30px;
+    z-index: 30;
+    box-shadow: 0 -12px 32px rgba(0,0,0,0.4);
+    border-top: 1px solid var(--border);
+  }
+  .bottom-sheet-handle {
+    width: 40px;
+    height: 4px;
+    background: var(--border-strong);
+    margin: 0 auto 14px;
+  }
+  .bottom-sheet-title {
+    font-weight: 900;
+    font-size: 17px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    text-align: center;
+    margin-bottom: 16px;
+  }
+
+  /* Backdrop overlay for modals */
+  .modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: var(--overlay);
+    z-index: 25;
+  }
+
+  /* Input underline */
+  .input-underline {
+    border: none;
+    border-bottom: 1px solid var(--border-strong);
+    background: transparent;
+    padding: 12px 0 10px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--text);
+    width: 100%;
+    outline: none;
+  }
+  .input-underline:focus { border-bottom-color: var(--text); }
+
+  /* Stepper */
+  .stepper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    margin: 20px 0;
+  }
+  .stepper-btn {
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--border-strong);
+    background: transparent;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 20px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .stepper-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 44px;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    min-width: 120px;
+  }
+  .stepper-unit {
+    font-size: 16px;
+    color: var(--text-mute);
+    font-weight: 500;
+    margin-left: 2px;
+  }
+
+  /* Radio option list */
+  .radio-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .radio-item {
+    padding: 14px;
+    border: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+  }
+  .radio-item.selected {
+    border-color: var(--accent);
+    background: rgba(255, 45, 63, 0.05);
+  }
+  .light .radio-item.selected {
+    background: rgba(232, 25, 44, 0.04);
+  }
+  .radio-item .rl-main {
+    flex: 1;
+  }
+  .radio-item .rl-title {
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 3px;
+  }
+  .radio-item.selected .rl-title { color: var(--accent); }
+  .radio-item .rl-desc {
+    font-size: 11px;
+    color: var(--text-mute);
+    line-height: 1.4;
+  }
+  .radio-item .rl-check {
+    width: 16px;
+    height: 16px;
+    border: 1px solid var(--border-strong);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .radio-item.selected .rl-check {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #FFF;
+    font-size: 10px;
+    font-weight: 700;
+  }
+
+  /* ========================================
+     WEIGHT EDIT FULL SCREEN
+     ======================================== */
+  .weight-big {
+    text-align: center;
+    padding: 20px 0 16px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 16px;
+  }
+  .weight-big .v {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 56px;
+    line-height: 1;
+    letter-spacing: 0.01em;
+  }
+  .weight-big .v .u {
+    font-size: 18px;
+    color: var(--text-mute);
+    margin-left: 4px;
+    font-weight: 400;
+  }
+  .weight-big .meta {
+    font-size: 11px;
+    color: var(--text-mute);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    margin-top: 6px;
+  }
+
+  .quick-set {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+  .quick-set-btn {
+    padding: 10px 6px;
+    border: 1px solid var(--border-strong);
+    background: transparent;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .quick-set-btn.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #FFF;
+  }
+
+  /* Chart full */
+  .chart-full {
+    height: 140px;
+    position: relative;
+    margin: 16px 0;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .chart-full svg { width: 100%; height: 100%; }
+
+  .period-tabs {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--border);
+    margin-bottom: 14px;
+  }
+  .period-tab {
+    background: var(--surface-1);
+    padding: 8px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    color: var(--text-mute);
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .period-tab.active {
+    background: var(--accent);
+    color: #FFF;
+  }
+
+  /* History weight entries */
+  .weight-entry {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .weight-entry .date {
+    font-size: 11px;
+    color: var(--text-mute);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .weight-entry .val {
+    display: flex;
+    gap: 12px;
+    align-items: baseline;
+  }
+  .weight-entry .val .w {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 14px;
+  }
+  .weight-entry .val .w .u {
+    font-size: 10px;
+    color: var(--text-mute);
+    margin-left: 2px;
+    font-weight: 400;
+  }
+  .weight-entry .val .delta {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    min-width: 40px;
+    text-align: right;
+  }
+  .weight-entry .val .delta.down { color: var(--green); }
+  .weight-entry .val .delta.up { color: var(--amber); }
+  .weight-entry .val .delta.flat { color: var(--text-mute); }
+
+  /* ========================================
+     HEALTH & SYNC
+     ======================================== */
+  .health-hero {
+    padding: 16px;
+    border: 1px solid var(--border);
+    margin-bottom: 16px;
+    position: relative;
+    background: var(--surface-1);
+  }
+  .health-hero .k {
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 900;
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: 0.4em;
+    margin-bottom: 6px;
+  }
+  .health-hero .t {
+    font-weight: 900;
+    font-size: 17px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    line-height: 1.2;
+    margin-bottom: 6px;
+  }
+  .health-hero .d {
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+  .health-status {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    font-weight: 700;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    padding: 4px 8px;
+    text-transform: uppercase;
+  }
+  .health-status.connected {
+    background: rgba(43, 174, 67, 0.15);
+    color: var(--green);
+    border: 1px solid var(--green);
+  }
+  .health-status.disconnected {
+    background: rgba(232, 169, 0, 0.15);
+    color: var(--amber);
+    border: 1px solid var(--amber);
+  }
+
+  /* Toggle */
+  .toggle {
+    width: 36px;
+    height: 20px;
+    background: var(--border-strong);
+    border-radius: 10px;
+    position: relative;
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .toggle.on { background: var(--accent); }
+  .toggle .knob {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    background: #FFF;
+    border-radius: 50%;
+    transition: left 0.2s;
+  }
+  .toggle.on .knob { left: 18px; }
+
+  /* Sync row */
+  .sync-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .sync-row .l {
+    font-weight: 500;
+    font-size: 13px;
+    color: var(--text);
+  }
+  .sync-row .l .sub {
+    font-weight: 400;
+    font-size: 10px;
+    color: var(--text-mute);
+    display: block;
+    margin-top: 2px;
+    letter-spacing: 0.04em;
+  }
+
+  /* ========================================
+     EXPORT DATA
+     ======================================== */
+  .export-option {
+    padding: 14px;
+    border: 1px solid var(--border);
+    margin-bottom: 8px;
+    cursor: pointer;
+  }
+  .export-option.selected {
+    border-color: var(--accent);
+    background: rgba(255, 45, 63, 0.04);
+  }
+  .light .export-option.selected {
+    background: rgba(232, 25, 44, 0.03);
+  }
+  .export-option .eo-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 4px;
+  }
+  .export-option .eo-title {
+    font-weight: 900;
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .export-option .eo-badge {
+    font-weight: 700;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    padding: 2px 6px;
+    background: var(--surface-2);
+    color: var(--text-mute);
+    text-transform: uppercase;
+  }
+  .export-option.selected .eo-title { color: var(--accent); }
+  .export-option .eo-desc {
+    font-size: 11px;
+    color: var(--text-mute);
+    line-height: 1.5;
+    margin-top: 4px;
+  }
+  .export-option .eo-size {
+    font-size: 10px;
+    color: var(--text-ghost);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-top: 6px;
+    font-weight: 700;
+  }
+
+  /* Confirmation modal (logout) */
+  .confirm-modal {
+    position: absolute;
+    left: 30px;
+    right: 30px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--bg);
+    padding: 24px 20px 20px;
+    z-index: 30;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    border: 1px solid var(--border);
+  }
+  .confirm-modal .k {
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 900;
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: 0.4em;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  .confirm-modal .t {
+    font-weight: 900;
+    font-size: 20px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    text-align: center;
+    margin-bottom: 10px;
+    line-height: 1.1;
+  }
+  .confirm-modal .d {
+    font-size: 12px;
+    color: var(--text-dim);
+    text-align: center;
+    line-height: 1.5;
+    margin-bottom: 20px;
+  }
+  .confirm-modal .actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  /* Design notes */
+  .design-notes {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 24px 28px;
+    margin: 32px auto;
+    max-width: 1100px;
+  }
+  .design-notes h4 {
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: #FF2D3F;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .design-notes p {
+    font-size: 13px;
+    color: #BBB;
+    line-height: 1.6;
+    margin-bottom: 10px;
+  }
+  .design-notes p:last-child { margin-bottom: 0; }
+  .design-notes p strong { color: #FFF; font-weight: 700; }
+
+  .label-middle {
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #FF2D3F;
+    margin: 30px 0 16px;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<div class="page-header">
+  <div class="page-label">Tanren · Profile Redesign</div>
+  <div class="page-title">Profile + Secondary Screens</div>
+  <div class="page-desc">
+    Refonte du landing Profile avec <strong style="color:#fff">évolution corporelle</strong> et <strong style="color:#fff">streak compact</strong>, plus <strong style="color:#fff">10 écrans secondaires</strong> accessibles via les rows : edits rapides (prénom, taille, niveau, objectif, séances), suivi poids complet, santé & sync, export données, et modals de confirmation.
+  </div>
+</div>
+
+<!-- ===================================================== -->
+<!-- 01 — PROFILE LANDING REDESIGN                        -->
+<!-- ===================================================== -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-number">01</div>
+    <div class="section-title-block">
+      <h2>Profile Landing (refonte)</h2>
+      <p>Ajouts vs version précédente : bloc <strong style="color:#fff">évolution corporelle</strong> (poids actuel, trend, mini-sparkline) et <strong style="color:#fff">streak compact</strong> (semaines consécutives avec kanji 鍛). Les 4 sections de rows (Personnel / Entraînement / Réglages / Compte) sont conservées avec leur navigation vers les écrans secondaires.</p>
+    </div>
+  </div>
+
+  <div class="compare-row">
+
+    <!-- DARK -->
+    <div class="compare-col">
+      <div class="mode-tag dark">Dark mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen dark">
+          <div class="vignette"></div>
+          <div class="corner-kanji">錬</div>
+          <div class="status-bar"><span>21:12</span><span>●●●●</span></div>
+          <div class="content">
+
+            <div class="screen-header">
+              <div class="title">Profil</div>
+            </div>
+
+            <div class="profile-header-new">
+              <div class="profile-avatar">R</div>
+              <div class="profile-info">
+                <div class="name">Ramy</div>
+                <div class="email">ramy@icloud.com</div>
+                <div class="provider">Connecté via Apple</div>
+              </div>
+            </div>
+
+            <div class="stats-row">
+              <div class="stat-cell">
+                <div class="v">87</div>
+                <div class="l">Séances</div>
+              </div>
+              <div class="stat-cell">
+                <div class="v highlight">1,2<span class="u">M</span></div>
+                <div class="l">Volume kg</div>
+              </div>
+              <div class="stat-cell">
+                <div class="v">34</div>
+                <div class="l">Records</div>
+              </div>
+            </div>
+
+            <!-- NEW: streak banner -->
+            <div class="streak-banner">
+              <div class="k">鍛</div>
+              <div class="t">
+                <div class="v"><span class="n">12</span> SEMAINES DE FORGE</div>
+                <div class="d">Pas une semaine sans séance depuis le 27 janvier</div>
+              </div>
+            </div>
+
+            <!-- NEW: body evolution -->
+            <div class="body-evolution">
+              <div class="be-header">
+                <div class="be-title">Évolution corporelle</div>
+                <div class="be-cta">Voir détail ›</div>
+              </div>
+              <div class="be-main">
+                <div class="be-current">82,4<span class="u">kg</span></div>
+                <div class="be-trend">
+                  <div class="delta down">−1,6 kg</div>
+                  <div class="period">sur 30 jours</div>
+                </div>
+              </div>
+              <div class="be-sparkline">
+                <svg viewBox="0 0 300 36" preserveAspectRatio="none">
+                  <polyline
+                    points="0,8 30,6 60,12 90,10 120,15 150,13 180,18 210,16 240,22 270,24 300,28"
+                    fill="none"
+                    stroke="#FF2D3F"
+                    stroke-width="1.5"
+                  />
+                  <circle cx="300" cy="28" r="3" fill="#FF2D3F"/>
+                </svg>
+              </div>
+            </div>
+
+            <div class="sec-label">Personnel</div>
+            <div class="row-item">
+              <div class="l">Prénom</div>
+              <div class="v">Ramy <span class="chev">›</span></div>
+            </div>
+            <div class="row-item">
+              <div class="l">Taille</div>
+              <div class="v">178 cm <span class="chev">›</span></div>
+            </div>
+            <div class="row-item">
+              <div class="l">Poids</div>
+              <div class="v">82,4 kg <span class="chev">›</span></div>
+            </div>
+
+            <div class="sec-label">Entraînement</div>
+            <div class="row-item">
+              <div class="l">Niveau</div>
+              <div class="v">Intermédiaire <span class="chev">›</span></div>
+            </div>
+            <div class="row-item">
+              <div class="l">Objectif</div>
+              <div class="v">Muscle <span class="chev">›</span></div>
+            </div>
+            <div class="row-item">
+              <div class="l">Séances / sem.</div>
+              <div class="v">4 <span class="chev">›</span></div>
+            </div>
+
+            <div class="sec-label">Réglages</div>
+            <div class="row-item">
+              <div class="l">Rappels</div>
+              <div class="v muted">Actifs <span class="chev">›</span></div>
+            </div>
+            <div class="row-item">
+              <div class="l">Santé & sync</div>
+              <div class="v muted">Apple Santé <span class="chev">›</span></div>
+            </div>
+            <div class="row-item">
+              <div class="l">Explorer Tanren</div>
+              <div class="v"><span style="background: var(--accent); color: #FFF; padding: 2px 6px; font-size: 8px; letter-spacing: 0.2em; font-weight: 700; text-transform: uppercase;">3 nouvelles</span> <span class="chev">›</span></div>
+            </div>
+
+            <div class="sec-label">Compte</div>
+            <div class="row-item">
+              <div class="l">Politique de confidentialité</div>
+              <div class="v muted"><span class="chev">›</span></div>
+            </div>
+            <div class="row-item">
+              <div class="l">Exporter mes données</div>
+              <div class="v muted"><span class="chev">›</span></div>
+            </div>
+            <div class="row-item">
+              <div class="l">Se déconnecter</div>
+              <div class="v muted"><span class="chev">›</span></div>
+            </div>
+            <div class="row-item danger no-border">
+              <div class="l">Supprimer mon compte</div>
+              <div class="v muted"><span class="chev">›</span></div>
+            </div>
+
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12 L12 3 L21 12 M5 10 V21 H19 V10"/></svg><div class="tab-label">Home</div></div>
+            <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="7" width="4" height="10"/><rect x="17" y="7" width="4" height="10"/><line x1="7" y1="12" x2="17" y2="12"/></svg><div class="tab-label">Training</div></div>
+            <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><div class="tab-label">Historique</div></div>
+            <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 C8 2 5 5 5 9 C5 12 7 14 12 22 C17 14 19 12 19 9 C19 5 16 2 12 2 Z"/></svg><div class="tab-label">Diet</div></div>
+            <div class="tab active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 22 C4 16 8 14 12 14 C16 14 20 16 20 22"/></svg><div class="tab-label">Profil</div></div>
+          </div>
+        </div>
+      </div></div>
+      <div class="mockup-caption">Profile Landing — Dark</div>
+    </div>
+
+    <!-- LIGHT -->
+    <div class="compare-col">
+      <div class="mode-tag light">Light mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen light">
+          <div class="vignette"></div>
+          <div class="corner-kanji">錬</div>
+          <div class="status-bar"><span>21:12</span><span>●●●●</span></div>
+          <div class="content">
+
+            <div class="screen-header">
+              <div class="title">Profil</div>
+            </div>
+
+            <div class="profile-header-new">
+              <div class="profile-avatar">R</div>
+              <div class="profile-info">
+                <div class="name">Ramy</div>
+                <div class="email">ramy@icloud.com</div>
+                <div class="provider">Connecté via Apple</div>
+              </div>
+            </div>
+
+            <div class="stats-row">
+              <div class="stat-cell">
+                <div class="v">87</div>
+                <div class="l">Séances</div>
+              </div>
+              <div class="stat-cell">
+                <div class="v highlight">1,2<span class="u">M</span></div>
+                <div class="l">Volume kg</div>
+              </div>
+              <div class="stat-cell">
+                <div class="v">34</div>
+                <div class="l">Records</div>
+              </div>
+            </div>
+
+            <div class="streak-banner">
+              <div class="k">鍛</div>
+              <div class="t">
+                <div class="v"><span class="n">12</span> SEMAINES DE FORGE</div>
+                <div class="d">Pas une semaine sans séance depuis le 27 janvier</div>
+              </div>
+            </div>
+
+            <div class="body-evolution">
+              <div class="be-header">
+                <div class="be-title">Évolution corporelle</div>
+                <div class="be-cta">Voir détail ›</div>
+              </div>
+              <div class="be-main">
+                <div class="be-current">82,4<span class="u">kg</span></div>
+                <div class="be-trend">
+                  <div class="delta down">−1,6 kg</div>
+                  <div class="period">sur 30 jours</div>
+                </div>
+              </div>
+              <div class="be-sparkline">
+                <svg viewBox="0 0 300 36" preserveAspectRatio="none">
+                  <polyline
+                    points="0,8 30,6 60,12 90,10 120,15 150,13 180,18 210,16 240,22 270,24 300,28"
+                    fill="none"
+                    stroke="#E8192C"
+                    stroke-width="1.5"
+                  />
+                  <circle cx="300" cy="28" r="3" fill="#E8192C"/>
+                </svg>
+              </div>
+            </div>
+
+            <div class="sec-label">Personnel</div>
+            <div class="row-item">
+              <div class="l">Prénom</div>
+              <div class="v">Ramy <span class="chev">›</span></div>
+            </div>
+            <div class="row-item">
+              <div class="l">Taille</div>
+              <div class="v">178 cm <span class="chev">›</span></div>
+            </div>
+            <div class="row-item">
+              <div class="l">Poids</div>
+              <div class="v">82,4 kg <span class="chev">›</span></div>
+            </div>
+
+            <div class="sec-label">Entraînement</div>
+            <div class="row-item">
+              <div class="l">Niveau</div>
+              <div class="v">Intermédiaire <span class="chev">›</span></div>
+            </div>
+            <div class="row-item">
+              <div class="l">Objectif</div>
+              <div class="v">Muscle <span class="chev">›</span></div>
+            </div>
+            <div class="row-item">
+              <div class="l">Séances / sem.</div>
+              <div class="v">4 <span class="chev">›</span></div>
+            </div>
+
+            <div class="sec-label">Réglages</div>
+            <div class="row-item">
+              <div class="l">Rappels</div>
+              <div class="v muted">Actifs <span class="chev">›</span></div>
+            </div>
+            <div class="row-item">
+              <div class="l">Santé & sync</div>
+              <div class="v muted">Apple Santé <span class="chev">›</span></div>
+            </div>
+            <div class="row-item">
+              <div class="l">Explorer Tanren</div>
+              <div class="v"><span style="background: var(--accent); color: #FFF; padding: 2px 6px; font-size: 8px; letter-spacing: 0.2em; font-weight: 700; text-transform: uppercase;">3 nouvelles</span> <span class="chev">›</span></div>
+            </div>
+
+            <div class="sec-label">Compte</div>
+            <div class="row-item">
+              <div class="l">Politique de confidentialité</div>
+              <div class="v muted"><span class="chev">›</span></div>
+            </div>
+            <div class="row-item">
+              <div class="l">Exporter mes données</div>
+              <div class="v muted"><span class="chev">›</span></div>
+            </div>
+            <div class="row-item">
+              <div class="l">Se déconnecter</div>
+              <div class="v muted"><span class="chev">›</span></div>
+            </div>
+            <div class="row-item danger no-border">
+              <div class="l">Supprimer mon compte</div>
+              <div class="v muted"><span class="chev">›</span></div>
+            </div>
+
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12 L12 3 L21 12 M5 10 V21 H19 V10"/></svg><div class="tab-label">Home</div></div>
+            <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="7" width="4" height="10"/><rect x="17" y="7" width="4" height="10"/><line x1="7" y1="12" x2="17" y2="12"/></svg><div class="tab-label">Training</div></div>
+            <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><div class="tab-label">Historique</div></div>
+            <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 C8 2 5 5 5 9 C5 12 7 14 12 22 C17 14 19 12 19 9 C19 5 16 2 12 2 Z"/></svg><div class="tab-label">Diet</div></div>
+            <div class="tab active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 22 C4 16 8 14 12 14 C16 14 20 16 20 22"/></svg><div class="tab-label">Profil</div></div>
+          </div>
+        </div>
+      </div></div>
+      <div class="mockup-caption">Profile Landing — Light</div>
+    </div>
+  </div>
+
+  <div class="design-notes">
+    <h4>Ce qui a changé vs version précédente</h4>
+    <p><strong>Streak banner.</strong> Bloc compact avec kanji 鍛 inline + "12 SEMAINES DE FORGE" (chiffre en accent rouge). Sous-titre factuel ("Pas une semaine sans séance depuis le 27 janvier") qui donne le contexte historique sans être gamifié. Quand le streak casse, le banner disparaît temporairement pour éviter de démoraliser — il réapparaît après 1 semaine complète.</p>
+    <p><strong>Body evolution.</strong> Remplace le simple row "Poids" par un bloc riche : poids actuel en JetBrains Mono 32px, delta sur 30 jours coloré (vert=down pour cut, ambre=up, mute=flat), mini-sparkline SVG des 30 derniers jours. Clic sur le bloc ou sur "Voir détail ›" → écran Edit Poids complet (section 03).</p>
+    <p><strong>"Explorer Tanren" badge rouge.</strong> Si de nouvelles features sont sorties, badge rouge "3 nouvelles" au lieu du simple "3 nouvelles" gris précédent. Signal visuel fort qui encourage l'exploration.</p>
+    <p><strong>Ce qui n'a PAS changé.</strong> Les 4 sections de rows (Personnel, Entraînement, Réglages, Compte) restent — elles sont le contrat avec le user. Chaque row ouvre l'écran secondaire correspondant, documenté dans les sections 02 à 10.</p>
+  </div>
+</div>
+
+<!-- ===================================================== -->
+<!-- 02 — EDIT MODALS (bottom-sheet)                      -->
+<!-- ===================================================== -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-number">02</div>
+    <div class="section-title-block">
+      <h2>Edits rapides (bottom-sheet modals)</h2>
+      <p>Les edits de valeurs simples ouvrent un bottom-sheet modal qui slide depuis le bas. Pattern iOS natif. Les 5 modals suivants partagent la même structure : handle, titre, contenu, actions en bas.</p>
+    </div>
+  </div>
+
+  <!-- ========== 2a. EDIT PRÉNOM ========== -->
+  <div class="label-middle">2a · Edit Prénom — text input</div>
+  <div class="compare-row">
+
+    <div class="compare-col">
+      <div class="mode-tag dark">Dark mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen dark">
+          <div class="vignette"></div>
+          <div class="corner-kanji">錬</div>
+          <div class="status-bar"><span>21:12</span><span>●●●●</span></div>
+          <div class="content" style="filter: blur(1px); opacity: 0.3;">
+            <div class="screen-header"><div class="title">Profil</div></div>
+            <div class="profile-header-new">
+              <div class="profile-avatar">R</div>
+              <div class="profile-info">
+                <div class="name">Ramy</div>
+                <div class="email">ramy@icloud.com</div>
+                <div class="provider">Connecté via Apple</div>
+              </div>
+            </div>
+            <div class="sec-label">Personnel</div>
+            <div class="row-item"><div class="l">Prénom</div><div class="v">Ramy <span class="chev">›</span></div></div>
+          </div>
+
+          <div class="modal-backdrop"></div>
+
+          <div class="bottom-sheet">
+            <div class="bottom-sheet-handle"></div>
+            <div class="bottom-sheet-title">Prénom</div>
+
+            <input class="input-underline" type="text" value="Ramy" style="margin-bottom: 8px;"/>
+            <div style="font-size: 11px; color: var(--text-mute); letter-spacing: 0.1em; margin-bottom: 20px;">Ton prénom apparaît dans les share cards et emails.</div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+              <button class="btn btn-outline">Annuler</button>
+              <button class="btn btn-primary">Enregistrer</button>
+            </div>
+          </div>
+        </div>
+      </div></div>
+      <div class="mockup-caption">Edit Prénom — Dark</div>
+    </div>
+
+    <div class="compare-col">
+      <div class="mode-tag light">Light mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen light">
+          <div class="vignette"></div>
+          <div class="corner-kanji">錬</div>
+          <div class="status-bar"><span>21:12</span><span>●●●●</span></div>
+          <div class="content" style="filter: blur(1px); opacity: 0.3;">
+            <div class="screen-header"><div class="title">Profil</div></div>
+            <div class="profile-header-new">
+              <div class="profile-avatar">R</div>
+              <div class="profile-info">
+                <div class="name">Ramy</div>
+                <div class="email">ramy@icloud.com</div>
+                <div class="provider">Connecté via Apple</div>
+              </div>
+            </div>
+            <div class="sec-label">Personnel</div>
+            <div class="row-item"><div class="l">Prénom</div><div class="v">Ramy <span class="chev">›</span></div></div>
+          </div>
+
+          <div class="modal-backdrop"></div>
+
+          <div class="bottom-sheet">
+            <div class="bottom-sheet-handle"></div>
+            <div class="bottom-sheet-title">Prénom</div>
+
+            <input class="input-underline" type="text" value="Ramy" style="margin-bottom: 8px;"/>
+            <div style="font-size: 11px; color: var(--text-mute); letter-spacing: 0.1em; margin-bottom: 20px;">Ton prénom apparaît dans les share cards et emails.</div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+              <button class="btn btn-outline">Annuler</button>
+              <button class="btn btn-primary">Enregistrer</button>
+            </div>
+          </div>
+        </div>
+      </div></div>
+      <div class="mockup-caption">Edit Prénom — Light</div>
+    </div>
+  </div>
+
+  <!-- ========== 2b. EDIT TAILLE ========== -->
+  <div class="label-middle">2b · Edit Taille — stepper</div>
+  <div class="compare-row">
+
+    <div class="compare-col">
+      <div class="mode-tag dark">Dark mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen dark">
+          <div class="vignette"></div>
+          <div class="corner-kanji">錬</div>
+          <div class="status-bar"><span>21:12</span><span>●●●●</span></div>
+          <div class="content" style="filter: blur(1px); opacity: 0.3;">
+            <div class="screen-header"><div class="title">Profil</div></div>
+          </div>
+
+          <div class="modal-backdrop"></div>
+
+          <div class="bottom-sheet">
+            <div class="bottom-sheet-handle"></div>
+            <div class="bottom-sheet-title">Taille</div>
+
+            <div class="stepper">
+              <button class="stepper-btn">−</button>
+              <div class="stepper-value">178<span class="stepper-unit">cm</span></div>
+              <button class="stepper-btn">+</button>
+            </div>
+            <div style="font-size: 11px; color: var(--text-mute); letter-spacing: 0.1em; text-align: center; margin-bottom: 20px;">Par pas de 1 cm. Maintiens pour défiler plus vite.</div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+              <button class="btn btn-outline">Annuler</button>
+              <button class="btn btn-primary">Enregistrer</button>
+            </div>
+          </div>
+        </div>
+      </div></div>
+      <div class="mockup-caption">Edit Taille — Dark</div>
+    </div>
+
+    <div class="compare-col">
+      <div class="mode-tag light">Light mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen light">
+          <div class="vignette"></div>
+          <div class="corner-kanji">錬</div>
+          <div class="status-bar"><span>21:12</span><span>●●●●</span></div>
+          <div class="content" style="filter: blur(1px); opacity: 0.3;">
+            <div class="screen-header"><div class="title">Profil</div></div>
+          </div>
+
+          <div class="modal-backdrop"></div>
+
+          <div class="bottom-sheet">
+            <div class="bottom-sheet-handle"></div>
+            <div class="bottom-sheet-title">Taille</div>
+
+            <div class="stepper">
+              <button class="stepper-btn">−</button>
+              <div class="stepper-value">178<span class="stepper-unit">cm</span></div>
+              <button class="stepper-btn">+</button>
+            </div>
+            <div style="font-size: 11px; color: var(--text-mute); letter-spacing: 0.1em; text-align: center; margin-bottom: 20px;">Par pas de 1 cm. Maintiens pour défiler plus vite.</div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+              <button class="btn btn-outline">Annuler</button>
+              <button class="btn btn-primary">Enregistrer</button>
+            </div>
+          </div>
+        </div>
+      </div></div>
+      <div class="mockup-caption">Edit Taille — Light</div>
+    </div>
+  </div>
+
+  <!-- ========== 2c. EDIT NIVEAU ========== -->
+  <div class="label-middle">2c · Edit Niveau — radio list</div>
+  <div class="compare-row">
+
+    <div class="compare-col">
+      <div class="mode-tag dark">Dark mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen dark">
+          <div class="vignette"></div>
+          <div class="corner-kanji">錬</div>
+          <div class="status-bar"><span>21:12</span><span>●●●●</span></div>
+          <div class="content" style="filter: blur(1px); opacity: 0.3;">
+            <div class="screen-header"><div class="title">Profil</div></div>
+          </div>
+
+          <div class="modal-backdrop"></div>
+
+          <div class="bottom-sheet">
+            <div class="bottom-sheet-handle"></div>
+            <div class="bottom-sheet-title">Niveau</div>
+
+            <div class="radio-list">
+              <div class="radio-item">
+                <div class="rl-main">
+                  <div class="rl-title">Débutant</div>
+                  <div class="rl-desc">0 à 1 an de muscu régulière</div>
+                </div>
+                <div class="rl-check"></div>
+              </div>
+              <div class="radio-item selected">
+                <div class="rl-main">
+                  <div class="rl-title">Intermédiaire</div>
+                  <div class="rl-desc">1 à 3 ans, tu connais les bases</div>
+                </div>
+                <div class="rl-check">✓</div>
+              </div>
+              <div class="radio-item">
+                <div class="rl-main">
+                  <div class="rl-title">Avancé</div>
+                  <div class="rl-desc">3+ ans, tu gères tes cycles</div>
+                </div>
+                <div class="rl-check"></div>
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 16px;">
+              <button class="btn btn-outline">Annuler</button>
+              <button class="btn btn-primary">Enregistrer</button>
+            </div>
+          </div>
+        </div>
+      </div></div>
+      <div class="mockup-caption">Edit Niveau — Dark</div>
+    </div>
+
+    <div class="compare-col">
+      <div class="mode-tag light">Light mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen light">
+          <div class="vignette"></div>
+          <div class="corner-kanji">錬</div>
+          <div class="status-bar"><span>21:12</span><span>●●●●</span></div>
+          <div class="content" style="filter: blur(1px); opacity: 0.3;">
+            <div class="screen-header"><div class="title">Profil</div></div>
+          </div>
+
+          <div class="modal-backdrop"></div>
+
+          <div class="bottom-sheet">
+            <div class="bottom-sheet-handle"></div>
+            <div class="bottom-sheet-title">Niveau</div>
+
+            <div class="radio-list">
+              <div class="radio-item">
+                <div class="rl-main">
+                  <div class="rl-title">Débutant</div>
+                  <div class="rl-desc">0 à 1 an de muscu régulière</div>
+                </div>
+                <div class="rl-check"></div>
+              </div>
+              <div class="radio-item selected">
+                <div class="rl-main">
+                  <div class="rl-title">Intermédiaire</div>
+                  <div class="rl-desc">1 à 3 ans, tu connais les bases</div>
+                </div>
+                <div class="rl-check">✓</div>
+              </div>
+              <div class="radio-item">
+                <div class="rl-main">
+                  <div class="rl-title">Avancé</div>
+                  <div class="rl-desc">3+ ans, tu gères tes cycles</div>
+                </div>
+                <div class="rl-check"></div>
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 16px;">
+              <button class="btn btn-outline">Annuler</button>
+              <button class="btn btn-primary">Enregistrer</button>
+            </div>
+          </div>
+        </div>
+      </div></div>
+      <div class="mockup-caption">Edit Niveau — Light</div>
+    </div>
+  </div>
+
+  <!-- ========== 2d. EDIT OBJECTIF ========== -->
+  <div class="label-middle">2d · Edit Objectif — radio list</div>
+  <div class="compare-row">
+
+    <div class="compare-col">
+      <div class="mode-tag dark">Dark mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen dark">
+          <div class="vignette"></div>
+          <div class="corner-kanji">錬</div>
+          <div class="status-bar"><span>21:12</span><span>●●●●</span></div>
+          <div class="content" style="filter: blur(1px); opacity: 0.3;">
+            <div class="screen-header"><div class="title">Profil</div></div>
+          </div>
+
+          <div class="modal-backdrop"></div>
+
+          <div class="bottom-sheet">
+            <div class="bottom-sheet-handle"></div>
+            <div class="bottom-sheet-title">Objectif</div>
+
+            <div class="radio-list">
+              <div class="radio-item selected">
+                <div class="rl-main">
+                  <div class="rl-title">Muscle</div>
+                  <div class="rl-desc">Hypertrophie, prise de masse</div>
+                </div>
+                <div class="rl-check">✓</div>
+              </div>
+              <div class="radio-item">
+                <div class="rl-main">
+                  <div class="rl-title">Force</div>
+                  <div class="rl-desc">Charges lourdes, powerlifting</div>
+                </div>
+                <div class="rl-check"></div>
+              </div>
+              <div class="radio-item">
+                <div class="rl-main">
+                  <div class="rl-title">Perte de gras</div>
+                  <div class="rl-desc">Sèche, recomposition corporelle</div>
+                </div>
+                <div class="rl-check"></div>
+              </div>
+              <div class="radio-item">
+                <div class="rl-main">
+                  <div class="rl-title">Maintien</div>
+                  <div class="rl-desc">Garder ta forme actuelle</div>
+                </div>
+                <div class="rl-check"></div>
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 16px;">
+              <button class="btn btn-outline">Annuler</button>
+              <button class="btn btn-primary">Enregistrer</button>
+            </div>
+          </div>
+        </div>
+      </div></div>
+      <div class="mockup-caption">Edit Objectif — Dark</div>
+    </div>
+
+    <div class="compare-col">
+      <div class="mode-tag light">Light mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen light">
+          <div class="vignette"></div>
+          <div class="corner-kanji">錬</div>
+          <div class="status-bar"><span>21:12</span><span>●●●●</span></div>
+          <div class="content" style="filter: blur(1px); opacity: 0.3;">
+            <div class="screen-header"><div class="title">Profil</div></div>
+          </div>
+
+          <div class="modal-backdrop"></div>
+
+          <div class="bottom-sheet">
+            <div class="bottom-sheet-handle"></div>
+            <div class="bottom-sheet-title">Objectif</div>
+
+            <div class="radio-list">
+              <div class="radio-item selected">
+                <div class="rl-main">
+                  <div class="rl-title">Muscle</div>
+                  <div class="rl-desc">Hypertrophie, prise de masse</div>
+                </div>
+                <div class="rl-check">✓</div>
+              </div>
+              <div class="radio-item">
+                <div class="rl-main">
+                  <div class="rl-title">Force</div>
+                  <div class="rl-desc">Charges lourdes, powerlifting</div>
+                </div>
+                <div class="rl-check"></div>
+              </div>
+              <div class="radio-item">
+                <div class="rl-main">
+                  <div class="rl-title">Perte de gras</div>
+                  <div class="rl-desc">Sèche, recomposition corporelle</div>
+                </div>
+                <div class="rl-check"></div>
+              </div>
+              <div class="radio-item">
+                <div class="rl-main">
+                  <div class="rl-title">Maintien</div>
+                  <div class="rl-desc">Garder ta forme actuelle</div>
+                </div>
+                <div class="rl-check"></div>
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 16px;">
+              <button class="btn btn-outline">Annuler</button>
+              <button class="btn btn-primary">Enregistrer</button>
+            </div>
+          </div>
+        </div>
+      </div></div>
+      <div class="mockup-caption">Edit Objectif — Light</div>
+    </div>
+  </div>
+
+  <!-- ========== 2e. EDIT SÉANCES PAR SEMAINE ========== -->
+  <div class="label-middle">2e · Edit Séances par semaine — stepper avec range</div>
+  <div class="compare-row">
+
+    <div class="compare-col">
+      <div class="mode-tag dark">Dark mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen dark">
+          <div class="vignette"></div>
+          <div class="corner-kanji">錬</div>
+          <div class="status-bar"><span>21:12</span><span>●●●●</span></div>
+          <div class="content" style="filter: blur(1px); opacity: 0.3;">
+            <div class="screen-header"><div class="title">Profil</div></div>
+          </div>
+
+          <div class="modal-backdrop"></div>
+
+          <div class="bottom-sheet">
+            <div class="bottom-sheet-handle"></div>
+            <div class="bottom-sheet-title">Séances par semaine</div>
+
+            <div class="stepper">
+              <button class="stepper-btn">−</button>
+              <div class="stepper-value">4<span class="stepper-unit">/ sem.</span></div>
+              <button class="stepper-btn">+</button>
+            </div>
+            <div style="font-size: 11px; color: var(--text-mute); letter-spacing: 0.1em; text-align: center; margin-bottom: 12px;">De 2 à 7 séances par semaine.</div>
+
+            <div style="padding: 10px 12px; border: 1px dashed var(--accent); margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+              <div style="font-family: 'Noto Serif JP', serif; font-weight: 900; font-size: 18px; color: var(--accent);">鍛</div>
+              <div style="flex: 1;">
+                <div style="font-weight: 700; font-size: 10px; letter-spacing: 0.2em; color: var(--accent); text-transform: uppercase; margin-bottom: 2px;">4 séances/sem</div>
+                <div style="font-size: 11px; color: var(--text-dim);">Idéal pour l'hypertrophie en split Push/Pull/Legs/Upper.</div>
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+              <button class="btn btn-outline">Annuler</button>
+              <button class="btn btn-primary">Enregistrer</button>
+            </div>
+          </div>
+        </div>
+      </div></div>
+      <div class="mockup-caption">Edit Séances — Dark</div>
+    </div>
+
+    <div class="compare-col">
+      <div class="mode-tag light">Light mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen light">
+          <div class="vignette"></div>
+          <div class="corner-kanji">錬</div>
+          <div class="status-bar"><span>21:12</span><span>●●●●</span></div>
+          <div class="content" style="filter: blur(1px); opacity: 0.3;">
+            <div class="screen-header"><div class="title">Profil</div></div>
+          </div>
+
+          <div class="modal-backdrop"></div>
+
+          <div class="bottom-sheet">
+            <div class="bottom-sheet-handle"></div>
+            <div class="bottom-sheet-title">Séances par semaine</div>
+
+            <div class="stepper">
+              <button class="stepper-btn">−</button>
+              <div class="stepper-value">4<span class="stepper-unit">/ sem.</span></div>
+              <button class="stepper-btn">+</button>
+            </div>
+            <div style="font-size: 11px; color: var(--text-mute); letter-spacing: 0.1em; text-align: center; margin-bottom: 12px;">De 2 à 7 séances par semaine.</div>
+
+            <div style="padding: 10px 12px; border: 1px dashed var(--accent); margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+              <div style="font-family: 'Noto Serif JP', serif; font-weight: 900; font-size: 18px; color: var(--accent);">鍛</div>
+              <div style="flex: 1;">
+                <div style="font-weight: 700; font-size: 10px; letter-spacing: 0.2em; color: var(--accent); text-transform: uppercase; margin-bottom: 2px;">4 séances/sem</div>
+                <div style="font-size: 11px; color: var(--text-dim);">Idéal pour l'hypertrophie en split Push/Pull/Legs/Upper.</div>
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+              <button class="btn btn-outline">Annuler</button>
+              <button class="btn btn-primary">Enregistrer</button>
+            </div>
+          </div>
+        </div>
+      </div></div>
+      <div class="mockup-caption">Edit Séances — Light</div>
+    </div>
+  </div>
+
+  <div class="design-notes">
+    <h4>Structure partagée des 5 bottom-sheet modals</h4>
+    <p><strong>Header commun.</strong> Handle 40×4 gris en haut, titre 17px Black MAJUSCULE centré. Aucun bouton close en haut à droite — le tap sur le backdrop ou le swipe-down du handle ferme la modal.</p>
+    <p><strong>Contenu spécifique par modal.</strong> Input souligné (prénom), stepper (taille, séances), radio list (niveau, objectif). Le stepper des séances par semaine a un <strong>coaching tip dashed rouge</strong> qui s'adapte au nombre sélectionné — donne du contexte sur ce que ce nombre implique.</p>
+    <p><strong>Actions en bas.</strong> Deux boutons toujours : "Annuler" (outline) + "Enregistrer" (primary accent). Grille 1fr 1fr, gap 8px. Pas de bouton "Sauvegarder automatique" — validation explicite.</p>
+    <p><strong>Backdrop.</strong> Overlay sombre à 72% d'opacité en dark mode, clair à 85% en light mode. Le contenu derrière est flouté légèrement (blur 1px, opacity 0.3) pour donner la profondeur sans se perdre totalement — le user voit toujours qu'il est sur son profil.</p>
+  </div>
+</div>
+
+<!-- ===================================================== -->
+<!-- 03 — EDIT POIDS (full-screen avec chart + historique)-->
+<!-- ===================================================== -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-number">03</div>
+    <div class="section-title-block">
+      <h2>Suivi du poids (full-screen)</h2>
+      <p>Le poids est traité différemment des autres mesures — c'est une <strong style="color:#fff">variable trackée dans le temps</strong>, pas un simple champ. Cet écran full-screen affiche l'historique en chart, permet d'ajouter une nouvelle pesée, et liste toutes les entrées passées.</p>
+    </div>
+  </div>
+
+  <div class="compare-row">
+
+    <!-- DARK -->
+    <div class="compare-col">
+      <div class="mode-tag dark">Dark mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen dark">
+          <div class="vignette"></div>
+          <div class="corner-kanji">錬</div>
+          <div class="status-bar"><span>21:14</span><span>●●●●</span></div>
+          <div class="content">
+
+            <div class="screen-header">
+              <div class="back">‹ Retour</div>
+              <div class="title">Poids</div>
+              <div class="right">+ Ajouter</div>
+            </div>
+
+            <div class="weight-big">
+              <div class="v">82,4<span class="u">kg</span></div>
+              <div class="meta">Pesée hier · 7h12</div>
+            </div>
+
+            <div class="period-tabs">
+              <div class="period-tab">7 jours</div>
+              <div class="period-tab active">30 jours</div>
+              <div class="period-tab">3 mois</div>
+              <div class="period-tab">1 an</div>
+            </div>
+
+            <div class="chart-full">
+              <svg viewBox="0 0 300 120" preserveAspectRatio="none">
+                <!-- Grid lines -->
+                <line x1="0" y1="30" x2="300" y2="30" stroke="#222" stroke-width="0.5" stroke-dasharray="2,2"/>
+                <line x1="0" y1="60" x2="300" y2="60" stroke="#222" stroke-width="0.5" stroke-dasharray="2,2"/>
+                <line x1="0" y1="90" x2="300" y2="90" stroke="#222" stroke-width="0.5" stroke-dasharray="2,2"/>
+
+                <!-- Area -->
+                <path d="M0,15 L20,18 L40,12 L60,22 L80,28 L100,32 L120,28 L140,38 L160,42 L180,48 L200,52 L220,58 L240,68 L260,72 L280,80 L300,90 L300,120 L0,120 Z"
+                      fill="rgba(255, 45, 63, 0.1)"/>
+
+                <!-- Line -->
+                <polyline
+                  points="0,15 20,18 40,12 60,22 80,28 100,32 120,28 140,38 160,42 180,48 200,52 220,58 240,68 260,72 280,80 300,90"
+                  fill="none"
+                  stroke="#FF2D3F"
+                  stroke-width="1.8"
+                />
+
+                <!-- Last point -->
+                <circle cx="300" cy="90" r="4" fill="#FF2D3F"/>
+                <circle cx="300" cy="90" r="6" fill="none" stroke="#FF2D3F" stroke-width="1" opacity="0.4"/>
+
+                <!-- Y-axis labels -->
+                <text x="2" y="14" font-family="JetBrains Mono" font-size="8" fill="#666">85,0</text>
+                <text x="2" y="44" font-family="JetBrains Mono" font-size="8" fill="#666">83,5</text>
+                <text x="2" y="74" font-family="JetBrains Mono" font-size="8" fill="#666">82,0</text>
+              </svg>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; padding: 0 0 14px; border-bottom: 1px solid var(--border); margin-bottom: 10px;">
+              <div>
+                <div style="font-weight: 700; font-size: 9px; letter-spacing: 0.2em; color: var(--text-mute); text-transform: uppercase;">Min</div>
+                <div style="font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 14px; color: var(--green);">82,4 kg</div>
+              </div>
+              <div style="text-align: center;">
+                <div style="font-weight: 700; font-size: 9px; letter-spacing: 0.2em; color: var(--text-mute); text-transform: uppercase;">Moy.</div>
+                <div style="font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 14px;">83,2 kg</div>
+              </div>
+              <div style="text-align: right;">
+                <div style="font-weight: 700; font-size: 9px; letter-spacing: 0.2em; color: var(--text-mute); text-transform: uppercase;">Max</div>
+                <div style="font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 14px; color: var(--amber);">84,1 kg</div>
+              </div>
+            </div>
+
+            <div class="sec-label">Historique</div>
+
+            <div class="weight-entry">
+              <div class="date">Hier · 7h12</div>
+              <div class="val">
+                <div class="w">82,4<span class="u">kg</span></div>
+                <div class="delta down">−0,3</div>
+              </div>
+            </div>
+            <div class="weight-entry">
+              <div class="date">Sam 19 avr · 7h05</div>
+              <div class="val">
+                <div class="w">82,7<span class="u">kg</span></div>
+                <div class="delta down">−0,4</div>
+              </div>
+            </div>
+            <div class="weight-entry">
+              <div class="date">Ven 18 avr · 7h08</div>
+              <div class="val">
+                <div class="w">83,1<span class="u">kg</span></div>
+                <div class="delta down">−0,2</div>
+              </div>
+            </div>
+            <div class="weight-entry">
+              <div class="date">Jeu 17 avr · 7h15</div>
+              <div class="val">
+                <div class="w">83,3<span class="u">kg</span></div>
+                <div class="delta flat">=</div>
+              </div>
+            </div>
+            <div class="weight-entry">
+              <div class="date">Mer 16 avr · 7h10</div>
+              <div class="val">
+                <div class="w">83,3<span class="u">kg</span></div>
+                <div class="delta up">+0,2</div>
+              </div>
+            </div>
+            <div class="weight-entry">
+              <div class="date">Mar 15 avr · 7h00</div>
+              <div class="val">
+                <div class="w">83,1<span class="u">kg</span></div>
+                <div class="delta down">−0,4</div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div></div>
+      <div class="mockup-caption">Edit Poids — Dark</div>
+    </div>
+
+    <!-- LIGHT -->
+    <div class="compare-col">
+      <div class="mode-tag light">Light mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen light">
+          <div class="vignette"></div>
+          <div class="corner-kanji">錬</div>
+          <div class="status-bar"><span>21:14</span><span>●●●●</span></div>
+          <div class="content">
+
+            <div class="screen-header">
+              <div class="back">‹ Retour</div>
+              <div class="title">Poids</div>
+              <div class="right">+ Ajouter</div>
+            </div>
+
+            <div class="weight-big">
+              <div class="v">82,4<span class="u">kg</span></div>
+              <div class="meta">Pesée hier · 7h12</div>
+            </div>
+
+            <div class="period-tabs">
+              <div class="period-tab">7 jours</div>
+              <div class="period-tab active">30 jours</div>
+              <div class="period-tab">3 mois</div>
+              <div class="period-tab">1 an</div>
+            </div>
+
+            <div class="chart-full">
+              <svg viewBox="0 0 300 120" preserveAspectRatio="none">
+                <line x1="0" y1="30" x2="300" y2="30" stroke="#E5E5E5" stroke-width="0.5" stroke-dasharray="2,2"/>
+                <line x1="0" y1="60" x2="300" y2="60" stroke="#E5E5E5" stroke-width="0.5" stroke-dasharray="2,2"/>
+                <line x1="0" y1="90" x2="300" y2="90" stroke="#E5E5E5" stroke-width="0.5" stroke-dasharray="2,2"/>
+
+                <path d="M0,15 L20,18 L40,12 L60,22 L80,28 L100,32 L120,28 L140,38 L160,42 L180,48 L200,52 L220,58 L240,68 L260,72 L280,80 L300,90 L300,120 L0,120 Z"
+                      fill="rgba(232, 25, 44, 0.08)"/>
+
+                <polyline
+                  points="0,15 20,18 40,12 60,22 80,28 100,32 120,28 140,38 160,42 180,48 200,52 220,58 240,68 260,72 280,80 300,90"
+                  fill="none"
+                  stroke="#E8192C"
+                  stroke-width="1.8"
+                />
+
+                <circle cx="300" cy="90" r="4" fill="#E8192C"/>
+                <circle cx="300" cy="90" r="6" fill="none" stroke="#E8192C" stroke-width="1" opacity="0.4"/>
+
+                <text x="2" y="14" font-family="JetBrains Mono" font-size="8" fill="#888">85,0</text>
+                <text x="2" y="44" font-family="JetBrains Mono" font-size="8" fill="#888">83,5</text>
+                <text x="2" y="74" font-family="JetBrains Mono" font-size="8" fill="#888">82,0</text>
+              </svg>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; padding: 0 0 14px; border-bottom: 1px solid var(--border); margin-bottom: 10px;">
+              <div>
+                <div style="font-weight: 700; font-size: 9px; letter-spacing: 0.2em; color: var(--text-mute); text-transform: uppercase;">Min</div>
+                <div style="font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 14px; color: var(--green);">82,4 kg</div>
+              </div>
+              <div style="text-align: center;">
+                <div style="font-weight: 700; font-size: 9px; letter-spacing: 0.2em; color: var(--text-mute); text-transform: uppercase;">Moy.</div>
+                <div style="font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 14px;">83,2 kg</div>
+              </div>
+              <div style="text-align: right;">
+                <div style="font-weight: 700; font-size: 9px; letter-spacing: 0.2em; color: var(--text-mute); text-transform: uppercase;">Max</div>
+                <div style="font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 14px; color: var(--amber);">84,1 kg</div>
+              </div>
+            </div>
+
+            <div class="sec-label">Historique</div>
+
+            <div class="weight-entry">
+              <div class="date">Hier · 7h12</div>
+              <div class="val">
+                <div class="w">82,4<span class="u">kg</span></div>
+                <div class="delta down">−0,3</div>
+              </div>
+            </div>
+            <div class="weight-entry">
+              <div class="date">Sam 19 avr · 7h05</div>
+              <div class="val">
+                <div class="w">82,7<span class="u">kg</span></div>
+                <div class="delta down">−0,4</div>
+              </div>
+            </div>
+            <div class="weight-entry">
+              <div class="date">Ven 18 avr · 7h08</div>
+              <div class="val">
+                <div class="w">83,1<span class="u">kg</span></div>
+                <div class="delta down">−0,2</div>
+              </div>
+            </div>
+            <div class="weight-entry">
+              <div class="date">Jeu 17 avr · 7h15</div>
+              <div class="val">
+                <div class="w">83,3<span class="u">kg</span></div>
+                <div class="delta flat">=</div>
+              </div>
+            </div>
+            <div class="weight-entry">
+              <div class="date">Mer 16 avr · 7h10</div>
+              <div class="val">
+                <div class="w">83,3<span class="u">kg</span></div>
+                <div class="delta up">+0,2</div>
+              </div>
+            </div>
+            <div class="weight-entry">
+              <div class="date">Mar 15 avr · 7h00</div>
+              <div class="val">
+                <div class="w">83,1<span class="u">kg</span></div>
+                <div class="delta down">−0,4</div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div></div>
+      <div class="mockup-caption">Edit Poids — Light</div>
+    </div>
+  </div>
+
+  <!-- Add weight bottom sheet -->
+  <div class="label-middle">3b · Ajouter une pesée — bottom sheet (depuis le bouton "+ Ajouter")</div>
+
+  <div class="compare-row">
+
+    <div class="compare-col">
+      <div class="mode-tag dark">Dark mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen dark">
+          <div class="vignette"></div>
+          <div class="corner-kanji">錬</div>
+          <div class="status-bar"><span>21:15</span><span>●●●●</span></div>
+          <div class="content" style="filter: blur(1px); opacity: 0.3;">
+            <div class="screen-header">
+              <div class="back">‹ Retour</div>
+              <div class="title">Poids</div>
+              <div class="right">+ Ajouter</div>
+            </div>
+          </div>
+
+          <div class="modal-backdrop"></div>
+
+          <div class="bottom-sheet">
+            <div class="bottom-sheet-handle"></div>
+            <div class="bottom-sheet-title">Nouvelle pesée</div>
+
+            <div class="stepper">
+              <button class="stepper-btn">−</button>
+              <div class="stepper-value">82,3<span class="stepper-unit">kg</span></div>
+              <button class="stepper-btn">+</button>
+            </div>
+            <div style="font-size: 11px; color: var(--text-mute); letter-spacing: 0.1em; text-align: center; margin-bottom: 14px;">Par pas de 0,1 kg</div>
+
+            <div class="quick-set">
+              <button class="quick-set-btn">−1 kg</button>
+              <button class="quick-set-btn">−0,5 kg</button>
+              <button class="quick-set-btn">−0,1 kg</button>
+            </div>
+            <div class="quick-set">
+              <button class="quick-set-btn">+0,1 kg</button>
+              <button class="quick-set-btn">+0,5 kg</button>
+              <button class="quick-set-btn">+1 kg</button>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; padding: 12px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); margin-top: 12px;">
+              <div style="font-weight: 500; font-size: 12px; color: var(--text-mute); letter-spacing: 0.04em;">Date & heure</div>
+              <div style="font-weight: 700; font-size: 12px;">Aujourd'hui · 7h05 ›</div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 16px;">
+              <button class="btn btn-outline">Annuler</button>
+              <button class="btn btn-primary">Enregistrer</button>
+            </div>
+          </div>
+        </div>
+      </div></div>
+      <div class="mockup-caption">Ajouter pesée — Dark</div>
+    </div>
+
+    <div class="compare-col">
+      <div class="mode-tag light">Light mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen light">
+          <div class="vignette"></div>
+          <div class="corner-kanji">錬</div>
+          <div class="status-bar"><span>21:15</span><span>●●●●</span></div>
+          <div class="content" style="filter: blur(1px); opacity: 0.3;">
+            <div class="screen-header">
+              <div class="back">‹ Retour</div>
+              <div class="title">Poids</div>
+              <div class="right">+ Ajouter</div>
+            </div>
+          </div>
+
+          <div class="modal-backdrop"></div>
+
+          <div class="bottom-sheet">
+            <div class="bottom-sheet-handle"></div>
+            <div class="bottom-sheet-title">Nouvelle pesée</div>
+
+            <div class="stepper">
+              <button class="stepper-btn">−</button>
+              <div class="stepper-value">82,3<span class="stepper-unit">kg</span></div>
+              <button class="stepper-btn">+</button>
+            </div>
+            <div style="font-size: 11px; color: var(--text-mute); letter-spacing: 0.1em; text-align: center; margin-bottom: 14px;">Par pas de 0,1 kg</div>
+
+            <div class="quick-set">
+              <button class="quick-set-btn">−1 kg</button>
+              <button class="quick-set-btn">−0,5 kg</button>
+              <button class="quick-set-btn">−0,1 kg</button>
+            </div>
+            <div class="quick-set">
+              <button class="quick-set-btn">+0,1 kg</button>
+              <button class="quick-set-btn">+0,5 kg</button>
+              <button class="quick-set-btn">+1 kg</button>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; padding: 12px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); margin-top: 12px;">
+              <div style="font-weight: 500; font-size: 12px; color: var(--text-mute); letter-spacing: 0.04em;">Date & heure</div>
+              <div style="font-weight: 700; font-size: 12px;">Aujourd'hui · 7h05 ›</div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 16px;">
+              <button class="btn btn-outline">Annuler</button>
+              <button class="btn btn-primary">Enregistrer</button>
+            </div>
+          </div>
+        </div>
+      </div></div>
+      <div class="mockup-caption">Ajouter pesée — Light</div>
+    </div>
+  </div>
+
+  <div class="design-notes">
+    <h4>Pourquoi le poids a son propre écran</h4>
+    <p><strong>Le poids n'est pas une mesure statique.</strong> Contrairement à la taille (1 fois par an au max), le user pèse souvent (1×/jour pour les sérieux, 1×/sem pour les autres). Donc on traite ça comme un journal de mesures, pas comme un champ de profil.</p>
+    <p><strong>Hero avec poids actuel + meta.</strong> Le poids le plus récent en très grand (56px JetBrains Mono), avec la date/heure en dessous. Le user a son info principale en 0,3 sec.</p>
+    <p><strong>Period tabs + chart SVG.</strong> 4 périodes (7j / 30j / 3m / 1an) qui adaptent le chart. Chart en line + area fill rouge à 8% opacity. Dernier point mis en valeur (cercle rouge plein + halo). Grid lines en pointillés pour repère, labels Y axis en JetBrains Mono.</p>
+    <p><strong>Min/Moy/Max.</strong> Stats agrégées sur la période sélectionnée. Min en vert (objectif quand on cut), Max en ambre. Moyenne en couleur neutre.</p>
+    <p><strong>Historique en liste.</strong> Toutes les pesées avec date, heure, valeur en JetBrains Mono, et delta vs entrée précédente coloré (vert=down, ambre=up, neutre=flat).</p>
+    <p><strong>Bouton "+ Ajouter" en top-right.</strong> Ouvre le bottom-sheet de saisie. Stepper principal + quick-set buttons (−1 / −0,5 / −0,1 / +0,1 / +0,5 / +1) pour ajustement rapide. Pré-rempli avec la dernière pesée pour faciliter (le poids change peu entre 2 pesées).</p>
+  </div>
+</div>
+
+<!-- ===================================================== -->
+<!-- 04 — SANTÉ & SYNC (full-screen)                      -->
+<!-- ===================================================== -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-number">04</div>
+    <div class="section-title-block">
+      <h2>Santé & sync (full-screen)</h2>
+      <p>Permet de connecter Apple Santé (iOS) ou Google Health Connect (Android) et de gérer ce qui est synchronisé dans les deux sens. Granular control par type de donnée.</p>
+    </div>
+  </div>
+
+  <div class="compare-row">
+
+    <!-- DARK -->
+    <div class="compare-col">
+      <div class="mode-tag dark">Dark mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen dark">
+          <div class="vignette"></div>
+          <div class="corner-kanji">錬</div>
+          <div class="status-bar"><span>21:18</span><span>●●●●</span></div>
+          <div class="content">
+
+            <div class="screen-header">
+              <div class="back">‹ Retour</div>
+              <div class="title">Santé & sync</div>
+              <div class="right"></div>
+            </div>
+
+            <div class="health-hero">
+              <div class="health-status connected">Connecté</div>
+              <div class="k">鍛 錬</div>
+              <div class="t">Apple Santé</div>
+              <div class="d">Tanren peut lire et écrire dans Apple Santé pour partager ton activité avec tes autres apps.</div>
+            </div>
+
+            <div class="sec-label">Lecture (Tanren importe)</div>
+
+            <div class="sync-row">
+              <div class="l">
+                Poids
+                <span class="sub">Tes pesées Apple Santé apparaissent ici</span>
+              </div>
+              <div class="toggle on"><div class="knob"></div></div>
+            </div>
+            <div class="sync-row">
+              <div class="l">
+                Pas quotidiens
+                <span class="sub">Compte ton activité hors muscu</span>
+              </div>
+              <div class="toggle on"><div class="knob"></div></div>
+            </div>
+            <div class="sync-row">
+              <div class="l">
+                Mensurations
+                <span class="sub">Taille, tour de bras, etc.</span>
+              </div>
+              <div class="toggle"><div class="knob"></div></div>
+            </div>
+
+            <div class="sec-label">Écriture (Tanren exporte)</div>
+
+            <div class="sync-row">
+              <div class="l">
+                Séances
+                <span class="sub">Apparaissent dans l'app Activité</span>
+              </div>
+              <div class="toggle on"><div class="knob"></div></div>
+            </div>
+            <div class="sync-row">
+              <div class="l">
+                Calories actives
+                <span class="sub">Estimation par exercice et durée</span>
+              </div>
+              <div class="toggle on"><div class="knob"></div></div>
+            </div>
+            <div class="sync-row">
+              <div class="l">
+                Volume soulevé
+                <span class="sub">Tonnage par séance, total cumulé</span>
+              </div>
+              <div class="toggle"><div class="knob"></div></div>
+            </div>
+
+            <div class="sec-label">Dernière sync</div>
+            <div class="row-item no-border">
+              <div class="l">Aujourd'hui · 14h32</div>
+              <div class="v"><button style="background: transparent; border: none; color: var(--accent); font-weight: 700; font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;">Sync maintenant</button></div>
+            </div>
+
+          </div>
+
+        </div>
+      </div></div>
+      <div class="mockup-caption">Santé & sync — Dark</div>
+    </div>
+
+    <!-- LIGHT -->
+    <div class="compare-col">
+      <div class="mode-tag light">Light mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen light">
+          <div class="vignette"></div>
+          <div class="corner-kanji">錬</div>
+          <div class="status-bar"><span>21:18</span><span>●●●●</span></div>
+          <div class="content">
+
+            <div class="screen-header">
+              <div class="back">‹ Retour</div>
+              <div class="title">Santé & sync</div>
+              <div class="right"></div>
+            </div>
+
+            <div class="health-hero">
+              <div class="health-status connected">Connecté</div>
+              <div class="k">鍛 錬</div>
+              <div class="t">Apple Santé</div>
+              <div class="d">Tanren peut lire et écrire dans Apple Santé pour partager ton activité avec tes autres apps.</div>
+            </div>
+
+            <div class="sec-label">Lecture (Tanren importe)</div>
+
+            <div class="sync-row">
+              <div class="l">
+                Poids
+                <span class="sub">Tes pesées Apple Santé apparaissent ici</span>
+              </div>
+              <div class="toggle on"><div class="knob"></div></div>
+            </div>
+            <div class="sync-row">
+              <div class="l">
+                Pas quotidiens
+                <span class="sub">Compte ton activité hors muscu</span>
+              </div>
+              <div class="toggle on"><div class="knob"></div></div>
+            </div>
+            <div class="sync-row">
+              <div class="l">
+                Mensurations
+                <span class="sub">Taille, tour de bras, etc.</span>
+              </div>
+              <div class="toggle"><div class="knob"></div></div>
+            </div>
+
+            <div class="sec-label">Écriture (Tanren exporte)</div>
+
+            <div class="sync-row">
+              <div class="l">
+                Séances
+                <span class="sub">Apparaissent dans l'app Activité</span>
+              </div>
+              <div class="toggle on"><div class="knob"></div></div>
+            </div>
+            <div class="sync-row">
+              <div class="l">
+                Calories actives
+                <span class="sub">Estimation par exercice et durée</span>
+              </div>
+              <div class="toggle on"><div class="knob"></div></div>
+            </div>
+            <div class="sync-row">
+              <div class="l">
+                Volume soulevé
+                <span class="sub">Tonnage par séance, total cumulé</span>
+              </div>
+              <div class="toggle"><div class="knob"></div></div>
+            </div>
+
+            <div class="sec-label">Dernière sync</div>
+            <div class="row-item no-border">
+              <div class="l">Aujourd'hui · 14h32</div>
+              <div class="v"><button style="background: transparent; border: none; color: var(--accent); font-weight: 700; font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;">Sync maintenant</button></div>
+            </div>
+
+          </div>
+
+        </div>
+      </div></div>
+      <div class="mockup-caption">Santé & sync — Light</div>
+    </div>
+  </div>
+
+  <!-- État déconnecté -->
+  <div class="label-middle">4b · État déconnecté (premier accès ou révoqué)</div>
+
+  <div class="compare-row">
+
+    <div class="compare-col">
+      <div class="mode-tag dark">Dark mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen dark">
+          <div class="vignette"></div>
+          <div class="corner-kanji">錬</div>
+          <div class="status-bar"><span>21:18</span><span>●●●●</span></div>
+          <div class="content">
+
+            <div class="screen-header">
+              <div class="back">‹ Retour</div>
+              <div class="title">Santé & sync</div>
+              <div class="right"></div>
+            </div>
+
+            <div class="health-hero" style="border-style: dashed;">
+              <div class="health-status disconnected">Non connecté</div>
+              <div class="k">鍛 錬</div>
+              <div class="t">Apple Santé</div>
+              <div class="d">Connecte Tanren à Apple Santé pour synchroniser ton poids, tes séances et tes calories actives entre toutes tes apps de santé.</div>
+            </div>
+
+            <div style="padding: 14px; border: 1px solid var(--border); margin-bottom: 14px;">
+              <div style="font-weight: 700; font-size: 10px; letter-spacing: 0.2em; color: var(--text-mute); text-transform: uppercase; margin-bottom: 10px;">Ce que Tanren peut faire avec Apple Santé</div>
+              <div style="font-size: 12px; color: var(--text-dim); line-height: 1.6;">
+                <strong style="color: var(--text);">Lire</strong> : ton poids, tes pas quotidiens, tes mensurations.<br>
+                <strong style="color: var(--text);">Écrire</strong> : tes séances de muscu, calories actives, volume soulevé.
+              </div>
+            </div>
+
+            <button class="btn btn-primary" style="margin-bottom: 8px;">Connecter Apple Santé</button>
+            <button class="btn btn-ghost">Plus tard</button>
+
+            <div style="font-size: 10px; color: var(--text-ghost); letter-spacing: 0.1em; line-height: 1.6; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border);">
+              Tu pourras choisir précisément quoi partager dans la pop-up Apple Santé. Tanren ne stocke jamais tes données sur nos serveurs sans ton consentement.
+            </div>
+
+          </div>
+
+        </div>
+      </div></div>
+      <div class="mockup-caption">Non connecté — Dark</div>
+    </div>
+
+    <div class="compare-col">
+      <div class="mode-tag light">Light mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen light">
+          <div class="vignette"></div>
+          <div class="corner-kanji">錬</div>
+          <div class="status-bar"><span>21:18</span><span>●●●●</span></div>
+          <div class="content">
+
+            <div class="screen-header">
+              <div class="back">‹ Retour</div>
+              <div class="title">Santé & sync</div>
+              <div class="right"></div>
+            </div>
+
+            <div class="health-hero" style="border-style: dashed;">
+              <div class="health-status disconnected">Non connecté</div>
+              <div class="k">鍛 錬</div>
+              <div class="t">Apple Santé</div>
+              <div class="d">Connecte Tanren à Apple Santé pour synchroniser ton poids, tes séances et tes calories actives entre toutes tes apps de santé.</div>
+            </div>
+
+            <div style="padding: 14px; border: 1px solid var(--border); margin-bottom: 14px;">
+              <div style="font-weight: 700; font-size: 10px; letter-spacing: 0.2em; color: var(--text-mute); text-transform: uppercase; margin-bottom: 10px;">Ce que Tanren peut faire avec Apple Santé</div>
+              <div style="font-size: 12px; color: var(--text-dim); line-height: 1.6;">
+                <strong style="color: var(--text);">Lire</strong> : ton poids, tes pas quotidiens, tes mensurations.<br>
+                <strong style="color: var(--text);">Écrire</strong> : tes séances de muscu, calories actives, volume soulevé.
+              </div>
+            </div>
+
+            <button class="btn btn-primary" style="margin-bottom: 8px;">Connecter Apple Santé</button>
+            <button class="btn btn-ghost">Plus tard</button>
+
+            <div style="font-size: 10px; color: var(--text-ghost); letter-spacing: 0.1em; line-height: 1.6; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border);">
+              Tu pourras choisir précisément quoi partager dans la pop-up Apple Santé. Tanren ne stocke jamais tes données sur nos serveurs sans ton consentement.
+            </div>
+
+          </div>
+
+        </div>
+      </div></div>
+      <div class="mockup-caption">Non connecté — Light</div>
+    </div>
+  </div>
+
+  <div class="design-notes">
+    <h4>Logique Santé & sync</h4>
+    <p><strong>Hero avec status badge.</strong> En haut, un bloc qui indique clairement si la connexion Apple Santé / Health Connect est active (vert "Connecté") ou non (ambre "Non connecté"). Le kanji 鍛 錬 stamp + nom du service rappelle le branding.</p>
+    <p><strong>Granular control en lecture/écriture.</strong> Sections séparées pour ce que Tanren importe (Lecture) et ce que Tanren exporte (Écriture). Chaque type de donnée a son toggle indépendant. Sub-text qui explique l'usage concret du toggle, pas du jargon technique.</p>
+    <p><strong>État non connecté.</strong> Hero en border dashed pour signaler "vide", explication détaillée de ce que Tanren peut faire (transparence sur les permissions demandées), CTA primary pour connecter + CTA ghost "Plus tard" pour différer. Mention rassurante en bas sur la non-rétention des données sur les serveurs Tanren.</p>
+    <p><strong>Différence iOS vs Android.</strong> Sur Android, le service est "Google Health Connect" au lieu d'"Apple Santé", et certains toggles diffèrent (pas de "calories actives" en écriture sur Android par ex.). L'écran s'adapte automatiquement à la plateforme.</p>
+  </div>
+</div>
+
+<!-- ===================================================== -->
+<!-- 05 — EXPORTER MES DONNÉES (full-screen)              -->
+<!-- ===================================================== -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-number">05</div>
+    <div class="section-title-block">
+      <h2>Exporter mes données (full-screen)</h2>
+      <p>Permet au user d'exporter toutes ses données dans plusieurs formats. Conforme RGPD ("portabilité des données"). Format choisi → email avec lien de téléchargement, ou partage direct depuis l'app.</p>
+    </div>
+  </div>
+
+  <div class="compare-row">
+
+    <!-- DARK -->
+    <div class="compare-col">
+      <div class="mode-tag dark">Dark mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen dark">
+          <div class="vignette"></div>
+          <div class="corner-kanji">錬</div>
+          <div class="status-bar"><span>21:22</span><span>●●●●</span></div>
+          <div class="content">
+
+            <div class="screen-header">
+              <div class="back">‹ Retour</div>
+              <div class="title">Exporter</div>
+              <div class="right"></div>
+            </div>
+
+            <div style="padding: 16px 0 14px; border-bottom: 1px solid var(--border); margin-bottom: 16px;">
+              <div style="font-family: 'Noto Serif JP', serif; font-weight: 900; font-size: 10px; color: var(--accent); letter-spacing: 0.4em; margin-bottom: 8px;">鍛 錬</div>
+              <div style="font-weight: 900; font-size: 20px; letter-spacing: 0.02em; text-transform: uppercase; line-height: 1.1; margin-bottom: 8px;">Tes données t'appartiennent</div>
+              <div style="font-size: 12px; color: var(--text-dim); line-height: 1.5;">Choisis le format qui te convient. L'export contient toutes tes séances, mesures, plans et préférences.</div>
+            </div>
+
+            <div class="sec-label">Format</div>
+
+            <div class="export-option selected">
+              <div class="eo-header">
+                <div class="eo-title">CSV</div>
+                <div class="eo-badge">Recommandé</div>
+              </div>
+              <div class="eo-desc">Tableur compatible Excel, Numbers, Google Sheets. Une feuille par catégorie (séances, mesures, plans).</div>
+              <div class="eo-size">~ 240 KB · 5 fichiers</div>
+            </div>
+
+            <div class="export-option">
+              <div class="eo-header">
+                <div class="eo-title">JSON</div>
+                <div class="eo-badge">Dev</div>
+              </div>
+              <div class="eo-desc">Format machine, idéal pour réimporter dans une autre app ou pour analyse personnalisée.</div>
+              <div class="eo-size">~ 180 KB · 1 fichier</div>
+            </div>
+
+            <div class="export-option">
+              <div class="eo-header">
+                <div class="eo-title">PDF</div>
+                <div class="eo-badge">Lecture</div>
+              </div>
+              <div class="eo-desc">Rapport mis en page, lisible humainement. Pour conserver une trace ou imprimer.</div>
+              <div class="eo-size">~ 1,2 MB · 18 pages</div>
+            </div>
+
+            <div class="sec-label">Période</div>
+            <div class="row-item">
+              <div class="l">À inclure</div>
+              <div class="v">Tout l'historique <span class="chev">›</span></div>
+            </div>
+
+            <div class="sec-label">Livraison</div>
+            <div class="row-item">
+              <div class="l">Méthode</div>
+              <div class="v">Email <span class="chev">›</span></div>
+            </div>
+            <div class="row-item no-border">
+              <div class="l">Adresse</div>
+              <div class="v">ramy@icloud.com</div>
+            </div>
+
+            <button class="btn btn-primary" style="margin-top: 20px;">Préparer l'export</button>
+            <div style="font-size: 10px; color: var(--text-ghost); letter-spacing: 0.1em; line-height: 1.6; margin-top: 12px; text-align: center;">
+              L'export sera prêt dans 1 à 5 minutes. Tu recevras un email avec un lien de téléchargement valide 24h.
+            </div>
+
+          </div>
+
+        </div>
+      </div></div>
+      <div class="mockup-caption">Exporter — Dark</div>
+    </div>
+
+    <!-- LIGHT -->
+    <div class="compare-col">
+      <div class="mode-tag light">Light mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen light">
+          <div class="vignette"></div>
+          <div class="corner-kanji">錬</div>
+          <div class="status-bar"><span>21:22</span><span>●●●●</span></div>
+          <div class="content">
+
+            <div class="screen-header">
+              <div class="back">‹ Retour</div>
+              <div class="title">Exporter</div>
+              <div class="right"></div>
+            </div>
+
+            <div style="padding: 16px 0 14px; border-bottom: 1px solid var(--border); margin-bottom: 16px;">
+              <div style="font-family: 'Noto Serif JP', serif; font-weight: 900; font-size: 10px; color: var(--accent); letter-spacing: 0.4em; margin-bottom: 8px;">鍛 錬</div>
+              <div style="font-weight: 900; font-size: 20px; letter-spacing: 0.02em; text-transform: uppercase; line-height: 1.1; margin-bottom: 8px;">Tes données t'appartiennent</div>
+              <div style="font-size: 12px; color: var(--text-dim); line-height: 1.5;">Choisis le format qui te convient. L'export contient toutes tes séances, mesures, plans et préférences.</div>
+            </div>
+
+            <div class="sec-label">Format</div>
+
+            <div class="export-option selected">
+              <div class="eo-header">
+                <div class="eo-title">CSV</div>
+                <div class="eo-badge">Recommandé</div>
+              </div>
+              <div class="eo-desc">Tableur compatible Excel, Numbers, Google Sheets. Une feuille par catégorie (séances, mesures, plans).</div>
+              <div class="eo-size">~ 240 KB · 5 fichiers</div>
+            </div>
+
+            <div class="export-option">
+              <div class="eo-header">
+                <div class="eo-title">JSON</div>
+                <div class="eo-badge">Dev</div>
+              </div>
+              <div class="eo-desc">Format machine, idéal pour réimporter dans une autre app ou pour analyse personnalisée.</div>
+              <div class="eo-size">~ 180 KB · 1 fichier</div>
+            </div>
+
+            <div class="export-option">
+              <div class="eo-header">
+                <div class="eo-title">PDF</div>
+                <div class="eo-badge">Lecture</div>
+              </div>
+              <div class="eo-desc">Rapport mis en page, lisible humainement. Pour conserver une trace ou imprimer.</div>
+              <div class="eo-size">~ 1,2 MB · 18 pages</div>
+            </div>
+
+            <div class="sec-label">Période</div>
+            <div class="row-item">
+              <div class="l">À inclure</div>
+              <div class="v">Tout l'historique <span class="chev">›</span></div>
+            </div>
+
+            <div class="sec-label">Livraison</div>
+            <div class="row-item">
+              <div class="l">Méthode</div>
+              <div class="v">Email <span class="chev">›</span></div>
+            </div>
+            <div class="row-item no-border">
+              <div class="l">Adresse</div>
+              <div class="v">ramy@icloud.com</div>
+            </div>
+
+            <button class="btn btn-primary" style="margin-top: 20px;">Préparer l'export</button>
+            <div style="font-size: 10px; color: var(--text-ghost); letter-spacing: 0.1em; line-height: 1.6; margin-top: 12px; text-align: center;">
+              L'export sera prêt dans 1 à 5 minutes. Tu recevras un email avec un lien de téléchargement valide 24h.
+            </div>
+
+          </div>
+
+        </div>
+      </div></div>
+      <div class="mockup-caption">Exporter — Light</div>
+    </div>
+  </div>
+
+  <div class="design-notes">
+    <h4>Logique Export</h4>
+    <p><strong>Hero RGPD-friendly.</strong> Kanji 鍛 錬 + titre fort "Tes données t'appartiennent" + explication courte. Posture transparente sur la portabilité, pas un texte légal froid.</p>
+    <p><strong>3 formats avec radio sélection.</strong> CSV (recommandé, badge accent), JSON (dev, badge gris), PDF (lecture humaine, badge gris). Chaque option : titre + badge + description du cas d'usage + size estimée. Le selected a la border accent + bg teinté.</p>
+    <p><strong>Période et Livraison.</strong> Sections rows pour choisir la portée temporelle et le canal (email, partage iOS/Android natif, AirDrop si iOS). Email par défaut = adresse du provider de connexion.</p>
+    <p><strong>Disclaimer en bas.</strong> Information factuelle sur le délai de génération (1-5 min) et la durée de validité du lien (24h). Pas de sales pitch, juste l'info.</p>
+  </div>
+</div>
+
+<!-- ===================================================== -->
+<!-- 06 — LOGOUT CONFIRMATION MODAL                       -->
+<!-- ===================================================== -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-number">06</div>
+    <div class="section-title-block">
+      <h2>Confirmation déconnexion</h2>
+      <p>Petit modal de confirmation centré (pas un bottom-sheet) car action légère et réversible. Différent du modal "Supprimer mon compte" qui est full-screen et destructif (déjà mockup dans Lot 4).</p>
+    </div>
+  </div>
+
+  <div class="compare-row">
+
+    <div class="compare-col">
+      <div class="mode-tag dark">Dark mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen dark">
+          <div class="vignette"></div>
+          <div class="corner-kanji">錬</div>
+          <div class="status-bar"><span>21:25</span><span>●●●●</span></div>
+          <div class="content" style="filter: blur(1px); opacity: 0.3;">
+            <div class="screen-header"><div class="title">Profil</div></div>
+            <div class="profile-header-new">
+              <div class="profile-avatar">R</div>
+              <div class="profile-info">
+                <div class="name">Ramy</div>
+                <div class="email">ramy@icloud.com</div>
+                <div class="provider">Connecté via Apple</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-backdrop"></div>
+
+          <div class="confirm-modal">
+            <div class="k">鍛 錬</div>
+            <div class="t">Se déconnecter ?</div>
+            <div class="d">Tes données restent stockées sur cet appareil et synchronisées sur le cloud. Tu pourras te reconnecter plus tard avec le même compte Apple.</div>
+
+            <div class="actions">
+              <button class="btn btn-outline">Annuler</button>
+              <button class="btn btn-danger">Déconnecter</button>
+            </div>
+          </div>
+        </div>
+      </div></div>
+      <div class="mockup-caption">Logout confirm — Dark</div>
+    </div>
+
+    <div class="compare-col">
+      <div class="mode-tag light">Light mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen light">
+          <div class="vignette"></div>
+          <div class="corner-kanji">錬</div>
+          <div class="status-bar"><span>21:25</span><span>●●●●</span></div>
+          <div class="content" style="filter: blur(1px); opacity: 0.3;">
+            <div class="screen-header"><div class="title">Profil</div></div>
+            <div class="profile-header-new">
+              <div class="profile-avatar">R</div>
+              <div class="profile-info">
+                <div class="name">Ramy</div>
+                <div class="email">ramy@icloud.com</div>
+                <div class="provider">Connecté via Apple</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-backdrop"></div>
+
+          <div class="confirm-modal">
+            <div class="k">鍛 錬</div>
+            <div class="t">Se déconnecter ?</div>
+            <div class="d">Tes données restent stockées sur cet appareil et synchronisées sur le cloud. Tu pourras te reconnecter plus tard avec le même compte Apple.</div>
+
+            <div class="actions">
+              <button class="btn btn-outline">Annuler</button>
+              <button class="btn btn-danger">Déconnecter</button>
+            </div>
+          </div>
+        </div>
+      </div></div>
+      <div class="mockup-caption">Logout confirm — Light</div>
+    </div>
+  </div>
+
+  <div class="design-notes">
+    <h4>Pourquoi un modal centré et pas un bottom-sheet</h4>
+    <p><strong>Le bottom-sheet est pour les actions rapides répétées</strong> (edit prénom, taille, niveau). La déconnexion est une action <strong>occasionnelle qui demande de l'attention</strong>. Un modal centré qui occupe l'écran "force" l'utilisateur à lire et confirmer.</p>
+    <p><strong>Pas trop dramatique.</strong> Le modal de logout reste petit (pas full-screen comme la suppression de compte). La copy est rassurante : "Tes données restent stockées" + "Tu pourras te reconnecter". On évite le ton qui dit "es-tu SÛR ?" — c'est un user adulte, il sait ce qu'il fait.</p>
+    <p><strong>Bouton danger rouge.</strong> "Déconnecter" en btn-danger (rouge plein) parce que c'est une action qui sort le user de son flow. Pas un primary outline timide. Mais pas un titre dramatique non plus — juste clarté visuelle.</p>
+    <p><strong>Stamp 鍛 錬</strong> en haut comme signature — rappelle que même la déconnexion fait partie de l'identité Tanren cohérente, pas un dialog système générique.</p>
+  </div>
+</div>
+
+<!-- ===== INDEX VISUEL DE TOUS LES ÉCRANS DOCUMENTÉS ===== -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-number">📑</div>
+    <div class="section-title-block">
+      <h2>Récap des écrans Profile</h2>
+      <p>Vue d'ensemble de tous les écrans accessibles depuis le Profile tab (cette doc + ceux déjà existants dans les Lots précédents).</p>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; max-width: 1200px; margin: 0 auto;">
+
+    <div style="border: 1px solid #2a2a2a; padding: 16px; background: rgba(255,255,255,0.02);">
+      <div style="font-weight: 700; font-size: 9px; letter-spacing: 0.2em; color: #FF2D3F; text-transform: uppercase; margin-bottom: 8px;">Cette doc · Section 01</div>
+      <div style="font-weight: 900; font-size: 14px; text-transform: uppercase; margin-bottom: 4px;">Profile Landing</div>
+      <div style="font-size: 11px; color: #888; line-height: 1.5;">Avatar, stats, streak, body evolution, 4 sections de rows.</div>
+    </div>
+
+    <div style="border: 1px solid #2a2a2a; padding: 16px; background: rgba(255,255,255,0.02);">
+      <div style="font-weight: 700; font-size: 9px; letter-spacing: 0.2em; color: #FF2D3F; text-transform: uppercase; margin-bottom: 8px;">Cette doc · Section 02a</div>
+      <div style="font-weight: 900; font-size: 14px; text-transform: uppercase; margin-bottom: 4px;">Edit Prénom</div>
+      <div style="font-size: 11px; color: #888; line-height: 1.5;">Bottom-sheet · Input texte + actions.</div>
+    </div>
+
+    <div style="border: 1px solid #2a2a2a; padding: 16px; background: rgba(255,255,255,0.02);">
+      <div style="font-weight: 700; font-size: 9px; letter-spacing: 0.2em; color: #FF2D3F; text-transform: uppercase; margin-bottom: 8px;">Cette doc · Section 02b</div>
+      <div style="font-weight: 900; font-size: 14px; text-transform: uppercase; margin-bottom: 4px;">Edit Taille</div>
+      <div style="font-size: 11px; color: #888; line-height: 1.5;">Bottom-sheet · Stepper cm.</div>
+    </div>
+
+    <div style="border: 1px solid #2a2a2a; padding: 16px; background: rgba(255,255,255,0.02);">
+      <div style="font-weight: 700; font-size: 9px; letter-spacing: 0.2em; color: #FF2D3F; text-transform: uppercase; margin-bottom: 8px;">Cette doc · Section 02c</div>
+      <div style="font-weight: 900; font-size: 14px; text-transform: uppercase; margin-bottom: 4px;">Edit Niveau</div>
+      <div style="font-size: 11px; color: #888; line-height: 1.5;">Bottom-sheet · Radio Déb/Inter/Avancé.</div>
+    </div>
+
+    <div style="border: 1px solid #2a2a2a; padding: 16px; background: rgba(255,255,255,0.02);">
+      <div style="font-weight: 700; font-size: 9px; letter-spacing: 0.2em; color: #FF2D3F; text-transform: uppercase; margin-bottom: 8px;">Cette doc · Section 02d</div>
+      <div style="font-weight: 900; font-size: 14px; text-transform: uppercase; margin-bottom: 4px;">Edit Objectif</div>
+      <div style="font-size: 11px; color: #888; line-height: 1.5;">Bottom-sheet · Radio Muscle/Force/Perte/Maintien.</div>
+    </div>
+
+    <div style="border: 1px solid #2a2a2a; padding: 16px; background: rgba(255,255,255,0.02);">
+      <div style="font-weight: 700; font-size: 9px; letter-spacing: 0.2em; color: #FF2D3F; text-transform: uppercase; margin-bottom: 8px;">Cette doc · Section 02e</div>
+      <div style="font-weight: 900; font-size: 14px; text-transform: uppercase; margin-bottom: 4px;">Edit Séances/sem.</div>
+      <div style="font-size: 11px; color: #888; line-height: 1.5;">Bottom-sheet · Stepper avec coaching tip.</div>
+    </div>
+
+    <div style="border: 1px solid #2a2a2a; padding: 16px; background: rgba(255,255,255,0.02);">
+      <div style="font-weight: 700; font-size: 9px; letter-spacing: 0.2em; color: #FF2D3F; text-transform: uppercase; margin-bottom: 8px;">Cette doc · Section 03</div>
+      <div style="font-weight: 900; font-size: 14px; text-transform: uppercase; margin-bottom: 4px;">Suivi du poids</div>
+      <div style="font-size: 11px; color: #888; line-height: 1.5;">Full-screen · Hero, period tabs, chart SVG, min/moy/max, historique.</div>
+    </div>
+
+    <div style="border: 1px solid #2a2a2a; padding: 16px; background: rgba(255,255,255,0.02);">
+      <div style="font-weight: 700; font-size: 9px; letter-spacing: 0.2em; color: #FF2D3F; text-transform: uppercase; margin-bottom: 8px;">Cette doc · Section 03b</div>
+      <div style="font-weight: 900; font-size: 14px; text-transform: uppercase; margin-bottom: 4px;">Ajouter pesée</div>
+      <div style="font-size: 11px; color: #888; line-height: 1.5;">Bottom-sheet · Stepper + quick-set + date.</div>
+    </div>
+
+    <div style="border: 1px solid #2a2a2a; padding: 16px; background: rgba(255,255,255,0.02);">
+      <div style="font-weight: 700; font-size: 9px; letter-spacing: 0.2em; color: #FF2D3F; text-transform: uppercase; margin-bottom: 8px;">Cette doc · Section 04</div>
+      <div style="font-weight: 900; font-size: 14px; text-transform: uppercase; margin-bottom: 4px;">Santé & sync</div>
+      <div style="font-size: 11px; color: #888; line-height: 1.5;">Full-screen · Hero status, toggles lecture/écriture, dernière sync.</div>
+    </div>
+
+    <div style="border: 1px solid #2a2a2a; padding: 16px; background: rgba(255,255,255,0.02);">
+      <div style="font-weight: 700; font-size: 9px; letter-spacing: 0.2em; color: #FF2D3F; text-transform: uppercase; margin-bottom: 8px;">Cette doc · Section 05</div>
+      <div style="font-weight: 900; font-size: 14px; text-transform: uppercase; margin-bottom: 4px;">Exporter mes données</div>
+      <div style="font-size: 11px; color: #888; line-height: 1.5;">Full-screen · Hero RGPD, 3 formats, période, livraison.</div>
+    </div>
+
+    <div style="border: 1px solid #2a2a2a; padding: 16px; background: rgba(255,255,255,0.02);">
+      <div style="font-weight: 700; font-size: 9px; letter-spacing: 0.2em; color: #FF2D3F; text-transform: uppercase; margin-bottom: 8px;">Cette doc · Section 06</div>
+      <div style="font-weight: 900; font-size: 14px; text-transform: uppercase; margin-bottom: 4px;">Logout confirm</div>
+      <div style="font-size: 11px; color: #888; line-height: 1.5;">Modal centré · Confirmation déconnexion.</div>
+    </div>
+
+    <div style="border: 1px solid rgba(255, 45, 63, 0.4); padding: 16px; background: rgba(255, 45, 63, 0.05);">
+      <div style="font-weight: 700; font-size: 9px; letter-spacing: 0.2em; color: #FF2D3F; text-transform: uppercase; margin-bottom: 8px;">Existant · Lot 3</div>
+      <div style="font-weight: 900; font-size: 14px; text-transform: uppercase; margin-bottom: 4px;">Rappels</div>
+      <div style="font-size: 11px; color: #888; line-height: 1.5;">Full-screen · Toggles + time pickers déjà mockup.</div>
+    </div>
+
+    <div style="border: 1px solid rgba(255, 45, 63, 0.4); padding: 16px; background: rgba(255, 45, 63, 0.05);">
+      <div style="font-weight: 700; font-size: 9px; letter-spacing: 0.2em; color: #FF2D3F; text-transform: uppercase; margin-bottom: 8px;">Existant · Lot 4</div>
+      <div style="font-weight: 900; font-size: 14px; text-transform: uppercase; margin-bottom: 4px;">Explorer Tanren</div>
+      <div style="font-size: 11px; color: #888; line-height: 1.5;">Full-screen · FeatureCards new/tried déjà mockup.</div>
+    </div>
+
+    <div style="border: 1px solid rgba(255, 45, 63, 0.4); padding: 16px; background: rgba(255, 45, 63, 0.05);">
+      <div style="font-weight: 700; font-size: 9px; letter-spacing: 0.2em; color: #FF2D3F; text-transform: uppercase; margin-bottom: 8px;">Existant · Lot 4</div>
+      <div style="font-weight: 900; font-size: 14px; text-transform: uppercase; margin-bottom: 4px;">Politique de confidentialité</div>
+      <div style="font-size: 11px; color: #888; line-height: 1.5;">Full-screen · Sections numérotées 01-03 déjà mockup.</div>
+    </div>
+
+    <div style="border: 1px solid rgba(255, 45, 63, 0.4); padding: 16px; background: rgba(255, 45, 63, 0.05);">
+      <div style="font-weight: 700; font-size: 9px; letter-spacing: 0.2em; color: #FF2D3F; text-transform: uppercase; margin-bottom: 8px;">Existant · Lot 4</div>
+      <div style="font-weight: 900; font-size: 14px; text-transform: uppercase; margin-bottom: 4px;">Supprimer mon compte</div>
+      <div style="font-size: 11px; color: #888; line-height: 1.5;">Full-screen · Warning destructif déjà mockup.</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== FOOTER ===== -->
+<div style="max-width: 900px; margin: 80px auto 40px; text-align: center; padding-top: 40px; border-top: 1px solid #2a2a2a;">
+  <div style="font-family: 'Noto Serif JP', serif; font-weight: 900; font-size: 24px; color: #FF2D3F; letter-spacing: 0.4em; margin-bottom: 8px;">鍛 錬</div>
+  <div style="font-weight: 900; font-size: 20px; letter-spacing: 0.16em; margin-bottom: 4px;">TANREN</div>
+  <div style="font-style: italic; color: #FF2D3F; font-size: 14px; margin-bottom: 12px;">Une rep après l'autre.</div>
+  <div style="font-size: 11px; color: #888; letter-spacing: 0.2em;">PROFILE REDESIGN + 10 SCREENS · DARK + LIGHT · 2026</div>
+</div>
+
+</body>
+</html>

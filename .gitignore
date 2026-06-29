@@ -16,3 +16,6 @@ android/
 tanren-f202fb97b00c.json
 .idea/
 packages/shared/dist/
+/app.json
+/public/
+icon final/

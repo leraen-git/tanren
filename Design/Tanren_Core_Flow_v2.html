@@ -1,0 +1,2769 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TANREN — Core Flow Mockups v2 (Dark + Light)</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,300;0,400;0,500;0,700;0,900;1,400&family=Noto+Serif+JP:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  /* ===== GLOBAL ===== */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Barlow Condensed', sans-serif;
+    background: linear-gradient(180deg, #0f0f0f 0%, #050505 100%);
+    color: #FFFFFF;
+    min-height: 100vh;
+    padding: 60px 40px 100px;
+  }
+
+  /* Page header */
+  .page-header {
+    text-align: center;
+    margin: 0 auto 80px;
+    max-width: 900px;
+  }
+  .page-label {
+    font-weight: 500;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    color: #FF2D3F;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .page-title {
+    font-weight: 900;
+    font-size: 56px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    line-height: 1;
+  }
+  .page-desc {
+    font-weight: 400;
+    font-size: 17px;
+    color: #999;
+    max-width: 680px;
+    margin: 0 auto;
+    line-height: 1.5;
+  }
+
+  /* Section */
+  .section {
+    max-width: 1600px;
+    margin: 0 auto 100px;
+  }
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 20px;
+    margin-bottom: 40px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #2a2a2a;
+  }
+  .section-number {
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 900;
+    font-size: 64px;
+    color: #FF2D3F;
+    line-height: 0.85;
+    letter-spacing: -0.02em;
+  }
+  .section-title-block h2 {
+    font-weight: 900;
+    font-size: 32px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .section-title-block p {
+    font-weight: 400;
+    font-size: 14px;
+    color: #888;
+    max-width: 700px;
+    line-height: 1.5;
+  }
+
+  /* Comparison row */
+  .compare-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    margin-bottom: 48px;
+    align-items: flex-start;
+  }
+  .compare-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+  .mode-tag {
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border-radius: 2px;
+  }
+  .mode-tag.dark {
+    background: #000;
+    color: #FFF;
+    border: 1px solid #333;
+  }
+  .mode-tag.light {
+    background: #FFF;
+    color: #000;
+    border: 1px solid #DDD;
+  }
+  .mockup-caption {
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    text-align: center;
+    color: #FFF;
+  }
+  .mockup-note {
+    font-size: 12px;
+    color: #888;
+    max-width: 320px;
+    text-align: center;
+    line-height: 1.5;
+  }
+
+  /* Phone frame */
+  .phone-frame {
+    background: #1a1a1a;
+    border-radius: 52px;
+    padding: 12px;
+    box-shadow:
+      0 40px 80px rgba(0,0,0,0.5),
+      0 12px 24px rgba(0,0,0,0.3),
+      inset 0 0 0 1px rgba(255,255,255,0.05);
+  }
+  .phone-screen {
+    width: 340px;
+    height: 734px;
+    border-radius: 40px;
+    overflow: hidden;
+    position: relative;
+  }
+  .phone-notch {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 28px;
+    background: #000;
+    border-radius: 16px;
+    z-index: 100;
+  }
+
+  /* Status bar */
+  .status-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 44px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 24px 0;
+    z-index: 50;
+    font-family: -apple-system, sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  /* ===== SCREEN — DARK THEME VARS ===== */
+  .dark {
+    --bg: #000000;
+    --text: #FFFFFF;
+    --text-dim: #aaaaaa;
+    --text-mute: #888888;
+    --text-ghost: #555555;
+    --accent: #FF2D3F;
+    --border: #222222;
+    --border-strong: #333333;
+    --surface-1: #0A0A0A;
+    --surface-2: #141414;
+    --vignette: radial-gradient(ellipse at top, rgba(255,45,63,0.04) 0%, transparent 60%);
+    --kanji-opacity: 0.04;
+    --ghost-bg: rgba(255,255,255,0.03);
+    --green: #2BAE43;
+    --amber: #E8A900;
+  }
+
+  /* ===== SCREEN — LIGHT THEME VARS ===== */
+  .light {
+    --bg: #FFFFFF;
+    --text: #000000;
+    --text-dim: #555555;
+    --text-mute: #888888;
+    --text-ghost: #BBBBBB;
+    --accent: #E8192C;
+    --border: #E5E5E5;
+    --border-strong: #CCCCCC;
+    --surface-1: #FAFAFA;
+    --surface-2: #F3F3F3;
+    --vignette: radial-gradient(ellipse at top, rgba(232,25,44,0.03) 0%, transparent 60%);
+    --kanji-opacity: 0.05;
+    --ghost-bg: rgba(0,0,0,0.025);
+    --green: #1A7F2C;
+    --amber: #D98E00;
+  }
+
+  .screen {
+    width: 100%;
+    height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    position: relative;
+    overflow: hidden;
+    padding-top: 54px;
+  }
+  .screen .status-bar { color: var(--text); }
+
+  .vignette {
+    position: absolute;
+    inset: 0;
+    background: var(--vignette);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .corner-kanji {
+    position: absolute;
+    top: 60px;
+    right: 20px;
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 900;
+    font-size: 48px;
+    color: var(--text);
+    opacity: var(--kanji-opacity);
+    line-height: 1;
+    letter-spacing: -0.05em;
+    z-index: 1;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .content {
+    position: relative;
+    z-index: 10;
+    padding: 0 20px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Common inputs / labels */
+  .field-label {
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    color: var(--text-mute);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border-strong);
+    padding: 12px 0;
+    color: var(--text);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 500;
+    font-size: 18px;
+    margin-bottom: 20px;
+  }
+  .input.with-value { border-bottom-color: var(--text); }
+
+  .choice-row { display: flex; gap: 8px; margin-bottom: 24px; }
+  .choice {
+    flex: 1;
+    padding: 14px 10px;
+    border: 1px solid var(--border-strong);
+    text-align: center;
+    font-weight: 500;
+    font-size: 14px;
+    color: var(--text);
+    cursor: pointer;
+    background: var(--bg);
+  }
+  .choice.selected {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #FFF;
+    font-weight: 700;
+  }
+
+  .day-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-bottom: 24px;
+  }
+  .day-dot {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 13px;
+    border: 1px solid var(--border-strong);
+  }
+  .day-dot.selected {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #FFF;
+  }
+
+  .level-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
+  .level-card {
+    padding: 14px 16px;
+    border: 1px solid var(--border-strong);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .level-card.selected {
+    background: var(--ghost-bg);
+    border-color: var(--accent);
+  }
+  .level-card h4 {
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .level-card small {
+    font-weight: 400;
+    font-size: 11px;
+    color: var(--text-mute);
+    letter-spacing: 0.02em;
+  }
+
+  .measure-row { display: flex; gap: 16px; margin-bottom: 20px; }
+  .measure-field { flex: 1; }
+  .measure-field .input { margin-bottom: 4px; }
+  .measure-field small { font-size: 11px; color: var(--text-mute); }
+
+  /* Buttons */
+  .btn-row {
+    margin-top: auto;
+    padding: 24px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .btn {
+    width: 100%;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: 4px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    border: none;
+  }
+  .btn-primary { background: var(--accent); color: #FFF; }
+  .btn-ghost {
+    background: transparent;
+    color: var(--text-mute);
+    height: 44px;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .btn-outline {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--text);
+  }
+
+  /* ===== ONBOARDING ===== */
+  .ob-dots { display: flex; gap: 6px; padding: 16px 0 24px; }
+  .ob-dot { flex: 1; height: 3px; background: var(--border); }
+  .ob-dot.active { background: var(--accent); }
+  .ob-dot.done { background: var(--text); opacity: 0.5; }
+  .ob-step-label {
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .ob-title {
+    font-weight: 900;
+    font-size: 28px;
+    line-height: 1.1;
+    margin-bottom: 12px;
+    letter-spacing: 0.01em;
+  }
+  .ob-desc {
+    font-weight: 400;
+    font-size: 14px;
+    color: var(--text-dim);
+    margin-bottom: 28px;
+    line-height: 1.5;
+  }
+
+  .consent-icon {
+    width: 56px;
+    height: 56px;
+    border: 2px solid var(--text);
+    margin: 16px 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  .consent-icon::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    width: 10px;
+    height: 10px;
+    background: var(--accent);
+  }
+  .consent-list { margin: 16px 0 24px; }
+  .consent-item {
+    display: flex;
+    gap: 12px;
+    padding: 10px 0;
+    border-top: 1px solid var(--border);
+  }
+  .consent-item:last-child { border-bottom: 1px solid var(--border); }
+  .consent-check {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 900;
+    margin-top: 2px;
+  }
+  .consent-item .text {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+  .consent-item .text strong {
+    color: var(--text);
+    font-weight: 700;
+  }
+  .privacy-link {
+    color: var(--accent);
+    text-decoration: underline;
+    font-weight: 500;
+    font-size: 12px;
+    margin-top: 12px;
+    display: block;
+  }
+
+  .info-note {
+    margin-top: 12px;
+    padding: 12px;
+    background: var(--ghost-bg);
+    border-left: 2px solid var(--accent);
+  }
+  .info-note .t {
+    font-size: 11px;
+    color: var(--text-mute);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .info-note .b {
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  .health-hint {
+    margin-top: 16px;
+    padding: 14px 16px;
+    border: 1px dashed var(--border-strong);
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .health-hint svg {
+    flex-shrink: 0;
+    margin-top: 2px;
+    color: var(--accent);
+  }
+  .health-hint .t {
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+  .health-hint .b {
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.4;
+  }
+  .health-hint .b a {
+    color: var(--text);
+    text-decoration: underline;
+  }
+
+  /* ===== HOME ===== */
+  .home-header { padding: 8px 0 20px; }
+  .greeting-time {
+    font-weight: 500;
+    font-size: 12px;
+    letter-spacing: 0.16em;
+    color: var(--text-mute);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .greeting-name {
+    font-weight: 900;
+    font-size: 28px;
+    letter-spacing: 0.01em;
+    line-height: 1;
+  }
+  .greeting-name .accent { color: var(--accent); }
+
+  .stats-strip {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    margin-bottom: 20px;
+  }
+  .stat { background: var(--bg); padding: 14px 8px; text-align: center; }
+  .stat-value {
+    font-weight: 900;
+    font-size: 24px;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .stat-value.highlight { color: var(--accent); }
+  .stat-value small {
+    color: var(--text-mute);
+    font-weight: 500;
+    font-size: 14px;
+  }
+  .stat-label {
+    font-weight: 500;
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    color: var(--text-mute);
+    text-transform: uppercase;
+  }
+
+  /* HOME TABS */
+  .home-tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .home-tab {
+    flex: 1;
+    padding: 12px 8px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    color: var(--text-mute);
+    text-transform: uppercase;
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .home-tab.active {
+    color: var(--accent);
+  }
+  .home-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--accent);
+  }
+  .home-tab svg {
+    width: 14px;
+    height: 14px;
+  }
+  .home-tab .dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    margin-left: 4px;
+  }
+
+  /* Today card */
+  .today-card {
+    border: 1px solid var(--accent);
+    padding: 18px;
+    margin-bottom: 16px;
+    position: relative;
+    background: var(--bg);
+  }
+  .today-card::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    width: 12px;
+    height: 12px;
+    background: var(--accent);
+  }
+  .today-label {
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .today-name {
+    font-weight: 900;
+    font-size: 22px;
+    letter-spacing: 0.01em;
+    line-height: 1.1;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+  .today-duration {
+    font-weight: 400;
+    font-size: 12px;
+    color: var(--text-mute);
+    margin-bottom: 12px;
+  }
+  .muscle-tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .muscle-tag {
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    padding: 4px 8px;
+    background: var(--surface-2);
+    color: var(--text);
+    text-transform: uppercase;
+  }
+  .exercise-list-mini {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-bottom: 14px;
+    line-height: 1.7;
+  }
+  .exercise-list-mini .num {
+    display: inline-block;
+    width: 18px;
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .today-cta {
+    width: 100%;
+    background: var(--accent);
+    color: #FFF;
+    padding: 12px;
+    border: none;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  .compact-card {
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .compact-card .name {
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .compact-card .day { font-weight: 400; font-size: 11px; color: var(--text-mute); }
+
+  .section-divider {
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--text-mute);
+    text-transform: uppercase;
+    margin: 20px 0 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* NUTRITION TAB CONTENT */
+  .day-theme {
+    padding: 14px 16px;
+    background: var(--ghost-bg);
+    border-left: 3px solid var(--accent);
+    margin-bottom: 16px;
+  }
+  .day-theme .l {
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .day-theme .n {
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+
+  .cal-target {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
+  }
+  .cal-target .label {
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    color: var(--text-mute);
+    text-transform: uppercase;
+  }
+  .cal-target .value {
+    font-weight: 900;
+    font-size: 22px;
+    letter-spacing: 0.01em;
+  }
+  .cal-target .value .unit {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-mute);
+  }
+
+  .macro-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .macro {
+    padding: 10px 8px;
+    border: 1px solid var(--border);
+    text-align: center;
+  }
+  .macro .l {
+    font-weight: 700;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--text-mute);
+    text-transform: uppercase;
+    margin-bottom: 2px;
+  }
+  .macro .v {
+    font-weight: 900;
+    font-size: 18px;
+    line-height: 1;
+  }
+  .macro .u {
+    font-size: 10px;
+    color: var(--text-mute);
+  }
+  /* Macro color coding : P=red, C=amber, F=green */
+  .macro.protein .v { color: var(--accent); }
+  .macro.protein { border-color: var(--accent); }
+  .macro.carbs .v { color: var(--amber); }
+  .macro.carbs { border-color: var(--amber); }
+  .macro.fat .v { color: var(--green); }
+  .macro.fat { border-color: var(--green); }
+
+  .meal-card {
+    padding: 14px 14px 14px 16px;
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    margin-bottom: 10px;
+    position: relative;
+  }
+  .meal-card .t-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 6px;
+  }
+  .meal-card .type {
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+  .meal-card .cal {
+    font-weight: 900;
+    font-size: 18px;
+  }
+  .meal-card .cal .u {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-mute);
+  }
+  .meal-card .name {
+    font-weight: 900;
+    font-size: 17px;
+    letter-spacing: 0.01em;
+    line-height: 1.2;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+  }
+  .meal-card .macros-inline {
+    display: flex;
+    gap: 10px;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+  }
+  .meal-card .macros-inline .macro-pill {
+    font-weight: 700;
+    letter-spacing: 0.06em;
+  }
+  .meal-card .macros-inline .protein { color: var(--accent); }
+  .meal-card .macros-inline .carbs { color: var(--amber); }
+  .meal-card .macros-inline .fat { color: var(--green); }
+
+  /* Bottom tab bar */
+  .tab-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--surface-1);
+    border-top: 1px solid var(--border);
+    padding: 10px 0 24px;
+    display: flex;
+    justify-content: space-around;
+    z-index: 20;
+  }
+  .tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+  }
+  .tab svg {
+    width: 20px;
+    height: 20px;
+    color: var(--text-mute);
+  }
+  .tab.active svg { color: var(--accent); }
+  .tab-label {
+    font-weight: 500;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-mute);
+  }
+  .tab.active .tab-label { color: var(--accent); }
+
+  /* ===== ACTIVE WORKOUT ===== */
+  .aw-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0 16px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 20px;
+  }
+  .aw-header-left .workout-name {
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .aw-header-left .time {
+    font-weight: 500;
+    font-size: 11px;
+    color: var(--text-mute);
+    font-family: 'JetBrains Mono', monospace;
+    margin-top: 2px;
+  }
+  .aw-close {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border-strong);
+    color: var(--text-mute);
+    font-size: 16px;
+  }
+
+  .exercise-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+  .nav-arrow {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border-strong);
+    color: var(--text);
+    font-size: 18px;
+  }
+  .exercise-current { text-align: center; flex: 1; }
+  .exercise-name {
+    font-weight: 900;
+    font-size: 18px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    line-height: 1.1;
+  }
+  .set-progress {
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  .set-inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .set-field {
+    text-align: center;
+    padding: 24px 12px;
+    border: 1px solid var(--border-strong);
+  }
+  .set-field .label {
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--text-mute);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .set-field .value {
+    font-weight: 900;
+    font-size: 48px;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .set-field .unit {
+    font-weight: 500;
+    font-size: 11px;
+    color: var(--text-mute);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  .ghost-value {
+    font-weight: 400;
+    font-size: 10px;
+    color: var(--text-ghost);
+    margin-top: 6px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .ghost-value .num { color: var(--text-mute); font-weight: 700; }
+
+  .set-history-row {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 20px;
+    justify-content: center;
+  }
+  .set-history-cell {
+    width: 52px;
+    padding: 8px 4px;
+    text-align: center;
+    font-size: 10px;
+    border: 1px solid var(--border);
+    color: var(--text-ghost);
+  }
+  .set-history-cell.done {
+    background: rgba(26,127,44,0.12);
+    border-color: var(--green);
+    color: var(--green);
+    font-weight: 700;
+  }
+  .light .set-history-cell.done { background: rgba(26,127,44,0.08); }
+  .set-history-cell.current {
+    border-color: var(--accent);
+    color: var(--accent);
+    font-weight: 700;
+    background: var(--ghost-bg);
+  }
+  .set-history-cell .num {
+    display: block;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    margin-bottom: 2px;
+    color: var(--text-mute);
+  }
+  .set-history-cell.done .num { color: var(--green); opacity: 0.7; }
+  .set-history-cell.current .num { color: var(--accent); opacity: 0.7; }
+
+  .volume-feedback {
+    padding: 12px 14px;
+    border: 1px dashed var(--border-strong);
+    margin-bottom: 16px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  .volume-feedback .kanji {
+    color: var(--accent);
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 900;
+    font-size: 18px;
+  }
+  .volume-feedback .t {
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 2px;
+  }
+  .volume-feedback .b {
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+
+  /* ===== REST TIMER ===== */
+  .rt-top-label {
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0.4em;
+    color: var(--accent);
+    text-transform: uppercase;
+    text-align: center;
+    margin-bottom: 6px;
+    padding-top: 20px;
+  }
+  .rt-exercise-name {
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    text-align: center;
+    color: var(--text-dim);
+    margin-bottom: 40px;
+  }
+  .rt-ring-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 40px;
+    position: relative;
+  }
+  .rt-ring-wrap::before {
+    content: '';
+    position: absolute;
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,45,63,0.15) 0%, transparent 70%);
+  }
+  .light .rt-ring-wrap::before {
+    background: radial-gradient(circle, rgba(232,25,44,0.1) 0%, transparent 70%);
+  }
+  .rt-time-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
+  .rt-time {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 56px;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .rt-time-label {
+    font-weight: 500;
+    font-size: 9px;
+    letter-spacing: 0.4em;
+    color: var(--text-mute);
+    text-transform: uppercase;
+    margin-top: 6px;
+  }
+
+  .rt-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .rt-controls-top {
+    display: grid;
+    grid-template-columns: 1fr 1fr 48px;
+    gap: 8px;
+    align-items: stretch;
+  }
+  .rt-btn {
+    padding: 18px 8px;
+    border: 1px solid var(--border-strong);
+    color: var(--text);
+    font-weight: 900;
+    font-size: 16px;
+    letter-spacing: 0.04em;
+    text-align: center;
+    cursor: pointer;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .rt-btn.small {
+    padding: 8px;
+    font-size: 13px;
+    color: var(--text-mute);
+  }
+  .rt-btn.skip {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #FFF;
+    padding: 16px;
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .rt-preview {
+    text-align: center;
+    padding: 16px 0;
+    margin-top: auto;
+  }
+  .rt-preview .l {
+    font-weight: 500;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--text-mute);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .rt-preview .b {
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.04em;
+  }
+  .rt-preview .b .target { color: var(--accent); }
+
+  .rt-bg-note {
+    padding: 10px 14px;
+    background: var(--ghost-bg);
+    border-left: 2px solid var(--border-strong);
+    margin-bottom: 16px;
+    display: flex;
+    gap: 10px;
+  }
+  .rt-bg-note svg {
+    flex-shrink: 0;
+    margin-top: 2px;
+    color: var(--text-mute);
+  }
+  .rt-bg-note .t {
+    font-size: 11px;
+    color: var(--text-dim);
+    line-height: 1.4;
+  }
+
+  /* ===== RECAP ===== */
+  .recap-header { text-align: center; padding: 24px 0 32px; }
+  .recap-stamp {
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 900;
+    font-size: 20px;
+    color: var(--accent);
+    letter-spacing: 0.4em;
+    margin-bottom: 8px;
+  }
+  .recap-title {
+    font-weight: 900;
+    font-size: 24px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    line-height: 1.05;
+  }
+  .recap-date {
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    color: var(--text-mute);
+    text-transform: uppercase;
+    margin-top: 6px;
+  }
+
+  .recap-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    margin-bottom: 24px;
+  }
+  .recap-stat { background: var(--bg); padding: 18px 14px; }
+  .recap-stat .label {
+    font-weight: 700;
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    color: var(--text-mute);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .recap-stat .value {
+    font-weight: 900;
+    font-size: 28px;
+    line-height: 1;
+  }
+  .recap-stat .value .unit {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-mute);
+    margin-left: 4px;
+  }
+  .recap-stat.pr .value { color: var(--accent); }
+
+  .pr-highlight {
+    padding: 14px 16px;
+    border: 1px solid var(--accent);
+    background: rgba(255,45,63,0.06);
+    margin-bottom: 20px;
+    position: relative;
+  }
+  .light .pr-highlight { background: rgba(232,25,44,0.04); }
+  .pr-highlight::before {
+    content: 'NEW PR';
+    position: absolute;
+    top: -7px;
+    left: 14px;
+    background: var(--accent);
+    color: #FFF;
+    font-weight: 700;
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    padding: 2px 8px;
+  }
+  .pr-highlight .exercise {
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    margin-top: 4px;
+  }
+  .pr-highlight .pr-value {
+    font-weight: 900;
+    font-size: 20px;
+    letter-spacing: 0.02em;
+  }
+
+  .compare-section-label {
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--text-mute);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .exercise-compare-list { margin-bottom: 20px; }
+  .compare-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-top: 1px solid var(--border);
+  }
+  .compare-item:last-child { border-bottom: 1px solid var(--border); }
+  .compare-item .name {
+    font-weight: 500;
+    font-size: 13px;
+    letter-spacing: 0.02em;
+    flex: 1;
+  }
+  .compare-badge {
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    padding: 3px 8px;
+    text-transform: uppercase;
+  }
+  .compare-badge.up {
+    background: rgba(26,127,44,0.15);
+    color: var(--green);
+    border: 1px solid var(--green);
+  }
+  .compare-badge.flat {
+    background: rgba(217,142,0,0.12);
+    color: var(--amber);
+    border: 1px solid var(--amber);
+  }
+  .compare-badge.down {
+    background: rgba(255,45,63,0.1);
+    color: var(--accent);
+    border: 1px solid var(--accent);
+  }
+
+  /* ===== SHARE CARD v2 ===== */
+  .share-workspace {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
+    padding: 54px 16px 16px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+  .light .share-workspace {
+    background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+  }
+
+  .share-header {
+    text-align: center;
+    padding-bottom: 12px;
+  }
+  .share-header .l {
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--text-mute);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .share-header .t {
+    font-weight: 900;
+    font-size: 16px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .share-toolbar {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 12px;
+    justify-content: center;
+  }
+  .share-tool {
+    padding: 8px 12px;
+    background: var(--surface-1);
+    border: 1px solid var(--border-strong);
+    font-weight: 700;
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--text);
+  }
+  .share-tool.active { background: var(--accent); border-color: var(--accent); color: #FFF; }
+
+  .share-card {
+    flex: 1;
+    aspect-ratio: 9 / 16;
+    background-image:
+      linear-gradient(180deg, rgba(0,0,0,0.15) 0%, transparent 30%, transparent 60%, rgba(0,0,0,0.55) 100%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 160' preserveAspectRatio='xMidYMid slice'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23444'/%3E%3Cstop offset='50%25' stop-color='%23222'/%3E%3Cstop offset='100%25' stop-color='%23111'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect fill='url(%23bg)' width='100' height='160'/%3E%3C!-- silhouette barbell scene --%3E%3Crect fill='%23555' x='20' y='80' width='60' height='4' opacity='0.5'/%3E%3Crect fill='%233a3a3a' x='10' y='75' width='12' height='14'/%3E%3Crect fill='%233a3a3a' x='78' y='75' width='12' height='14'/%3E%3Cellipse fill='%232a2a2a' cx='50' cy='110' rx='18' ry='40'/%3E%3Cellipse fill='%23444' cx='50' cy='65' rx='8' ry='10'/%3E%3C/svg%3E");
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    margin: 0 auto;
+    max-width: 260px;
+    border: 1px solid var(--border-strong);
+    overflow: hidden;
+  }
+
+  /* Share card content */
+  .sc-top {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    right: 16px;
+  }
+  .sc-kanji {
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 900;
+    font-size: 11px;
+    color: #FF2D3F;
+    letter-spacing: 0.4em;
+    margin-bottom: 6px;
+    line-height: 1;
+  }
+  .sc-workout-name {
+    font-weight: 900;
+    font-size: 22px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    line-height: 0.95;
+    color: #FFFFFF;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.6);
+    max-width: 90%;
+  }
+  .sc-date {
+    font-weight: 500;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: rgba(255,255,255,0.7);
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  /* Stats line at bottom */
+  .sc-bottom {
+    position: absolute;
+    bottom: 16px;
+    left: 16px;
+    right: 16px;
+  }
+  .sc-stats-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.25);
+  }
+  .sc-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .sc-stat .l {
+    font-weight: 700;
+    font-size: 7px;
+    letter-spacing: 0.25em;
+    color: rgba(255,255,255,0.7);
+    text-transform: uppercase;
+    margin-bottom: 2px;
+  }
+  .sc-stat .v {
+    font-weight: 900;
+    font-size: 15px;
+    line-height: 1;
+    color: #FFF;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+  }
+  .sc-stat .v .u {
+    font-size: 9px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.7);
+    margin-left: 1px;
+  }
+  .sc-stat.pr .v { color: #FF2D3F; }
+
+  .sc-logo-line {
+    margin-top: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .sc-brand {
+    font-weight: 900;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: #FFF;
+  }
+  .sc-url {
+    font-weight: 500;
+    font-size: 8px;
+    letter-spacing: 0.2em;
+    color: rgba(255,255,255,0.5);
+  }
+
+  .drag-handle {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border: 1px dashed #FF2D3F;
+    pointer-events: none;
+  }
+  .drag-handle.tl { top: -2px; left: -2px; }
+  .drag-handle.br { bottom: -2px; right: -2px; }
+
+  .share-buttons {
+    padding-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .share-buttons .btn { height: 44px; font-size: 14px; }
+  .share-buttons .btn-ghost { color: var(--text-mute); }
+
+  /* ===== FLOW NOTES ===== */
+  .design-notes {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 24px 28px;
+    margin: 48px auto;
+    max-width: 900px;
+  }
+  .design-notes h4 {
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: #FF2D3F;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .design-notes p {
+    font-size: 14px;
+    color: #BBB;
+    line-height: 1.6;
+  }
+  .design-notes p strong { color: #FFF; font-weight: 700; }
+</style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<div class="page-header">
+  <div class="page-label">Tanren · Core Flow v2</div>
+  <div class="page-title">User Manual Mockups</div>
+  <div class="page-desc">Lot 1 v2 — Dark + Light mode côte à côte. Home retravaillé avec tabs Entraînement / Nutrition (bascule auto post-séance). Share card refondue : kanji haut-gauche, nom du workout en titre, stats en ligne discrète.</div>
+</div>
+
+<!-- ============================================ -->
+<!-- SECTION 03 - ONBOARDING                      -->
+<!-- ============================================ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-number">03</div>
+    <div class="section-title-block">
+      <h2>Onboarding · Step 3 (Measurements)</h2>
+      <p>Étape finale de l'onboarding avec proposition contextuelle d'Apple Santé. Représentative du style onboarding complet, déclinée en dark / light mode.</p>
+    </div>
+  </div>
+
+  <div class="compare-row">
+    <!-- DARK -->
+    <div class="compare-col">
+      <div class="mode-tag dark">Dark mode · défaut</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen dark">
+          <div class="vignette"></div>
+          <div class="corner-kanji">錬</div>
+          <div class="status-bar"><span>09:16</span><span>●●●●</span></div>
+          <div class="content">
+            <div class="ob-dots">
+              <div class="ob-dot done"></div>
+              <div class="ob-dot done"></div>
+              <div class="ob-dot done"></div>
+              <div class="ob-dot active"></div>
+            </div>
+            <div class="ob-step-label">Étape 4 / 4 · Optionnel</div>
+            <div class="ob-title">Tes mensurations</div>
+            <div class="ob-desc">Pour les calculs nutrition et le suivi de progression. Tu peux passer cette étape.</div>
+
+            <div class="measure-row">
+              <div class="measure-field">
+                <div class="field-label">Taille</div>
+                <input class="input with-value" value="178" readonly>
+                <small>cm</small>
+              </div>
+              <div class="measure-field">
+                <div class="field-label">Poids</div>
+                <input class="input with-value" value="82,4" readonly>
+                <small>kg</small>
+              </div>
+            </div>
+
+            <div class="health-hint">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2 L4 6 V12 C4 18 12 22 12 22 C12 22 20 18 20 12 V6 L12 2 Z"/>
+              </svg>
+              <div>
+                <div class="t">Apple Santé détecté</div>
+                <div class="b">Tanren peut lire ton poids depuis Apple Santé. <a>Activer</a></div>
+              </div>
+            </div>
+
+            <div class="btn-row">
+              <button class="btn btn-primary">Terminer</button>
+              <button class="btn btn-ghost">Passer cette étape</button>
+            </div>
+          </div>
+        </div>
+      </div></div>
+      <div class="mockup-caption">Measurements — Dark</div>
+    </div>
+
+    <!-- LIGHT -->
+    <div class="compare-col">
+      <div class="mode-tag light">Light mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen light">
+          <div class="vignette"></div>
+          <div class="corner-kanji">錬</div>
+          <div class="status-bar"><span>09:16</span><span>●●●●</span></div>
+          <div class="content">
+            <div class="ob-dots">
+              <div class="ob-dot done"></div>
+              <div class="ob-dot done"></div>
+              <div class="ob-dot done"></div>
+              <div class="ob-dot active"></div>
+            </div>
+            <div class="ob-step-label">Étape 4 / 4 · Optionnel</div>
+            <div class="ob-title">Tes mensurations</div>
+            <div class="ob-desc">Pour les calculs nutrition et le suivi de progression. Tu peux passer cette étape.</div>
+
+            <div class="measure-row">
+              <div class="measure-field">
+                <div class="field-label">Taille</div>
+                <input class="input with-value" value="178" readonly>
+                <small>cm</small>
+              </div>
+              <div class="measure-field">
+                <div class="field-label">Poids</div>
+                <input class="input with-value" value="82,4" readonly>
+                <small>kg</small>
+              </div>
+            </div>
+
+            <div class="health-hint">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2 L4 6 V12 C4 18 12 22 12 22 C12 22 20 18 20 12 V6 L12 2 Z"/>
+              </svg>
+              <div>
+                <div class="t">Apple Santé détecté</div>
+                <div class="b">Tanren peut lire ton poids depuis Apple Santé. <a>Activer</a></div>
+              </div>
+            </div>
+
+            <div class="btn-row">
+              <button class="btn btn-primary">Terminer</button>
+              <button class="btn btn-ghost">Passer cette étape</button>
+            </div>
+          </div>
+        </div>
+      </div></div>
+      <div class="mockup-caption">Measurements — Light</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- SECTION 04 - HOME AVEC TABS                  -->
+<!-- ============================================ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-number">04</div>
+    <div class="section-title-block">
+      <h2>Home Screen · Entraînement & Nutrition</h2>
+      <p>Deux tabs à côté de la stats strip : <strong style="color:#fff;">Entraînement</strong> (par défaut) et <strong style="color:#fff;">Nutrition</strong>. La bascule se fait automatiquement vers Nutrition une fois la séance du jour terminée. Chaque tab garde les mêmes greeting + stats strip en haut.</p>
+    </div>
+  </div>
+
+  <!-- ROW 1: TAB ENTRAINEMENT -->
+  <h3 style="font-size: 14px; font-weight: 700; letter-spacing: 0.2em; color: #FF2D3F; text-transform: uppercase; margin-bottom: 24px; padding-left: 12px; border-left: 3px solid #FF2D3F;">Tab Entraînement · actif par défaut</h3>
+  <div class="compare-row">
+
+    <!-- DARK - TAB WORKOUT -->
+    <div class="compare-col">
+      <div class="mode-tag dark">Dark mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen dark">
+          <div class="vignette"></div>
+          <div class="corner-kanji">鍛</div>
+          <div class="status-bar"><span>07:42</span><span>●●●●</span></div>
+          <div class="content" style="padding-bottom: 80px;">
+
+            <div class="home-header">
+              <div class="greeting-time">Vendredi matin</div>
+              <div class="greeting-name">Salut <span class="accent">Ramy.</span></div>
+            </div>
+
+            <div class="stats-strip">
+              <div class="stat">
+                <div class="stat-value">2<small> / 4</small></div>
+                <div class="stat-label">Semaine</div>
+              </div>
+              <div class="stat">
+                <div class="stat-value highlight">12</div>
+                <div class="stat-label">Streak</div>
+              </div>
+              <div class="stat">
+                <div class="stat-value">3</div>
+                <div class="stat-label">PR récents</div>
+              </div>
+            </div>
+
+            <div class="home-tabs">
+              <div class="home-tab active">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="7" width="4" height="10"/><rect x="17" y="7" width="4" height="10"/><line x1="7" y1="12" x2="17" y2="12"/></svg>
+                Entraînement
+              </div>
+              <div class="home-tab">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 C8 2 5 5 5 9 C5 12 7 14 12 22 C17 14 19 12 19 9 C19 5 16 2 12 2 Z"/></svg>
+                Nutrition
+              </div>
+            </div>
+
+            <div class="today-card">
+              <div class="today-label">Aujourd'hui · 18h00</div>
+              <div class="today-name">Push Day</div>
+              <div class="today-duration">Durée estimée · 60 min</div>
+              <div class="muscle-tags">
+                <span class="muscle-tag">Pectoraux</span>
+                <span class="muscle-tag">Épaules</span>
+                <span class="muscle-tag">Triceps</span>
+              </div>
+              <div class="exercise-list-mini">
+                <div><span class="num">1.</span>Développé couché · 4×8 · 80 kg</div>
+                <div><span class="num">2.</span>Développé militaire · 3×10 · 50 kg</div>
+                <div><span class="num">3.</span>Dips lestés · 4×8 · +15 kg</div>
+                <div style="color: var(--text-mute); font-style: italic;"><span class="num">+3</span> autres exercices</div>
+              </div>
+              <button class="today-cta">Commencer la séance</button>
+            </div>
+
+            <div class="section-divider">Cette semaine</div>
+            <div class="compact-card">
+              <div class="name">Pull Day</div>
+              <div class="day">Demain</div>
+            </div>
+            <div class="compact-card">
+              <div class="name">Leg Day</div>
+              <div class="day">Dimanche</div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12 L12 3 L21 12 M5 10 V21 H19 V10"/></svg>
+              <div class="tab-label">Home</div>
+            </div>
+            <div class="tab">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="7" width="4" height="10"/><rect x="17" y="7" width="4" height="10"/><line x1="7" y1="12" x2="17" y2="12"/></svg>
+              <div class="tab-label">Training</div>
+            </div>
+            <div class="tab">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <div class="tab-label">Historique</div>
+            </div>
+            <div class="tab">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 C8 2 5 5 5 9 C5 12 7 14 12 22 C17 14 19 12 19 9 C19 5 16 2 12 2 Z"/></svg>
+              <div class="tab-label">Diet</div>
+            </div>
+            <div class="tab">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 22 C4 16 8 14 12 14 C16 14 20 16 20 22"/></svg>
+              <div class="tab-label">Profil</div>
+            </div>
+          </div>
+        </div>
+      </div></div>
+      <div class="mockup-caption">Home · Entraînement — Dark</div>
+    </div>
+
+    <!-- LIGHT - TAB WORKOUT -->
+    <div class="compare-col">
+      <div class="mode-tag light">Light mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen light">
+          <div class="vignette"></div>
+          <div class="corner-kanji">鍛</div>
+          <div class="status-bar"><span>07:42</span><span>●●●●</span></div>
+          <div class="content" style="padding-bottom: 80px;">
+
+            <div class="home-header">
+              <div class="greeting-time">Vendredi matin</div>
+              <div class="greeting-name">Salut <span class="accent">Ramy.</span></div>
+            </div>
+
+            <div class="stats-strip">
+              <div class="stat">
+                <div class="stat-value">2<small> / 4</small></div>
+                <div class="stat-label">Semaine</div>
+              </div>
+              <div class="stat">
+                <div class="stat-value highlight">12</div>
+                <div class="stat-label">Streak</div>
+              </div>
+              <div class="stat">
+                <div class="stat-value">3</div>
+                <div class="stat-label">PR récents</div>
+              </div>
+            </div>
+
+            <div class="home-tabs">
+              <div class="home-tab active">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="7" width="4" height="10"/><rect x="17" y="7" width="4" height="10"/><line x1="7" y1="12" x2="17" y2="12"/></svg>
+                Entraînement
+              </div>
+              <div class="home-tab">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 C8 2 5 5 5 9 C5 12 7 14 12 22 C17 14 19 12 19 9 C19 5 16 2 12 2 Z"/></svg>
+                Nutrition
+              </div>
+            </div>
+
+            <div class="today-card">
+              <div class="today-label">Aujourd'hui · 18h00</div>
+              <div class="today-name">Push Day</div>
+              <div class="today-duration">Durée estimée · 60 min</div>
+              <div class="muscle-tags">
+                <span class="muscle-tag">Pectoraux</span>
+                <span class="muscle-tag">Épaules</span>
+                <span class="muscle-tag">Triceps</span>
+              </div>
+              <div class="exercise-list-mini">
+                <div><span class="num">1.</span>Développé couché · 4×8 · 80 kg</div>
+                <div><span class="num">2.</span>Développé militaire · 3×10 · 50 kg</div>
+                <div><span class="num">3.</span>Dips lestés · 4×8 · +15 kg</div>
+                <div style="color: var(--text-mute); font-style: italic;"><span class="num">+3</span> autres exercices</div>
+              </div>
+              <button class="today-cta">Commencer la séance</button>
+            </div>
+
+            <div class="section-divider">Cette semaine</div>
+            <div class="compact-card">
+              <div class="name">Pull Day</div>
+              <div class="day">Demain</div>
+            </div>
+            <div class="compact-card">
+              <div class="name">Leg Day</div>
+              <div class="day">Dimanche</div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12 L12 3 L21 12 M5 10 V21 H19 V10"/></svg>
+              <div class="tab-label">Home</div>
+            </div>
+            <div class="tab">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="7" width="4" height="10"/><rect x="17" y="7" width="4" height="10"/><line x1="7" y1="12" x2="17" y2="12"/></svg>
+              <div class="tab-label">Training</div>
+            </div>
+            <div class="tab">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <div class="tab-label">Historique</div>
+            </div>
+            <div class="tab">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 C8 2 5 5 5 9 C5 12 7 14 12 22 C17 14 19 12 19 9 C19 5 16 2 12 2 Z"/></svg>
+              <div class="tab-label">Diet</div>
+            </div>
+            <div class="tab">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 22 C4 16 8 14 12 14 C16 14 20 16 20 22"/></svg>
+              <div class="tab-label">Profil</div>
+            </div>
+          </div>
+        </div>
+      </div></div>
+      <div class="mockup-caption">Home · Entraînement — Light</div>
+    </div>
+  </div>
+
+  <!-- ROW 2: TAB NUTRITION (post-session auto-switch) -->
+  <h3 style="font-size: 14px; font-weight: 700; letter-spacing: 0.2em; color: #FF2D3F; text-transform: uppercase; margin: 60px 0 24px; padding-left: 12px; border-left: 3px solid #FF2D3F;">Tab Nutrition · bascule auto après la séance</h3>
+  <div class="compare-row">
+
+    <!-- DARK - TAB NUTRITION -->
+    <div class="compare-col">
+      <div class="mode-tag dark">Dark mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen dark">
+          <div class="vignette"></div>
+          <div class="corner-kanji">錬</div>
+          <div class="status-bar"><span>19:30</span><span>●●●●</span></div>
+          <div class="content" style="padding-bottom: 80px;">
+
+            <div class="home-header">
+              <div class="greeting-time">Vendredi soir</div>
+              <div class="greeting-name">Salut <span class="accent">Ramy.</span></div>
+            </div>
+
+            <div class="stats-strip">
+              <div class="stat">
+                <div class="stat-value">3<small> / 4</small></div>
+                <div class="stat-label">Semaine</div>
+              </div>
+              <div class="stat">
+                <div class="stat-value highlight">12</div>
+                <div class="stat-label">Streak</div>
+              </div>
+              <div class="stat">
+                <div class="stat-value">5</div>
+                <div class="stat-label">PR récents</div>
+              </div>
+            </div>
+
+            <div class="home-tabs">
+              <div class="home-tab">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="7" width="4" height="10"/><rect x="17" y="7" width="4" height="10"/><line x1="7" y1="12" x2="17" y2="12"/></svg>
+                Entraînement
+              </div>
+              <div class="home-tab active">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 C8 2 5 5 5 9 C5 12 7 14 12 22 C17 14 19 12 19 9 C19 5 16 2 12 2 Z"/></svg>
+                Nutrition
+              </div>
+            </div>
+
+            <div class="day-theme">
+              <div class="l">Aujourd'hui</div>
+              <div class="n">Mediterranean Friday</div>
+            </div>
+
+            <div class="cal-target">
+              <div class="label">Objectif calories</div>
+              <div class="value">2 450<span class="unit"> kcal</span></div>
+            </div>
+
+            <div class="macro-row">
+              <div class="macro protein">
+                <div class="l">Protéines</div>
+                <div class="v">185<span class="u">g</span></div>
+              </div>
+              <div class="macro carbs">
+                <div class="l">Glucides</div>
+                <div class="v">245<span class="u">g</span></div>
+              </div>
+              <div class="macro fat">
+                <div class="l">Lipides</div>
+                <div class="v">75<span class="u">g</span></div>
+              </div>
+            </div>
+
+            <div class="section-divider">Repas du jour</div>
+
+            <div class="meal-card">
+              <div class="t-row">
+                <div class="type">Petit-déj</div>
+                <div class="cal">520<span class="u"> kcal</span></div>
+              </div>
+              <div class="name">Porridge banane & beurre de cacahuète</div>
+              <div class="macros-inline"><span class="macro-pill protein">P 32g</span><span class="macro-pill carbs">G 68g</span><span class="macro-pill fat">L 14g</span></div>
+            </div>
+
+            <div class="meal-card">
+              <div class="t-row">
+                <div class="type">Déjeuner</div>
+                <div class="cal">680<span class="u"> kcal</span></div>
+              </div>
+              <div class="name">Bowl de poulet grillé, riz & légumes</div>
+              <div class="macros-inline"><span class="macro-pill protein">P 55g</span><span class="macro-pill carbs">G 72g</span><span class="macro-pill fat">L 18g</span></div>
+            </div>
+
+            <div class="meal-card">
+              <div class="t-row">
+                <div class="type">Collation</div>
+                <div class="cal">280<span class="u"> kcal</span></div>
+              </div>
+              <div class="name">Skyr, fruits rouges, amandes</div>
+              <div class="macros-inline"><span class="macro-pill protein">P 28g</span><span class="macro-pill carbs">G 22g</span><span class="macro-pill fat">L 10g</span></div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12 L12 3 L21 12 M5 10 V21 H19 V10"/></svg>
+              <div class="tab-label">Home</div>
+            </div>
+            <div class="tab">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="7" width="4" height="10"/><rect x="17" y="7" width="4" height="10"/><line x1="7" y1="12" x2="17" y2="12"/></svg>
+              <div class="tab-label">Training</div>
+            </div>
+            <div class="tab">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <div class="tab-label">Historique</div>
+            </div>
+            <div class="tab">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 C8 2 5 5 5 9 C5 12 7 14 12 22 C17 14 19 12 19 9 C19 5 16 2 12 2 Z"/></svg>
+              <div class="tab-label">Diet</div>
+            </div>
+            <div class="tab">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 22 C4 16 8 14 12 14 C16 14 20 16 20 22"/></svg>
+              <div class="tab-label">Profil</div>
+            </div>
+          </div>
+        </div>
+      </div></div>
+      <div class="mockup-caption">Home · Nutrition — Dark</div>
+    </div>
+
+    <!-- LIGHT - TAB NUTRITION -->
+    <div class="compare-col">
+      <div class="mode-tag light">Light mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen light">
+          <div class="vignette"></div>
+          <div class="corner-kanji">錬</div>
+          <div class="status-bar"><span>19:30</span><span>●●●●</span></div>
+          <div class="content" style="padding-bottom: 80px;">
+
+            <div class="home-header">
+              <div class="greeting-time">Vendredi soir</div>
+              <div class="greeting-name">Salut <span class="accent">Ramy.</span></div>
+            </div>
+
+            <div class="stats-strip">
+              <div class="stat">
+                <div class="stat-value">3<small> / 4</small></div>
+                <div class="stat-label">Semaine</div>
+              </div>
+              <div class="stat">
+                <div class="stat-value highlight">12</div>
+                <div class="stat-label">Streak</div>
+              </div>
+              <div class="stat">
+                <div class="stat-value">5</div>
+                <div class="stat-label">PR récents</div>
+              </div>
+            </div>
+
+            <div class="home-tabs">
+              <div class="home-tab">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="7" width="4" height="10"/><rect x="17" y="7" width="4" height="10"/><line x1="7" y1="12" x2="17" y2="12"/></svg>
+                Entraînement
+              </div>
+              <div class="home-tab active">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 C8 2 5 5 5 9 C5 12 7 14 12 22 C17 14 19 12 19 9 C19 5 16 2 12 2 Z"/></svg>
+                Nutrition
+              </div>
+            </div>
+
+            <div class="day-theme">
+              <div class="l">Aujourd'hui</div>
+              <div class="n">Mediterranean Friday</div>
+            </div>
+
+            <div class="cal-target">
+              <div class="label">Objectif calories</div>
+              <div class="value">2 450<span class="unit"> kcal</span></div>
+            </div>
+
+            <div class="macro-row">
+              <div class="macro protein">
+                <div class="l">Protéines</div>
+                <div class="v">185<span class="u">g</span></div>
+              </div>
+              <div class="macro carbs">
+                <div class="l">Glucides</div>
+                <div class="v">245<span class="u">g</span></div>
+              </div>
+              <div class="macro fat">
+                <div class="l">Lipides</div>
+                <div class="v">75<span class="u">g</span></div>
+              </div>
+            </div>
+
+            <div class="section-divider">Repas du jour</div>
+
+            <div class="meal-card">
+              <div class="t-row">
+                <div class="type">Petit-déj</div>
+                <div class="cal">520<span class="u"> kcal</span></div>
+              </div>
+              <div class="name">Porridge banane & beurre de cacahuète</div>
+              <div class="macros-inline"><span class="macro-pill protein">P 32g</span><span class="macro-pill carbs">G 68g</span><span class="macro-pill fat">L 14g</span></div>
+            </div>
+
+            <div class="meal-card">
+              <div class="t-row">
+                <div class="type">Déjeuner</div>
+                <div class="cal">680<span class="u"> kcal</span></div>
+              </div>
+              <div class="name">Bowl de poulet grillé, riz & légumes</div>
+              <div class="macros-inline"><span class="macro-pill protein">P 55g</span><span class="macro-pill carbs">G 72g</span><span class="macro-pill fat">L 18g</span></div>
+            </div>
+
+            <div class="meal-card">
+              <div class="t-row">
+                <div class="type">Collation</div>
+                <div class="cal">280<span class="u"> kcal</span></div>
+              </div>
+              <div class="name">Skyr, fruits rouges, amandes</div>
+              <div class="macros-inline"><span class="macro-pill protein">P 28g</span><span class="macro-pill carbs">G 22g</span><span class="macro-pill fat">L 10g</span></div>
+            </div>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12 L12 3 L21 12 M5 10 V21 H19 V10"/></svg>
+              <div class="tab-label">Home</div>
+            </div>
+            <div class="tab">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="7" width="4" height="10"/><rect x="17" y="7" width="4" height="10"/><line x1="7" y1="12" x2="17" y2="12"/></svg>
+              <div class="tab-label">Training</div>
+            </div>
+            <div class="tab">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <div class="tab-label">Historique</div>
+            </div>
+            <div class="tab">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 C8 2 5 5 5 9 C5 12 7 14 12 22 C17 14 19 12 19 9 C19 5 16 2 12 2 Z"/></svg>
+              <div class="tab-label">Diet</div>
+            </div>
+            <div class="tab">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 22 C4 16 8 14 12 14 C16 14 20 16 20 22"/></svg>
+              <div class="tab-label">Profil</div>
+            </div>
+          </div>
+        </div>
+      </div></div>
+      <div class="mockup-caption">Home · Nutrition — Light</div>
+    </div>
+  </div>
+
+  <div class="design-notes">
+    <h4>Logique des tabs Home</h4>
+    <p>Les deux tabs sont <strong>toujours visibles</strong> (si plan nutrition actif). Par défaut, on affiche <strong>Entraînement</strong>. Dès que la séance du jour est complétée (status <code>done</code>), l'app bascule automatiquement sur <strong>Nutrition</strong> — l'utilisateur peut manuellement revenir sur Entraînement. Si aucun plan nutrition n'existe, seul le tab Entraînement s'affiche, avec un CTA "Créer un plan nutrition" en bas de l'écran Home.</p>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- SECTION 10 - ACTIVE WORKOUT                  -->
+<!-- ============================================ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-number">10</div>
+    <div class="section-title-block">
+      <h2>Active Workout</h2>
+      <p>Cœur de l'app. Valeurs en gros, ghost values discrètes, feedback volume temps réel.</p>
+    </div>
+  </div>
+
+  <div class="compare-row">
+
+    <!-- DARK -->
+    <div class="compare-col">
+      <div class="mode-tag dark">Dark mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen dark">
+          <div class="vignette"></div>
+          <div class="status-bar"><span>18:04</span><span>●●●●</span></div>
+          <div class="content" style="padding-top: 10px;">
+
+            <div class="aw-header">
+              <div class="aw-header-left">
+                <div class="workout-name">Push Day</div>
+                <div class="time">04:12 écoulées</div>
+              </div>
+              <div class="aw-close">✕</div>
+            </div>
+
+            <div class="exercise-nav">
+              <div class="nav-arrow">‹</div>
+              <div class="exercise-current">
+                <div class="exercise-name">Développé<br>couché</div>
+                <div class="set-progress">Série 3 / 4</div>
+              </div>
+              <div class="nav-arrow">›</div>
+            </div>
+
+            <div class="set-history-row">
+              <div class="set-history-cell done">
+                <span class="num">S1</span>
+                80×8
+              </div>
+              <div class="set-history-cell done">
+                <span class="num">S2</span>
+                82,5×8
+              </div>
+              <div class="set-history-cell current">
+                <span class="num">S3</span>
+                ···
+              </div>
+              <div class="set-history-cell">
+                <span class="num">S4</span>
+                —
+              </div>
+            </div>
+
+            <div class="set-inputs">
+              <div class="set-field">
+                <div class="label">Reps</div>
+                <div class="value">8</div>
+                <div class="unit">répétitions</div>
+                <div class="ghost-value">Dernière · <span class="num">8</span></div>
+              </div>
+              <div class="set-field">
+                <div class="label">Charge</div>
+                <div class="value">85</div>
+                <div class="unit">kg</div>
+                <div class="ghost-value">Dernière · <span class="num">82,5</span></div>
+              </div>
+            </div>
+
+            <div class="volume-feedback">
+              <div class="kanji">鍛</div>
+              <div>
+                <div class="t">Volume +3,1%</div>
+                <div class="b">vs ta dernière séance sur cet exo</div>
+              </div>
+            </div>
+
+            <button class="btn btn-primary" style="margin-top: 16px;">Valider la série</button>
+            <div style="flex: 1;"></div>
+          </div>
+        </div>
+      </div></div>
+      <div class="mockup-caption">Active Workout — Dark</div>
+    </div>
+
+    <!-- LIGHT -->
+    <div class="compare-col">
+      <div class="mode-tag light">Light mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen light">
+          <div class="vignette"></div>
+          <div class="status-bar"><span>18:04</span><span>●●●●</span></div>
+          <div class="content" style="padding-top: 10px;">
+
+            <div class="aw-header">
+              <div class="aw-header-left">
+                <div class="workout-name">Push Day</div>
+                <div class="time">04:12 écoulées</div>
+              </div>
+              <div class="aw-close">✕</div>
+            </div>
+
+            <div class="exercise-nav">
+              <div class="nav-arrow">‹</div>
+              <div class="exercise-current">
+                <div class="exercise-name">Développé<br>couché</div>
+                <div class="set-progress">Série 3 / 4</div>
+              </div>
+              <div class="nav-arrow">›</div>
+            </div>
+
+            <div class="set-history-row">
+              <div class="set-history-cell done">
+                <span class="num">S1</span>
+                80×8
+              </div>
+              <div class="set-history-cell done">
+                <span class="num">S2</span>
+                82,5×8
+              </div>
+              <div class="set-history-cell current">
+                <span class="num">S3</span>
+                ···
+              </div>
+              <div class="set-history-cell">
+                <span class="num">S4</span>
+                —
+              </div>
+            </div>
+
+            <div class="set-inputs">
+              <div class="set-field">
+                <div class="label">Reps</div>
+                <div class="value">8</div>
+                <div class="unit">répétitions</div>
+                <div class="ghost-value">Dernière · <span class="num">8</span></div>
+              </div>
+              <div class="set-field">
+                <div class="label">Charge</div>
+                <div class="value">85</div>
+                <div class="unit">kg</div>
+                <div class="ghost-value">Dernière · <span class="num">82,5</span></div>
+              </div>
+            </div>
+
+            <div class="volume-feedback">
+              <div class="kanji">鍛</div>
+              <div>
+                <div class="t">Volume +3,1%</div>
+                <div class="b">vs ta dernière séance sur cet exo</div>
+              </div>
+            </div>
+
+            <button class="btn btn-primary" style="margin-top: 16px;">Valider la série</button>
+            <div style="flex: 1;"></div>
+          </div>
+        </div>
+      </div></div>
+      <div class="mockup-caption">Active Workout — Light</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- SECTION 11 - REST TIMER                      -->
+<!-- ============================================ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-number">11</div>
+    <div class="section-title-block">
+      <h2>Rest Timer</h2>
+      <p>Anneau rouge qui se vide, temps central en JetBrains Mono, contrôles ±15s / pause / skip.</p>
+    </div>
+  </div>
+
+  <div class="compare-row">
+
+    <!-- DARK -->
+    <div class="compare-col">
+      <div class="mode-tag dark">Dark mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen dark">
+          <div class="vignette"></div>
+          <div class="status-bar"><span>18:06</span><span>●●●●</span></div>
+          <div class="content">
+
+            <div class="rt-top-label">Repos</div>
+            <div class="rt-exercise-name">Développé couché</div>
+
+            <div class="rt-ring-wrap">
+              <svg width="240" height="240" viewBox="0 0 240 240">
+                <circle cx="120" cy="120" r="108" fill="none" stroke="#1a1a1a" stroke-width="6"/>
+                <circle cx="120" cy="120" r="108" fill="none" stroke="#FF2D3F" stroke-width="6"
+                        stroke-dasharray="678" stroke-dashoffset="237"
+                        transform="rotate(-90 120 120)"
+                        stroke-linecap="square"/>
+              </svg>
+              <div class="rt-time-center">
+                <div class="rt-time">01:12</div>
+                <div class="rt-time-label">/ 01:30</div>
+              </div>
+            </div>
+
+            <div class="rt-controls">
+              <div class="rt-controls-top">
+                <button class="rt-btn">−15s</button>
+                <button class="rt-btn">+15s</button>
+                <button class="rt-btn small">⏸</button>
+              </div>
+              <button class="rt-btn skip">Passer</button>
+            </div>
+
+            <div class="rt-preview">
+              <div class="l">Prochaine série</div>
+              <div class="b">Série 4 · Objectif <span class="target">85 kg × 8</span></div>
+            </div>
+
+            <div style="flex: 1;"></div>
+          </div>
+        </div>
+      </div></div>
+      <div class="mockup-caption">Rest Timer — Dark</div>
+    </div>
+
+    <!-- LIGHT -->
+    <div class="compare-col">
+      <div class="mode-tag light">Light mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen light">
+          <div class="vignette"></div>
+          <div class="status-bar"><span>18:06</span><span>●●●●</span></div>
+          <div class="content">
+
+            <div class="rt-top-label">Repos</div>
+            <div class="rt-exercise-name">Développé couché</div>
+
+            <div class="rt-ring-wrap">
+              <svg width="240" height="240" viewBox="0 0 240 240">
+                <circle cx="120" cy="120" r="108" fill="none" stroke="#E5E5E5" stroke-width="6"/>
+                <circle cx="120" cy="120" r="108" fill="none" stroke="#E8192C" stroke-width="6"
+                        stroke-dasharray="678" stroke-dashoffset="237"
+                        transform="rotate(-90 120 120)"
+                        stroke-linecap="square"/>
+              </svg>
+              <div class="rt-time-center">
+                <div class="rt-time">01:12</div>
+                <div class="rt-time-label">/ 01:30</div>
+              </div>
+            </div>
+
+            <div class="rt-controls">
+              <div class="rt-controls-top">
+                <button class="rt-btn">−15s</button>
+                <button class="rt-btn">+15s</button>
+                <button class="rt-btn small">⏸</button>
+              </div>
+              <button class="rt-btn skip">Passer</button>
+            </div>
+
+            <div class="rt-preview">
+              <div class="l">Prochaine série</div>
+              <div class="b">Série 4 · Objectif <span class="target">85 kg × 8</span></div>
+            </div>
+
+            <div style="flex: 1;"></div>
+          </div>
+        </div>
+      </div></div>
+      <div class="mockup-caption">Rest Timer — Light</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- SECTION 12 - RECAP                            -->
+<!-- ============================================ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-number">12</div>
+    <div class="section-title-block">
+      <h2>Session Recap</h2>
+      <p>Récapitulatif avec métriques, PR détectés, comparaison par exercice en vert/ambre/rouge.</p>
+    </div>
+  </div>
+
+  <div class="compare-row">
+
+    <!-- DARK -->
+    <div class="compare-col">
+      <div class="mode-tag dark">Dark mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen dark">
+          <div class="vignette"></div>
+          <div class="status-bar"><span>19:18</span><span>●●●●</span></div>
+          <div class="content" style="padding-top: 8px;">
+
+            <div class="recap-header">
+              <div class="recap-stamp">鍛 錬</div>
+              <div class="recap-title">Séance<br>terminée</div>
+              <div class="recap-date">Ven 18 avr · Push Day · 1h12</div>
+            </div>
+
+            <div class="recap-stats">
+              <div class="recap-stat">
+                <div class="label">Volume</div>
+                <div class="value">12 450<span class="unit">kg</span></div>
+              </div>
+              <div class="recap-stat">
+                <div class="label">Durée</div>
+                <div class="value">1:12<span class="unit">h</span></div>
+              </div>
+              <div class="recap-stat">
+                <div class="label">Séries</div>
+                <div class="value">18</div>
+              </div>
+              <div class="recap-stat pr">
+                <div class="label">Records</div>
+                <div class="value">2</div>
+              </div>
+            </div>
+
+            <div class="pr-highlight">
+              <div class="exercise">Développé couché</div>
+              <div class="pr-value">85 kg × 8 reps</div>
+            </div>
+
+            <div class="compare-section-label">Comparaison par exercice</div>
+            <div class="exercise-compare-list">
+              <div class="compare-item">
+                <div class="name">Développé couché</div>
+                <div class="compare-badge up">+8,3%</div>
+              </div>
+              <div class="compare-item">
+                <div class="name">Développé militaire</div>
+                <div class="compare-badge up">+2,1%</div>
+              </div>
+              <div class="compare-item">
+                <div class="name">Dips lestés</div>
+                <div class="compare-badge flat">= 0,4%</div>
+              </div>
+              <div class="compare-item">
+                <div class="name">Extensions triceps</div>
+                <div class="compare-badge down">−1,8%</div>
+              </div>
+            </div>
+
+            <div class="btn-row">
+              <button class="btn btn-primary">Sauvegarder & partager</button>
+              <button class="btn btn-ghost">Ajouter des exercices</button>
+            </div>
+          </div>
+        </div>
+      </div></div>
+      <div class="mockup-caption">Session Recap — Dark</div>
+    </div>
+
+    <!-- LIGHT -->
+    <div class="compare-col">
+      <div class="mode-tag light">Light mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen light">
+          <div class="vignette"></div>
+          <div class="status-bar"><span>19:18</span><span>●●●●</span></div>
+          <div class="content" style="padding-top: 8px;">
+
+            <div class="recap-header">
+              <div class="recap-stamp">鍛 錬</div>
+              <div class="recap-title">Séance<br>terminée</div>
+              <div class="recap-date">Ven 18 avr · Push Day · 1h12</div>
+            </div>
+
+            <div class="recap-stats">
+              <div class="recap-stat">
+                <div class="label">Volume</div>
+                <div class="value">12 450<span class="unit">kg</span></div>
+              </div>
+              <div class="recap-stat">
+                <div class="label">Durée</div>
+                <div class="value">1:12<span class="unit">h</span></div>
+              </div>
+              <div class="recap-stat">
+                <div class="label">Séries</div>
+                <div class="value">18</div>
+              </div>
+              <div class="recap-stat pr">
+                <div class="label">Records</div>
+                <div class="value">2</div>
+              </div>
+            </div>
+
+            <div class="pr-highlight">
+              <div class="exercise">Développé couché</div>
+              <div class="pr-value">85 kg × 8 reps</div>
+            </div>
+
+            <div class="compare-section-label">Comparaison par exercice</div>
+            <div class="exercise-compare-list">
+              <div class="compare-item">
+                <div class="name">Développé couché</div>
+                <div class="compare-badge up">+8,3%</div>
+              </div>
+              <div class="compare-item">
+                <div class="name">Développé militaire</div>
+                <div class="compare-badge up">+2,1%</div>
+              </div>
+              <div class="compare-item">
+                <div class="name">Dips lestés</div>
+                <div class="compare-badge flat">= 0,4%</div>
+              </div>
+              <div class="compare-item">
+                <div class="name">Extensions triceps</div>
+                <div class="compare-badge down">−1,8%</div>
+              </div>
+            </div>
+
+            <div class="btn-row">
+              <button class="btn btn-primary">Sauvegarder & partager</button>
+              <button class="btn btn-ghost">Ajouter des exercices</button>
+            </div>
+          </div>
+        </div>
+      </div></div>
+      <div class="mockup-caption">Session Recap — Light</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- SECTION 13 - SHARE CARD v2                   -->
+<!-- ============================================ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-number">13</div>
+    <div class="section-title-block">
+      <h2>Session Sharing · v2</h2>
+      <p>Refonte complète. Kanji 鍛錬 en petit haut-gauche, nom du workout en grosse typo juste dessous. Stats en une ligne discrète en bas, séparées par des tirets fins. La photo respire, le centre de l'image est libre.</p>
+    </div>
+  </div>
+
+  <div class="compare-row">
+
+    <!-- DARK -->
+    <div class="compare-col">
+      <div class="mode-tag dark">Dark mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen dark">
+          <div class="status-bar"><span>19:19</span><span>●●●●</span></div>
+          <div class="share-workspace">
+
+            <div class="share-header">
+              <div class="l">Aperçu 9:16</div>
+              <div class="t">Partager ta séance</div>
+            </div>
+
+            <div class="share-toolbar">
+              <div class="share-tool active">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg>
+                Photo
+              </div>
+              <div class="share-tool">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="3"/></svg>
+                Caméra
+              </div>
+              <div class="share-tool">Retirer</div>
+            </div>
+
+            <div class="share-card">
+              <div class="drag-handle tl"></div>
+              <div class="drag-handle br"></div>
+
+              <!-- TOP: kanji + workout name -->
+              <div class="sc-top">
+                <div class="sc-kanji">鍛 錬</div>
+                <div class="sc-workout-name">Push Day</div>
+                <div class="sc-date">Ven 18 avr · 1h12</div>
+              </div>
+
+              <!-- BOTTOM: stats line + logo -->
+              <div class="sc-bottom">
+                <div class="sc-stats-line">
+                  <div class="sc-stat">
+                    <div class="l">Volume</div>
+                    <div class="v">12 450<span class="u"> kg</span></div>
+                  </div>
+                  <div class="sc-stat">
+                    <div class="l">Séries</div>
+                    <div class="v">18</div>
+                  </div>
+                  <div class="sc-stat pr">
+                    <div class="l">Records</div>
+                    <div class="v">2</div>
+                  </div>
+                </div>
+                <div class="sc-logo-line">
+                  <div class="sc-brand">TANREN</div>
+                  <div class="sc-url">tanren.app</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="share-buttons">
+              <button class="btn btn-primary">Partager</button>
+              <button class="btn btn-ghost">Terminer sans partager</button>
+            </div>
+          </div>
+        </div>
+      </div></div>
+      <div class="mockup-caption">Share Card v2 — Dark</div>
+    </div>
+
+    <!-- LIGHT -->
+    <div class="compare-col">
+      <div class="mode-tag light">Light mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen light">
+          <div class="status-bar"><span>19:19</span><span>●●●●</span></div>
+          <div class="share-workspace">
+
+            <div class="share-header">
+              <div class="l">Aperçu 9:16</div>
+              <div class="t">Partager ta séance</div>
+            </div>
+
+            <div class="share-toolbar">
+              <div class="share-tool active">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg>
+                Photo
+              </div>
+              <div class="share-tool">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="3"/></svg>
+                Caméra
+              </div>
+              <div class="share-tool">Retirer</div>
+            </div>
+
+            <div class="share-card">
+              <div class="drag-handle tl"></div>
+              <div class="drag-handle br"></div>
+
+              <div class="sc-top">
+                <div class="sc-kanji">鍛 錬</div>
+                <div class="sc-workout-name">Push Day</div>
+                <div class="sc-date">Ven 18 avr · 1h12</div>
+              </div>
+
+              <div class="sc-bottom">
+                <div class="sc-stats-line">
+                  <div class="sc-stat">
+                    <div class="l">Volume</div>
+                    <div class="v">12 450<span class="u"> kg</span></div>
+                  </div>
+                  <div class="sc-stat">
+                    <div class="l">Séries</div>
+                    <div class="v">18</div>
+                  </div>
+                  <div class="sc-stat pr">
+                    <div class="l">Records</div>
+                    <div class="v">2</div>
+                  </div>
+                </div>
+                <div class="sc-logo-line">
+                  <div class="sc-brand">TANREN</div>
+                  <div class="sc-url">tanren.app</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="share-buttons">
+              <button class="btn btn-primary">Partager</button>
+              <button class="btn btn-ghost">Terminer sans partager</button>
+            </div>
+          </div>
+        </div>
+      </div></div>
+      <div class="mockup-caption">Share Card v2 — Light</div>
+    </div>
+  </div>
+
+  <div class="design-notes">
+    <h4>Changements de la Share Card v2</h4>
+    <p><strong>Avant :</strong> titre générique "Séance terminée" qui cachait la photo, bloc de stats en grille 2×2 opaque qui bouffait 40% de l'image.<br><strong>Maintenant :</strong> kanji 鍛錬 en petit haut-gauche (signature discrète), <strong>nom du workout</strong> en grosse typo juste dessous (l'identité de la séance est le vrai sujet), date en sous-titre. Stats en ligne unique tout en bas, séparées par une barre fine horizontale. Plus de bloc opaque — les stats sont ombrées par un dégradé naturel depuis le bas de la photo. Le centre complet de l'image est libre pour la photo.</p>
+  </div>
+</div>
+
+<!-- ===== FOOTER ===== -->
+<div style="max-width: 900px; margin: 80px auto 40px; text-align: center; padding-top: 40px; border-top: 1px solid #2a2a2a;">
+  <div style="font-family: 'Noto Serif JP', serif; font-weight: 900; font-size: 24px; color: #FF2D3F; letter-spacing: 0.4em; margin-bottom: 8px;">鍛 錬</div>
+  <div style="font-weight: 900; font-size: 20px; letter-spacing: 0.16em; margin-bottom: 4px;">TANREN</div>
+  <div style="font-style: italic; color: #FF2D3F; font-size: 14px; margin-bottom: 12px;">Une rep après l'autre.</div>
+  <div style="font-size: 11px; color: #888; letter-spacing: 0.2em;">CORE FLOW v2 · DARK + LIGHT · LOT 1/3 · 2026</div>
+</div>
+
+</body>
+</html>

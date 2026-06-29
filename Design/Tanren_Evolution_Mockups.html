@@ -1,0 +1,1761 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TANREN — Évolution physique · Mockups</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;500;700;900&family=Noto+Serif+JP:wght@400;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --red-light: #E8192C;
+    --red-dark: #FF2D3F;
+    --iron-deep: #0A0A0A;
+    --iron: #141414;
+    --iron-soft: #1c1c1c;
+    --anvil: #FFFFFF;
+  }
+
+  body {
+    font-family: 'Barlow Condensed', sans-serif;
+    background: linear-gradient(180deg, #1a1a1a 0%, #0a0a0a 100%);
+    color: #FFFFFF;
+    min-height: 100vh;
+    padding: 60px 32px 100px;
+  }
+
+  /* ---------- PAGE HEADER ---------- */
+
+  .page-head {
+    text-align: center;
+    margin: 0 auto 64px;
+    max-width: 1100px;
+  }
+  .page-head .label {
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: 0.32em;
+    color: var(--red-dark);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .page-head .kanji {
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 900;
+    font-size: 64px;
+    color: var(--red-dark);
+    letter-spacing: 0.2em;
+    margin-bottom: 12px;
+    line-height: 1;
+  }
+  .page-head h1 {
+    font-weight: 900;
+    font-size: 56px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 18px;
+    line-height: 1;
+  }
+  .page-head p {
+    font-weight: 400;
+    font-size: 15px;
+    color: #999;
+    line-height: 1.6;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  /* ---------- SECTION HEADER ---------- */
+
+  .section {
+    max-width: 1500px;
+    margin: 0 auto 96px;
+  }
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    gap: 24px;
+    margin-bottom: 40px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #2a2a2a;
+  }
+  .section-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 56px;
+    color: var(--red-dark);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .section-info { flex: 1; }
+  .section-info .eyebrow {
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0.32em;
+    color: var(--red-dark);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .section-info h2 {
+    font-weight: 900;
+    font-size: 36px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    line-height: 1;
+    margin-bottom: 10px;
+  }
+  .section-info p {
+    font-size: 14px;
+    color: #999;
+    line-height: 1.6;
+    max-width: 720px;
+  }
+
+  /* ---------- DEVICE GRID ---------- */
+
+  .pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    justify-items: center;
+  }
+  @media (max-width: 800px) {
+    .pair { grid-template-columns: 1fr; }
+  }
+
+  .device {
+    width: 320px;
+  }
+  .device-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+    padding-left: 4px;
+  }
+  .device-meta .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+  }
+  .device-meta .dot.dark { background: var(--red-dark); }
+  .device-meta .dot.light { background: var(--red-light); }
+  .device-meta .name {
+    font-weight: 700; font-size: 11px; letter-spacing: 0.24em;
+    text-transform: uppercase;
+  }
+  .device-meta.dark-tag .name { color: #DDD; }
+  .device-meta.light-tag .name { color: #888; }
+
+  .frame {
+    border-radius: 36px;
+    padding: 6px;
+    overflow: hidden;
+  }
+  .frame.dark { background: #2a2a2a; border: 1px solid #444; }
+  .frame.light { background: #ddd; border: 1px solid #ccc; }
+  .frame .screen {
+    border-radius: 30px;
+    overflow: hidden;
+    width: 100%;
+    aspect-ratio: 9 / 19.5;
+    position: relative;
+  }
+
+  /* ---------- SCREEN BASE — DARK ---------- */
+
+  .screen.dark { background: #000000; color: #FFFFFF; }
+  .screen.light { background: #FFFFFF; color: #0A0A0A; }
+
+  .screen .statusbar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 14px 24px 6px;
+    font-weight: 500; font-size: 12px;
+  }
+  .screen.dark .statusbar { color: #FFFFFF; }
+  .screen.light .statusbar { color: #0A0A0A; }
+  .statusbar .icons {
+    font-size: 10px;
+    letter-spacing: 2px;
+  }
+
+  /* ---------- KANJI WATERMARK ---------- */
+
+  .kanji-watermark {
+    position: absolute;
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 900;
+    font-size: 280px;
+    line-height: 1;
+    pointer-events: none;
+    user-select: none;
+    z-index: 0;
+  }
+  .screen.dark .kanji-watermark { color: rgba(255,45,63,0.025); }
+  .screen.light .kanji-watermark { color: rgba(232,25,44,0.04); }
+  .kanji-tan { top: 50%; right: -40px; transform: translateY(-50%); }
+  .kanji-ren { top: 50%; left: -40px; transform: translateY(-50%); }
+
+  /* ---------- HEADERS COMMON ---------- */
+
+  .scr-content {
+    position: relative; z-index: 1;
+    padding: 16px 22px 0;
+  }
+
+  .scr-title-block {
+    margin-bottom: 24px;
+  }
+  .scr-title-block h1 {
+    font-weight: 900; font-size: 26px;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    line-height: 1;
+  }
+  .screen.dark .scr-title-block h1 { color: #FFFFFF; }
+  .screen.light .scr-title-block h1 { color: #0A0A0A; }
+
+  .scr-back-row {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 22px;
+  }
+  .scr-back {
+    display: flex; align-items: center; gap: 12px;
+  }
+  .scr-back .arrow {
+    font-weight: 500; font-size: 14px;
+  }
+  .scr-back .lbl {
+    font-weight: 500; font-size: 11px;
+    letter-spacing: 0.24em; text-transform: uppercase;
+  }
+  .screen.dark .scr-back .arrow,
+  .screen.dark .scr-back .lbl { color: var(--red-dark); }
+  .screen.light .scr-back .arrow,
+  .screen.light .scr-back .lbl { color: var(--red-light); }
+
+  .scr-back-title {
+    font-weight: 900; font-size: 18px;
+    letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  .screen.dark .scr-back-title { color: #FFFFFF; }
+  .screen.light .scr-back-title { color: #0A0A0A; }
+
+  .scr-action {
+    font-weight: 500; font-size: 11px;
+    letter-spacing: 0.24em; text-transform: uppercase;
+  }
+  .screen.dark .scr-action { color: var(--red-dark); }
+  .screen.light .scr-action { color: var(--red-light); }
+
+  /* ---------- AVATAR + IDENTITY ---------- */
+
+  .id-row {
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 22px;
+  }
+  .avatar {
+    position: relative;
+    width: 56px; height: 56px;
+    flex-shrink: 0;
+  }
+  .avatar .corner {
+    position: absolute; top: 0; left: 0;
+    width: 9px; height: 9px;
+    background: var(--red-dark);
+  }
+  .screen.light .avatar .corner { background: var(--red-light); }
+  .avatar .square {
+    position: absolute; inset: 0;
+    border: 1.5px solid #FFFFFF;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 22px;
+    letter-spacing: 0.04em;
+  }
+  .screen.light .avatar .square { border-color: #0A0A0A; color: #0A0A0A; }
+  .screen.dark .avatar .square { color: #FFFFFF; }
+
+  .id-info .name {
+    font-weight: 700; font-size: 18px; letter-spacing: 0.02em;
+    line-height: 1.1; margin-bottom: 2px;
+  }
+  .id-info .email {
+    font-size: 11px;
+    line-height: 1.3;
+  }
+  .screen.dark .id-info .email { color: #888; }
+  .screen.light .id-info .email { color: #888; }
+  .id-info .provider {
+    font-weight: 700; font-size: 9px;
+    letter-spacing: 0.24em; text-transform: uppercase;
+    margin-top: 4px;
+  }
+  .screen.dark .id-info .provider { color: var(--red-dark); }
+  .screen.light .id-info .provider { color: var(--red-light); }
+
+  /* ---------- STATS STRIP ---------- */
+
+  .stats-strip {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    border: 1px solid;
+    margin-bottom: 24px;
+  }
+  .screen.dark .stats-strip { border-color: rgba(255,255,255,0.15); }
+  .screen.light .stats-strip { border-color: rgba(10,10,10,0.12); }
+
+  .stat-cell {
+    padding: 14px 6px;
+    text-align: center;
+    border-right: 1px solid;
+  }
+  .stat-cell:last-child { border-right: none; }
+  .screen.dark .stat-cell { border-color: rgba(255,255,255,0.15); }
+  .screen.light .stat-cell { border-color: rgba(10,10,10,0.12); }
+
+  .stat-cell .num {
+    font-weight: 700; font-size: 20px;
+    letter-spacing: 0.02em; line-height: 1.05;
+  }
+  .stat-cell .num.accent { color: var(--red-dark); }
+  .screen.light .stat-cell .num.accent { color: var(--red-light); }
+  .screen.dark .stat-cell .num { color: #FFFFFF; }
+  .screen.light .stat-cell .num { color: #0A0A0A; }
+
+  .stat-cell .lbl {
+    font-weight: 500; font-size: 9px;
+    letter-spacing: 0.24em; text-transform: uppercase;
+    margin-top: 4px;
+  }
+  .screen.dark .stat-cell .lbl { color: #666; }
+  .screen.light .stat-cell .lbl { color: #999; }
+
+  /* ---------- STATS STRIP DEUX ---------- */
+
+  .stats-strip-2 {
+    display: grid; grid-template-columns: 1fr 1fr;
+    border: 1px solid;
+    margin-bottom: 20px;
+  }
+  .screen.dark .stats-strip-2 { border-color: rgba(255,255,255,0.15); }
+  .screen.light .stats-strip-2 { border-color: rgba(10,10,10,0.12); }
+  .stats-strip-2 .stat-cell:nth-child(1) { border-right: 1px solid; }
+  .stats-strip-2 .stat-cell:last-child { border-right: none; }
+
+  /* ---------- SECTION LABEL ---------- */
+
+  .sec-label {
+    font-weight: 500; font-size: 10px;
+    letter-spacing: 0.32em; text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .screen.dark .sec-label { color: #555; }
+  .screen.light .sec-label { color: #aaa; }
+
+  /* ---------- ROWS (Profile pattern) ---------- */
+
+  .row-line {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 16px 0;
+    border-bottom: 0.5px solid;
+  }
+  .screen.dark .row-line { border-color: rgba(255,255,255,0.08); }
+  .screen.light .row-line { border-color: rgba(10,10,10,0.08); }
+
+  .row-line .label {
+    font-weight: 400; font-size: 14px;
+  }
+  .screen.dark .row-line .label { color: #FFFFFF; }
+  .screen.light .row-line .label { color: #0A0A0A; }
+
+  .row-line .value {
+    font-weight: 700; font-size: 14px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .screen.dark .row-line .value { color: #FFFFFF; }
+  .screen.light .row-line .value { color: #0A0A0A; }
+  .row-line .chevron {
+    opacity: 0.4; font-size: 16px;
+  }
+
+  .row-line.highlight {
+    margin: 0 -22px;
+    padding-left: 22px; padding-right: 22px;
+  }
+  .screen.dark .row-line.highlight { background: rgba(255,45,63,0.06); }
+  .screen.light .row-line.highlight { background: rgba(232,25,44,0.05); }
+
+  .badge-new {
+    font-weight: 700; font-size: 8px;
+    letter-spacing: 0.16em;
+    padding: 3px 6px;
+    color: #FFFFFF;
+    background: var(--red-dark);
+    margin-left: 8px;
+  }
+  .screen.light .badge-new { background: var(--red-light); }
+
+  /* ---------- CTA COMPARE CARD ---------- */
+
+  .cta-compare {
+    border: 1px solid var(--red-dark);
+    padding: 13px;
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 22px;
+    cursor: pointer;
+  }
+  .screen.light .cta-compare { border-color: var(--red-light); }
+
+  .cta-thumbs {
+    display: flex; gap: 3px;
+    flex-shrink: 0;
+  }
+  .cta-thumb {
+    width: 32px; aspect-ratio: 3/4;
+  }
+  .screen.dark .cta-thumb {
+    background: linear-gradient(180deg, #2a2a2a, #141414);
+  }
+  .screen.light .cta-thumb {
+    background: linear-gradient(180deg, #d8d8d8, #f0f0f0);
+  }
+
+  .cta-info { flex: 1; }
+  .cta-info .ttl {
+    font-weight: 700; font-size: 13px;
+    letter-spacing: 0.02em;
+    margin-bottom: 2px;
+  }
+  .screen.dark .cta-info .ttl { color: #FFFFFF; }
+  .screen.light .cta-info .ttl { color: #0A0A0A; }
+
+  .cta-info .sub {
+    font-size: 11px;
+  }
+  .screen.dark .cta-info .sub { color: #888; }
+  .screen.light .cta-info .sub { color: #888; }
+
+  .cta-arrow {
+    font-size: 16px;
+    color: var(--red-dark);
+  }
+  .screen.light .cta-arrow { color: var(--red-light); }
+
+  /* ---------- ANGLE FILTERS ---------- */
+
+  .angle-filters {
+    display: flex; gap: 5px;
+    margin-bottom: 22px;
+    flex-wrap: nowrap;
+  }
+  .angle-pill {
+    font-weight: 500; font-size: 9px;
+    letter-spacing: 0.24em; text-transform: uppercase;
+    padding: 7px 11px;
+    cursor: pointer;
+  }
+  .angle-pill.active {
+    background: var(--red-dark);
+    color: #FFFFFF;
+  }
+  .screen.light .angle-pill.active { background: var(--red-light); }
+
+  .angle-pill.inactive {
+    border: 0.5px solid;
+  }
+  .screen.dark .angle-pill.inactive {
+    color: #888; border-color: rgba(255,255,255,0.18);
+  }
+  .screen.light .angle-pill.inactive {
+    color: #777; border-color: rgba(10,10,10,0.18);
+  }
+
+  /* ---------- MONTH HEADER ---------- */
+
+  .month-head {
+    font-weight: 500; font-size: 10px;
+    letter-spacing: 0.32em; text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .screen.dark .month-head { color: #555; }
+  .screen.light .month-head { color: #999; }
+
+  /* ---------- PHOTO GRID ---------- */
+
+  .photo-grid {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 4px;
+    margin-bottom: 24px;
+  }
+  .photo-cell {
+    aspect-ratio: 3/4;
+    position: relative;
+    overflow: hidden;
+  }
+  .screen.dark .photo-cell.tone-a { background: linear-gradient(180deg, #2a2a2a, #151515); }
+  .screen.dark .photo-cell.tone-b { background: linear-gradient(180deg, #2e2e2e, #181818); }
+  .screen.dark .photo-cell.tone-c { background: linear-gradient(180deg, #2c2c2c, #161616); }
+  .screen.light .photo-cell.tone-a { background: linear-gradient(180deg, #f0f0f0, #d8d8d8); }
+  .screen.light .photo-cell.tone-b { background: linear-gradient(180deg, #ececec, #d4d4d4); }
+  .screen.light .photo-cell.tone-c { background: linear-gradient(180deg, #efefef, #d6d6d6); }
+
+  .photo-tag {
+    position: absolute; top: 0; left: 0;
+    background: var(--red-dark);
+    color: #FFFFFF;
+    font-weight: 700; font-size: 8px;
+    letter-spacing: 0.18em;
+    padding: 3px 6px;
+  }
+  .screen.light .photo-tag { background: var(--red-light); }
+
+  .photo-date {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 6px 8px;
+    color: #FFFFFF;
+    font-weight: 700; font-size: 10px;
+    letter-spacing: 0.08em;
+  }
+  .screen.dark .photo-date {
+    background: linear-gradient(0deg, rgba(0,0,0,0.85), transparent);
+  }
+  .screen.light .photo-date {
+    background: linear-gradient(0deg, rgba(10,10,10,0.65), transparent);
+    color: #FFFFFF;
+  }
+
+  /* ---------- COMPARE PAIR ---------- */
+
+  .compare-card {
+    border: 1px solid;
+    padding: 14px;
+    margin-bottom: 18px;
+  }
+  .screen.dark .compare-card { border-color: rgba(255,255,255,0.1); background: #0A0A0A; }
+  .screen.light .compare-card { border-color: rgba(10,10,10,0.08); background: #FAFAFA; }
+
+  .compare-labels {
+    display: flex; justify-content: space-between;
+    margin-bottom: 6px;
+  }
+  .compare-labels span {
+    font-weight: 500; font-size: 9px;
+    letter-spacing: 0.32em; text-transform: uppercase;
+  }
+  .screen.dark .compare-labels span { color: #666; }
+  .screen.light .compare-labels span { color: #999; }
+
+  .compare-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    margin-bottom: 12px;
+  }
+  .compare-cell {
+    aspect-ratio: 3/4;
+    position: relative;
+    overflow: hidden;
+  }
+  .screen.dark .compare-cell { background: linear-gradient(180deg, #2c2c2c, #141414); }
+  .screen.light .compare-cell { background: linear-gradient(180deg, #ececec, #d4d4d4); }
+  .compare-cell .photo-tag { font-size: 8px; }
+  .compare-info {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 8px;
+    color: #FFFFFF;
+  }
+  .screen.dark .compare-info {
+    background: linear-gradient(0deg, rgba(0,0,0,0.92), transparent);
+  }
+  .screen.light .compare-info {
+    background: linear-gradient(0deg, rgba(10,10,10,0.75), transparent);
+  }
+  .compare-info .d {
+    font-weight: 700; font-size: 12px;
+    letter-spacing: 0.04em;
+    line-height: 1.1;
+  }
+  .compare-info .w {
+    font-weight: 400; font-size: 10px;
+    color: rgba(255,255,255,0.75);
+    margin-top: 1px;
+  }
+
+  .compare-deltas {
+    display: grid; grid-template-columns: 1fr 1fr;
+    border-top: 1px solid;
+    padding-top: 12px;
+  }
+  .screen.dark .compare-deltas { border-color: rgba(255,255,255,0.08); }
+  .screen.light .compare-deltas { border-color: rgba(10,10,10,0.08); }
+  .delta-cell {
+    text-align: center;
+    border-right: 1px solid;
+  }
+  .delta-cell:last-child { border-right: none; }
+  .screen.dark .delta-cell { border-color: rgba(255,255,255,0.08); }
+  .screen.light .delta-cell { border-color: rgba(10,10,10,0.08); }
+
+  .delta-cell .v {
+    font-weight: 700; font-size: 17px;
+    letter-spacing: 0.02em;
+    line-height: 1;
+  }
+  .screen.dark .delta-cell .v { color: #FFFFFF; }
+  .screen.light .delta-cell .v { color: #0A0A0A; }
+  .delta-cell .v.accent { color: var(--red-dark); }
+  .screen.light .delta-cell .v.accent { color: var(--red-light); }
+
+  .delta-cell .l {
+    font-weight: 500; font-size: 8px;
+    letter-spacing: 0.24em; text-transform: uppercase;
+    margin-top: 3px;
+  }
+  .screen.dark .delta-cell .l { color: #666; }
+  .screen.light .delta-cell .l { color: #999; }
+
+  /* ---------- SELECT ZONE ---------- */
+
+  .select-zone {
+    margin-bottom: 16px;
+  }
+
+  .select-pair {
+    display: flex; gap: 10px;
+  }
+  .select-pair > div { flex: 1; }
+  .select-pair .lbl {
+    font-weight: 500; font-size: 8px;
+    letter-spacing: 0.32em; text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .screen.dark .select-pair .lbl { color: #666; }
+  .screen.light .select-pair .lbl { color: #999; }
+
+  .select-thumb {
+    aspect-ratio: 1;
+    border: 1px solid var(--red-dark);
+    position: relative;
+  }
+  .screen.light .select-thumb { border-color: var(--red-light); }
+  .screen.dark .select-thumb.t-a { background: linear-gradient(180deg, #2a2a2a, #141414); }
+  .screen.dark .select-thumb.t-b { background: linear-gradient(180deg, #2d2d2d, #171717); }
+  .screen.light .select-thumb.t-a { background: linear-gradient(180deg, #ececec, #d4d4d4); }
+  .screen.light .select-thumb.t-b { background: linear-gradient(180deg, #efefef, #d8d8d8); }
+  .select-thumb .d {
+    position: absolute; bottom: 4px; left: 4px;
+    color: #FFFFFF;
+    font-weight: 700; font-size: 9px;
+    letter-spacing: 0.04em;
+  }
+
+  /* ---------- SHARE PANEL ---------- */
+
+  .share-panel {
+    margin-top: 22px;
+    padding: 18px 22px 22px;
+    margin-left: -22px; margin-right: -22px;
+    border-top: 0.5px solid;
+  }
+  .screen.dark .share-panel { background: #0A0A0A; border-color: rgba(255,255,255,0.08); }
+  .screen.light .share-panel { background: #F5F5F5; border-color: rgba(10,10,10,0.08); }
+
+  .share-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 0;
+    border-bottom: 0.5px solid;
+  }
+  .share-row:last-child { border-bottom: none; }
+  .screen.dark .share-row { border-color: rgba(255,255,255,0.08); }
+  .screen.light .share-row { border-color: rgba(10,10,10,0.08); }
+
+  .share-row .name {
+    font-size: 13px;
+    font-weight: 400;
+  }
+  .screen.dark .share-row .name { color: #FFFFFF; }
+  .screen.light .share-row .name { color: #0A0A0A; }
+
+  .toggle {
+    width: 34px; height: 19px;
+    border-radius: 10px;
+    position: relative;
+  }
+  .toggle.on { background: var(--red-dark); }
+  .screen.light .toggle.on { background: var(--red-light); }
+  .toggle .knob {
+    position: absolute; top: 2px;
+    width: 15px; height: 15px;
+    border-radius: 50%;
+    background: #FFFFFF;
+  }
+  .toggle.on .knob { right: 2px; }
+
+  .format-pills {
+    display: flex; gap: 4px;
+  }
+  .format-pill {
+    font-weight: 700; font-size: 9px;
+    letter-spacing: 0.16em;
+    padding: 6px 9px;
+  }
+  .format-pill.active { background: var(--red-dark); color: #FFFFFF; }
+  .screen.light .format-pill.active { background: var(--red-light); }
+  .format-pill.inactive {
+    border: 0.5px solid;
+  }
+  .screen.dark .format-pill.inactive {
+    color: #888; border-color: rgba(255,255,255,0.2);
+  }
+  .screen.light .format-pill.inactive {
+    color: #777; border-color: rgba(10,10,10,0.18);
+  }
+
+  .share-cta {
+    background: var(--red-dark);
+    color: #FFFFFF;
+    text-align: center;
+    padding: 14px;
+    margin-top: 14px;
+    font-weight: 700; font-size: 12px;
+    letter-spacing: 0.32em; text-transform: uppercase;
+  }
+  .screen.light .share-cta { background: var(--red-light); }
+
+  /* ---------- TAB BAR ---------- */
+
+  .tabbar {
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    padding: 16px 24px 22px;
+    border-top: 0.5px solid;
+    position: absolute; bottom: 0; left: 0; right: 0;
+  }
+  .screen.dark .tabbar {
+    background: #0A0A0A; border-color: rgba(255,255,255,0.08);
+  }
+  .screen.light .tabbar {
+    background: #FAFAFA; border-color: rgba(10,10,10,0.06);
+  }
+  .tab {
+    text-align: center;
+    font-size: 16px;
+  }
+  .screen.dark .tab { color: rgba(255,255,255,0.35); }
+  .screen.light .tab { color: rgba(10,10,10,0.4); }
+  .tab.active { color: var(--red-dark); }
+  .screen.light .tab.active { color: var(--red-light); }
+
+  /* ---------- SHARE CARD PREVIEW ---------- */
+
+  .share-preview-wrap {
+    text-align: center;
+    padding: 40px 20px;
+  }
+  .share-preview-wrap .preview-label {
+    font-weight: 500; font-size: 10px;
+    letter-spacing: 0.32em; color: #666;
+    text-transform: uppercase;
+    margin-bottom: 18px;
+  }
+
+  .share-card {
+    width: 270px;
+    aspect-ratio: 9/16;
+    margin: 0 auto;
+    padding: 24px 20px;
+    display: flex; flex-direction: column;
+    font-family: 'Barlow Condensed', sans-serif;
+  }
+  .share-card.dark {
+    background: #000000;
+    color: #FFFFFF;
+  }
+  .share-card.light {
+    background: #FFFFFF;
+    color: #0A0A0A;
+  }
+
+  .share-card-head {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 22px;
+  }
+  .share-card .logo-mark {
+    position: relative;
+    width: 24px; height: 24px;
+  }
+  .share-card .logo-mark .corner {
+    position: absolute; top: -2px; left: -2px;
+    width: 8px; height: 8px;
+    background: var(--red-dark);
+  }
+  .share-card.light .logo-mark .corner { background: var(--red-light); }
+  .share-card .logo-mark .square {
+    position: absolute; inset: 0;
+    border: 1.5px solid;
+  }
+  .share-card.dark .logo-mark .square { border-color: #FFFFFF; }
+  .share-card.light .logo-mark .square { border-color: #0A0A0A; }
+  .share-card .logo-mark .square::before,
+  .share-card .logo-mark .square::after {
+    content: ''; position: absolute;
+    background: currentColor;
+  }
+  .share-card.dark .logo-mark .square::before,
+  .share-card.dark .logo-mark .square::after { background: #FFFFFF; }
+  .share-card.light .logo-mark .square::before,
+  .share-card.light .logo-mark .square::after { background: #0A0A0A; }
+  .share-card .logo-mark .square::before {
+    top: 50%; left: 50%; transform: translate(-50%,-50%);
+    width: 1.5px; height: 11px;
+  }
+  .share-card .logo-mark .square::after {
+    top: 50%; left: 50%; transform: translate(-50%,-50%);
+    width: 11px; height: 1.5px;
+  }
+  .share-card .handle {
+    font-weight: 500; font-size: 9px;
+    letter-spacing: 0.32em; text-transform: uppercase;
+  }
+  .share-card.dark .handle { color: rgba(255,255,255,0.5); }
+  .share-card.light .handle { color: #666; }
+
+  .share-card-photos {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 4px; margin-bottom: 18px;
+  }
+  .share-card-cell {
+    aspect-ratio: 3/4;
+    position: relative;
+  }
+  .share-card.dark .share-card-cell { background: linear-gradient(180deg, #2a2a2a, #141414); }
+  .share-card.light .share-card-cell { background: linear-gradient(180deg, #e8e8e8, #d0d0d0); }
+  .share-card-cell .ba {
+    position: absolute; top: 4px; left: 4px;
+    font-weight: 700; font-size: 8px;
+    letter-spacing: 0.16em;
+    padding: 2px 5px;
+    color: #FFFFFF;
+  }
+  .ba.before-tag {
+    background: rgba(0,0,0,0.5);
+  }
+  .share-card.light .ba.before-tag { background: rgba(0,0,0,0.6); }
+  .ba.after-tag {
+    background: var(--red-dark);
+  }
+  .share-card.light .ba.after-tag { background: var(--red-light); }
+  .share-card-cell .info {
+    position: absolute; bottom: 4px; left: 4px; right: 4px;
+    color: #FFFFFF;
+    font-size: 9px;
+    line-height: 1.2;
+  }
+  .share-card.light .share-card-cell .info {
+    background: rgba(0,0,0,0.6);
+    padding: 3px 5px;
+  }
+  .share-card-cell .info .d { font-weight: 700; }
+  .share-card-cell .info .w { color: rgba(255,255,255,0.75); }
+
+  .share-card-stat {
+    text-align: center;
+    margin-bottom: 14px;
+  }
+  .share-card-stat .days {
+    font-weight: 500; font-size: 10px;
+    letter-spacing: 0.32em;
+    margin-bottom: 4px;
+  }
+  .share-card.dark .share-card-stat .days { color: #FFFFFF; }
+  .share-card.light .share-card-stat .days { color: #0A0A0A; }
+
+  .share-card-stat .delta {
+    font-weight: 900; font-size: 38px;
+    line-height: 1;
+    letter-spacing: 0.04em;
+    color: var(--red-dark);
+  }
+  .share-card.light .share-card-stat .delta { color: var(--red-light); }
+
+  .share-card-foot {
+    margin-top: auto;
+    padding-top: 12px;
+    border-top: 0.5px solid;
+    text-align: center;
+  }
+  .share-card.dark .share-card-foot { border-color: rgba(255,255,255,0.2); }
+  .share-card.light .share-card-foot { border-color: rgba(10,10,10,0.15); }
+
+  .share-card-foot .mantra-1 {
+    font-weight: 500; font-size: 11px;
+    letter-spacing: 0.16em; text-transform: uppercase;
+  }
+  .share-card.dark .share-card-foot .mantra-1 { color: #FFFFFF; }
+  .share-card.light .share-card-foot .mantra-1 { color: #0A0A0A; }
+
+  .share-card-foot .mantra-2 {
+    font-weight: 500; font-size: 11px;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--red-dark);
+  }
+  .share-card.light .share-card-foot .mantra-2 { color: var(--red-light); }
+
+  .share-card-foot .handle-bottom {
+    font-weight: 500; font-size: 8px;
+    letter-spacing: 0.32em;
+    margin-top: 8px;
+  }
+  .share-card.dark .share-card-foot .handle-bottom { color: rgba(255,255,255,0.4); }
+  .share-card.light .share-card-foot .handle-bottom { color: #888; }
+
+  .share-card-foot .kanji-foot {
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 900; font-size: 14px;
+    letter-spacing: 0.32em;
+    color: var(--red-dark);
+    margin-top: 6px;
+  }
+  .share-card.light .share-card-foot .kanji-foot { color: var(--red-light); }
+
+  /* ---------- DESIGN NOTES ---------- */
+
+  .notes {
+    max-width: 1100px;
+    margin: 32px auto 0;
+    padding: 22px 28px;
+    background: rgba(255,255,255,0.025);
+    border-left: 3px solid var(--red-dark);
+  }
+  .notes h4 {
+    font-weight: 700; font-size: 11px;
+    letter-spacing: 0.24em; color: var(--red-dark);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .notes p {
+    font-size: 13px; color: #BBB;
+    line-height: 1.65;
+    margin-bottom: 8px;
+  }
+  .notes p:last-child { margin-bottom: 0; }
+  .notes p strong { color: #FFF; font-weight: 700; }
+
+  /* ---------- FOOTER ---------- */
+
+  .page-foot {
+    max-width: 900px;
+    margin: 96px auto 0;
+    text-align: center;
+    padding-top: 40px;
+    border-top: 1px solid #2a2a2a;
+  }
+  .page-foot .k {
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 900; font-size: 26px;
+    color: var(--red-dark);
+    letter-spacing: 0.4em;
+    margin-bottom: 8px;
+  }
+  .page-foot .t {
+    font-weight: 900; font-size: 22px;
+    letter-spacing: 0.16em;
+    margin-bottom: 4px;
+  }
+  .page-foot .d {
+    font-style: italic;
+    color: var(--red-dark);
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
+  .page-foot .meta {
+    font-size: 10px; color: #888;
+    letter-spacing: 0.24em;
+  }
+</style>
+</head>
+<body>
+
+<div class="page-head">
+  <div class="kanji">鍛 錬</div>
+  <div class="label">Tanren · Évolution physique</div>
+  <h1>Photos avant / après</h1>
+  <p>
+    Quatre écrans, en mode sombre et clair, qui montrent l'intégration de la fonctionnalité d'évolution photo dans Tanren — du profil à la galerie, du comparateur à la carte de partage social.
+  </p>
+</div>
+
+<!-- =========================================================== -->
+<!-- ÉCRAN 1 — PROFIL AVEC LIGNE ÉVOLUTION                        -->
+<!-- =========================================================== -->
+
+<div class="section">
+  <div class="section-head">
+    <div class="section-num">01</div>
+    <div class="section-info">
+      <div class="eyebrow">Profil — point d'entrée</div>
+      <h2>Une nouvelle ligne dans Personnel</h2>
+      <p>
+        La fonctionnalité s'insère discrètement dans la section Personnel existante, juste après Poids. Fond rouge subtil et badge NEW pour signaler la nouveauté lors du premier lancement post-update — disparaissent après le premier tap.
+      </p>
+    </div>
+  </div>
+
+  <div class="pair">
+
+    <!-- DARK -->
+    <div class="device">
+      <div class="device-meta dark-tag">
+        <span class="dot dark"></span>
+        <span class="name">Mode sombre</span>
+      </div>
+      <div class="frame dark">
+        <div class="screen dark">
+          <div class="kanji-watermark kanji-tan">鍛</div>
+          <div class="statusbar">
+            <span>11:59</span>
+            <span class="icons">●●● ◐ ▮</span>
+          </div>
+
+          <div class="scr-content">
+            <div class="scr-title-block"><h1>Profil</h1></div>
+
+            <div class="id-row">
+              <div class="avatar">
+                <div class="corner"></div>
+                <div class="square">R</div>
+              </div>
+              <div class="id-info">
+                <div class="name">Ramy</div>
+                <div class="email">ramy.abouelnay@gmail.com</div>
+                <div class="provider">Connecté via email</div>
+              </div>
+            </div>
+
+            <div class="stats-strip">
+              <div class="stat-cell">
+                <div class="num">9</div>
+                <div class="lbl">Séances</div>
+              </div>
+              <div class="stat-cell">
+                <div class="num accent">16 670 kg</div>
+                <div class="lbl">Volume</div>
+              </div>
+              <div class="stat-cell">
+                <div class="num">15</div>
+                <div class="lbl">Records</div>
+              </div>
+            </div>
+
+            <div class="sec-label">Personnel</div>
+
+            <div class="row-line">
+              <div class="label">Prénom</div>
+              <div class="value">Ramy <span class="chevron">›</span></div>
+            </div>
+
+            <div class="row-line">
+              <div class="label">Taille</div>
+              <div class="value">169 cm <span class="chevron">›</span></div>
+            </div>
+
+            <div class="row-line">
+              <div class="label">Poids</div>
+              <div class="value">74,0 kg <span class="chevron">›</span></div>
+            </div>
+
+            <div class="row-line highlight">
+              <div class="label">
+                Évolution physique
+                <span class="badge-new">New</span>
+              </div>
+              <div class="value">12 photos <span class="chevron">›</span></div>
+            </div>
+
+            <div class="sec-label" style="margin-top: 24px;">Entraînement</div>
+
+            <div class="row-line">
+              <div class="label">Niveau</div>
+              <div class="value">Avancé <span class="chevron">›</span></div>
+            </div>
+
+            <div class="row-line">
+              <div class="label">Objectif</div>
+              <div class="value">Prise de muscle <span class="chevron">›</span></div>
+            </div>
+          </div>
+
+          <div class="tabbar">
+            <div class="tab">⌂</div>
+            <div class="tab">▤</div>
+            <div class="tab">◷</div>
+            <div class="tab">⊕</div>
+            <div class="tab active">●</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LIGHT -->
+    <div class="device">
+      <div class="device-meta light-tag">
+        <span class="dot light"></span>
+        <span class="name">Mode clair</span>
+      </div>
+      <div class="frame light">
+        <div class="screen light">
+          <div class="kanji-watermark kanji-tan">鍛</div>
+          <div class="statusbar">
+            <span>11:59</span>
+            <span class="icons">●●● ◐ ▮</span>
+          </div>
+
+          <div class="scr-content">
+            <div class="scr-title-block"><h1>Profil</h1></div>
+
+            <div class="id-row">
+              <div class="avatar">
+                <div class="corner"></div>
+                <div class="square">R</div>
+              </div>
+              <div class="id-info">
+                <div class="name">Ramy</div>
+                <div class="email">ramy.abouelnay@gmail.com</div>
+                <div class="provider">Connecté via email</div>
+              </div>
+            </div>
+
+            <div class="stats-strip">
+              <div class="stat-cell">
+                <div class="num">9</div>
+                <div class="lbl">Séances</div>
+              </div>
+              <div class="stat-cell">
+                <div class="num accent">16 670 kg</div>
+                <div class="lbl">Volume</div>
+              </div>
+              <div class="stat-cell">
+                <div class="num">15</div>
+                <div class="lbl">Records</div>
+              </div>
+            </div>
+
+            <div class="sec-label">Personnel</div>
+
+            <div class="row-line">
+              <div class="label">Prénom</div>
+              <div class="value">Ramy <span class="chevron">›</span></div>
+            </div>
+
+            <div class="row-line">
+              <div class="label">Taille</div>
+              <div class="value">169 cm <span class="chevron">›</span></div>
+            </div>
+
+            <div class="row-line">
+              <div class="label">Poids</div>
+              <div class="value">74,0 kg <span class="chevron">›</span></div>
+            </div>
+
+            <div class="row-line highlight">
+              <div class="label">
+                Évolution physique
+                <span class="badge-new">New</span>
+              </div>
+              <div class="value">12 photos <span class="chevron">›</span></div>
+            </div>
+
+            <div class="sec-label" style="margin-top: 24px;">Entraînement</div>
+
+            <div class="row-line">
+              <div class="label">Niveau</div>
+              <div class="value">Avancé <span class="chevron">›</span></div>
+            </div>
+
+            <div class="row-line">
+              <div class="label">Objectif</div>
+              <div class="value">Prise de muscle <span class="chevron">›</span></div>
+            </div>
+          </div>
+
+          <div class="tabbar">
+            <div class="tab">⌂</div>
+            <div class="tab">▤</div>
+            <div class="tab">◷</div>
+            <div class="tab">⊕</div>
+            <div class="tab active">●</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- =========================================================== -->
+<!-- ÉCRAN 2 — GALERIE ÉVOLUTION                                  -->
+<!-- =========================================================== -->
+
+<div class="section">
+  <div class="section-head">
+    <div class="section-num">02</div>
+    <div class="section-info">
+      <div class="eyebrow">Galerie — collecte & visualisation</div>
+      <h2>Toutes les photos, organisées par mois</h2>
+      <p>
+        L'écran reprend la grammaire de l'écran Poids : back rouge à gauche, action +Ajouter à droite, stats strip avec le delta global en accent. La carte CTA Comparer & partager apparaît dès qu'il y a au moins deux photos. Les filtres d'angle (Tout / Face / Profil / Dos) reproduisent le pattern des périodes 7J/30J/3M/1A.
+      </p>
+    </div>
+  </div>
+
+  <div class="pair">
+
+    <!-- DARK -->
+    <div class="device">
+      <div class="device-meta dark-tag">
+        <span class="dot dark"></span>
+        <span class="name">Mode sombre</span>
+      </div>
+      <div class="frame dark">
+        <div class="screen dark">
+          <div class="kanji-watermark kanji-tan">鍛</div>
+          <div class="statusbar">
+            <span>11:59</span>
+            <span class="icons">●●● ◐ ▮</span>
+          </div>
+
+          <div class="scr-content">
+            <div class="scr-back-row">
+              <div class="scr-back">
+                <span class="arrow">‹</span>
+                <span class="lbl">Back</span>
+              </div>
+              <span class="scr-action">+ Ajouter</span>
+            </div>
+
+            <div class="scr-title-block"><h1>Évolution</h1></div>
+
+            <div class="stats-strip-2">
+              <div class="stat-cell">
+                <div class="num">12</div>
+                <div class="lbl">Photos</div>
+              </div>
+              <div class="stat-cell">
+                <div class="num accent">−2,4 kg</div>
+                <div class="lbl">Depuis le début</div>
+              </div>
+            </div>
+
+            <div class="cta-compare">
+              <div class="cta-thumbs">
+                <div class="cta-thumb"></div>
+                <div class="cta-thumb"></div>
+              </div>
+              <div class="cta-info">
+                <div class="ttl">Comparer & partager</div>
+                <div class="sub">Avant / après en un tap</div>
+              </div>
+              <span class="cta-arrow">›</span>
+            </div>
+
+            <div class="angle-filters">
+              <span class="angle-pill active">Tout</span>
+              <span class="angle-pill inactive">Face</span>
+              <span class="angle-pill inactive">Profil</span>
+              <span class="angle-pill inactive">Dos</span>
+            </div>
+
+            <div class="month-head">Novembre 2026 · 73,8 kg</div>
+            <div class="photo-grid">
+              <div class="photo-cell tone-a">
+                <span class="photo-tag">Face</span>
+                <div class="photo-date">04 nov</div>
+              </div>
+              <div class="photo-cell tone-b">
+                <span class="photo-tag">Profil</span>
+                <div class="photo-date">04 nov</div>
+              </div>
+              <div class="photo-cell tone-c">
+                <span class="photo-tag">Dos</span>
+                <div class="photo-date">04 nov</div>
+              </div>
+            </div>
+
+            <div class="month-head">Octobre 2026 · 75,2 kg</div>
+            <div class="photo-grid">
+              <div class="photo-cell tone-b">
+                <span class="photo-tag">Face</span>
+                <div class="photo-date">05 oct</div>
+              </div>
+              <div class="photo-cell tone-a">
+                <span class="photo-tag">Profil</span>
+                <div class="photo-date">05 oct</div>
+              </div>
+              <div class="photo-cell tone-c">
+                <span class="photo-tag">Dos</span>
+                <div class="photo-date">05 oct</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LIGHT -->
+    <div class="device">
+      <div class="device-meta light-tag">
+        <span class="dot light"></span>
+        <span class="name">Mode clair</span>
+      </div>
+      <div class="frame light">
+        <div class="screen light">
+          <div class="kanji-watermark kanji-tan">鍛</div>
+          <div class="statusbar">
+            <span>11:59</span>
+            <span class="icons">●●● ◐ ▮</span>
+          </div>
+
+          <div class="scr-content">
+            <div class="scr-back-row">
+              <div class="scr-back">
+                <span class="arrow">‹</span>
+                <span class="lbl">Back</span>
+              </div>
+              <span class="scr-action">+ Ajouter</span>
+            </div>
+
+            <div class="scr-title-block"><h1>Évolution</h1></div>
+
+            <div class="stats-strip-2">
+              <div class="stat-cell">
+                <div class="num">12</div>
+                <div class="lbl">Photos</div>
+              </div>
+              <div class="stat-cell">
+                <div class="num accent">−2,4 kg</div>
+                <div class="lbl">Depuis le début</div>
+              </div>
+            </div>
+
+            <div class="cta-compare">
+              <div class="cta-thumbs">
+                <div class="cta-thumb"></div>
+                <div class="cta-thumb"></div>
+              </div>
+              <div class="cta-info">
+                <div class="ttl">Comparer & partager</div>
+                <div class="sub">Avant / après en un tap</div>
+              </div>
+              <span class="cta-arrow">›</span>
+            </div>
+
+            <div class="angle-filters">
+              <span class="angle-pill active">Tout</span>
+              <span class="angle-pill inactive">Face</span>
+              <span class="angle-pill inactive">Profil</span>
+              <span class="angle-pill inactive">Dos</span>
+            </div>
+
+            <div class="month-head">Novembre 2026 · 73,8 kg</div>
+            <div class="photo-grid">
+              <div class="photo-cell tone-a">
+                <span class="photo-tag">Face</span>
+                <div class="photo-date">04 nov</div>
+              </div>
+              <div class="photo-cell tone-b">
+                <span class="photo-tag">Profil</span>
+                <div class="photo-date">04 nov</div>
+              </div>
+              <div class="photo-cell tone-c">
+                <span class="photo-tag">Dos</span>
+                <div class="photo-date">04 nov</div>
+              </div>
+            </div>
+
+            <div class="month-head">Octobre 2026 · 75,2 kg</div>
+            <div class="photo-grid">
+              <div class="photo-cell tone-b">
+                <span class="photo-tag">Face</span>
+                <div class="photo-date">05 oct</div>
+              </div>
+              <div class="photo-cell tone-a">
+                <span class="photo-tag">Profil</span>
+                <div class="photo-date">05 oct</div>
+              </div>
+              <div class="photo-cell tone-c">
+                <span class="photo-tag">Dos</span>
+                <div class="photo-date">05 oct</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- =========================================================== -->
+<!-- ÉCRAN 3 — COMPARATEUR + PARTAGE                              -->
+<!-- =========================================================== -->
+
+<div class="section">
+  <div class="section-head">
+    <div class="section-num">03</div>
+    <div class="section-info">
+      <div class="eyebrow">Comparateur — moment de vérité</div>
+      <h2>Avant, après, et le delta qui motive</h2>
+      <p>
+        Pré-sélection automatique : la première photo en avant, la plus récente en après. L'écart en jours et le delta de poids reprennent la grammaire stats strip. En bas, les options de partage : poids visible, watermark Tanren, format 9:16 pour stories ou 1:1 pour posts.
+      </p>
+    </div>
+  </div>
+
+  <div class="pair">
+
+    <!-- DARK -->
+    <div class="device">
+      <div class="device-meta dark-tag">
+        <span class="dot dark"></span>
+        <span class="name">Mode sombre</span>
+      </div>
+      <div class="frame dark">
+        <div class="screen dark">
+          <div class="kanji-watermark kanji-ren">錬</div>
+          <div class="statusbar">
+            <span>11:59</span>
+            <span class="icons">●●● ◐ ▮</span>
+          </div>
+
+          <div class="scr-content">
+            <div class="scr-back-row">
+              <div class="scr-back">
+                <span class="arrow">‹</span>
+                <span class="lbl">Back</span>
+              </div>
+            </div>
+
+            <div class="scr-title-block"><h1>Comparer</h1></div>
+
+            <div class="compare-card">
+              <div class="compare-labels">
+                <span>Avant</span>
+                <span>Après</span>
+              </div>
+              <div class="compare-grid">
+                <div class="compare-cell">
+                  <span class="photo-tag">Face</span>
+                  <div class="compare-info">
+                    <div class="d">07 sep 2026</div>
+                    <div class="w">76,2 kg</div>
+                  </div>
+                </div>
+                <div class="compare-cell">
+                  <span class="photo-tag">Face</span>
+                  <div class="compare-info">
+                    <div class="d">04 nov 2026</div>
+                    <div class="w">73,8 kg</div>
+                  </div>
+                </div>
+              </div>
+              <div class="compare-deltas">
+                <div class="delta-cell">
+                  <div class="v">58 jours</div>
+                  <div class="l">Écart</div>
+                </div>
+                <div class="delta-cell">
+                  <div class="v accent">−2,4 kg</div>
+                  <div class="l">Delta poids</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="select-zone">
+              <div class="sec-label" style="margin-bottom: 8px;">Changer les photos</div>
+              <div class="select-pair">
+                <div>
+                  <div class="lbl">Avant</div>
+                  <div class="select-thumb t-a">
+                    <span class="d">07 sep</span>
+                  </div>
+                </div>
+                <div>
+                  <div class="lbl">Après</div>
+                  <div class="select-thumb t-b">
+                    <span class="d">04 nov</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="share-panel">
+              <div class="sec-label" style="margin-bottom: 6px;">Partage</div>
+              <div class="share-row">
+                <span class="name">Inclure le poids</span>
+                <div class="toggle on"><div class="knob"></div></div>
+              </div>
+              <div class="share-row">
+                <span class="name">Watermark Tanren</span>
+                <div class="toggle on"><div class="knob"></div></div>
+              </div>
+              <div class="share-row">
+                <span class="name">Format</span>
+                <div class="format-pills">
+                  <span class="format-pill active">9:16</span>
+                  <span class="format-pill inactive">1:1</span>
+                </div>
+              </div>
+              <div class="share-cta">Partager</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LIGHT -->
+    <div class="device">
+      <div class="device-meta light-tag">
+        <span class="dot light"></span>
+        <span class="name">Mode clair</span>
+      </div>
+      <div class="frame light">
+        <div class="screen light">
+          <div class="kanji-watermark kanji-ren">錬</div>
+          <div class="statusbar">
+            <span>11:59</span>
+            <span class="icons">●●● ◐ ▮</span>
+          </div>
+
+          <div class="scr-content">
+            <div class="scr-back-row">
+              <div class="scr-back">
+                <span class="arrow">‹</span>
+                <span class="lbl">Back</span>
+              </div>
+            </div>
+
+            <div class="scr-title-block"><h1>Comparer</h1></div>
+
+            <div class="compare-card">
+              <div class="compare-labels">
+                <span>Avant</span>
+                <span>Après</span>
+              </div>
+              <div class="compare-grid">
+                <div class="compare-cell">
+                  <span class="photo-tag">Face</span>
+                  <div class="compare-info">
+                    <div class="d">07 sep 2026</div>
+                    <div class="w">76,2 kg</div>
+                  </div>
+                </div>
+                <div class="compare-cell">
+                  <span class="photo-tag">Face</span>
+                  <div class="compare-info">
+                    <div class="d">04 nov 2026</div>
+                    <div class="w">73,8 kg</div>
+                  </div>
+                </div>
+              </div>
+              <div class="compare-deltas">
+                <div class="delta-cell">
+                  <div class="v">58 jours</div>
+                  <div class="l">Écart</div>
+                </div>
+                <div class="delta-cell">
+                  <div class="v accent">−2,4 kg</div>
+                  <div class="l">Delta poids</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="select-zone">
+              <div class="sec-label" style="margin-bottom: 8px;">Changer les photos</div>
+              <div class="select-pair">
+                <div>
+                  <div class="lbl">Avant</div>
+                  <div class="select-thumb t-a">
+                    <span class="d">07 sep</span>
+                  </div>
+                </div>
+                <div>
+                  <div class="lbl">Après</div>
+                  <div class="select-thumb t-b">
+                    <span class="d">04 nov</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="share-panel">
+              <div class="sec-label" style="margin-bottom: 6px;">Partage</div>
+              <div class="share-row">
+                <span class="name">Inclure le poids</span>
+                <div class="toggle on"><div class="knob"></div></div>
+              </div>
+              <div class="share-row">
+                <span class="name">Watermark Tanren</span>
+                <div class="toggle on"><div class="knob"></div></div>
+              </div>
+              <div class="share-row">
+                <span class="name">Format</span>
+                <div class="format-pills">
+                  <span class="format-pill active">9:16</span>
+                  <span class="format-pill inactive">1:1</span>
+                </div>
+              </div>
+              <div class="share-cta">Partager</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- =========================================================== -->
+<!-- ÉCRAN 4 — CARTE DE PARTAGE                                   -->
+<!-- =========================================================== -->
+
+<div class="section">
+  <div class="section-head">
+    <div class="section-num">04</div>
+    <div class="section-info">
+      <div class="eyebrow">Carte exportée — acquisition organique</div>
+      <h2>Le PNG qui part sur Instagram et TikTok</h2>
+      <p>
+        Composition générée en 1080×1920px via react-native-view-shot. Forge-Spark Mark en haut-gauche, handle social en haut-droit, paire avant / après avec dates et poids, le delta en typographie monumentale, et le mantra brand en pied. Disponible en deux variantes pour respecter les feeds clairs comme sombres.
+      </p>
+    </div>
+  </div>
+
+  <div class="pair">
+
+    <!-- DARK -->
+    <div class="device">
+      <div class="device-meta dark-tag">
+        <span class="dot dark"></span>
+        <span class="name">Variante sombre</span>
+      </div>
+      <div class="share-preview-wrap" style="background: #0e0e0e; border-radius: 18px;">
+        <div class="preview-label">Story 9:16 · 1080×1920</div>
+        <div class="share-card dark">
+          <div class="share-card-head">
+            <div class="logo-mark">
+              <div class="corner"></div>
+              <div class="square"></div>
+            </div>
+            <span class="handle">@tanrenapp</span>
+          </div>
+
+          <div class="share-card-photos">
+            <div class="share-card-cell">
+              <span class="ba before-tag">Avant</span>
+              <div class="info">
+                <div class="d">07.09.26</div>
+                <div class="w">76,2 kg</div>
+              </div>
+            </div>
+            <div class="share-card-cell">
+              <span class="ba after-tag">Après</span>
+              <div class="info">
+                <div class="d">04.11.26</div>
+                <div class="w">73,8 kg</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="share-card-stat">
+            <div class="days">58 jours</div>
+            <div class="delta">−2,4 KG</div>
+          </div>
+
+          <div style="flex:1"></div>
+
+          <div class="share-card-foot">
+            <div class="mantra-1">Une rep</div>
+            <div class="mantra-2">après l'autre</div>
+            <div class="kanji-foot">鍛 錬</div>
+            <div class="handle-bottom">@tanrenapp</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LIGHT -->
+    <div class="device">
+      <div class="device-meta light-tag">
+        <span class="dot light"></span>
+        <span class="name">Variante claire</span>
+      </div>
+      <div class="share-preview-wrap" style="background: #f0f0f0; border-radius: 18px;">
+        <div class="preview-label">Story 9:16 · 1080×1920</div>
+        <div class="share-card light">
+          <div class="share-card-head">
+            <div class="logo-mark">
+              <div class="corner"></div>
+              <div class="square"></div>
+            </div>
+            <span class="handle">@tanrenapp</span>
+          </div>
+
+          <div class="share-card-photos">
+            <div class="share-card-cell">
+              <span class="ba before-tag">Avant</span>
+              <div class="info">
+                <div class="d">07.09.26</div>
+                <div class="w">76,2 kg</div>
+              </div>
+            </div>
+            <div class="share-card-cell">
+              <span class="ba after-tag">Après</span>
+              <div class="info">
+                <div class="d">04.11.26</div>
+                <div class="w">73,8 kg</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="share-card-stat">
+            <div class="days">58 jours</div>
+            <div class="delta">−2,4 KG</div>
+          </div>
+
+          <div style="flex:1"></div>
+
+          <div class="share-card-foot">
+            <div class="mantra-1">Une rep</div>
+            <div class="mantra-2">après l'autre</div>
+            <div class="kanji-foot">鍛 錬</div>
+            <div class="handle-bottom">@tanrenapp</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- =========================================================== -->
+<!-- DESIGN NOTES                                                 -->
+<!-- =========================================================== -->
+
+<div class="notes">
+  <h4>Notes de design</h4>
+  <p><strong>Brutalisme cohérent</strong> — Pas de border-radius supérieur à 4px, pas d'ombres, accents par bordures rouges uniquement. Stats strips avec bordures 1px nettes, pas de cards flottantes à fond translucide.</p>
+  <p><strong>Palette stricte</strong> — Rouge dark (#FF2D3F) en mode sombre, rouge light (#E8192C) en mode clair. Iron #0A0A0A pour le fond sombre, white #FFFFFF pour le clair. Aucune couleur intermédiaire.</p>
+  <p><strong>Watermark kanji</strong> — Alternance 鍛 (galerie, profil) / 錬 (comparateur, raccord avec le mantra), à 2,5% d'opacité en sombre, 4% en clair. Centré verticalement, débordant légèrement à droite ou gauche.</p>
+  <p><strong>Typographie</strong> — Barlow Condensed 900 pour les titres en uppercase letter-spacing 0,06em, Barlow Condensed 500 en majuscules letter-spacing 0,24-0,32em pour les labels de section. JetBrains Mono pour les numéros d'écran. Noto Serif JP exclusivement pour les kanji.</p>
+  <p><strong>Pattern de découvrabilité</strong> — La carte CTA "Comparer & partager" apparaît dès qu'il existe au moins deux photos. Avec une seule photo, elle est remplacée par une mention sobre ("Ajoute une 2ème photo pour débloquer la comparaison"), sans bordure rouge ni tap target.</p>
+  <p><strong>Carte de partage</strong> — Génération via <code style="font-family:'JetBrains Mono', monospace; color: var(--red-dark); background: rgba(255,45,63,0.1); padding: 1px 5px;">react-native-view-shot</code>. Le mantra "Une rep après l'autre" est splitté en deux lignes pour casser visuellement entre blanc et rouge. Le kanji 鍛錬 sépare le mantra du handle, en accent rouge.</p>
+</div>
+
+<!-- =========================================================== -->
+<!-- FOOTER                                                       -->
+<!-- =========================================================== -->
+
+<div class="page-foot">
+  <div class="k">鍛 錬</div>
+  <div class="t">Tanren</div>
+  <div class="d">Une rep après l'autre</div>
+  <div class="meta">Évolution physique · Mockups · 2026</div>
+</div>
+
+</body>
+</html>

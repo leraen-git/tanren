@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <title>Tanren Icon — Layer 02 · Ring (Anvil)</title>
+  <desc>The outer ring representing the anvil. Intended to be rendered as Glass material in Icon Composer with 75% translucency and 70% specular.</desc>
+  <circle cx="512" cy="512" r="372" fill="none" stroke="#FFFFFF" stroke-width="40"/>
+</svg>

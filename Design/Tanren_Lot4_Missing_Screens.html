@@ -1,0 +1,2717 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TANREN — Lot 4 · Missing Screens (Dark + Light)</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,300;0,400;0,500;0,700;0,900;1,400&family=Noto+Serif+JP:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Barlow Condensed', sans-serif;
+    background: linear-gradient(180deg, #0f0f0f 0%, #050505 100%);
+    color: #FFFFFF;
+    min-height: 100vh;
+    padding: 60px 40px 100px;
+  }
+
+  .page-header {
+    text-align: center;
+    margin: 0 auto 80px;
+    max-width: 900px;
+  }
+  .page-label {
+    font-weight: 500;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    color: #FF2D3F;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .page-title {
+    font-weight: 900;
+    font-size: 56px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    line-height: 1;
+  }
+  .page-desc {
+    font-weight: 400;
+    font-size: 17px;
+    color: #999;
+    max-width: 680px;
+    margin: 0 auto;
+    line-height: 1.5;
+  }
+
+  .section {
+    max-width: 1600px;
+    margin: 0 auto 100px;
+  }
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 20px;
+    margin-bottom: 40px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #2a2a2a;
+  }
+  .section-number {
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 900;
+    font-size: 64px;
+    color: #FF2D3F;
+    line-height: 0.85;
+    letter-spacing: -0.02em;
+  }
+  .section-title-block h2 {
+    font-weight: 900;
+    font-size: 32px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .section-title-block p {
+    font-weight: 400;
+    font-size: 14px;
+    color: #888;
+    max-width: 700px;
+    line-height: 1.5;
+  }
+
+  .compare-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    margin-bottom: 48px;
+    align-items: flex-start;
+  }
+  .compare-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+  .mode-tag {
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border-radius: 2px;
+  }
+  .mode-tag.dark { background: #000; color: #FFF; border: 1px solid #333; }
+  .mode-tag.light { background: #FFF; color: #000; border: 1px solid #DDD; }
+  .mockup-caption {
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    text-align: center;
+    color: #FFF;
+  }
+
+  .sub-section-title {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    color: #FF2D3F;
+    text-transform: uppercase;
+    margin: 60px 0 24px;
+    padding-left: 12px;
+    border-left: 3px solid #FF2D3F;
+  }
+
+  .phone-frame {
+    background: #1a1a1a;
+    border-radius: 52px;
+    padding: 12px;
+    box-shadow:
+      0 40px 80px rgba(0,0,0,0.5),
+      0 12px 24px rgba(0,0,0,0.3),
+      inset 0 0 0 1px rgba(255,255,255,0.05);
+  }
+  .phone-screen {
+    width: 340px;
+    height: 734px;
+    border-radius: 40px;
+    overflow: hidden;
+    position: relative;
+  }
+  .phone-notch {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 28px;
+    background: #000;
+    border-radius: 16px;
+    z-index: 100;
+  }
+
+  .status-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 44px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 24px 0;
+    z-index: 50;
+    font-family: -apple-system, sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  /* ===== THEMES ===== */
+  .dark {
+    --bg: #000000;
+    --text: #FFFFFF;
+    --text-dim: #aaaaaa;
+    --text-mute: #888888;
+    --text-ghost: #555555;
+    --accent: #FF2D3F;
+    --border: #222222;
+    --border-strong: #333333;
+    --surface-1: #0A0A0A;
+    --surface-2: #141414;
+    --vignette: radial-gradient(ellipse at top, rgba(255,45,63,0.04) 0%, transparent 60%);
+    --kanji-opacity: 0.04;
+    --ghost-bg: rgba(255,255,255,0.03);
+    --green: #2BAE43;
+    --amber: #E8A900;
+    --overlay: rgba(0,0,0,0.72);
+  }
+
+  .light {
+    --bg: #FFFFFF;
+    --text: #000000;
+    --text-dim: #555555;
+    --text-mute: #888888;
+    --text-ghost: #BBBBBB;
+    --accent: #E8192C;
+    --border: #E5E5E5;
+    --border-strong: #CCCCCC;
+    --surface-1: #FAFAFA;
+    --surface-2: #F3F3F3;
+    --vignette: radial-gradient(ellipse at top, rgba(232,25,44,0.03) 0%, transparent 60%);
+    --kanji-opacity: 0.05;
+    --ghost-bg: rgba(0,0,0,0.025);
+    --green: #1A7F2C;
+    --amber: #D98E00;
+    --overlay: rgba(255,255,255,0.85);
+  }
+
+  .screen {
+    width: 100%;
+    height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    position: relative;
+    overflow: hidden;
+    padding-top: 54px;
+  }
+  .screen .status-bar { color: var(--text); }
+
+  .vignette {
+    position: absolute;
+    inset: 0;
+    background: var(--vignette);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .corner-kanji {
+    position: absolute;
+    top: 60px;
+    right: 20px;
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 900;
+    font-size: 48px;
+    color: var(--text);
+    opacity: var(--kanji-opacity);
+    line-height: 1;
+    letter-spacing: -0.05em;
+    z-index: 1;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .content {
+    position: relative;
+    z-index: 10;
+    padding: 0 20px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .screen-header {
+    padding: 8px 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .screen-header .back {
+    color: var(--text-mute);
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .screen-header .title {
+    font-weight: 900;
+    font-size: 16px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .screen-header .close {
+    color: var(--text-mute);
+    font-size: 18px;
+  }
+
+  /* Buttons */
+  .btn {
+    width: 100%;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: 4px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    border: none;
+  }
+  .btn-primary { background: var(--accent); color: #FFF; }
+  .btn-ghost {
+    background: transparent;
+    color: var(--text-mute);
+    height: 44px;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .btn-outline {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--text);
+  }
+  .btn-danger {
+    background: var(--accent);
+    color: #FFF;
+  }
+  .btn-danger-outline {
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+  }
+
+  .field-label {
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--text-mute);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border-strong);
+    padding: 10px 0;
+    color: var(--text);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+    margin-bottom: 18px;
+  }
+  .input.with-value { border-bottom-color: var(--text); }
+
+  .sec-label {
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--text-mute);
+    text-transform: uppercase;
+    margin: 16px 0 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* ============================================= */
+  /* SESSION PREVIEW                               */
+  /* ============================================= */
+  .sp-hero {
+    padding: 18px;
+    border: 1px solid var(--accent);
+    position: relative;
+    margin-bottom: 16px;
+    background: var(--bg);
+  }
+  .sp-hero::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    width: 12px;
+    height: 12px;
+    background: var(--accent);
+  }
+  .sp-hero .kanji {
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 900;
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: 0.4em;
+    margin-bottom: 6px;
+  }
+  .sp-hero .name {
+    font-weight: 900;
+    font-size: 24px;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    line-height: 1.05;
+    margin-bottom: 8px;
+  }
+  .sp-hero-meta {
+    display: flex;
+    gap: 18px;
+    margin-bottom: 10px;
+  }
+  .sp-hero-meta .item {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+  }
+  .sp-hero-meta .item strong {
+    font-weight: 900;
+    color: var(--text);
+    font-size: 14px;
+    margin-right: 4px;
+  }
+  .sp-hero-meta .item .l {
+    font-weight: 500;
+    font-size: 9px;
+    color: var(--text-mute);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    display: block;
+    margin-top: 2px;
+  }
+  .sp-muscle-tags {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+  }
+  .sp-muscle-tag {
+    font-weight: 700;
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    padding: 3px 7px;
+    background: var(--surface-2);
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+
+  .sp-exercise-item {
+    display: flex;
+    gap: 10px;
+    padding: 12px 10px;
+    border-bottom: 1px solid var(--border);
+    align-items: center;
+  }
+  .sp-ex-num {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 18px;
+    color: var(--accent);
+    width: 26px;
+    line-height: 1;
+    letter-spacing: 0.02em;
+  }
+  .sp-ex-main { flex: 1; min-width: 0; }
+  .sp-ex-name {
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 3px;
+  }
+  .sp-ex-params {
+    font-size: 10px;
+    color: var(--text-mute);
+    letter-spacing: 0.06em;
+  }
+  .sp-ex-params strong {
+    color: var(--text-dim);
+    font-weight: 700;
+  }
+  .sp-ex-edit {
+    color: var(--text-ghost);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+
+  .sp-add-row {
+    display: flex;
+    gap: 6px;
+    padding-top: 14px;
+    margin-top: 6px;
+  }
+  .sp-add-btn {
+    flex: 1;
+    padding: 10px 6px;
+    border: 1px dashed var(--border-strong);
+    background: transparent;
+    color: var(--text-mute);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-align: center;
+  }
+
+  /* ============================================= */
+  /* RECIPE MODAL                                  */
+  /* ============================================= */
+  .modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: var(--overlay);
+    backdrop-filter: blur(8px);
+    z-index: 15;
+    padding-top: 70px;
+  }
+  .modal-sheet {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: 60px;
+    background: var(--bg);
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .modal-handle {
+    width: 40px;
+    height: 4px;
+    background: var(--border-strong);
+    border-radius: 2px;
+    margin: 10px auto;
+  }
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 20px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .modal-header .title {
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+  .modal-header .close {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border-strong);
+    color: var(--text-mute);
+    font-size: 14px;
+  }
+  .modal-body {
+    padding: 20px;
+    overflow-y: auto;
+    height: calc(100% - 58px);
+  }
+
+  .recipe-title {
+    font-weight: 900;
+    font-size: 22px;
+    letter-spacing: 0.01em;
+    line-height: 1.1;
+    margin-bottom: 8px;
+  }
+  .recipe-meta {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+    font-size: 11px;
+  }
+  .recipe-meta .m {
+    color: var(--text-mute);
+    letter-spacing: 0.06em;
+  }
+  .recipe-meta .m strong {
+    color: var(--text);
+    font-weight: 700;
+    font-size: 13px;
+    margin-right: 3px;
+  }
+
+  .recipe-macros {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    margin-bottom: 20px;
+  }
+  .recipe-macro {
+    background: var(--bg);
+    padding: 10px 6px;
+    text-align: center;
+  }
+  .recipe-macro .l {
+    font-weight: 700;
+    font-size: 8px;
+    letter-spacing: 0.3em;
+    color: var(--text-mute);
+    text-transform: uppercase;
+    margin-bottom: 2px;
+  }
+  .recipe-macro .v {
+    font-weight: 900;
+    font-size: 18px;
+    line-height: 1;
+  }
+  .recipe-macro .v .u {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--text-mute);
+  }
+
+  .recipe-sec-title {
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--text-mute);
+    text-transform: uppercase;
+    margin: 16px 0 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+  .ingredient-list {
+    margin-bottom: 16px;
+  }
+  .ingredient-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px dotted var(--border);
+    font-size: 12px;
+  }
+  .ingredient-item .n {
+    color: var(--text);
+    letter-spacing: 0.02em;
+  }
+  .ingredient-item .q {
+    font-weight: 700;
+    color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+  }
+
+  .step-list {
+    margin-bottom: 16px;
+  }
+  .step-item {
+    display: flex;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+    line-height: 1.5;
+  }
+  .step-num {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 16px;
+    color: var(--accent);
+    line-height: 1;
+    width: 24px;
+    flex-shrink: 0;
+    letter-spacing: 0.02em;
+  }
+  .step-text {
+    color: var(--text-dim);
+  }
+
+  .recipe-video {
+    padding: 14px 16px;
+    border: 1px solid var(--border-strong);
+    margin-bottom: 16px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    cursor: pointer;
+  }
+  .recipe-video svg {
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+  .recipe-video .t {
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+  .recipe-video .b {
+    font-size: 11px;
+    color: var(--text-mute);
+  }
+  .recipe-video .arrow {
+    color: var(--accent);
+    font-size: 16px;
+  }
+
+  /* ============================================= */
+  /* QUICK EXERCISE                                */
+  /* ============================================= */
+  .qe-exercise-card {
+    padding: 14px 16px;
+    border: 1px solid var(--accent);
+    margin-bottom: 20px;
+    position: relative;
+  }
+  .qe-exercise-card::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    width: 10px;
+    height: 10px;
+    background: var(--accent);
+  }
+  .qe-exercise-card .label {
+    font-weight: 700;
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .qe-exercise-card .name {
+    font-weight: 900;
+    font-size: 18px;
+    letter-spacing: 0.02em;
+    line-height: 1.1;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .qe-exercise-card .tags {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+  .qe-exercise-card .tag {
+    font-weight: 700;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    padding: 3px 7px;
+    background: var(--surface-2);
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+
+  .config-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .config-row .l {
+    font-weight: 500;
+    font-size: 13px;
+    color: var(--text);
+    letter-spacing: 0.02em;
+  }
+  .config-row .stepper {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .step-btn {
+    width: 32px;
+    height: 32px;
+    border: 1px solid var(--border-strong);
+    background: transparent;
+    color: var(--text);
+    font-weight: 900;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .stepper-value {
+    font-weight: 900;
+    font-size: 20px;
+    letter-spacing: 0.02em;
+    min-width: 40px;
+    text-align: center;
+    line-height: 1;
+  }
+  .stepper-value .u {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-mute);
+    letter-spacing: 0.16em;
+    margin-left: 2px;
+  }
+
+  /* ============================================= */
+  /* EXPLORE                                        */
+  /* ============================================= */
+  .explore-progress {
+    padding: 14px 0;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .explore-progress .v {
+    font-weight: 900;
+    font-size: 28px;
+    line-height: 1;
+    color: var(--accent);
+  }
+  .explore-progress .t {
+    font-weight: 500;
+    font-size: 11px;
+    color: var(--text-mute);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .exp-cat-header {
+    font-weight: 900;
+    font-size: 12px;
+    letter-spacing: 0.3em;
+    color: var(--text);
+    text-transform: uppercase;
+    margin: 20px 0 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .exp-cat-kanji {
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 900;
+    font-size: 14px;
+    color: var(--accent);
+    letter-spacing: 0;
+  }
+
+  .feature-card {
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    margin-bottom: 6px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+  .feature-card.new {
+    border-color: var(--accent);
+    background: var(--ghost-bg);
+  }
+  .feat-icon-wrap {
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--border-strong);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text);
+    flex-shrink: 0;
+  }
+  .feature-card.new .feat-icon-wrap {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .feat-main { flex: 1; min-width: 0; }
+  .feat-title-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 2px;
+  }
+  .feat-title {
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+  .feat-new-badge {
+    font-weight: 700;
+    font-size: 8px;
+    letter-spacing: 0.25em;
+    padding: 2px 5px;
+    background: var(--accent);
+    color: #FFF;
+    text-transform: uppercase;
+  }
+  .feat-desc {
+    font-size: 10px;
+    color: var(--text-mute);
+    letter-spacing: 0.04em;
+    line-height: 1.4;
+  }
+  .feat-try {
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+  .feature-card .check {
+    color: var(--green);
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  /* ============================================= */
+  /* PRIVACY                                        */
+  /* ============================================= */
+  .pri-intro {
+    padding: 16px;
+    border: 1px solid var(--accent);
+    margin-bottom: 20px;
+    position: relative;
+  }
+  .pri-intro::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    width: 10px;
+    height: 10px;
+    background: var(--accent);
+  }
+  .pri-intro .kanji {
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 900;
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: 0.4em;
+    margin-bottom: 6px;
+  }
+  .pri-intro .t {
+    font-weight: 900;
+    font-size: 18px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    line-height: 1.1;
+    margin-bottom: 6px;
+  }
+  .pri-intro .d {
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  .pri-sec-title {
+    font-weight: 900;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    color: var(--text);
+    text-transform: uppercase;
+    margin: 20px 0 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .pri-sec-title .num {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    color: var(--accent);
+    font-size: 16px;
+    letter-spacing: 0.02em;
+  }
+
+  .pri-item {
+    padding: 10px 0;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .pri-check {
+    width: 14px;
+    height: 14px;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 9px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .pri-x {
+    width: 14px;
+    height: 14px;
+    border: 1px solid var(--text-mute);
+    color: var(--text-mute);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 9px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .pri-item .t {
+    font-size: 12px;
+    color: var(--text);
+    line-height: 1.5;
+  }
+  .pri-item .t strong {
+    font-weight: 700;
+    display: block;
+    margin-bottom: 2px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-size: 11px;
+  }
+  .pri-item .t small {
+    color: var(--text-mute);
+  }
+
+  .pri-encrypted {
+    padding: 12px 14px;
+    background: var(--ghost-bg);
+    border-left: 3px solid var(--accent);
+    margin: 16px 0;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  .pri-encrypted svg {
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+  .pri-encrypted .b {
+    font-size: 11px;
+    color: var(--text-dim);
+    line-height: 1.4;
+  }
+  .pri-encrypted .b strong {
+    color: var(--text);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  .pri-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 20px;
+  }
+  .pri-action {
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .pri-action .l {
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text);
+  }
+  .pri-action .chev {
+    color: var(--text-mute);
+    font-size: 14px;
+  }
+
+  /* ============================================= */
+  /* GUEST UPGRADE                                 */
+  /* ============================================= */
+  .guest-hero {
+    text-align: center;
+    padding: 40px 20px 24px;
+  }
+  .guest-kanji {
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 900;
+    font-size: 72px;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    line-height: 0.9;
+    margin-bottom: 20px;
+  }
+  .guest-label {
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0.4em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .guest-title {
+    font-weight: 900;
+    font-size: 24px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    line-height: 1.1;
+    margin-bottom: 10px;
+  }
+  .guest-desc {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.5;
+    max-width: 260px;
+    margin: 0 auto 20px;
+  }
+
+  .guest-benefits {
+    margin-bottom: 24px;
+  }
+  .guest-benefit {
+    display: flex;
+    gap: 10px;
+    padding: 10px 12px;
+    border-left: 2px solid var(--accent);
+    background: var(--ghost-bg);
+    margin-bottom: 6px;
+  }
+  .gb-num {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 18px;
+    color: var(--accent);
+    line-height: 1;
+    flex-shrink: 0;
+    letter-spacing: 0.02em;
+    min-width: 26px;
+  }
+  .gb-text {
+    font-size: 12px;
+    color: var(--text);
+    line-height: 1.4;
+  }
+  .gb-text small {
+    display: block;
+    color: var(--text-mute);
+    font-size: 11px;
+    margin-top: 2px;
+    font-weight: 400;
+  }
+
+  .guest-preserve {
+    text-align: center;
+    padding: 12px;
+    font-size: 11px;
+    color: var(--text-mute);
+    letter-spacing: 0.04em;
+    line-height: 1.5;
+    margin-bottom: 16px;
+  }
+  .guest-preserve strong {
+    color: var(--text);
+    font-weight: 700;
+  }
+
+  /* ============================================= */
+  /* DELETE ACCOUNT                                */
+  /* ============================================= */
+  .del-warning-icon {
+    width: 64px;
+    height: 64px;
+    border: 2px solid var(--accent);
+    margin: 20px auto 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    color: var(--accent);
+  }
+  .del-warning-icon::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    width: 12px;
+    height: 12px;
+    background: var(--accent);
+  }
+  .del-warning-icon::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    width: 12px;
+    height: 12px;
+    background: var(--accent);
+  }
+
+  .del-hero-text {
+    text-align: center;
+    margin-bottom: 24px;
+    padding: 0 10px;
+  }
+  .del-title {
+    font-weight: 900;
+    font-size: 24px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    line-height: 1.1;
+    margin-bottom: 10px;
+    color: var(--accent);
+  }
+  .del-desc {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  .del-impact-list {
+    margin-bottom: 20px;
+  }
+  .del-impact-title {
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--text-mute);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+  .del-impact-item {
+    display: flex;
+    gap: 10px;
+    padding: 8px 0;
+    align-items: flex-start;
+  }
+  .del-impact-item svg {
+    color: var(--accent);
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .del-impact-item .t {
+    font-size: 12px;
+    color: var(--text);
+    line-height: 1.4;
+  }
+
+  .del-confirm-input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 2px solid var(--accent);
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+    letter-spacing: 0.04em;
+    outline: none;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+  .del-confirm-hint {
+    font-size: 11px;
+    color: var(--text-mute);
+    letter-spacing: 0.04em;
+    line-height: 1.5;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  .del-confirm-hint code {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--surface-2);
+    padding: 2px 6px;
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  /* Design notes */
+  .design-notes {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 24px 28px;
+    margin: 48px auto;
+    max-width: 900px;
+  }
+  .design-notes h4 {
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: #FF2D3F;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .design-notes p {
+    font-size: 14px;
+    color: #BBB;
+    line-height: 1.6;
+    margin-bottom: 10px;
+  }
+  .design-notes p:last-child { margin-bottom: 0; }
+  .design-notes p strong { color: #FFF; font-weight: 700; }
+</style>
+</head>
+<body>
+
+<!-- ===== PAGE HEADER ===== -->
+<div class="page-header">
+  <div class="page-label">Tanren · Lot 4 / final</div>
+  <div class="page-title">Missing Screens</div>
+  <div class="page-desc">Complétion du set : Session Preview, Recipe Modal, Quick Exercise, Explore, Privacy, Guest Upgrade, Delete Account. Dark + Light systématique.</div>
+</div>
+
+<!-- ============================================= -->
+<!-- SECTION 09 - SESSION PREVIEW                  -->
+<!-- ============================================= -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-number">09</div>
+    <div class="section-title-block">
+      <h2>Session Preview</h2>
+      <p>Écran qui s'ouvre quand tu tapes "Start" sur la séance du jour. Tu vois l'ensemble des exercices avec la possibilité d'ajouter/éditer/retirer avant de commencer.</p>
+    </div>
+  </div>
+
+  <div class="compare-row">
+
+    <!-- DARK -->
+    <div class="compare-col">
+      <div class="mode-tag dark">Dark mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen dark">
+          <div class="vignette"></div>
+          <div class="corner-kanji">鍛</div>
+          <div class="status-bar"><span>18:02</span><span>●●●●</span></div>
+          <div class="content">
+
+            <div class="screen-header">
+              <div class="back">‹ Retour</div>
+              <div class="title">Aperçu</div>
+              <div style="width: 40px;"></div>
+            </div>
+
+            <div class="sp-hero">
+              <div class="kanji">鍛 錬</div>
+              <div class="name">Push Day</div>
+              <div class="sp-hero-meta">
+                <div class="item">
+                  <strong>6</strong>
+                  <span class="l">Exercices</span>
+                </div>
+                <div class="item">
+                  <strong>60</strong>
+                  <span class="l">Min est.</span>
+                </div>
+                <div class="item">
+                  <strong>22</strong>
+                  <span class="l">Séries</span>
+                </div>
+              </div>
+              <div class="sp-muscle-tags">
+                <span class="sp-muscle-tag">Pectoraux</span>
+                <span class="sp-muscle-tag">Épaules</span>
+                <span class="sp-muscle-tag">Triceps</span>
+              </div>
+            </div>
+
+            <div class="sec-label">Programme de la séance</div>
+
+            <div class="sp-exercise-item">
+              <div class="sp-ex-num">1</div>
+              <div class="sp-ex-main">
+                <div class="sp-ex-name">Développé couché</div>
+                <div class="sp-ex-params"><strong>4 séries</strong> × <strong>8 reps</strong> · <strong>80 kg</strong></div>
+              </div>
+              <div class="sp-ex-edit">Éditer</div>
+            </div>
+            <div class="sp-exercise-item">
+              <div class="sp-ex-num">2</div>
+              <div class="sp-ex-main">
+                <div class="sp-ex-name">Développé militaire</div>
+                <div class="sp-ex-params"><strong>3 séries</strong> × <strong>10 reps</strong> · <strong>50 kg</strong></div>
+              </div>
+              <div class="sp-ex-edit">Éditer</div>
+            </div>
+            <div class="sp-exercise-item">
+              <div class="sp-ex-num">3</div>
+              <div class="sp-ex-main">
+                <div class="sp-ex-name">Dips lestés</div>
+                <div class="sp-ex-params"><strong>4 séries</strong> × <strong>8 reps</strong> · <strong>+15 kg</strong></div>
+              </div>
+              <div class="sp-ex-edit">Éditer</div>
+            </div>
+            <div class="sp-exercise-item">
+              <div class="sp-ex-num">4</div>
+              <div class="sp-ex-main">
+                <div class="sp-ex-name">Extensions triceps poulie</div>
+                <div class="sp-ex-params"><strong>3 séries</strong> × <strong>12 reps</strong> · <strong>30 kg</strong></div>
+              </div>
+              <div class="sp-ex-edit">Éditer</div>
+            </div>
+
+            <div class="sp-add-row">
+              <button class="sp-add-btn">+ Exercice</button>
+              <button class="sp-add-btn">⇅ Réorganiser</button>
+            </div>
+
+            <button class="btn btn-primary" style="margin-top: auto;">Démarrer la séance</button>
+            <div style="height: 16px;"></div>
+          </div>
+        </div>
+      </div></div>
+      <div class="mockup-caption">Session Preview — Dark</div>
+    </div>
+
+    <!-- LIGHT -->
+    <div class="compare-col">
+      <div class="mode-tag light">Light mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen light">
+          <div class="vignette"></div>
+          <div class="corner-kanji">鍛</div>
+          <div class="status-bar"><span>18:02</span><span>●●●●</span></div>
+          <div class="content">
+
+            <div class="screen-header">
+              <div class="back">‹ Retour</div>
+              <div class="title">Aperçu</div>
+              <div style="width: 40px;"></div>
+            </div>
+
+            <div class="sp-hero">
+              <div class="kanji">鍛 錬</div>
+              <div class="name">Push Day</div>
+              <div class="sp-hero-meta">
+                <div class="item">
+                  <strong>6</strong>
+                  <span class="l">Exercices</span>
+                </div>
+                <div class="item">
+                  <strong>60</strong>
+                  <span class="l">Min est.</span>
+                </div>
+                <div class="item">
+                  <strong>22</strong>
+                  <span class="l">Séries</span>
+                </div>
+              </div>
+              <div class="sp-muscle-tags">
+                <span class="sp-muscle-tag">Pectoraux</span>
+                <span class="sp-muscle-tag">Épaules</span>
+                <span class="sp-muscle-tag">Triceps</span>
+              </div>
+            </div>
+
+            <div class="sec-label">Programme de la séance</div>
+
+            <div class="sp-exercise-item">
+              <div class="sp-ex-num">1</div>
+              <div class="sp-ex-main">
+                <div class="sp-ex-name">Développé couché</div>
+                <div class="sp-ex-params"><strong>4 séries</strong> × <strong>8 reps</strong> · <strong>80 kg</strong></div>
+              </div>
+              <div class="sp-ex-edit">Éditer</div>
+            </div>
+            <div class="sp-exercise-item">
+              <div class="sp-ex-num">2</div>
+              <div class="sp-ex-main">
+                <div class="sp-ex-name">Développé militaire</div>
+                <div class="sp-ex-params"><strong>3 séries</strong> × <strong>10 reps</strong> · <strong>50 kg</strong></div>
+              </div>
+              <div class="sp-ex-edit">Éditer</div>
+            </div>
+            <div class="sp-exercise-item">
+              <div class="sp-ex-num">3</div>
+              <div class="sp-ex-main">
+                <div class="sp-ex-name">Dips lestés</div>
+                <div class="sp-ex-params"><strong>4 séries</strong> × <strong>8 reps</strong> · <strong>+15 kg</strong></div>
+              </div>
+              <div class="sp-ex-edit">Éditer</div>
+            </div>
+            <div class="sp-exercise-item">
+              <div class="sp-ex-num">4</div>
+              <div class="sp-ex-main">
+                <div class="sp-ex-name">Extensions triceps poulie</div>
+                <div class="sp-ex-params"><strong>3 séries</strong> × <strong>12 reps</strong> · <strong>30 kg</strong></div>
+              </div>
+              <div class="sp-ex-edit">Éditer</div>
+            </div>
+
+            <div class="sp-add-row">
+              <button class="sp-add-btn">+ Exercice</button>
+              <button class="sp-add-btn">⇅ Réorganiser</button>
+            </div>
+
+            <button class="btn btn-primary" style="margin-top: auto;">Démarrer la séance</button>
+            <div style="height: 16px;"></div>
+          </div>
+        </div>
+      </div></div>
+      <div class="mockup-caption">Session Preview — Light</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================= -->
+<!-- SECTION 17.1 - RECIPE MODAL                   -->
+<!-- ============================================= -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-number">17b</div>
+    <div class="section-title-block">
+      <h2>Recipe Modal</h2>
+      <p>Modal bottom-sheet qui s'ouvre en tapant un repas. Ingrédients, étapes, lien vidéo YouTube. Fond de l'app légèrement flouté derrière.</p>
+    </div>
+  </div>
+
+  <div class="compare-row">
+
+    <!-- DARK -->
+    <div class="compare-col">
+      <div class="mode-tag dark">Dark mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen dark">
+          <div class="vignette"></div>
+          <div class="status-bar"><span>12:22</span><span>●●●●</span></div>
+
+          <!-- Background content (nutrition tab visible) -->
+          <div class="content" style="opacity: 0.5;">
+            <div class="screen-header" style="padding-top: 0;">
+              <div class="back">‹ Retour</div>
+              <div class="title">Nutrition</div>
+              <div style="width: 40px;"></div>
+            </div>
+            <div style="height: 100px;"></div>
+          </div>
+
+          <!-- Modal overlay -->
+          <div class="modal-backdrop">
+            <div class="modal-sheet">
+              <div class="modal-handle"></div>
+              <div class="modal-header">
+                <div class="title">Déjeuner · 680 kcal</div>
+                <div class="close">✕</div>
+              </div>
+              <div class="modal-body">
+                <div class="recipe-title">Bowl poulet grillé,<br>riz & légumes</div>
+                <div class="recipe-meta">
+                  <div class="m"><strong>25</strong>min prep</div>
+                  <div class="m"><strong>2</strong>personnes</div>
+                  <div class="m"><strong>Batch</strong> OK</div>
+                </div>
+
+                <div class="recipe-macros">
+                  <div class="recipe-macro">
+                    <div class="l">Protéines</div>
+                    <div class="v">55<span class="u">g</span></div>
+                  </div>
+                  <div class="recipe-macro">
+                    <div class="l">Glucides</div>
+                    <div class="v">72<span class="u">g</span></div>
+                  </div>
+                  <div class="recipe-macro">
+                    <div class="l">Lipides</div>
+                    <div class="v">18<span class="u">g</span></div>
+                  </div>
+                </div>
+
+                <div class="recipe-video">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="5 3 19 12 5 21 5 3"/>
+                  </svg>
+                  <div style="flex: 1;">
+                    <div class="t">Voir la recette</div>
+                    <div class="b">YouTube · 4:32 min</div>
+                  </div>
+                  <div class="arrow">›</div>
+                </div>
+
+                <div class="recipe-sec-title">Ingrédients · 2 pers.</div>
+                <div class="ingredient-list">
+                  <div class="ingredient-item">
+                    <div class="n">Filet de poulet</div>
+                    <div class="q">300 g</div>
+                  </div>
+                  <div class="ingredient-item">
+                    <div class="n">Riz basmati</div>
+                    <div class="q">160 g</div>
+                  </div>
+                  <div class="ingredient-item">
+                    <div class="n">Brocolis</div>
+                    <div class="q">200 g</div>
+                  </div>
+                  <div class="ingredient-item">
+                    <div class="n">Poivron rouge</div>
+                    <div class="q">1 unité</div>
+                  </div>
+                  <div class="ingredient-item">
+                    <div class="n">Huile d'olive</div>
+                    <div class="q">2 c.à.s.</div>
+                  </div>
+                  <div class="ingredient-item">
+                    <div class="n">Sauce soja</div>
+                    <div class="q">2 c.à.s.</div>
+                  </div>
+                  <div class="ingredient-item">
+                    <div class="n">Ail</div>
+                    <div class="q">2 gousses</div>
+                  </div>
+                </div>
+
+                <div class="recipe-sec-title">Préparation</div>
+                <div class="step-list">
+                  <div class="step-item">
+                    <div class="step-num">1</div>
+                    <div class="step-text">Cuire le riz basmati selon les instructions du paquet.</div>
+                  </div>
+                  <div class="step-item">
+                    <div class="step-num">2</div>
+                    <div class="step-text">Pendant ce temps, couper le poulet en lamelles et l'assaisonner (sel, poivre, paprika).</div>
+                  </div>
+                  <div class="step-item">
+                    <div class="step-num">3</div>
+                    <div class="step-text">Faire sauter le poulet à la poêle avec l'huile d'olive 6-8 min jusqu'à coloration.</div>
+                  </div>
+                  <div class="step-item">
+                    <div class="step-num">4</div>
+                    <div class="step-text">Ajouter les légumes et l'ail, cuire 4-5 min en gardant du croquant.</div>
+                  </div>
+                  <div class="step-item">
+                    <div class="step-num">5</div>
+                    <div class="step-text">Déglacer à la sauce soja, servir sur le riz.</div>
+                  </div>
+                </div>
+
+                <div style="height: 20px;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div></div>
+      <div class="mockup-caption">Recipe Modal — Dark</div>
+    </div>
+
+    <!-- LIGHT -->
+    <div class="compare-col">
+      <div class="mode-tag light">Light mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen light">
+          <div class="vignette"></div>
+          <div class="status-bar"><span>12:22</span><span>●●●●</span></div>
+
+          <div class="content" style="opacity: 0.5;">
+            <div class="screen-header" style="padding-top: 0;">
+              <div class="back">‹ Retour</div>
+              <div class="title">Nutrition</div>
+              <div style="width: 40px;"></div>
+            </div>
+            <div style="height: 100px;"></div>
+          </div>
+
+          <div class="modal-backdrop">
+            <div class="modal-sheet">
+              <div class="modal-handle"></div>
+              <div class="modal-header">
+                <div class="title">Déjeuner · 680 kcal</div>
+                <div class="close">✕</div>
+              </div>
+              <div class="modal-body">
+                <div class="recipe-title">Bowl poulet grillé,<br>riz & légumes</div>
+                <div class="recipe-meta">
+                  <div class="m"><strong>25</strong>min prep</div>
+                  <div class="m"><strong>2</strong>personnes</div>
+                  <div class="m"><strong>Batch</strong> OK</div>
+                </div>
+
+                <div class="recipe-macros">
+                  <div class="recipe-macro">
+                    <div class="l">Protéines</div>
+                    <div class="v">55<span class="u">g</span></div>
+                  </div>
+                  <div class="recipe-macro">
+                    <div class="l">Glucides</div>
+                    <div class="v">72<span class="u">g</span></div>
+                  </div>
+                  <div class="recipe-macro">
+                    <div class="l">Lipides</div>
+                    <div class="v">18<span class="u">g</span></div>
+                  </div>
+                </div>
+
+                <div class="recipe-video">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="5 3 19 12 5 21 5 3"/>
+                  </svg>
+                  <div style="flex: 1;">
+                    <div class="t">Voir la recette</div>
+                    <div class="b">YouTube · 4:32 min</div>
+                  </div>
+                  <div class="arrow">›</div>
+                </div>
+
+                <div class="recipe-sec-title">Ingrédients · 2 pers.</div>
+                <div class="ingredient-list">
+                  <div class="ingredient-item">
+                    <div class="n">Filet de poulet</div>
+                    <div class="q">300 g</div>
+                  </div>
+                  <div class="ingredient-item">
+                    <div class="n">Riz basmati</div>
+                    <div class="q">160 g</div>
+                  </div>
+                  <div class="ingredient-item">
+                    <div class="n">Brocolis</div>
+                    <div class="q">200 g</div>
+                  </div>
+                  <div class="ingredient-item">
+                    <div class="n">Poivron rouge</div>
+                    <div class="q">1 unité</div>
+                  </div>
+                  <div class="ingredient-item">
+                    <div class="n">Huile d'olive</div>
+                    <div class="q">2 c.à.s.</div>
+                  </div>
+                  <div class="ingredient-item">
+                    <div class="n">Sauce soja</div>
+                    <div class="q">2 c.à.s.</div>
+                  </div>
+                  <div class="ingredient-item">
+                    <div class="n">Ail</div>
+                    <div class="q">2 gousses</div>
+                  </div>
+                </div>
+
+                <div class="recipe-sec-title">Préparation</div>
+                <div class="step-list">
+                  <div class="step-item">
+                    <div class="step-num">1</div>
+                    <div class="step-text">Cuire le riz basmati selon les instructions du paquet.</div>
+                  </div>
+                  <div class="step-item">
+                    <div class="step-num">2</div>
+                    <div class="step-text">Pendant ce temps, couper le poulet en lamelles et l'assaisonner (sel, poivre, paprika).</div>
+                  </div>
+                  <div class="step-item">
+                    <div class="step-num">3</div>
+                    <div class="step-text">Faire sauter le poulet à la poêle avec l'huile d'olive 6-8 min jusqu'à coloration.</div>
+                  </div>
+                  <div class="step-item">
+                    <div class="step-num">4</div>
+                    <div class="step-text">Ajouter les légumes et l'ail, cuire 4-5 min en gardant du croquant.</div>
+                  </div>
+                  <div class="step-item">
+                    <div class="step-num">5</div>
+                    <div class="step-text">Déglacer à la sauce soja, servir sur le riz.</div>
+                  </div>
+                </div>
+
+                <div style="height: 20px;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div></div>
+      <div class="mockup-caption">Recipe Modal — Light</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================= -->
+<!-- SECTION 16 - QUICK EXERCISE                   -->
+<!-- ============================================= -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-number">16</div>
+    <div class="section-title-block">
+      <h2>Quick Exercise</h2>
+      <p>Configurateur rapide d'un exercice unique sans créer une séance complète. Steppers ± pour chaque paramètre. Trigger principal depuis le "Just start an exercise" du home no-plan.</p>
+    </div>
+  </div>
+
+  <div class="compare-row">
+
+    <!-- DARK -->
+    <div class="compare-col">
+      <div class="mode-tag dark">Dark mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen dark">
+          <div class="vignette"></div>
+          <div class="corner-kanji">鍛</div>
+          <div class="status-bar"><span>16:40</span><span>●●●●</span></div>
+          <div class="content">
+
+            <div class="screen-header">
+              <div class="back">‹ Retour</div>
+              <div class="title">Séance rapide</div>
+              <div style="width: 40px;"></div>
+            </div>
+
+            <div class="qe-exercise-card">
+              <div class="label">Exercice sélectionné</div>
+              <div class="name">Développé couché</div>
+              <div class="tags">
+                <div class="tag">Pectoraux</div>
+                <div class="tag">Triceps</div>
+                <div class="tag">Barre</div>
+              </div>
+            </div>
+
+            <div class="sec-label">Configuration</div>
+
+            <div class="config-row">
+              <div class="l">Nombre de séries</div>
+              <div class="stepper">
+                <button class="step-btn">−</button>
+                <div class="stepper-value">4</div>
+                <button class="step-btn">+</button>
+              </div>
+            </div>
+            <div class="config-row">
+              <div class="l">Répétitions / série</div>
+              <div class="stepper">
+                <button class="step-btn">−</button>
+                <div class="stepper-value">8</div>
+                <button class="step-btn">+</button>
+              </div>
+            </div>
+            <div class="config-row">
+              <div class="l">Charge</div>
+              <div class="stepper">
+                <button class="step-btn">−</button>
+                <div class="stepper-value">80<span class="u">kg</span></div>
+                <button class="step-btn">+</button>
+              </div>
+            </div>
+            <div class="config-row">
+              <div class="l">Repos / série</div>
+              <div class="stepper">
+                <button class="step-btn">−</button>
+                <div class="stepper-value">90<span class="u">s</span></div>
+                <button class="step-btn">+</button>
+              </div>
+            </div>
+
+            <div style="padding: 12px 14px; background: var(--ghost-bg); border-left: 2px solid var(--accent); margin-top: 16px;">
+              <div style="font-weight: 700; font-size: 10px; letter-spacing: 0.2em; color: var(--accent); text-transform: uppercase; margin-bottom: 4px;">Volume prévu</div>
+              <div style="font-size: 12px; color: var(--text-dim); line-height: 1.5;">2 560 kg · env. 8 min de travail</div>
+            </div>
+
+            <button class="btn btn-primary" style="margin-top: auto;">Démarrer</button>
+            <div style="height: 16px;"></div>
+          </div>
+        </div>
+      </div></div>
+      <div class="mockup-caption">Quick Exercise — Dark</div>
+    </div>
+
+    <!-- LIGHT -->
+    <div class="compare-col">
+      <div class="mode-tag light">Light mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen light">
+          <div class="vignette"></div>
+          <div class="corner-kanji">鍛</div>
+          <div class="status-bar"><span>16:40</span><span>●●●●</span></div>
+          <div class="content">
+
+            <div class="screen-header">
+              <div class="back">‹ Retour</div>
+              <div class="title">Séance rapide</div>
+              <div style="width: 40px;"></div>
+            </div>
+
+            <div class="qe-exercise-card">
+              <div class="label">Exercice sélectionné</div>
+              <div class="name">Développé couché</div>
+              <div class="tags">
+                <div class="tag">Pectoraux</div>
+                <div class="tag">Triceps</div>
+                <div class="tag">Barre</div>
+              </div>
+            </div>
+
+            <div class="sec-label">Configuration</div>
+
+            <div class="config-row">
+              <div class="l">Nombre de séries</div>
+              <div class="stepper">
+                <button class="step-btn">−</button>
+                <div class="stepper-value">4</div>
+                <button class="step-btn">+</button>
+              </div>
+            </div>
+            <div class="config-row">
+              <div class="l">Répétitions / série</div>
+              <div class="stepper">
+                <button class="step-btn">−</button>
+                <div class="stepper-value">8</div>
+                <button class="step-btn">+</button>
+              </div>
+            </div>
+            <div class="config-row">
+              <div class="l">Charge</div>
+              <div class="stepper">
+                <button class="step-btn">−</button>
+                <div class="stepper-value">80<span class="u">kg</span></div>
+                <button class="step-btn">+</button>
+              </div>
+            </div>
+            <div class="config-row">
+              <div class="l">Repos / série</div>
+              <div class="stepper">
+                <button class="step-btn">−</button>
+                <div class="stepper-value">90<span class="u">s</span></div>
+                <button class="step-btn">+</button>
+              </div>
+            </div>
+
+            <div style="padding: 12px 14px; background: var(--ghost-bg); border-left: 2px solid var(--accent); margin-top: 16px;">
+              <div style="font-weight: 700; font-size: 10px; letter-spacing: 0.2em; color: var(--accent); text-transform: uppercase; margin-bottom: 4px;">Volume prévu</div>
+              <div style="font-size: 12px; color: var(--text-dim); line-height: 1.5;">2 560 kg · env. 8 min de travail</div>
+            </div>
+
+            <button class="btn btn-primary" style="margin-top: auto;">Démarrer</button>
+            <div style="height: 16px;"></div>
+          </div>
+        </div>
+      </div></div>
+      <div class="mockup-caption">Quick Exercise — Light</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================= -->
+<!-- SECTION 21 - EXPLORE                          -->
+<!-- ============================================= -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-number">21</div>
+    <div class="section-title-block">
+      <h2>Explore</h2>
+      <p>Carte de toutes les fonctionnalités de Tanren, organisée par catégorie. Montre ce que tu as déjà utilisé (coche verte) vs ce qui est nouveau (badge NEW + border rouge). Aide le user à découvrir l'app.</p>
+    </div>
+  </div>
+
+  <div class="compare-row">
+
+    <!-- DARK -->
+    <div class="compare-col">
+      <div class="mode-tag dark">Dark mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen dark">
+          <div class="vignette"></div>
+          <div class="corner-kanji">錬</div>
+          <div class="status-bar"><span>22:05</span><span>●●●●</span></div>
+          <div class="content" style="overflow-y: auto; padding-bottom: 20px;">
+
+            <div class="screen-header">
+              <div class="back">‹ Retour</div>
+              <div class="title">Explorer Tanren</div>
+              <div style="width: 40px;"></div>
+            </div>
+
+            <div class="explore-progress">
+              <div class="v">9 / 12</div>
+              <div class="t">Fonctionnalités explorées</div>
+            </div>
+
+            <div class="exp-cat-header">
+              <span class="exp-cat-kanji">鍛</span> Entraînement
+            </div>
+            <div class="feature-card">
+              <div class="feat-icon-wrap">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="7" width="4" height="10"/><rect x="17" y="7" width="4" height="10"/><line x1="7" y1="12" x2="17" y2="12"/>
+                </svg>
+              </div>
+              <div class="feat-main">
+                <div class="feat-title-row">
+                  <div class="feat-title">Builder de séance</div>
+                </div>
+                <div class="feat-desc">Crée des templates personnalisés</div>
+              </div>
+              <div class="check">✓</div>
+            </div>
+            <div class="feature-card">
+              <div class="feat-icon-wrap">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="5 3 19 12 5 21 5 3"/>
+                </svg>
+              </div>
+              <div class="feat-main">
+                <div class="feat-title-row">
+                  <div class="feat-title">Tracker de séance</div>
+                </div>
+                <div class="feat-desc">Log en temps réel avec ghost values</div>
+              </div>
+              <div class="check">✓</div>
+            </div>
+            <div class="feature-card">
+              <div class="feat-icon-wrap">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                </svg>
+              </div>
+              <div class="feat-main">
+                <div class="feat-title-row">
+                  <div class="feat-title">Rest timer</div>
+                </div>
+                <div class="feat-desc">Chrono auto avec notification background</div>
+              </div>
+              <div class="check">✓</div>
+            </div>
+            <div class="feature-card new">
+              <div class="feat-icon-wrap">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="12 2 15 8 22 9 17 14 18 21 12 18 6 21 7 14 2 9 9 8 12 2"/>
+                </svg>
+              </div>
+              <div class="feat-main">
+                <div class="feat-title-row">
+                  <div class="feat-title">Personal records</div>
+                  <div class="feat-new-badge">New</div>
+                </div>
+                <div class="feat-desc">Détection automatique des PR</div>
+              </div>
+              <div class="feat-try">Essayer ›</div>
+            </div>
+
+            <div class="exp-cat-header">
+              <span class="exp-cat-kanji">錬</span> Progrès
+            </div>
+            <div class="feature-card">
+              <div class="feat-icon-wrap">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="3 18 9 12 13 16 21 6"/><polyline points="14 6 21 6 21 13"/>
+                </svg>
+              </div>
+              <div class="feat-main">
+                <div class="feat-title-row">
+                  <div class="feat-title">Graphiques de progression</div>
+                </div>
+                <div class="feat-desc">Max / Volume / Reps par exercice</div>
+              </div>
+              <div class="check">✓</div>
+            </div>
+            <div class="feature-card new">
+              <div class="feat-icon-wrap">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+              </div>
+              <div class="feat-main">
+                <div class="feat-title-row">
+                  <div class="feat-title">Streak & volume lifetime</div>
+                  <div class="feat-new-badge">New</div>
+                </div>
+                <div class="feat-desc">Ton parcours depuis le début</div>
+              </div>
+              <div class="feat-try">Essayer ›</div>
+            </div>
+
+            <div class="exp-cat-header">
+              <span class="exp-cat-kanji">鍛</span> Nutrition
+            </div>
+            <div class="feature-card new">
+              <div class="feat-icon-wrap">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2 C8 2 5 5 5 9 C5 12 7 14 12 22 C17 14 19 12 19 9 C19 5 16 2 12 2 Z"/>
+                </svg>
+              </div>
+              <div class="feat-main">
+                <div class="feat-title-row">
+                  <div class="feat-title">Plan nutrition IA</div>
+                  <div class="feat-new-badge">New</div>
+                </div>
+                <div class="feat-desc">7 jours de repas selon tes goûts</div>
+              </div>
+              <div class="feat-try">Essayer ›</div>
+            </div>
+
+          </div>
+        </div>
+      </div></div>
+      <div class="mockup-caption">Explore — Dark</div>
+    </div>
+
+    <!-- LIGHT -->
+    <div class="compare-col">
+      <div class="mode-tag light">Light mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen light">
+          <div class="vignette"></div>
+          <div class="corner-kanji">錬</div>
+          <div class="status-bar"><span>22:05</span><span>●●●●</span></div>
+          <div class="content" style="overflow-y: auto; padding-bottom: 20px;">
+
+            <div class="screen-header">
+              <div class="back">‹ Retour</div>
+              <div class="title">Explorer Tanren</div>
+              <div style="width: 40px;"></div>
+            </div>
+
+            <div class="explore-progress">
+              <div class="v">9 / 12</div>
+              <div class="t">Fonctionnalités explorées</div>
+            </div>
+
+            <div class="exp-cat-header">
+              <span class="exp-cat-kanji">鍛</span> Entraînement
+            </div>
+            <div class="feature-card">
+              <div class="feat-icon-wrap">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="7" width="4" height="10"/><rect x="17" y="7" width="4" height="10"/><line x1="7" y1="12" x2="17" y2="12"/>
+                </svg>
+              </div>
+              <div class="feat-main">
+                <div class="feat-title-row">
+                  <div class="feat-title">Builder de séance</div>
+                </div>
+                <div class="feat-desc">Crée des templates personnalisés</div>
+              </div>
+              <div class="check">✓</div>
+            </div>
+            <div class="feature-card">
+              <div class="feat-icon-wrap">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="5 3 19 12 5 21 5 3"/>
+                </svg>
+              </div>
+              <div class="feat-main">
+                <div class="feat-title-row">
+                  <div class="feat-title">Tracker de séance</div>
+                </div>
+                <div class="feat-desc">Log en temps réel avec ghost values</div>
+              </div>
+              <div class="check">✓</div>
+            </div>
+            <div class="feature-card">
+              <div class="feat-icon-wrap">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                </svg>
+              </div>
+              <div class="feat-main">
+                <div class="feat-title-row">
+                  <div class="feat-title">Rest timer</div>
+                </div>
+                <div class="feat-desc">Chrono auto avec notification background</div>
+              </div>
+              <div class="check">✓</div>
+            </div>
+            <div class="feature-card new">
+              <div class="feat-icon-wrap">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="12 2 15 8 22 9 17 14 18 21 12 18 6 21 7 14 2 9 9 8 12 2"/>
+                </svg>
+              </div>
+              <div class="feat-main">
+                <div class="feat-title-row">
+                  <div class="feat-title">Personal records</div>
+                  <div class="feat-new-badge">New</div>
+                </div>
+                <div class="feat-desc">Détection automatique des PR</div>
+              </div>
+              <div class="feat-try">Essayer ›</div>
+            </div>
+
+            <div class="exp-cat-header">
+              <span class="exp-cat-kanji">錬</span> Progrès
+            </div>
+            <div class="feature-card">
+              <div class="feat-icon-wrap">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="3 18 9 12 13 16 21 6"/><polyline points="14 6 21 6 21 13"/>
+                </svg>
+              </div>
+              <div class="feat-main">
+                <div class="feat-title-row">
+                  <div class="feat-title">Graphiques de progression</div>
+                </div>
+                <div class="feat-desc">Max / Volume / Reps par exercice</div>
+              </div>
+              <div class="check">✓</div>
+            </div>
+            <div class="feature-card new">
+              <div class="feat-icon-wrap">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+              </div>
+              <div class="feat-main">
+                <div class="feat-title-row">
+                  <div class="feat-title">Streak & volume lifetime</div>
+                  <div class="feat-new-badge">New</div>
+                </div>
+                <div class="feat-desc">Ton parcours depuis le début</div>
+              </div>
+              <div class="feat-try">Essayer ›</div>
+            </div>
+
+            <div class="exp-cat-header">
+              <span class="exp-cat-kanji">鍛</span> Nutrition
+            </div>
+            <div class="feature-card new">
+              <div class="feat-icon-wrap">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2 C8 2 5 5 5 9 C5 12 7 14 12 22 C17 14 19 12 19 9 C19 5 16 2 12 2 Z"/>
+                </svg>
+              </div>
+              <div class="feat-main">
+                <div class="feat-title-row">
+                  <div class="feat-title">Plan nutrition IA</div>
+                  <div class="feat-new-badge">New</div>
+                </div>
+                <div class="feat-desc">7 jours de repas selon tes goûts</div>
+              </div>
+              <div class="feat-try">Essayer ›</div>
+            </div>
+
+          </div>
+        </div>
+      </div></div>
+      <div class="mockup-caption">Explore — Light</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================= -->
+<!-- SECTION 22 - PRIVACY                          -->
+<!-- ============================================= -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-number">22</div>
+    <div class="section-title-block">
+      <h2>Privacy</h2>
+      <p>Page dédiée à la gestion des données. Transparent sur ce qu'on collecte, comment on l'utilise, et les droits du user. Ton direct, pas de jargon juridique.</p>
+    </div>
+  </div>
+
+  <div class="compare-row">
+
+    <!-- DARK -->
+    <div class="compare-col">
+      <div class="mode-tag dark">Dark mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen dark">
+          <div class="vignette"></div>
+          <div class="corner-kanji">錬</div>
+          <div class="status-bar"><span>10:15</span><span>●●●●</span></div>
+          <div class="content" style="overflow-y: auto; padding-bottom: 20px;">
+
+            <div class="screen-header">
+              <div class="back">‹ Retour</div>
+              <div class="title">Confidentialité</div>
+              <div style="width: 40px;"></div>
+            </div>
+
+            <div class="pri-intro">
+              <div class="kanji">鍛 錬</div>
+              <div class="t">Tes données<br>t'appartiennent</div>
+              <div class="d">Pas de pub, pas de tracking, pas de revente. Jamais. On t'explique exactement ce qu'on fait avec tes données.</div>
+            </div>
+
+            <div class="pri-sec-title">
+              <span class="num">01</span> Ce qu'on collecte
+            </div>
+            <div class="pri-item">
+              <div class="pri-check">✓</div>
+              <div class="t"><strong>Données du provider</strong><small>Email, prénom, avatar (Apple ou Google). Tu peux refuser l'email via Private Relay.</small></div>
+            </div>
+            <div class="pri-item">
+              <div class="pri-check">✓</div>
+              <div class="t"><strong>Données de profil</strong><small>Genre, niveau, mensurations, objectif. Tout est modifiable.</small></div>
+            </div>
+            <div class="pri-item">
+              <div class="pri-check">✓</div>
+              <div class="t"><strong>Données d'usage</strong><small>Tes séances, PR, plans nutrition. Stockés localement + synchro chiffrée.</small></div>
+            </div>
+
+            <div class="pri-sec-title">
+              <span class="num">02</span> Ce qu'on fait avec
+            </div>
+            <div class="pri-item">
+              <div class="pri-check">✓</div>
+              <div class="t"><strong>Personnalisation</strong><small>Recommandations d'exercices, ghost values, graphes de progression.</small></div>
+            </div>
+            <div class="pri-item">
+              <div class="pri-check">✓</div>
+              <div class="t"><strong>Détection de PR</strong><small>On compare tes nouvelles performances à ton historique.</small></div>
+            </div>
+            <div class="pri-item">
+              <div class="pri-check">✓</div>
+              <div class="t"><strong>Génération IA</strong><small>Tes préférences sont envoyées à Claude (Anthropic) pour construire tes plans.</small></div>
+            </div>
+
+            <div class="pri-encrypted">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2"/>
+                <path d="M7 11 V7 C7 4 9 2 12 2 C15 2 17 4 17 7 V11"/>
+              </svg>
+              <div class="b"><strong>AES-256-GCM au repos.</strong> Ton email et ton prénom sont chiffrés en base. On ne les voit pas.</div>
+            </div>
+
+            <div class="pri-sec-title">
+              <span class="num">03</span> Ce qu'on NE fait jamais
+            </div>
+            <div class="pri-item">
+              <div class="pri-x">✕</div>
+              <div class="t"><strong>Pas de publicité</strong><small>Zéro ad, jamais.</small></div>
+            </div>
+            <div class="pri-item">
+              <div class="pri-x">✕</div>
+              <div class="t"><strong>Pas de tracking cross-app</strong><small>On ne suit pas tes comportements hors de Tanren.</small></div>
+            </div>
+            <div class="pri-item">
+              <div class="pri-x">✕</div>
+              <div class="t"><strong>Pas de revente</strong><small>Tes données ne sont vendues à personne.</small></div>
+            </div>
+
+            <div class="pri-actions">
+              <div class="pri-action">
+                <div class="l">Exporter mes données</div>
+                <div class="chev">›</div>
+              </div>
+              <div class="pri-action">
+                <div class="l">Politique complète (PDF)</div>
+                <div class="chev">›</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div></div>
+      <div class="mockup-caption">Privacy — Dark</div>
+    </div>
+
+    <!-- LIGHT -->
+    <div class="compare-col">
+      <div class="mode-tag light">Light mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen light">
+          <div class="vignette"></div>
+          <div class="corner-kanji">錬</div>
+          <div class="status-bar"><span>10:15</span><span>●●●●</span></div>
+          <div class="content" style="overflow-y: auto; padding-bottom: 20px;">
+
+            <div class="screen-header">
+              <div class="back">‹ Retour</div>
+              <div class="title">Confidentialité</div>
+              <div style="width: 40px;"></div>
+            </div>
+
+            <div class="pri-intro">
+              <div class="kanji">鍛 錬</div>
+              <div class="t">Tes données<br>t'appartiennent</div>
+              <div class="d">Pas de pub, pas de tracking, pas de revente. Jamais. On t'explique exactement ce qu'on fait avec tes données.</div>
+            </div>
+
+            <div class="pri-sec-title">
+              <span class="num">01</span> Ce qu'on collecte
+            </div>
+            <div class="pri-item">
+              <div class="pri-check">✓</div>
+              <div class="t"><strong>Données du provider</strong><small>Email, prénom, avatar (Apple ou Google). Tu peux refuser l'email via Private Relay.</small></div>
+            </div>
+            <div class="pri-item">
+              <div class="pri-check">✓</div>
+              <div class="t"><strong>Données de profil</strong><small>Genre, niveau, mensurations, objectif. Tout est modifiable.</small></div>
+            </div>
+            <div class="pri-item">
+              <div class="pri-check">✓</div>
+              <div class="t"><strong>Données d'usage</strong><small>Tes séances, PR, plans nutrition. Stockés localement + synchro chiffrée.</small></div>
+            </div>
+
+            <div class="pri-sec-title">
+              <span class="num">02</span> Ce qu'on fait avec
+            </div>
+            <div class="pri-item">
+              <div class="pri-check">✓</div>
+              <div class="t"><strong>Personnalisation</strong><small>Recommandations d'exercices, ghost values, graphes de progression.</small></div>
+            </div>
+            <div class="pri-item">
+              <div class="pri-check">✓</div>
+              <div class="t"><strong>Détection de PR</strong><small>On compare tes nouvelles performances à ton historique.</small></div>
+            </div>
+            <div class="pri-item">
+              <div class="pri-check">✓</div>
+              <div class="t"><strong>Génération IA</strong><small>Tes préférences sont envoyées à Claude (Anthropic) pour construire tes plans.</small></div>
+            </div>
+
+            <div class="pri-encrypted">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2"/>
+                <path d="M7 11 V7 C7 4 9 2 12 2 C15 2 17 4 17 7 V11"/>
+              </svg>
+              <div class="b"><strong>AES-256-GCM au repos.</strong> Ton email et ton prénom sont chiffrés en base. On ne les voit pas.</div>
+            </div>
+
+            <div class="pri-sec-title">
+              <span class="num">03</span> Ce qu'on NE fait jamais
+            </div>
+            <div class="pri-item">
+              <div class="pri-x">✕</div>
+              <div class="t"><strong>Pas de publicité</strong><small>Zéro ad, jamais.</small></div>
+            </div>
+            <div class="pri-item">
+              <div class="pri-x">✕</div>
+              <div class="t"><strong>Pas de tracking cross-app</strong><small>On ne suit pas tes comportements hors de Tanren.</small></div>
+            </div>
+            <div class="pri-item">
+              <div class="pri-x">✕</div>
+              <div class="t"><strong>Pas de revente</strong><small>Tes données ne sont vendues à personne.</small></div>
+            </div>
+
+            <div class="pri-actions">
+              <div class="pri-action">
+                <div class="l">Exporter mes données</div>
+                <div class="chev">›</div>
+              </div>
+              <div class="pri-action">
+                <div class="l">Politique complète (PDF)</div>
+                <div class="chev">›</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div></div>
+      <div class="mockup-caption">Privacy — Light</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================= -->
+<!-- SECTION 23 - GUEST UPGRADE                    -->
+<!-- ============================================= -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-number">23</div>
+    <div class="section-title-block">
+      <h2>Guest Mode · Upgrade Prompt</h2>
+      <p>Écran qui apparaît quand un invité essaie d'utiliser une feature IA (plan workout, plan nutrition). Présentation positive : voici ce que tu débloques, pas ce que tu rates.</p>
+    </div>
+  </div>
+
+  <div class="compare-row">
+
+    <!-- DARK -->
+    <div class="compare-col">
+      <div class="mode-tag dark">Dark mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen dark">
+          <div class="vignette"></div>
+          <div class="status-bar"><span>14:28</span><span>●●●●</span></div>
+          <div class="content">
+
+            <div class="screen-header">
+              <div class="back">‹ Retour</div>
+              <div class="title"></div>
+              <div class="close">✕</div>
+            </div>
+
+            <div class="guest-hero">
+              <div class="guest-kanji">鍛</div>
+              <div class="guest-label">Fonctionnalité Premium</div>
+              <div class="guest-title">Passe un cran<br>au-dessus</div>
+              <div class="guest-desc">L'IA de Tanren a besoin d'un compte pour fonctionner. 30 secondes d'inscription, rien à payer.</div>
+            </div>
+
+            <div class="guest-benefits">
+              <div class="guest-benefit">
+                <div class="gb-num">01</div>
+                <div class="gb-text">Plans d'entraînement générés par l'IA<small>Personnalisés selon ton niveau et tes objectifs</small></div>
+              </div>
+              <div class="guest-benefit">
+                <div class="gb-num">02</div>
+                <div class="gb-text">Plans nutrition 7 jours par l'IA<small>Construits autour de tes goûts réels</small></div>
+              </div>
+              <div class="guest-benefit">
+                <div class="gb-num">03</div>
+                <div class="gb-text">Synchro multi-appareils<small>Tes données partout où tu vas</small></div>
+              </div>
+            </div>
+
+            <div class="guest-preserve">
+              <strong>Tes données sont conservées.</strong><br>Tes séances, plans et historique te suivent.
+            </div>
+
+            <button class="btn btn-primary">Continuer avec Apple</button>
+            <button class="btn btn-outline" style="margin-top: 8px;">Continuer avec Google</button>
+            <button class="btn btn-ghost" style="color: var(--text-mute);">Rester en invité</button>
+            <div style="height: 16px;"></div>
+          </div>
+        </div>
+      </div></div>
+      <div class="mockup-caption">Guest Upgrade — Dark</div>
+    </div>
+
+    <!-- LIGHT -->
+    <div class="compare-col">
+      <div class="mode-tag light">Light mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen light">
+          <div class="vignette"></div>
+          <div class="status-bar"><span>14:28</span><span>●●●●</span></div>
+          <div class="content">
+
+            <div class="screen-header">
+              <div class="back">‹ Retour</div>
+              <div class="title"></div>
+              <div class="close">✕</div>
+            </div>
+
+            <div class="guest-hero">
+              <div class="guest-kanji">鍛</div>
+              <div class="guest-label">Fonctionnalité Premium</div>
+              <div class="guest-title">Passe un cran<br>au-dessus</div>
+              <div class="guest-desc">L'IA de Tanren a besoin d'un compte pour fonctionner. 30 secondes d'inscription, rien à payer.</div>
+            </div>
+
+            <div class="guest-benefits">
+              <div class="guest-benefit">
+                <div class="gb-num">01</div>
+                <div class="gb-text">Plans d'entraînement générés par l'IA<small>Personnalisés selon ton niveau et tes objectifs</small></div>
+              </div>
+              <div class="guest-benefit">
+                <div class="gb-num">02</div>
+                <div class="gb-text">Plans nutrition 7 jours par l'IA<small>Construits autour de tes goûts réels</small></div>
+              </div>
+              <div class="guest-benefit">
+                <div class="gb-num">03</div>
+                <div class="gb-text">Synchro multi-appareils<small>Tes données partout où tu vas</small></div>
+              </div>
+            </div>
+
+            <div class="guest-preserve">
+              <strong>Tes données sont conservées.</strong><br>Tes séances, plans et historique te suivent.
+            </div>
+
+            <button class="btn btn-primary">Continuer avec Apple</button>
+            <button class="btn btn-outline" style="margin-top: 8px;">Continuer avec Google</button>
+            <button class="btn btn-ghost" style="color: var(--text-mute);">Rester en invité</button>
+            <div style="height: 16px;"></div>
+          </div>
+        </div>
+      </div></div>
+      <div class="mockup-caption">Guest Upgrade — Light</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================= -->
+<!-- SECTION 19b - DELETE ACCOUNT                  -->
+<!-- ============================================= -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-number">19b</div>
+    <div class="section-title-block">
+      <h2>Delete Account · Confirmation</h2>
+      <p>Écran final avant suppression définitive. Icône warning avec corners rouges, liste des impacts, et confirmation par saisie du mot "SUPPRIMER" en majuscules (anti-clic accidentel).</p>
+    </div>
+  </div>
+
+  <div class="compare-row">
+
+    <!-- DARK -->
+    <div class="compare-col">
+      <div class="mode-tag dark">Dark mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen dark">
+          <div class="vignette"></div>
+          <div class="status-bar"><span>21:14</span><span>●●●●</span></div>
+          <div class="content">
+
+            <div class="screen-header">
+              <div class="back">‹ Annuler</div>
+              <div class="title">Étape 2 / 2</div>
+              <div style="width: 40px;"></div>
+            </div>
+
+            <div class="del-warning-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M10.29 3.86 L1.82 18 a2 2 0 0 0 1.71 3 h16.94 a2 2 0 0 0 1.71-3 L13.71 3.86 a2 2 0 0 0-3.42 0 z"/>
+                <line x1="12" y1="9" x2="12" y2="13"/>
+                <line x1="12" y1="17" x2="12.01" y2="17"/>
+              </svg>
+            </div>
+
+            <div class="del-hero-text">
+              <div class="del-title">Suppression<br>définitive</div>
+              <div class="del-desc">Cette action est <strong style="color: var(--text);">irréversible</strong>. Ton compte et toutes tes données seront supprimés dans les 30 jours.</div>
+            </div>
+
+            <div class="del-impact-list">
+              <div class="del-impact-title">Ce qui sera supprimé</div>
+
+              <div class="del-impact-item">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+                <div class="t">87 séances d'historique et 34 PR</div>
+              </div>
+              <div class="del-impact-item">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+                <div class="t">Tes plans d'entraînement et nutrition</div>
+              </div>
+              <div class="del-impact-item">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+                <div class="t">Ton profil, mensurations, préférences</div>
+              </div>
+              <div class="del-impact-item">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+                <div class="t">Les séances publiées sur Apple Santé resteront</div>
+              </div>
+            </div>
+
+            <input class="del-confirm-input" value="SUPPRIMER" readonly>
+            <div class="del-confirm-hint">Saisis le mot <code>SUPPRIMER</code> en majuscules pour confirmer.</div>
+
+            <button class="btn btn-danger" style="margin-top: auto;">Supprimer mon compte</button>
+            <button class="btn btn-ghost" style="color: var(--text-mute);">Annuler</button>
+            <div style="height: 16px;"></div>
+          </div>
+        </div>
+      </div></div>
+      <div class="mockup-caption">Delete Account — Dark</div>
+    </div>
+
+    <!-- LIGHT -->
+    <div class="compare-col">
+      <div class="mode-tag light">Light mode</div>
+      <div class="phone-frame"><div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="screen light">
+          <div class="vignette"></div>
+          <div class="status-bar"><span>21:14</span><span>●●●●</span></div>
+          <div class="content">
+
+            <div class="screen-header">
+              <div class="back">‹ Annuler</div>
+              <div class="title">Étape 2 / 2</div>
+              <div style="width: 40px;"></div>
+            </div>
+
+            <div class="del-warning-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M10.29 3.86 L1.82 18 a2 2 0 0 0 1.71 3 h16.94 a2 2 0 0 0 1.71-3 L13.71 3.86 a2 2 0 0 0-3.42 0 z"/>
+                <line x1="12" y1="9" x2="12" y2="13"/>
+                <line x1="12" y1="17" x2="12.01" y2="17"/>
+              </svg>
+            </div>
+
+            <div class="del-hero-text">
+              <div class="del-title">Suppression<br>définitive</div>
+              <div class="del-desc">Cette action est <strong style="color: var(--text);">irréversible</strong>. Ton compte et toutes tes données seront supprimés dans les 30 jours.</div>
+            </div>
+
+            <div class="del-impact-list">
+              <div class="del-impact-title">Ce qui sera supprimé</div>
+
+              <div class="del-impact-item">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+                <div class="t">87 séances d'historique et 34 PR</div>
+              </div>
+              <div class="del-impact-item">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+                <div class="t">Tes plans d'entraînement et nutrition</div>
+              </div>
+              <div class="del-impact-item">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+                <div class="t">Ton profil, mensurations, préférences</div>
+              </div>
+              <div class="del-impact-item">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+                <div class="t">Les séances publiées sur Apple Santé resteront</div>
+              </div>
+            </div>
+
+            <input class="del-confirm-input" value="SUPPRIMER" readonly>
+            <div class="del-confirm-hint">Saisis le mot <code>SUPPRIMER</code> en majuscules pour confirmer.</div>
+
+            <button class="btn btn-danger" style="margin-top: auto;">Supprimer mon compte</button>
+            <button class="btn btn-ghost" style="color: var(--text-mute);">Annuler</button>
+            <div style="height: 16px;"></div>
+          </div>
+        </div>
+      </div></div>
+      <div class="mockup-caption">Delete Account — Light</div>
+    </div>
+  </div>
+
+  <div class="design-notes">
+    <h4>Pattern 2-step destruction</h4>
+    <p>Étape 1 (pas mockupée) : modal depuis Profile avec message "Es-tu sûr ?" + bouton "Continuer". Étape 2 (celle-ci) : confirmation forte avec saisie obligatoire de <code>SUPPRIMER</code>. Cette friction volontaire est un <strong>standard UX pour les actions irréversibles</strong> (GitHub, Stripe, etc.). Le bouton reste rouge pour rappeler le danger, mais l'input à remplir empêche les suppressions accidentelles. Note spéciale : les séances déjà publiées sur Apple Santé ne sont pas supprimées côté Apple — c'est cohérent avec le modèle de HealthKit (on ne peut pas écrire un delete sur des données qu'on a écrites, l'utilisateur doit le faire manuellement dans Santé).</p>
+  </div>
+</div>
+
+<!-- ===== FOOTER ===== -->
+<div style="max-width: 900px; margin: 80px auto 40px; text-align: center; padding-top: 40px; border-top: 1px solid #2a2a2a;">
+  <div style="font-family: 'Noto Serif JP', serif; font-weight: 900; font-size: 24px; color: #FF2D3F; letter-spacing: 0.4em; margin-bottom: 8px;">鍛 錬</div>
+  <div style="font-weight: 900; font-size: 20px; letter-spacing: 0.16em; margin-bottom: 4px;">TANREN</div>
+  <div style="font-style: italic; color: #FF2D3F; font-size: 14px; margin-bottom: 12px;">Une rep après l'autre.</div>
+  <div style="font-size: 11px; color: #888; letter-spacing: 0.2em;">MISSING SCREENS · DARK + LIGHT · LOT 4/4 · COMPLETE · 2026</div>
+</div>
+
+</body>
+</html>

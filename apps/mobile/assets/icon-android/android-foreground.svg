@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 432 432" width="432" height="432">
+  <title>Tanren — Android Adaptive Icon Foreground</title>
+  <desc>Foreground layer for Android Adaptive Icons. Contains the full Forge-Spark Mark centered within the 288x288 safe zone (Android requires 72dp safe area from 108dp canvas).</desc>
+
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="50%" r="45%">
+      <stop offset="0%" stop-color="#FF2D3F" stop-opacity="0.5"/>
+      <stop offset="60%" stop-color="#FF2D3F" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#FF2D3F" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Glow background -->
+  <circle cx="216" cy="216" r="150" fill="url(#glow)"/>
+
+  <!-- Outer ring (anvil) -->
+  <circle cx="216" cy="216" r="118" fill="none" stroke="#FFFFFF" stroke-width="14"/>
+
+  <!-- Inner core (heated steel) -->
+  <circle cx="216" cy="216" r="36" fill="#FF2D3F"/>
+
+  <!-- Vertical bars (hammer axis) -->
+  <rect x="203" y="90" width="26" height="80" fill="#FFFFFF"/>
+  <rect x="203" y="262" width="26" height="80" fill="#FFFFFF"/>
+
+  <!-- Horizontal bars (anvil top) -->
+  <rect x="90" y="203" width="80" height="26" fill="#FFFFFF"/>
+  <rect x="262" y="203" width="80" height="26" fill="#FFFFFF"/>
+
+  <!-- Sparks -->
+  <line x1="310" y1="122" x2="290" y2="142" stroke="#FF2D3F" stroke-width="7" stroke-linecap="square"/>
+  <line x1="122" y1="310" x2="142" y2="290" stroke="#FF2D3F" stroke-width="7" stroke-linecap="square"/>
+</svg>

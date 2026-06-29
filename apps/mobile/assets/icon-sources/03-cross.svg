@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <title>Tanren Icon — Layer 03 · Cross (Hammer + Anvil axes)</title>
+  <desc>Four rectangular bars forming a cross. Vertical bars = hammer axis, horizontal bars = anvil top. Intended as Glass material with 80% translucency and 65% specular in Icon Composer.</desc>
+  <!-- Vertical bars (hammer axis) -->
+  <rect x="470" y="100" width="84" height="260" fill="#FFFFFF"/>
+  <rect x="470" y="664" width="84" height="260" fill="#FFFFFF"/>
+  <!-- Horizontal bars (anvil top) -->
+  <rect x="100" y="470" width="260" height="84" fill="#FFFFFF"/>
+  <rect x="664" y="470" width="260" height="84" fill="#FFFFFF"/>
+</svg>

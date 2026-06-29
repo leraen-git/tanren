@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 432 432" width="432" height="432">
+  <title>Tanren — Android Adaptive Icon Monochrome</title>
+  <desc>Monochrome version for Android 13+ themed icons (system applies accent color). Only white/transparent — no colors. Same composition as foreground minus the red glow.</desc>
+
+  <!-- Outer ring -->
+  <circle cx="216" cy="216" r="118" fill="none" stroke="#FFFFFF" stroke-width="14"/>
+
+  <!-- Inner core (white in monochrome) -->
+  <circle cx="216" cy="216" r="36" fill="#FFFFFF"/>
+
+  <!-- Vertical bars -->
+  <rect x="203" y="90" width="26" height="80" fill="#FFFFFF"/>
+  <rect x="203" y="262" width="26" height="80" fill="#FFFFFF"/>
+
+  <!-- Horizontal bars -->
+  <rect x="90" y="203" width="80" height="26" fill="#FFFFFF"/>
+  <rect x="262" y="203" width="80" height="26" fill="#FFFFFF"/>
+
+  <!-- Sparks in white -->
+  <line x1="310" y1="122" x2="290" y2="142" stroke="#FFFFFF" stroke-width="7" stroke-linecap="square"/>
+  <line x1="122" y1="310" x2="142" y2="290" stroke="#FFFFFF" stroke-width="7" stroke-linecap="square"/>
+</svg>
