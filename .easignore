@@ -1,7 +1,5 @@
 node_modules
 .expo
-dist
-!packages/shared/dist
 .env
 .env.*
 !.env.example
@@ -19,3 +17,9 @@ tanren-f202fb97b00c.json
 /app.json
 /public/
 icon final/
+Design/
+AUDIT.md
+PLAN_BUILDER_CURRENT.md
+TANREN_SECURITY_AUDIT_PROMPT.md
+USER_MANUAL.md
+WORKOUT_BUILDER_CURRENT.md

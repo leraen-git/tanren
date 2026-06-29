@@ -5,7 +5,7 @@
   },
   "build": {
     "base": {
-      "prebuildCommand": "node ../../node_modules/typescript/bin/tsc -p ../../packages/shared/tsconfig.json"
+      "prebuildCommand": "test -f ../../packages/shared/dist/index.js || node ../../node_modules/typescript/bin/tsc -p ../../packages/shared/tsconfig.json"
     },
     "development": {
       "extends": "base",
