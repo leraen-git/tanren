@@ -1,7 +1,6 @@
 node_modules
 .expo
 dist
-!packages/shared/dist
 .env
 .env.*
 !.env.example
@@ -13,4 +12,7 @@ google-service-account.json
 apps/mobile/android/
 apps/mobile/ios/
 ios/
+android/
 tanren-f202fb97b00c.json
+.idea/
+packages/shared/dist/

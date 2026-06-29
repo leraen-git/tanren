@@ -12,9 +12,9 @@ export default function PrivacyScreen() {
   return (
     <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: tokens.bg }}>
       <View style={{ flexDirection: 'row', alignItems: 'center', padding: 16, gap: 12 }}>
-        <TouchableOpacity onPress={() => router.back()} accessibilityRole="button">
+        <TouchableOpacity onPress={() => router.back()} accessibilityLabel={t('common.back')} accessibilityRole="button">
           <Text style={{ ...label.md, color: tokens.accent }}>
-            {'< RETOUR'}
+            {'< '}{t('common.back').toUpperCase()}
           </Text>
         </TouchableOpacity>
         <Text style={{ fontFamily: fonts.sansX, fontSize: 20, color: tokens.text, textTransform: 'uppercase' }}>

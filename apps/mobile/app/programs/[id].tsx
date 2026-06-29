@@ -32,9 +32,9 @@ export default function ProgramDetailScreen() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: tokens.bg }}>
       <ScrollView contentContainerStyle={{ padding: 16, gap: 20 }}>
-        <TouchableOpacity onPress={() => router.back()} accessibilityLabel="Go back" accessibilityRole="button">
+        <TouchableOpacity onPress={() => router.back()} accessibilityLabel={t('common.back')} accessibilityRole="button">
           <Text style={{ ...label.md, color: tokens.accent }}>
-            {'< BACK'}
+            {'< '}{t('common.back').toUpperCase()}
           </Text>
         </TouchableOpacity>
 
@@ -49,12 +49,11 @@ export default function ProgramDetailScreen() {
               </Text>
             </View>
 
-            {/* Stats strip */}
             <View style={{ flexDirection: 'row', borderWidth: 1, borderColor: tokens.border }}>
               {[
-                { label: 'DURATION', value: `${program.durationWeeks}wk` },
-                { label: 'DAYS/WK', value: `${program.sessionsPerWeek}d` },
-                { label: 'LEVEL', value: program.level.charAt(0) + program.level.slice(1).toLowerCase() },
+                { label: t('programs.duration'), value: `${program.durationWeeks}${t('weight.period7d').charAt(0)}` },
+                { label: t('programs.daysPerWeek'), value: `${program.sessionsPerWeek}${t('days.mon').charAt(0).toLowerCase()}` },
+                { label: t('programs.level'), value: t(`difficulty.${program.level}`) },
               ].map((stat, i) => (
                 <View key={stat.label} style={{
                   flex: 1,
@@ -73,10 +72,9 @@ export default function ProgramDetailScreen() {
               ))}
             </View>
 
-            {/* Goal */}
             <View style={{ borderWidth: 1, borderColor: tokens.border, padding: 12, gap: 6 }}>
               <Text style={{ ...label.sm, color: tokens.textMute }}>
-                GOAL
+                {t('programs.goal')}
               </Text>
               <View style={{
                 alignSelf: 'flex-start',
@@ -91,17 +89,16 @@ export default function ProgramDetailScreen() {
               </View>
             </View>
 
-            {/* Week overview */}
             <Text style={{ ...label.md, color: tokens.textMute }}>
-              WEEK OVERVIEW
+              {t('programs.weekOverview')}
             </Text>
             {Array.from({ length: Math.min(program.durationWeeks, 4) }).map((_, wi) => (
               <View key={wi} style={{ borderWidth: 1, borderColor: tokens.border, padding: 12, gap: 6 }}>
                 <Text style={{ fontFamily: fonts.sansB, fontSize: 13, color: tokens.text, textTransform: 'uppercase' }}>
-                  Week {wi + 1}
+                  {t('programs.week', { n: wi + 1 })}
                 </Text>
                 <Text style={{ fontFamily: fonts.mono, fontSize: 11, color: tokens.textMute }}>
-                  {program.sessionsPerWeek} sessions planned
+                  {t('programs.sessionsPlanned', { count: program.sessionsPerWeek })}
                 </Text>
                 <View style={{ height: 3, backgroundColor: tokens.surface2 }}>
                   <View style={{ width: 0, height: 3, backgroundColor: tokens.accent }} />
@@ -110,12 +107,12 @@ export default function ProgramDetailScreen() {
             ))}
             {program.durationWeeks > 4 && (
               <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute, textAlign: 'center' }}>
-                + {program.durationWeeks - 4} more weeks after enrollment
+                {t('programs.moreWeeks', { count: program.durationWeeks - 4 })}
               </Text>
             )}
 
             <Button
-              label="Start program"
+              label={t('programs.startProgram')}
               onPress={() => enroll.mutate({ programId: program.id })}
               loading={enroll.isPending}
               style={{ marginTop: 4 }}
