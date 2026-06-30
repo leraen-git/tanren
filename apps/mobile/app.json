@@ -2,7 +2,7 @@
   "expo": {
     "name": "Tanren",
     "slug": "tanren",
-    "version": "1.0.5",
+    "version": "1.0.6",
     "scheme": "tanren",
     "orientation": "portrait",
     "icon": "./assets/icon/tanren_icon_1024.png",
@@ -46,7 +46,7 @@
         "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"
       ]
     },
-    "runtimeVersion": "1.0.5",
+    "runtimeVersion": "1.0.6",
     "updates": {
       "url": "https://u.expo.dev/933ef993-9092-4e5c-aaa8-af38a9735b8d"
     },
