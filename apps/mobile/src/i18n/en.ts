@@ -569,6 +569,9 @@ export const en = {
     genErrorToast: 'Error generating the plan',
     genInProgress: 'Forging in progress',
     genInProgressDesc: 'You can navigate freely, we\'ll notify you when it\'s ready.',
+    localeMismatch: 'This plan was generated in French',
+    localeMismatchCta: 'Regenerate to get it in English',
+    localeMismatchNoCredits: 'Regeneration available next week',
   },
   explore: {
     title: 'Explore Tanren',

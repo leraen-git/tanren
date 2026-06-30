@@ -339,6 +339,8 @@ export const dietPlansV2 = pgTable('diet_plans_v2', {
   aiSupplements: jsonb('ai_supplements'),
   aiSnackSwaps: jsonb('ai_snack_swaps'),
 
+  locale: text('locale').notNull().default('fr'),
+
   status: planStatusEnum('status').notNull().default('ACTIVE'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   replacedAt: timestamp('replaced_at'),

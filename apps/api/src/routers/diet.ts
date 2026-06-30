@@ -63,6 +63,7 @@ async function persistPlanFromAi(
   userId: string,
   intakeId: string,
   ai: AiPlanResponse,
+  locale: 'fr' | 'en' = 'fr',
 ): Promise<string> {
   // Mark existing v2 plans as REPLACED
   await db.update(dietPlansV2)
@@ -84,6 +85,7 @@ async function persistPlanFromAi(
     aiTimeline: ai.timeline,
     aiSupplements: ai.supplements,
     aiSnackSwaps: ai.snackSwaps,
+    locale,
     status: 'ACTIVE' as const,
   }).returning()
 
@@ -306,7 +308,7 @@ export const dietRouter = router({
   }),
 
   submitIntakeV2: protectedProcedure
-    .input(intakeInputV2)
+    .input(intakeInputV2.and(z.object({ locale: z.enum(['fr', 'en']).default('fr') })))
     .mutation(async ({ ctx, input }) => {
       const user = await resolveUser(ctx.db, ctx.userId)
 
@@ -368,7 +370,7 @@ export const dietRouter = router({
           goalWeightKg: input.goalWeightKg ?? null,
           goalFeel: input.goalFeel ?? null,
           hatedFoods: input.hatedFoods ?? null,
-        } as Parameters<typeof generatePlanWithClaude>[0], { model: dietModel })
+        } as Parameters<typeof generatePlanWithClaude>[0], { model: dietModel, locale: input.locale })
       } catch (err) {
         const msg = err instanceof Error ? err.message : 'Unknown error'
         throw new TRPCError({
@@ -377,7 +379,7 @@ export const dietRouter = router({
         })
       }
 
-      const planId = await persistPlanFromAi(ctx.db, user.id, intake!.id, ai)
+      const planId = await persistPlanFromAi(ctx.db, user.id, intake!.id, ai, input.locale)
       return { planId }
     }),
 
@@ -385,6 +387,7 @@ export const dietRouter = router({
     .input(z.object({
       useNewIntake: z.boolean(),
       newIntake: intakeInputV2.optional(),
+      locale: z.enum(['fr', 'en']).default('fr'),
     }))
     .mutation(async ({ ctx, input }) => {
       const user = await resolveUser(ctx.db, ctx.userId)
@@ -484,7 +487,7 @@ export const dietRouter = router({
           snackMotivation: intake.snackMotivation,
           snackPreference: intake.snackPreference,
           nightSnacking: intake.nightSnacking,
-        }, { model: resolveModelForUser({ role: ctx.user.role, preferredModel: ctx.user.preferredLlmModel }) })
+        }, { model: resolveModelForUser({ role: ctx.user.role, preferredModel: ctx.user.preferredLlmModel }), locale: input.locale })
       } catch (err) {
         const msg = err instanceof Error ? err.message : 'Unknown error'
         throw new TRPCError({
@@ -493,7 +496,7 @@ export const dietRouter = router({
         })
       }
 
-      const planId = await persistPlanFromAi(ctx.db, user.id, intakeId, ai)
+      const planId = await persistPlanFromAi(ctx.db, user.id, intakeId, ai, input.locale)
       return { planId }
     }),
 

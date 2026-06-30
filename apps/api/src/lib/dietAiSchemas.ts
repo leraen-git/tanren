@@ -29,7 +29,7 @@ const mealSchema = z.object({
 
 const daySchema = z.object({
   dayNumber: z.number().int().min(1).max(7),
-  dayLabel: z.enum(['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']),
+  dayLabel: z.enum(['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']),
   theme: z.string(),
   targetKcal: z.number().int(),
   meals: z.array(mealSchema).min(3).max(6),

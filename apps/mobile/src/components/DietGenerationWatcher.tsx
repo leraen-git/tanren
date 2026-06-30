@@ -22,10 +22,11 @@ export function DietGenerationWatcher() {
 
     const run = async () => {
       try {
+        const locale = (i18n.language?.startsWith('fr') ? 'fr' : 'en') as 'fr' | 'en'
         if (payload.mode === 'submit' && payload.submitInput) {
-          await submitMutation.mutateAsync(payload.submitInput as any)
+          await submitMutation.mutateAsync({ ...payload.submitInput, locale } as any)
         } else if (payload.mode === 'regenerate') {
-          await regenMutation.mutateAsync({ useNewIntake: false })
+          await regenMutation.mutateAsync({ useNewIntake: false, locale })
         }
         invalidateDiet()
         finish()

@@ -11,6 +11,8 @@ import { SkeletonCard } from '@/components/SkeletonCard'
 import { KanjiWatermark } from '@/components/KanjiWatermark'
 import { useDietGenerationStore } from '@/stores/dietGenerationStore'
 import { useTranslation } from 'react-i18next'
+import i18n from '@/i18n'
+import { trpc } from '@/lib/trpc'
 
 const DOW_DB_KEY = ['', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const
 
@@ -248,6 +250,7 @@ interface V2GroceryItem {
 
 interface V2PlanData {
   id: string
+  locale?: string
   targetKcal: number
   targetProteinG: number
   targetCarbsG: number
@@ -283,6 +286,13 @@ function V2ActivePlan({ plan }: { plan: V2PlanData }) {
   const checkedCount = plan.groceryItems.filter((g) => g.isChecked).length
   const totalGroceries = plan.groceryItems.length
 
+  const resolvedAppLocale = i18n.language?.startsWith('fr') ? 'fr' : 'en'
+  const planLocale = plan.locale ?? 'fr'
+  const localeMismatch = planLocale !== resolvedAppLocale
+
+  const { data: credits } = trpc.diet.getRegenCredits.useQuery(undefined, { enabled: localeMismatch })
+  const hasCredits = (credits?.remaining ?? 0) > 0
+
   return (
     <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
       {/* Header */}
@@ -299,6 +309,26 @@ function V2ActivePlan({ plan }: { plan: V2PlanData }) {
           </Text>
         </TouchableOpacity>
       </View>
+
+      {localeMismatch && (
+        <TouchableOpacity
+          onPress={hasCredits ? () => router.push('/diet/regenerate' as Href) : undefined}
+          activeOpacity={hasCredits ? 0.7 : 1}
+          style={{
+            marginHorizontal: 16, marginBottom: 8, padding: 12,
+            borderWidth: 1, borderColor: tokens.accent,
+            backgroundColor: tokens.surface1,
+          }}
+          accessibilityRole={hasCredits ? 'button' : 'text'}
+        >
+          <Text style={{ fontFamily: fonts.sansB, fontSize: 13, color: tokens.text, marginBottom: 2 }}>
+            {t('diet.localeMismatch')}
+          </Text>
+          <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute }}>
+            {hasCredits ? t('diet.localeMismatchCta') : t('diet.localeMismatchNoCredits')}
+          </Text>
+        </TouchableOpacity>
+      )}
 
       {/* Day selector */}
       <View style={{ flexDirection: 'row', paddingHorizontal: 16, gap: 4, paddingBottom: 8 }}>

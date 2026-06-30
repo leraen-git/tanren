@@ -352,6 +352,10 @@ export async function runPendingMigrations() {
     await client.query(`CREATE INDEX IF NOT EXISTS idx_auth_sessions_expires ON auth_sessions (expires_at)`)
     console.log('[migration] Ensured auth_sessions exists')
 
+    // --- 0023: diet_plans_v2 locale ---
+    await ensureColumn(client, 'diet_plans_v2', 'locale', `"locale" text NOT NULL DEFAULT 'fr'`)
+    console.log('[migration] Ensured diet_plans_v2.locale exists')
+
     // --- Extra indexes ---
     await client.query(`CREATE INDEX IF NOT EXISTS wt_user_idx ON workout_templates (user_id)`)
     await client.query(`CREATE INDEX IF NOT EXISTS we_template_idx ON workout_exercises (workout_template_id)`)
