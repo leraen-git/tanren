@@ -1,5 +1,5 @@
-import React from 'react'
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native'
+import React, { useState } from 'react'
+import { View, Text, ScrollView, TouchableOpacity, Alert } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Redirect, router } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
@@ -18,6 +18,55 @@ function StatCell({ label, value }: { label: string; value: string | number }) {
         {value}
       </Text>
       <Text style={{ ...labelPreset.sm, color: tokens.textMute }}>{label}</Text>
+    </View>
+  )
+}
+
+function AdminDevTools() {
+  const { tokens, fonts, label: labelPreset } = useTheme()
+  const { t } = useTranslation()
+  const [resetting, setResetting] = useState(false)
+  const resetCredits = trpc.admin.resetDietCredits.useMutation()
+  const utils = trpc.useUtils()
+
+  const handleReset = () => {
+    setResetting(true)
+    resetCredits.mutate(undefined, {
+      onSuccess: (data) => {
+        utils.diet.getRegenCredits.invalidate()
+        Alert.alert('Done', `${data.deletedCount} credit(s) cleared`)
+        setResetting(false)
+      },
+      onError: (err) => {
+        Alert.alert('Error', err.message)
+        setResetting(false)
+      },
+    })
+  }
+
+  return (
+    <View style={{ marginTop: 24 }}>
+      <Text style={{ ...labelPreset.sm, color: tokens.textGhost, marginBottom: 8 }}>
+        DEV TOOLS
+      </Text>
+      <TouchableOpacity
+        onPress={handleReset}
+        disabled={resetting}
+        accessibilityRole="button"
+        style={{
+          paddingVertical: 14,
+          borderBottomWidth: 1,
+          borderBottomColor: tokens.border,
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          opacity: resetting ? 0.5 : 1,
+        }}
+      >
+        <Text style={{ fontFamily: fonts.sansM, fontSize: 14, color: tokens.accent }}>
+          {resetting ? 'Resetting...' : t('admin.resetDietCredits')}
+        </Text>
+      </TouchableOpacity>
     </View>
   )
 }
@@ -94,6 +143,8 @@ export default function AdminDashboardScreen() {
             <Text style={{ fontFamily: fonts.sans, fontSize: 14, color: tokens.textMute }}>›</Text>
           </TouchableOpacity>
         ))}
+
+        <AdminDevTools />
       </ScrollView>
     </SafeAreaView>
   )

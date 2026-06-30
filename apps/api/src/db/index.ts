@@ -356,6 +356,15 @@ export async function runPendingMigrations() {
     await ensureColumn(client, 'diet_plans_v2', 'locale', `"locale" text NOT NULL DEFAULT 'fr'`)
     console.log('[migration] Ensured diet_plans_v2.locale exists')
 
+    // --- 0024: audit action enum: diet_credits_reset ---
+    await client.query(`
+      DO $$ BEGIN
+        ALTER TYPE admin_audit_action_enum ADD VALUE IF NOT EXISTS 'diet_credits_reset';
+      EXCEPTION WHEN duplicate_object THEN NULL;
+      END $$
+    `)
+    console.log('[migration] Ensured audit action diet_credits_reset exists')
+
     // --- Extra indexes ---
     await client.query(`CREATE INDEX IF NOT EXISTS wt_user_idx ON workout_templates (user_id)`)
     await client.query(`CREATE INDEX IF NOT EXISTS we_template_idx ON workout_exercises (workout_template_id)`)

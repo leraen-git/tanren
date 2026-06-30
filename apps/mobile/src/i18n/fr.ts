@@ -1368,5 +1368,6 @@ export const fr = {
     auditLlm: 'LLM',
     auditFlags: 'Flags',
     noAuditEntries: 'Aucune entrée',
+    resetDietCredits: 'Reset crédits diet',
   },
 } as const

@@ -10,6 +10,7 @@ type AuditAction =
   | 'ai_quota_reset'
   | 'feature_flag_overridden'
   | 'llm_model_changed'
+  | 'diet_credits_reset'
 
 export async function recordAdminAction(input: {
   adminUserId: string

@@ -487,6 +487,7 @@ export const adminAuditActionEnum = pgEnum('admin_audit_action_enum', [
   'feature_flag_overridden',
   'llm_model_changed',
   'bootstrap',
+  'diet_credits_reset',
 ])
 
 export const adminAuditLog = pgTable('admin_audit_log', {
