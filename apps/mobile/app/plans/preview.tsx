@@ -13,11 +13,15 @@ import { translateMuscleGroup } from '@/hooks/useExercises'
 import { useExercises } from '@/hooks/useExercises'
 import { ExercisePicker, type PickedExercise } from '@/components/ExercisePicker'
 
-const DAY_NAMES: Record<number, string> = { 1: 'Lun', 2: 'Mar', 3: 'Mer', 4: 'Jeu', 5: 'Ven', 6: 'Sam', 7: 'Dim' }
+function useDayNames(): Record<number, string> {
+  const { t } = useTranslation()
+  return { 1: t('common.dayShort1'), 2: t('common.dayShort2'), 3: t('common.dayShort3'), 4: t('common.dayShort4'), 5: t('common.dayShort5'), 6: t('common.dayShort6'), 7: t('common.dayShort7') }
+}
 
 export default function PreviewPlanScreen() {
   const { tokens, fonts, label } = useTheme()
   const { t } = useTranslation()
+  const DAY_NAMES = useDayNames()
   const { proposedPlan, updateProposedPlan, reset } = useAIPlanStore()
   const { data: plans } = trpc.plans.list.useQuery()
   const currentActivePlan = plans?.find((p) => p.isActive)

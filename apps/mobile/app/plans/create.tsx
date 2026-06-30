@@ -20,15 +20,12 @@ import { useProfile } from '@/data/useProfile'
 
 const DOW_KEY: Record<number, string> = { 1: 'mon', 2: 'tue', 3: 'wed', 4: 'thu', 5: 'fri', 6: 'sat', 7: 'sun' }
 
-const DAYS = [
-  { label: 'Lun', value: 1 },
-  { label: 'Mar', value: 2 },
-  { label: 'Mer', value: 3 },
-  { label: 'Jeu', value: 4 },
-  { label: 'Ven', value: 5 },
-  { label: 'Sam', value: 6 },
-  { label: 'Dim', value: 7 },
-]
+const DAY_VALUES = [1, 2, 3, 4, 5, 6, 7] as const
+
+function useDayLabels() {
+  const { t } = useTranslation()
+  return DAY_VALUES.map((v) => ({ label: t(`common.dayShort${v}`), value: v }))
+}
 
 type PlanDay = {
   dayOfWeek: number
@@ -38,6 +35,7 @@ type PlanDay = {
 export default function CreatePlanScreen() {
   const { tokens, fonts, label } = useTheme()
   const { t } = useTranslation()
+  const DAYS = useDayLabels()
   const { id } = useLocalSearchParams<{ id?: string }>()
   const isEditing = !!id
 

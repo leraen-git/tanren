@@ -12,7 +12,6 @@ import { useInvalidateActivePlan } from '@/lib/invalidation'
 import { useTranslation } from 'react-i18next'
 import { translateMuscleGroup } from '@/hooks/useExercises'
 
-const DOW_SHORT: Record<number, string> = { 1: 'Lun', 2: 'Mar', 3: 'Mer', 4: 'Jeu', 5: 'Ven', 6: 'Sam', 7: 'Dim' }
 const DOW_KEY: Record<number, string> = { 1: 'mon', 2: 'tue', 3: 'wed', 4: 'thu', 5: 'fri', 6: 'sat', 7: 'sun' }
 
 function jsDowToUi(jsDow: number): number { return jsDow === 0 ? 7 : jsDow }
@@ -44,6 +43,7 @@ function SectionLabel({ title, count, onAdd, addLabel }: { title: string; count?
 export default function TrainingScreen() {
   const { tokens, fonts, label } = useTheme()
   const { t } = useTranslation()
+  const DOW_SHORT: Record<number, string> = { 1: t('common.dayShort1'), 2: t('common.dayShort2'), 3: t('common.dayShort3'), 4: t('common.dayShort4'), 5: t('common.dayShort5'), 6: t('common.dayShort6'), 7: t('common.dayShort7') }
   const bannerVisible = useGuestBannerVisible()
 
   const invalidateActivePlan = useInvalidateActivePlan()

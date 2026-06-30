@@ -31,6 +31,13 @@ export const fr = {
     tryAgainLater: 'Réessaie dans un instant',
     savedLocally: 'Sauvegardé localement — synchronisation automatique',
     offlineBanner: 'Hors ligne — les mises à jour seront visibles à la prochaine connexion',
+    dayShort1: 'Lun',
+    dayShort2: 'Mar',
+    dayShort3: 'Mer',
+    dayShort4: 'Jeu',
+    dayShort5: 'Ven',
+    dayShort6: 'Sam',
+    dayShort7: 'Dim',
   },
   tabs: {
     home: 'Home',

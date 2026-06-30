@@ -31,6 +31,13 @@ export const en = {
     tryAgainLater: 'Try again in a moment',
     savedLocally: 'Saved locally — will sync automatically',
     offlineBanner: 'Offline — updates will appear when back online',
+    dayShort1: 'Mon',
+    dayShort2: 'Tue',
+    dayShort3: 'Wed',
+    dayShort4: 'Thu',
+    dayShort5: 'Fri',
+    dayShort6: 'Sat',
+    dayShort7: 'Sun',
   },
   tabs: {
     home: 'Home',
