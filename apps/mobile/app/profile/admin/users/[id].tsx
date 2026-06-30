@@ -12,6 +12,27 @@ import { Button } from '@/components/Button'
 import { BottomSheetShell } from '@/components/BottomSheetShell'
 import { formatDateShort } from '@/utils/format'
 
+function ResetButton({ label, onPress, loading }: { label: string; onPress: () => void; loading: boolean }) {
+  const { tokens, fonts } = useTheme()
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      disabled={loading}
+      accessibilityRole="button"
+      style={{
+        flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+        paddingVertical: 12, paddingHorizontal: 14,
+        borderBottomWidth: 1, borderBottomColor: tokens.border,
+        opacity: loading ? 0.5 : 1,
+      }}
+    >
+      <Text style={{ fontFamily: fonts.sansM, fontSize: 13, color: tokens.accent }}>
+        {loading ? '...' : label}
+      </Text>
+    </TouchableOpacity>
+  )
+}
+
 function InfoRow({ label, value }: { label: string; value: string }) {
   const { tokens, fonts } = useTheme()
   return (
@@ -68,6 +89,11 @@ export default function AdminUserDetailScreen() {
       setQuotaSheet(false)
       utils.admin.users.get.invalidate({ userId: id! })
     },
+    onError: (err) => Alert.alert(t('common.error'), err.message),
+  })
+
+  const resetDietCreditsMut = trpc.admin.users.resetDietCredits.useMutation({
+    onSuccess: (data) => Alert.alert('Done', `${data.deletedCount} credit(s) cleared`),
     onError: (err) => Alert.alert(t('common.error'), err.message),
   })
 
@@ -140,6 +166,16 @@ export default function AdminUserDetailScreen() {
         >
           <Text style={{ fontFamily: fonts.sansM, fontSize: 13, color: tokens.accent }}>{t('admin.quotaEdit')}</Text>
         </TouchableOpacity>
+
+        {/* Quick actions */}
+        <Text style={{ ...labelPreset.sm, color: tokens.textGhost, marginBottom: 8 }}>RESETS</Text>
+        <View style={{ borderWidth: 1, borderColor: tokens.border, marginBottom: 24 }}>
+          <ResetButton
+            label={t('admin.resetDietCredits')}
+            onPress={() => resetDietCreditsMut.mutate({ userId: id! })}
+            loading={resetDietCreditsMut.isPending}
+          />
+        </View>
 
         {/* Actions */}
         <Text style={{ ...labelPreset.sm, color: tokens.accent, marginBottom: 8 }}>ACTIONS</Text>

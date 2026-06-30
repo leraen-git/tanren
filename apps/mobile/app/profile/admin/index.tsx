@@ -25,13 +25,15 @@ function StatCell({ label, value }: { label: string; value: string | number }) {
 function AdminDevTools() {
   const { tokens, fonts, label: labelPreset } = useTheme()
   const { t } = useTranslation()
+  const { data: me } = useProfile()
   const [resetting, setResetting] = useState(false)
-  const resetCredits = trpc.admin.resetDietCredits.useMutation()
+  const resetCredits = trpc.admin.users.resetDietCredits.useMutation()
   const utils = trpc.useUtils()
 
   const handleReset = () => {
+    if (!me?.id) return
     setResetting(true)
-    resetCredits.mutate(undefined, {
+    resetCredits.mutate({ userId: me.id }, {
       onSuccess: (data) => {
         utils.diet.getRegenCredits.invalidate()
         Alert.alert('Done', `${data.deletedCount} credit(s) cleared`)

@@ -8,7 +8,7 @@
 import { z } from 'zod'
 import { router, adminProcedure } from '../../trpc.js'
 import { db } from '../../db/index.js'
-import { users, workoutSessions, aiGenerationLog } from '../../db/schema.js'
+import { users, workoutSessions, aiGenerationLog, dietRegenCredits } from '../../db/schema.js'
 import { eq, isNull, isNotNull, and, sql, desc, or } from 'drizzle-orm'
 import { decryptUserFields, encryptUserFields } from '../../db/encryption.js'
 import { deterministicHash } from '../../services/cryptoService.js'
@@ -55,24 +55,42 @@ export const adminUsersRouter = router({
   search: adminProcedure
     .input(z.object({ query: z.string().min(1).max(200) }))
     .query(async ({ input }) => {
-      const emailHash = deterministicHash(input.query.toLowerCase().trim())
+      const q = input.query.toLowerCase().trim()
 
-      const rows = await db
+      const exactHash = deterministicHash(q)
+      const exactRows = await db
         .select({
-          id: users.id,
-          email: users.email,
-          name: users.name,
-          role: users.role,
-          authProvider: users.authProvider,
-          createdAt: users.createdAt,
-          deletedAt: users.deletedAt,
+          id: users.id, email: users.email, name: users.name,
+          role: users.role, authProvider: users.authProvider,
+          createdAt: users.createdAt, deletedAt: users.deletedAt,
           aiQuotaOverrides: users.aiQuotaOverrides,
         })
         .from(users)
-        .where(or(eq(users.emailHash, emailHash), sql`${users.name} ILIKE ${'%' + input.query + '%'}`))
-        .limit(20)
+        .where(eq(users.emailHash, exactHash))
+        .limit(5)
 
-      return rows.map((r) => decryptUserFields(r))
+      if (exactRows.length > 0) {
+        return exactRows.map((r) => decryptUserFields(r))
+      }
+
+      const allRows = await db
+        .select({
+          id: users.id, email: users.email, name: users.name,
+          role: users.role, authProvider: users.authProvider,
+          createdAt: users.createdAt, deletedAt: users.deletedAt,
+          aiQuotaOverrides: users.aiQuotaOverrides,
+        })
+        .from(users)
+        .limit(500)
+
+      return allRows
+        .map((r) => decryptUserFields(r))
+        .filter((r) => {
+          const email = (r.email ?? '').toLowerCase()
+          const name = (r.name ?? '').toLowerCase()
+          return email.includes(q) || name.includes(q)
+        })
+        .slice(0, 20)
     }),
 
   get: adminProcedure
@@ -225,5 +243,26 @@ export const adminUsersRouter = router({
       })
 
       return { success: true }
+    }),
+
+  resetDietCredits: adminProcedure
+    .input(z.object({ userId: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      const [target] = await db.select({ id: users.id }).from(users).where(eq(users.id, input.userId)).limit(1)
+      if (!target) throw new TRPCError({ code: 'NOT_FOUND' })
+
+      const deleted = await db.delete(dietRegenCredits)
+        .where(eq(dietRegenCredits.userId, input.userId))
+        .returning()
+
+      await recordAdminAction({
+        adminUserId: ctx.user.id,
+        action: 'diet_credits_reset',
+        targetUserId: input.userId,
+        payload: { deletedCount: deleted.length },
+        request: ctx.req,
+      })
+
+      return { deletedCount: deleted.length }
     }),
 })
