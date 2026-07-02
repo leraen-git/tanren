@@ -857,6 +857,10 @@ export const en = {
     genCanLeave: 'You can leave this screen, we\'ll notify you when it\'s ready.',
     genContinueBrowsing: 'Continue browsing ›',
     genError: 'Generation error',
+    genFailedTitle: 'Generation failed',
+    genFailedSub: 'An error occurred while creating your plan.',
+    genFailedNoCredit: 'No credit was used.',
+    genRetry: 'Retry',
   },
   days: {
     sun: 'Sun',

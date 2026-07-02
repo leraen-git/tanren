@@ -859,6 +859,10 @@ export const fr = {
     genCanLeave: 'Tu peux quitter cet écran, on te prévient quand c\'est prêt.',
     genContinueBrowsing: 'Continuer à naviguer ›',
     genError: 'Erreur de génération',
+    genFailedTitle: 'Génération échouée',
+    genFailedSub: 'Une erreur est survenue pendant la création de ton plan.',
+    genFailedNoCredit: 'Aucun crédit n\'a été utilisé.',
+    genRetry: 'Réessayer',
   },
   days: {
     sun: 'Dim',

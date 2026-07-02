@@ -15,6 +15,7 @@ interface DietGenerationState {
   start: (payload: DietGenPayload) => void
   finish: () => void
   fail: (message: string) => void
+  retry: () => void
   reset: () => void
 }
 
@@ -24,6 +25,7 @@ export const useDietGenerationStore = create<DietGenerationState>((set) => ({
   payload: null,
   start: (payload) => set({ status: 'generating', payload, errorMessage: null }),
   finish: () => set({ status: 'done', payload: null }),
-  fail: (message) => set({ status: 'error', errorMessage: message, payload: null }),
+  fail: (message) => set({ status: 'error', errorMessage: message }),
+  retry: () => set((s) => s.payload ? { status: 'generating', errorMessage: null } : {}),
   reset: () => set({ status: 'idle', errorMessage: null, payload: null }),
 }))

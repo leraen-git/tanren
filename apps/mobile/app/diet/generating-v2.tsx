@@ -27,7 +27,7 @@ export default function GeneratingV2Screen() {
   const { draft, reset } = useIntakeDraftV2Store()
   const triggered = useRef(false)
   const started = useRef(false)
-  const { status, start, reset: resetGen } = useDietGenerationStore()
+  const { status, errorMessage, start, retry, reset: resetGen } = useDietGenerationStore()
   const [progress, setProgress] = useState(0)
 
   const pulseScale = useSharedValue(1)
@@ -106,8 +106,6 @@ export default function GeneratingV2Screen() {
       setProgress(100)
       reset()
       router.replace('/diet')
-    } else if (status === 'error') {
-      router.replace('/diet')
     }
   }, [status])
 
@@ -118,6 +116,72 @@ export default function GeneratingV2Screen() {
     return 0
   }
   const stepIdx = currentStepIndex()
+
+  if (status === 'error') {
+    return (
+      <Screen showKanji kanjiChar="錬">
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+          <Text style={{
+            fontFamily: 'NotoSerifJP_900Black_subset',
+            fontSize: 96, color: tokens.accent, lineHeight: 110, opacity: 0.3,
+          }}>
+            鍛
+          </Text>
+
+          <Text style={{
+            fontFamily: fonts.sansX, fontSize: 22, color: tokens.text,
+            textAlign: 'center', textTransform: 'uppercase', letterSpacing: 0.4,
+            marginTop: 24, marginBottom: 12,
+          }}>
+            {t('intakeV2.genFailedTitle')}
+          </Text>
+
+          <Text style={{
+            fontFamily: fonts.sans, fontSize: 13, color: tokens.textDim,
+            textAlign: 'center', lineHeight: 18, maxWidth: 280, marginBottom: 8,
+          }}>
+            {errorMessage || t('intakeV2.genFailedSub')}
+          </Text>
+
+          <Text style={{
+            fontFamily: fonts.sans, fontSize: 11, color: tokens.textMute,
+            textAlign: 'center', marginBottom: 32,
+          }}>
+            {t('intakeV2.genFailedNoCredit')}
+          </Text>
+
+          <TouchableOpacity
+            onPress={() => { setProgress(0); retry() }}
+            style={{
+              width: 240, height: 52, backgroundColor: tokens.accent,
+              alignItems: 'center', justifyContent: 'center',
+            }}
+            accessibilityRole="button"
+          >
+            <Text style={{
+              fontFamily: fonts.sansB, fontSize: 13, color: '#FFFFFF',
+              textTransform: 'uppercase', letterSpacing: 0.8,
+            }}>
+              {t('intakeV2.genRetry')}
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => { resetGen(); router.replace('/diet') }}
+            style={{ marginTop: 16, paddingVertical: 12, paddingHorizontal: 24 }}
+            accessibilityRole="button"
+          >
+            <Text style={{
+              fontFamily: fonts.sansM, fontSize: 13, color: tokens.textMute,
+              textAlign: 'center',
+            }}>
+              {t('common.back')}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </Screen>
+    )
+  }
 
   return (
     <Screen showKanji kanjiChar="錬">

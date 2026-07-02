@@ -327,12 +327,9 @@ export const dietRouter = router({
             message: `Tu as utilisé tes 2 régénérations de la semaine. Reset le ${credits.resetDateLabel}.`,
           })
         }
-        await ctx.db.insert(dietRegenCredits).values({
-          userId: user.id,
-          isoWeek: getCurrentISOWeek(),
-        })
       }
 
+      const isRegen = !!anyPrevious
 
       const [intake] = await ctx.db.insert(dietIntakes).values({
         userId: user.id,
@@ -380,6 +377,14 @@ export const dietRouter = router({
       }
 
       const planId = await persistPlanFromAi(ctx.db, user.id, intake!.id, ai, input.locale)
+
+      if (isRegen) {
+        await ctx.db.insert(dietRegenCredits).values({
+          userId: user.id,
+          isoWeek: getCurrentISOWeek(),
+        })
+      }
+
       return { planId }
     }),
 
@@ -444,12 +449,6 @@ export const dietRouter = router({
         intakeId = latest.id
       }
 
-      // Consume credit BEFORE generation
-      await ctx.db.insert(dietRegenCredits).values({
-        userId: user.id,
-        isoWeek: getCurrentISOWeek(),
-      })
-
       const [intake] = await ctx.db
         .select()
         .from(dietIntakes)
@@ -497,6 +496,12 @@ export const dietRouter = router({
       }
 
       const planId = await persistPlanFromAi(ctx.db, user.id, intakeId, ai, input.locale)
+
+      await ctx.db.insert(dietRegenCredits).values({
+        userId: user.id,
+        isoWeek: getCurrentISOWeek(),
+      })
+
       return { planId }
     }),
 
