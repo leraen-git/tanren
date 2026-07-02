@@ -24,6 +24,13 @@ struct TanrenWidgetView: View {
 struct SmallWidgetView: View {
     let entry: TanrenEntry
 
+    private var sessionURL: URL {
+        if let tid = entry.payload.nextSession?.templateId {
+            return URL(string: "tanren://workout/preview?templateId=\(tid)")!
+        }
+        return URL(string: "tanren://")!
+    }
+
     var body: some View {
         let session = entry.payload.nextSession
 
@@ -82,7 +89,7 @@ struct SmallWidgetView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .widgetURL(URL(string: "tanren://workout/preview"))
+        .widgetURL(sessionURL)
     }
 }
 
@@ -91,10 +98,17 @@ struct SmallWidgetView: View {
 struct MediumWidgetView: View {
     let entry: TanrenEntry
 
+    private var sessionURL: URL {
+        if let tid = entry.payload.nextSession?.templateId {
+            return URL(string: "tanren://workout/preview?templateId=\(tid)")!
+        }
+        return URL(string: "tanren://")!
+    }
+
     var body: some View {
         HStack(spacing: 0) {
             // Session zone
-            Link(destination: URL(string: "tanren://workout/preview")!) {
+            Link(destination: sessionURL) {
                 SessionZone(session: entry.payload.nextSession)
             }
 

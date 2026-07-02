@@ -8,6 +8,7 @@ struct WidgetPayload: Codable {
         let title: String
         let timeLabel: String
         let muscleGroups: String?
+        let templateId: String?
     }
     struct Meal: Codable {
         let title: String
@@ -62,7 +63,7 @@ struct TanrenProvider: TimelineProvider {
 extension WidgetPayload {
     static let empty = WidgetPayload(nextSession: nil, nextMeal: nil, updatedAt: nil)
     static let placeholder = WidgetPayload(
-        nextSession: .init(title: "PUSH DAY", timeLabel: "Aujourd'hui", muscleGroups: "Pecs · Épaules · Triceps"),
+        nextSession: .init(title: "PUSH DAY", timeLabel: "Aujourd'hui", muscleGroups: "Pecs · Épaules · Triceps", templateId: nil),
         nextMeal: .init(title: "Poulet grillé & riz", kcalLabel: "620 kcal", mealType: "Déjeuner"),
         updatedAt: nil
     )

@@ -3,6 +3,7 @@ export const FLAGS = {
   AI_PLAN_GENERATOR: true,
   DIET_TAB: true,
   EXPORT_DATA: false,
+  WIDGET_ENABLED: true,
 } as const
 
 export function useFeatureFlag(flag: keyof typeof FLAGS): boolean {

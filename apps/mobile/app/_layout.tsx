@@ -24,6 +24,7 @@ import * as Sentry from '@sentry/react-native'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { ToastHost } from '@/components/ToastHost'
 import { DietGenerationWatcher } from '@/components/DietGenerationWatcher'
+import { WidgetSyncWatcher } from '@/components/WidgetSyncWatcher'
 import { useActiveSessionStore } from '@/stores/activeSessionStore'
 import { useProgressPhotosStore } from '@/stores/progressPhotosStore'
 import { useSyncWorker } from '@/hooks/useSyncWorker'
@@ -391,6 +392,7 @@ export default function RootLayout() {
                     <NotificationWatcher />
                     <OTAUpdateChecker />
                     <DietGenerationWatcher />
+                    <WidgetSyncWatcher />
                     <ToastHost />
                   </>
                 )}
