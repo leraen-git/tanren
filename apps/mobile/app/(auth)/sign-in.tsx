@@ -137,7 +137,7 @@ export default function SignInScreen() {
       await signInWithApple()
     } catch (err: any) {
       if (err?.code !== 'ERR_CANCELED') {
-        Alert.alert(t('signIn.errorTitle'), t('signIn.errorApple'))
+        Alert.alert(t('signIn.errorTitle'), err?.message ?? t('signIn.errorApple'))
       }
     } finally {
       setSocialLoading(false)

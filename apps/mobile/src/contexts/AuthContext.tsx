@@ -59,18 +59,23 @@ async function authFetch(path: string, body: Record<string, unknown>): Promise<{
   const res = await fetch(`${API_URL}/trpc/${path}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
+    body: JSON.stringify({ json: body }),
   })
   if (!res.ok) {
     let message = 'Sign-in failed'
     try {
-      const err: { error?: { message?: string } } = await res.json()
-      message = err?.error?.message ?? message
+      const payload = await res.json()
+      const trpcErrors = payload?.error?.json?.message
+        ?? payload?.error?.message
+        ?? payload?.[0]?.error?.json?.message
+      if (trpcErrors) message = trpcErrors
     } catch {}
     throw new Error(message)
   }
-  const data = await res.json() as { result: { data: { token: string } } }
-  return { token: data.result.data.token }
+  const data = await res.json() as {
+    result: { data: { json: { token: string } } }
+  }
+  return { token: data.result.data.json.token }
 }
 
 // ─── Provider ─────────────────────────────────────────────────────────────────
@@ -120,6 +125,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       ],
     })
 
+    if (!credential.identityToken) {
+      throw new Error('Apple did not return an identity token')
+    }
+
     const fullName = [
       credential.fullName?.givenName,
       credential.fullName?.familyName,
@@ -155,13 +164,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const res = await fetch(`${API_URL}/trpc/auth.requestOtp`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email }),
+      body: JSON.stringify({ json: { email } }),
     })
     if (!res.ok) {
       let message = 'Could not send code'
       try {
-        const err: { error?: { message?: string } } = await res.json()
-        message = err?.error?.message ?? message
+        const payload = await res.json()
+        const trpcError = payload?.error?.json?.message
+          ?? payload?.error?.message
+          ?? payload?.[0]?.error?.json?.message
+        if (trpcError) message = trpcError
       } catch {}
       throw new Error(message)
     }
@@ -195,7 +207,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${currentToken}`,
           },
-          body: JSON.stringify({}),
+          body: JSON.stringify({ json: {} }),
         })
       } catch {}
     }
