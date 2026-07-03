@@ -18,7 +18,9 @@
       "icon": "./assets/Tanren.icon",
       "bundleIdentifier": "app.tanren",
       "entitlements": {
-        "com.apple.security.application-groups": ["group.app.tanren.shared"]
+        "com.apple.security.application-groups": [
+          "group.app.tanren.shared"
+        ]
       },
       "infoPlist": {
         "UIUserInterfaceStyle": "Automatic",
@@ -70,7 +72,9 @@
             "../../node_modules/@expo-google-fonts/barlow-condensed/700Bold/BarlowCondensed_700Bold.ttf",
             "../../node_modules/@expo-google-fonts/barlow-condensed/900Black/BarlowCondensed_900Black.ttf",
             "./assets/fonts/NotoSerifJP_700Bold_subset.ttf",
-            "./assets/fonts/NotoSerifJP_900Black_subset.ttf"
+            "./assets/fonts/NotoSerifJP_900Black_subset.ttf",
+            "../../node_modules/@expo-google-fonts/jetbrains-mono/400Regular/JetBrainsMono_400Regular.ttf",
+            "../../node_modules/@expo-google-fonts/jetbrains-mono/700Bold/JetBrainsMono_700Bold.ttf"
           ]
         }
       ],
@@ -90,7 +94,56 @@
       "expo-sharing",
       "expo-image",
       "@react-native-community/datetimepicker",
-      "@bacons/apple-targets"
+      "@bacons/apple-targets",
+      [
+        "react-native-android-widget",
+        {
+          "fonts": [
+            "../../node_modules/@expo-google-fonts/barlow-condensed/400Regular/BarlowCondensed_400Regular.ttf",
+            "../../node_modules/@expo-google-fonts/barlow-condensed/500Medium/BarlowCondensed_500Medium.ttf",
+            "../../node_modules/@expo-google-fonts/barlow-condensed/700Bold/BarlowCondensed_700Bold.ttf",
+            "../../node_modules/@expo-google-fonts/barlow-condensed/900Black/BarlowCondensed_900Black.ttf",
+            "../../node_modules/@expo-google-fonts/jetbrains-mono/400Regular/JetBrainsMono_400Regular.ttf",
+            "../../node_modules/@expo-google-fonts/jetbrains-mono/700Bold/JetBrainsMono_700Bold.ttf",
+            "./assets/fonts/NotoSerifJP_700Bold_subset.ttf"
+          ],
+          "widgets": [
+            {
+              "name": "TanrenSession",
+              "label": "Tanren — Séance",
+              "description": "Ta prochaine séance d'entraînement.",
+              "minWidth": "110dp",
+              "minHeight": "110dp",
+              "targetCellWidth": 2,
+              "targetCellHeight": 2,
+              "resizeMode": "none",
+              "updatePeriodMillis": 1800000
+            },
+            {
+              "name": "TanrenMeal",
+              "label": "Tanren — Repas",
+              "description": "Ton prochain repas du jour.",
+              "minWidth": "110dp",
+              "minHeight": "110dp",
+              "targetCellWidth": 2,
+              "targetCellHeight": 2,
+              "resizeMode": "none",
+              "updatePeriodMillis": 1800000
+            },
+            {
+              "name": "TanrenMedium",
+              "label": "Tanren — Séance + Repas",
+              "description": "Ta prochaine séance et ton prochain repas.",
+              "minWidth": "250dp",
+              "minHeight": "110dp",
+              "targetCellWidth": 4,
+              "targetCellHeight": 2,
+              "resizeMode": "none",
+              "updatePeriodMillis": 1800000
+            }
+          ]
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
