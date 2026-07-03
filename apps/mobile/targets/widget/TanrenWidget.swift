@@ -58,17 +58,30 @@ struct TanrenProvider: TimelineProvider {
         }
 
         let sortedMeals = meals.sorted { ($0.hour ?? 0) < ($1.hour ?? 0) }
+        let currentHour = cal.component(.hour, from: now)
         var entries: [TanrenEntry] = []
 
-        for (i, meal) in sortedMeals.enumerated() {
+        // Find the current meal (last one whose hour has passed) or next upcoming
+        let currentMeal = sortedMeals.last { ($0.hour ?? 0) <= currentHour }
+            ?? sortedMeals.first
+
+        // Entry for right now with the current meal
+        if let meal = currentMeal {
+            let payloadNow = WidgetPayload(
+                nextSession: stored.nextSession,
+                nextMeal: meal,
+                todayMeals: meals,
+                updatedAt: stored.updatedAt
+            )
+            entries.append(TanrenEntry(date: now, payload: payloadNow))
+        }
+
+        // Future entries at each upcoming meal transition
+        for meal in sortedMeals {
             let hour = meal.hour ?? 12
-            let entryDate: Date
-            if i == 0 {
-                entryDate = now
-            } else {
-                entryDate = cal.date(bySettingHour: hour, minute: 0, second: 0, of: now) ?? now
-            }
-            if entryDate < now && i > 0 { continue }
+            guard hour > currentHour,
+                  let entryDate = cal.date(bySettingHour: hour, minute: 0, second: 0, of: now)
+            else { continue }
 
             let payloadWithMeal = WidgetPayload(
                 nextSession: stored.nextSession,
