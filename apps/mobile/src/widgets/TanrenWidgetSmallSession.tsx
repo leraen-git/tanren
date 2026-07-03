@@ -7,9 +7,14 @@ interface Props {
   colors: WidgetColors
   title: string | null
   dayLabel: string | null
+  templateId?: string | null
 }
 
-export function TanrenWidgetSmallSession({ colors, title, dayLabel }: Props) {
+export function TanrenWidgetSmallSession({ colors, title, dayLabel, templateId }: Props) {
+  const uri = templateId
+    ? `tanren://workout/preview?templateId=${templateId}`
+    : 'tanren://'
+
   return (
     <FlexWidget
       style={{
@@ -21,6 +26,8 @@ export function TanrenWidgetSmallSession({ colors, title, dayLabel }: Props) {
           orientation: 'TL_BR',
         },
       }}
+      clickAction="OPEN_URI"
+      clickActionData={{ uri }}
     >
       <SessionTile colors={colors} title={title} dayLabel={dayLabel} />
     </FlexWidget>

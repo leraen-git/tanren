@@ -8,6 +8,7 @@ export type AndroidWidgetPayload = {
   session: {
     title: string
     dayLabel: string
+    templateId: string | null
   } | null
   meal: {
     slot: string

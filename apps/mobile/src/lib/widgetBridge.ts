@@ -168,7 +168,7 @@ export async function syncWidget(
 
       const androidPayload = {
         session: payload.nextSession
-          ? { title: payload.nextSession.title, dayLabel: payload.nextSession.timeLabel }
+          ? { title: payload.nextSession.title, dayLabel: payload.nextSession.timeLabel, templateId: payload.nextSession.templateId }
           : null,
         meal: payload.nextMeal
           ? {

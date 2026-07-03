@@ -87,8 +87,9 @@ export function MealTile({ colors, slot, name, kcalLabel, macrosLabel }: MealTil
               truncate="END"
               style={{
                 fontFamily: fonts.sansX,
-                fontSize: 22,
+                fontSize: 26,
                 color: colors.text,
+                adjustsFontSizeToFit: true,
               }}
             />
             {kcalLabel && (

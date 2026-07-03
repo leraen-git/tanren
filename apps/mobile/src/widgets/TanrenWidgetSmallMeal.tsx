@@ -23,6 +23,8 @@ export function TanrenWidgetSmallMeal({ colors, slot, name, kcalLabel, macrosLab
           orientation: 'TL_BR',
         },
       }}
+      clickAction="OPEN_URI"
+      clickActionData={{ uri: 'tanren://diet' }}
     >
       <MealTile colors={colors} slot={slot} name={name} kcalLabel={kcalLabel} macrosLabel={macrosLabel} />
     </FlexWidget>

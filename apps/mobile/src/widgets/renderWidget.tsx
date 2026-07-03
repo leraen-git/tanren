@@ -12,6 +12,7 @@ export function renderWidgetByName(
 ): WidgetRepresentation | null {
   const session = payload?.session ?? null
   const meal = payload?.meal ?? null
+  const tid = session?.templateId ?? null
 
   switch (widgetName) {
     case WIDGET_SESSION:
@@ -21,6 +22,7 @@ export function renderWidgetByName(
             colors={lightColors}
             title={session?.title ?? null}
             dayLabel={session?.dayLabel ?? null}
+            templateId={tid}
           />
         ),
         dark: (
@@ -28,6 +30,7 @@ export function renderWidgetByName(
             colors={darkColors}
             title={session?.title ?? null}
             dayLabel={session?.dayLabel ?? null}
+            templateId={tid}
           />
         ),
       }
@@ -61,6 +64,7 @@ export function renderWidgetByName(
             colors={lightColors}
             sessionTitle={session?.title ?? null}
             sessionDayLabel={session?.dayLabel ?? null}
+            sessionTemplateId={tid}
             mealSlot={meal?.slot ?? null}
             mealName={meal?.name ?? null}
             mealKcalLabel={meal?.kcalLabel ?? null}
@@ -72,6 +76,7 @@ export function renderWidgetByName(
             colors={darkColors}
             sessionTitle={session?.title ?? null}
             sessionDayLabel={session?.dayLabel ?? null}
+            sessionTemplateId={tid}
             mealSlot={meal?.slot ?? null}
             mealName={meal?.name ?? null}
             mealKcalLabel={meal?.kcalLabel ?? null}

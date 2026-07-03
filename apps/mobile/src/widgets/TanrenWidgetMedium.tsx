@@ -2,13 +2,12 @@ import React from 'react'
 import { FlexWidget, TextWidget } from 'react-native-android-widget'
 import type { WidgetColors } from './widgetTheme'
 import { fonts } from './widgetTheme'
-import { SessionTile } from './SessionTile'
-import { MealTile } from './MealTile'
 
 interface Props {
   colors: WidgetColors
   sessionTitle: string | null
   sessionDayLabel: string | null
+  sessionTemplateId?: string | null
   mealSlot: string | null
   mealName: string | null
   mealKcalLabel: string | null
@@ -19,12 +18,16 @@ export function TanrenWidgetMedium({
   colors,
   sessionTitle,
   sessionDayLabel,
+  sessionTemplateId,
   mealSlot,
   mealName,
   mealKcalLabel,
   mealMacrosLabel,
 }: Props) {
   const bothEmpty = !sessionTitle && !mealName
+  const sessionUri = sessionTemplateId
+    ? `tanren://workout/preview?templateId=${sessionTemplateId}`
+    : 'tanren://'
 
   return (
     <FlexWidget
@@ -50,12 +53,9 @@ export function TanrenWidgetMedium({
 
       {/* Session zone */}
       <FlexWidget
-        style={{
-          flex: 1,
-          height: 'match_parent',
-        }}
+        style={{ flex: 1, height: 'match_parent' }}
         clickAction="OPEN_URI"
-        clickActionData={{ uri: 'tanren://' }}
+        clickActionData={{ uri: sessionUri }}
       >
         <SessionTileInline colors={colors} title={sessionTitle} dayLabel={sessionDayLabel} />
       </FlexWidget>
@@ -73,10 +73,7 @@ export function TanrenWidgetMedium({
 
       {/* Meal zone */}
       <FlexWidget
-        style={{
-          flex: 1,
-          height: 'match_parent',
-        }}
+        style={{ flex: 1, height: 'match_parent' }}
         clickAction="OPEN_URI"
         clickActionData={{ uri: 'tanren://diet' }}
       >
@@ -94,12 +91,12 @@ function SessionTileInline({ colors, title, dayLabel }: { colors: WidgetColors; 
       style={{
         flex: 1,
         flexDirection: 'column',
-        justifyContent: 'space-between',
         paddingLeft: 12,
         paddingRight: 10,
         paddingTop: 12,
         paddingBottom: 12,
         width: 'match_parent',
+        height: 'match_parent',
       }}
     >
       <FlexWidget style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -114,6 +111,7 @@ function SessionTileInline({ colors, title, dayLabel }: { colors: WidgetColors; 
         />
       </FlexWidget>
 
+      <FlexWidget style={{ flex: 1 }} />
       {isEmpty ? (
         <TextWidget
           text="Aucune séance planifiée"
@@ -126,9 +124,15 @@ function SessionTileInline({ colors, title, dayLabel }: { colors: WidgetColors; 
           text={title!.toUpperCase()}
           maxLines={3}
           truncate="END"
-          style={{ fontFamily: fonts.sansX, fontSize: 24, color: colors.text }}
+          style={{
+            fontFamily: fonts.sansX,
+            fontSize: 24,
+            color: colors.text,
+            adjustsFontSizeToFit: true,
+          }}
         />
       )}
+      <FlexWidget style={{ flex: 1 }} />
 
       {!isEmpty && dayLabel ? (
         <TextWidget
@@ -155,12 +159,12 @@ function MealTileInline({ colors, slot, name, kcalLabel, macrosLabel }: { colors
       style={{
         flex: 1,
         flexDirection: 'column',
-        justifyContent: 'space-between',
         paddingLeft: 10,
         paddingRight: 12,
         paddingTop: 12,
         paddingBottom: 12,
         width: 'match_parent',
+        height: 'match_parent',
       }}
     >
       <FlexWidget style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -186,6 +190,7 @@ function MealTileInline({ colors, slot, name, kcalLabel, macrosLabel }: { colors
         />
       </FlexWidget>
 
+      <FlexWidget style={{ flex: 1 }} />
       {isEmpty ? (
         <TextWidget
           text="Aucun repas planifié"
@@ -199,7 +204,12 @@ function MealTileInline({ colors, slot, name, kcalLabel, macrosLabel }: { colors
             text={name!}
             maxLines={2}
             truncate="END"
-            style={{ fontFamily: fonts.sansX, fontSize: 20, color: colors.text }}
+            style={{
+              fontFamily: fonts.sansX,
+              fontSize: 24,
+              color: colors.text,
+              adjustsFontSizeToFit: true,
+            }}
           />
           {kcalLabel && (
             <FlexWidget style={{ flexDirection: 'row', alignItems: 'center', marginTop: 2 }}>
@@ -210,6 +220,7 @@ function MealTileInline({ colors, slot, name, kcalLabel, macrosLabel }: { colors
           )}
         </FlexWidget>
       )}
+      <FlexWidget style={{ flex: 1 }} />
 
       {!isEmpty && macrosLabel ? (
         <TextWidget

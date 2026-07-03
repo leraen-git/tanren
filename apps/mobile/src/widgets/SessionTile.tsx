@@ -80,8 +80,9 @@ export function SessionTile({ colors, title, dayLabel }: SessionTileProps) {
             truncate="END"
             style={{
               fontFamily: fonts.sansX,
-              fontSize: 28,
+              fontSize: 32,
               color: colors.text,
+              adjustsFontSizeToFit: true,
             }}
           />
         )}
