@@ -1,7 +1,7 @@
 import React from 'react'
 import {
   View, Text, TextInput, ScrollView, TouchableOpacity,
-  Alert, KeyboardAvoidingView, Platform,
+  Alert,
 } from 'react-native'
 import { router } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
@@ -146,10 +146,6 @@ export default function IntakeLifestyleScreen() {
   return (
     <Screen showKanji kanjiChar="錬">
       <ScreenHeader showBack onBack={() => router.back()} />
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        style={{ flex: 1 }}
-      >
         <ScrollView
           contentContainerStyle={{ padding: 16, paddingBottom: 40, gap: 16 }}
           keyboardShouldPersistTaps="handled"
@@ -274,7 +270,6 @@ export default function IntakeLifestyleScreen() {
             style={{ marginTop: 4 }}
           />
         </ScrollView>
-      </KeyboardAvoidingView>
     </Screen>
   )
 }

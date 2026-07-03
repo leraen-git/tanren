@@ -1,5 +1,5 @@
 import React, { type ReactNode } from 'react'
-import { View, type ViewStyle } from 'react-native'
+import { KeyboardAvoidingView, Platform, type ViewStyle } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useTheme } from '@/theme/ThemeContext'
 import { KanjiWatermark } from './KanjiWatermark'
@@ -10,6 +10,7 @@ interface ScreenProps {
   kanjiChar?: '鍛' | '錬'
   edges?: ('top' | 'bottom' | 'left' | 'right')[]
   style?: ViewStyle
+  keyboardAvoiding?: boolean
 }
 
 export function Screen({
@@ -18,6 +19,7 @@ export function Screen({
   kanjiChar = '鍛',
   edges = ['top'],
   style,
+  keyboardAvoiding = true,
 }: ScreenProps) {
   const { tokens } = useTheme()
 
@@ -27,7 +29,17 @@ export function Screen({
       style={[{ flex: 1, backgroundColor: tokens.bg }, style]}
     >
       {showKanji && <KanjiWatermark char={kanjiChar} />}
-      {children}
+      {keyboardAvoiding ? (
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
+        >
+          {children}
+        </KeyboardAvoidingView>
+      ) : (
+        children
+      )}
     </SafeAreaView>
   )
 }

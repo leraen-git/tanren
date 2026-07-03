@@ -1,7 +1,7 @@
 import React, { useRef, useCallback } from 'react'
 import {
   View, Text, TextInput, ScrollView, TouchableOpacity,
-  Alert, KeyboardAvoidingView, Platform, PanResponder, LayoutChangeEvent,
+  Alert, PanResponder, LayoutChangeEvent,
 } from 'react-native'
 import { router } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
@@ -156,10 +156,6 @@ export default function IntakeFoodPreferencesScreen() {
   return (
     <Screen showKanji kanjiChar="錬">
       <ScreenHeader showBack onBack={() => router.back()} />
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        style={{ flex: 1 }}
-      >
         <ScrollView
           contentContainerStyle={{ padding: 16, paddingBottom: 40, gap: 16 }}
           keyboardShouldPersistTaps="handled"
@@ -271,7 +267,6 @@ export default function IntakeFoodPreferencesScreen() {
             style={{ marginTop: 4 }}
           />
         </ScrollView>
-      </KeyboardAvoidingView>
     </Screen>
   )
 }

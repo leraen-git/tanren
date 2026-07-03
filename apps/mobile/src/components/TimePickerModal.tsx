@@ -1,8 +1,6 @@
 import React, { useState } from 'react'
-import {
-  Modal, View, Text, TouchableOpacity, TextInput,
-  Dimensions, TouchableWithoutFeedback,
-} from 'react-native'
+import { Modal, View, Text, TouchableOpacity, TouchableWithoutFeedback, Platform } from 'react-native'
+import DateTimePicker from '@react-native-community/datetimepicker'
 import { useTheme } from '@/theme/ThemeContext'
 
 interface Props {
@@ -13,59 +11,54 @@ interface Props {
   label?: string
 }
 
-const { height: SCREEN_HEIGHT } = Dimensions.get('window')
-
 function pad(n: number): string {
   return String(n).padStart(2, '0')
 }
 
+function timeToDate(time: string): Date {
+  const [h, m] = time.split(':').map(Number)
+  const d = new Date()
+  d.setHours(h ?? 0, m ?? 0, 0, 0)
+  return d
+}
+
 export function TimePickerModal({ visible, value, onConfirm, onClose, label }: Props) {
   const { tokens, fonts, label: labelPreset } = useTheme()
-
-  const [hour, minute] = value.split(':').map(Number)
-  const [h, setH] = useState(pad(hour ?? 0))
-  const [m, setM] = useState(pad(minute ?? 0))
+  const [date, setDate] = useState(timeToDate(value))
 
   React.useEffect(() => {
-    const [hh, mm] = value.split(':').map(Number)
-    setH(pad(hh ?? 0))
-    setM(pad(mm ?? 0))
+    if (visible) setDate(timeToDate(value))
   }, [value, visible])
 
-  const adjustHour = (delta: number) => {
-    const next = ((Number(h) + delta + 24) % 24)
-    setH(pad(next))
-  }
-
-  const adjustMinute = (delta: number) => {
-    let next = Number(m) + delta
-    if (next >= 60) { next -= 60; adjustHour(1) }
-    else if (next < 0) { next += 60; adjustHour(-1) }
-    setM(pad(next))
+  const handleChange = (_: any, selected?: Date) => {
+    if (Platform.OS === 'android') {
+      if (!selected) {
+        onClose()
+        return
+      }
+      onConfirm(`${pad(selected.getHours())}:${pad(selected.getMinutes())}`)
+      onClose()
+      return
+    }
+    if (selected) setDate(selected)
   }
 
   const handleConfirm = () => {
-    const hh = Math.min(23, Math.max(0, Number(h) || 0))
-    const mm = Math.min(59, Math.max(0, Number(m) || 0))
-    onConfirm(`${pad(hh)}:${pad(mm)}`)
+    onConfirm(`${pad(date.getHours())}:${pad(date.getMinutes())}`)
     onClose()
   }
 
-  const spinnerStyle = {
-    borderWidth: 1,
-    borderColor: tokens.border,
-    padding: 16,
-    alignItems: 'center' as const,
-    width: 90,
-    gap: 8,
-  }
-
-  const numberStyle = {
-    fontFamily: fonts.monoB,
-    fontSize: 32,
-    color: tokens.text,
-    textAlign: 'center' as const,
-    minWidth: 60,
+  if (Platform.OS === 'android') {
+    if (!visible) return null
+    return (
+      <DateTimePicker
+        value={date}
+        mode="time"
+        is24Hour
+        display="spinner"
+        onChange={handleChange}
+      />
+    )
   }
 
   return (
@@ -75,84 +68,53 @@ export function TimePickerModal({ visible, value, onConfirm, onClose, label }: P
           <TouchableWithoutFeedback>
             <View style={{
               backgroundColor: tokens.bg,
-              padding: 20,
               paddingBottom: 24,
-              height: SCREEN_HEIGHT * 0.38,
               borderTopWidth: 1,
               borderTopColor: tokens.border,
             }}>
               {label && (
-                <Text style={{ ...labelPreset.sm, color: tokens.textMute,
-                  textAlign: 'center', marginBottom: 20 }}>
+                <Text style={{
+                  ...labelPreset.sm,
+                  color: tokens.textMute,
+                  textAlign: 'center',
+                  marginTop: 16,
+                  marginBottom: 8,
+                }}>
                   {label}
                 </Text>
               )}
 
-              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
-                <View style={spinnerStyle}>
-                  <TouchableOpacity
-                    onPress={() => adjustHour(1)}
-                    accessibilityLabel="Increase hour" accessibilityRole="button"
-                    style={{ padding: 4 }}
-                  >
-                    <Text style={{ fontFamily: fonts.sansB, fontSize: 14, color: tokens.accent }}>^</Text>
-                  </TouchableOpacity>
-                  <TextInput
-                    value={h}
-                    onChangeText={(v) => setH(v.replace(/\D/g, '').slice(0, 2))}
-                    keyboardType="number-pad"
-                    maxLength={2}
-                    style={numberStyle}
-                    selectTextOnFocus
-                    accessibilityLabel="Hour"
-                  />
-                  <TouchableOpacity
-                    onPress={() => adjustHour(-1)}
-                    accessibilityLabel="Decrease hour" accessibilityRole="button"
-                    style={{ padding: 4 }}
-                  >
-                    <Text style={{ fontFamily: fonts.sansB, fontSize: 14, color: tokens.accent }}>v</Text>
-                  </TouchableOpacity>
-                </View>
-
-                <Text style={{ fontFamily: fonts.monoB, fontSize: 24, color: tokens.text }}>:</Text>
-
-                <View style={spinnerStyle}>
-                  <TouchableOpacity
-                    onPress={() => adjustMinute(5)}
-                    accessibilityLabel="Increase minute" accessibilityRole="button"
-                    style={{ padding: 4 }}
-                  >
-                    <Text style={{ fontFamily: fonts.sansB, fontSize: 14, color: tokens.accent }}>^</Text>
-                  </TouchableOpacity>
-                  <TextInput
-                    value={m}
-                    onChangeText={(v) => setM(v.replace(/\D/g, '').slice(0, 2))}
-                    keyboardType="number-pad"
-                    maxLength={2}
-                    style={numberStyle}
-                    selectTextOnFocus
-                    accessibilityLabel="Minute"
-                  />
-                  <TouchableOpacity
-                    onPress={() => adjustMinute(-5)}
-                    accessibilityLabel="Decrease minute" accessibilityRole="button"
-                    style={{ padding: 4 }}
-                  >
-                    <Text style={{ fontFamily: fonts.sansB, fontSize: 14, color: tokens.accent }}>v</Text>
-                  </TouchableOpacity>
-                </View>
+              <View style={{ alignItems: 'center' }}>
+                <DateTimePicker
+                  value={date}
+                  mode="time"
+                  is24Hour
+                  display="spinner"
+                  onChange={handleChange}
+                  style={{ height: 180, width: '100%' }}
+                />
               </View>
 
               <TouchableOpacity
                 onPress={handleConfirm}
                 style={{
-                  marginTop: 20, backgroundColor: tokens.accent,
-                  height: 44, alignItems: 'center', justifyContent: 'center',
+                  marginHorizontal: 20,
+                  marginTop: 12,
+                  backgroundColor: tokens.accent,
+                  height: 44,
+                  alignItems: 'center',
+                  justifyContent: 'center',
                 }}
-                accessibilityLabel="Confirm time" accessibilityRole="button"
+                accessibilityLabel="Confirm time"
+                accessibilityRole="button"
               >
-                <Text style={{ fontFamily: fonts.sansB, fontSize: 13, color: '#FFFFFF', textTransform: 'uppercase', letterSpacing: 1 }}>
+                <Text style={{
+                  fontFamily: fonts.sansB,
+                  fontSize: 13,
+                  color: '#FFFFFF',
+                  textTransform: 'uppercase',
+                  letterSpacing: 1,
+                }}>
                   OK
                 </Text>
               </TouchableOpacity>
