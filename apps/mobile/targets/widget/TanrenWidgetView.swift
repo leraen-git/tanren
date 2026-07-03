@@ -88,7 +88,7 @@ struct SmallSessionWidgetView: View {
                             .font(.custom("BarlowCondensed-Bold", size: 32))
                             .foregroundStyle(Color.tanrenText)
                             .lineLimit(3)
-                            .minimumScaleFactor(0.55)
+                            .minimumScaleFactor(0.45)
                             .fixedSize(horizontal: false, vertical: true)
                     } else {
                         Text("Aucune séance planifiée")
@@ -153,7 +153,7 @@ struct SmallDietWidgetView: View {
                             .font(.custom("BarlowCondensed-Bold", size: 24))
                             .foregroundStyle(Color.tanrenText)
                             .lineLimit(3)
-                            .minimumScaleFactor(0.6)
+                            .minimumScaleFactor(0.45)
                             .fixedSize(horizontal: false, vertical: true)
 
                         HStack(spacing: 0) {
@@ -239,7 +239,6 @@ struct MediumSessionZone: View {
         let isEmpty = session == nil
 
         VStack(alignment: .leading, spacing: 0) {
-            // Head — top
             HStack(spacing: 8) {
                 if !isEmpty {
                     DumbbellIcon(size: 18, strokeColor: Color.tanrenText, accentColor: Color.forgeRed)
@@ -250,28 +249,24 @@ struct MediumSessionZone: View {
                     .foregroundStyle(Color.tanrenTextMute)
             }
 
-            // Title — right after head
-            VStack(alignment: .leading, spacing: 0) {
-                if let session = session {
-                    Text(session.title.uppercased())
-                        .font(.custom("BarlowCondensed-Bold", size: 28))
-                        .foregroundStyle(Color.tanrenText)
-                        .lineLimit(3)
-                        .minimumScaleFactor(0.55)
-                        .fixedSize(horizontal: false, vertical: true)
-                } else {
-                    Text("Aucune séance planifiée")
-                        .font(.custom("BarlowCondensed-SemiBold", size: 19))
-                        .foregroundStyle(Color.tanrenTextMute)
-                        .lineLimit(2)
-                }
+            Spacer(minLength: 4)
+
+            if let session = session {
+                Text(session.title.uppercased())
+                    .font(.custom("BarlowCondensed-Bold", size: 18))
+                    .foregroundStyle(Color.tanrenText)
+                    .lineLimit(3)
+                    .minimumScaleFactor(0.5)
+                    .fixedSize(horizontal: false, vertical: true)
+            } else {
+                Text("Aucune séance planifiée")
+                    .font(.custom("BarlowCondensed-SemiBold", size: 15))
+                    .foregroundStyle(Color.tanrenTextMute)
+                    .lineLimit(2)
             }
-            .layoutPriority(1)
-            .padding(.top, 6)
 
-            Spacer(minLength: 0)
+            Spacer(minLength: 4)
 
-            // Foot — bottom
             if let session = session {
                 Text(session.timeLabel.uppercased())
                     .font(.custom("BarlowCondensed-SemiBold", size: 10))
@@ -280,8 +275,8 @@ struct MediumSessionZone: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .padding(.horizontal, 18)
-        .padding(.vertical, 16)
+        .padding(.leading, 6)
+        .padding(.trailing, 4)
     }
 }
 
@@ -291,7 +286,6 @@ struct MediumMealZone: View {
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             VStack(alignment: .leading, spacing: 0) {
-                // Head — top
                 HStack(spacing: 8) {
                     if meal != nil {
                         Circle()
@@ -304,50 +298,47 @@ struct MediumMealZone: View {
                         .foregroundStyle(Color.tanrenTextMute)
                 }
 
-                // Title + kcal — right after head
+                Spacer(minLength: 4)
+
                 VStack(alignment: .leading, spacing: 2) {
                     if let meal = meal {
                         Text(meal.title)
-                            .font(.custom("BarlowCondensed-Bold", size: 22))
+                            .font(.custom("BarlowCondensed-Bold", size: 18))
                             .foregroundStyle(Color.tanrenText)
                             .lineLimit(3)
-                            .minimumScaleFactor(0.6)
-                            .fixedSize(horizontal: false, vertical: true)
+                            .minimumScaleFactor(0.5)
 
                         HStack(spacing: 0) {
                             Text("≈")
-                                .font(.custom("JetBrainsMono-Bold", size: 15))
+                                .font(.custom("JetBrainsMono-Bold", size: 13))
                                 .foregroundStyle(Color.forgeRed)
                             Text(meal.kcalLabel)
-                                .font(.custom("JetBrainsMono-Bold", size: 15))
+                                .font(.custom("JetBrainsMono-Bold", size: 13))
                                 .foregroundStyle(Color.tanrenText)
                             Text(" kcal")
-                                .font(.custom("JetBrainsMono-Regular", size: 10))
+                                .font(.custom("JetBrainsMono-Regular", size: 9))
                                 .foregroundStyle(Color.tanrenTextMute)
                         }
                     } else {
                         Text("Aucun repas planifié")
-                            .font(.custom("BarlowCondensed-SemiBold", size: 19))
+                            .font(.custom("BarlowCondensed-SemiBold", size: 15))
                             .foregroundStyle(Color.tanrenTextMute)
                             .lineLimit(2)
                     }
                 }
-                .layoutPriority(1)
-                .padding(.top, 6)
 
-                Spacer(minLength: 0)
+                Spacer(minLength: 4)
 
-                // Foot — bottom
                 if let meal = meal,
                    let p = meal.proteinG, let c = meal.carbsG, let f = meal.fatG {
                     Text("P \(p) · G \(c) · L \(f) g")
-                        .font(.custom("JetBrainsMono-Regular", size: 9.5))
+                        .font(.custom("JetBrainsMono-Regular", size: 9))
                         .foregroundStyle(Color.tanrenText.opacity(0.5))
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-            .padding(.horizontal, 18)
-            .padding(.vertical, 16)
+            .padding(.leading, 6)
+            .padding(.trailing, 4)
 
             if meal != nil {
                 Text("鍛錬")
