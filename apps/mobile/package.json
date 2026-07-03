@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@bacons/apple-targets": "^4.0.7",
+    "widget-bridge": "file:./modules/widget-bridge",
     "@expo-google-fonts/barlow-condensed": "^0.4.1",
     "@expo-google-fonts/jetbrains-mono": "^0.4.1",
     "@react-native-async-storage/async-storage": "2.2.0",

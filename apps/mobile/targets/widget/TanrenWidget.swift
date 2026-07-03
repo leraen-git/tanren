@@ -14,6 +14,9 @@ struct WidgetPayload: Codable {
         let title: String
         let kcalLabel: String
         let mealType: String?
+        let proteinG: Int?
+        let carbsG: Int?
+        let fatG: Int?
     }
     let nextSession: Session?
     let nextMeal: Meal?
@@ -42,8 +45,6 @@ struct TanrenProvider: TimelineProvider {
     func getTimeline(in context: Context, completion: @escaping (Timeline<TanrenEntry>) -> Void) {
         let payload = loadPayload()
         let entry = TanrenEntry(date: .now, payload: payload)
-
-        // Refresh in 30 minutes or at the next relevant time
         let nextRefresh = Calendar.current.date(byAdding: .minute, value: 30, to: .now) ?? .now
         let timeline = Timeline(entries: [entry], policy: .after(nextRefresh))
         completion(timeline)
@@ -63,8 +64,8 @@ struct TanrenProvider: TimelineProvider {
 extension WidgetPayload {
     static let empty = WidgetPayload(nextSession: nil, nextMeal: nil, updatedAt: nil)
     static let placeholder = WidgetPayload(
-        nextSession: .init(title: "PUSH DAY", timeLabel: "Aujourd'hui", muscleGroups: "Pecs · Épaules · Triceps", templateId: nil),
-        nextMeal: .init(title: "Poulet grillé & riz", kcalLabel: "620 kcal", mealType: "Déjeuner"),
+        nextSession: .init(title: "Push A", timeLabel: "Aujourd'hui", muscleGroups: "Pecs · Épaules · Triceps", templateId: nil),
+        nextMeal: .init(title: "Poulet basquaise", kcalLabel: "720", mealType: "Déjeuner", proteinG: 52, carbsG: 68, fatG: 24),
         updatedAt: nil
     )
 }
@@ -75,6 +76,23 @@ extension WidgetPayload {
 struct TanrenWidgetBundle: WidgetBundle {
     var body: some Widget {
         TanrenSessionWidget()
+        TanrenDietWidget()
+    }
+}
+
+struct TanrenDietWidget: Widget {
+    let kind = "TanrenDietWidget"
+
+    var body: some WidgetConfiguration {
+        StaticConfiguration(kind: kind, provider: TanrenProvider()) { entry in
+            SmallDietWidgetView(entry: entry)
+                .containerBackground(for: .widget) {
+                    LinearGradient(colors: [Color.tanrenSurface, Color.tanrenBg], startPoint: .topLeading, endPoint: .bottomTrailing)
+                }
+        }
+        .configurationDisplayName("Tanren — Repas")
+        .description("Ton prochain repas du jour.")
+        .supportedFamilies([.systemSmall])
     }
 }
 
@@ -85,7 +103,7 @@ struct TanrenSessionWidget: Widget {
         StaticConfiguration(kind: kind, provider: TanrenProvider()) { entry in
             TanrenWidgetView(entry: entry)
                 .containerBackground(for: .widget) {
-                    Color.tanrenBg
+                    LinearGradient(colors: [Color.tanrenSurface, Color.tanrenBg], startPoint: .topLeading, endPoint: .bottomTrailing)
                 }
         }
         .configurationDisplayName("Tanren")

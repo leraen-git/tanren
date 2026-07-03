@@ -36,20 +36,24 @@ export function DietGenerationWatcher() {
         })
       } catch (err: any) {
         // The server may have completed the generation even though the client
-        // lost the response (Android backgrounding, Railway proxy timeout, etc.).
-        // Check if the plan actually exists before declaring failure.
-        try {
-          const plan = await utils.diet.getMyPlanV2.fetch()
-          if (plan) {
-            invalidateDiet()
-            finish()
-            toast.show(i18n.t('diet.genReadyToast'), 'success', {
-              duration: 5000,
-              onPress: () => router.push('/diet'),
-            })
-            return
-          }
-        } catch {}
+        // timed out or lost the response. Retry checking for the plan a few
+        // times with increasing delay before declaring failure.
+        const wait = (ms: number) => new Promise((r) => setTimeout(r, ms))
+        for (const delayMs of [2000, 5000, 10000]) {
+          await wait(delayMs)
+          try {
+            const plan = await utils.diet.getMyPlanV2.fetch()
+            if (plan) {
+              invalidateDiet()
+              finish()
+              toast.show(i18n.t('diet.genReadyToast'), 'success', {
+                duration: 5000,
+                onPress: () => router.push('/diet'),
+              })
+              return
+            }
+          } catch {}
+        }
 
         const raw = err?.message ?? ''
         const msg = raw.includes('{') || raw.length > 100

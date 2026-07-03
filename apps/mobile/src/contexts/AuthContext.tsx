@@ -59,7 +59,7 @@ async function authFetch(path: string, body: Record<string, unknown>): Promise<{
   const res = await fetch(`${API_URL}/trpc/${path}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ json: body }),
+    body: JSON.stringify(body),
   })
   if (!res.ok) {
     let message = 'Sign-in failed'
@@ -73,9 +73,9 @@ async function authFetch(path: string, body: Record<string, unknown>): Promise<{
     throw new Error(message)
   }
   const data = await res.json() as {
-    result: { data: { json: { token: string } } }
+    result: { data: { token: string } }
   }
-  return { token: data.result.data.json.token }
+  return { token: data.result.data.token }
 }
 
 // ─── Provider ─────────────────────────────────────────────────────────────────
@@ -164,7 +164,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const res = await fetch(`${API_URL}/trpc/auth.requestOtp`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ json: { email } }),
+      body: JSON.stringify({ email }),
     })
     if (!res.ok) {
       let message = 'Could not send code'
@@ -207,7 +207,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${currentToken}`,
           },
-          body: JSON.stringify({ json: {} }),
+          body: JSON.stringify({}),
         })
       } catch {}
     }

@@ -20,6 +20,9 @@ type WidgetPayload = {
     title: string
     kcalLabel: string
     mealType: string
+    proteinG: number | null
+    carbsG: number | null
+    fatG: number | null
   } | null
   updatedAt?: string
 }
@@ -35,6 +38,9 @@ type DietMeal = {
   mealType: string
   name: string
   kcal: number
+  proteinG?: number
+  carbsG?: number
+  fatG?: number
 }
 
 type DietDay = {
@@ -117,8 +123,11 @@ export function buildWidgetPayload(
       if (meal) {
         nextMeal = {
           title: meal.name,
-          kcalLabel: `${meal.kcal} kcal`,
+          kcalLabel: `${meal.kcal}`,
           mealType: MEAL_TYPE_FR[meal.mealType] ?? meal.mealType,
+          proteinG: meal.proteinG ?? null,
+          carbsG: meal.carbsG ?? null,
+          fatG: meal.fatG ?? null,
         }
       }
     }
@@ -134,11 +143,10 @@ export async function syncWidget(
   if (Platform.OS !== 'ios' || !FLAGS.WIDGET_ENABLED) return
 
   try {
-    const { setWidgetData, reloadWidgets } = await import(
-      '../../modules/widget-bridge/src/index'
-    )
+    const { requireNativeModule } = require('expo-modules-core')
+    const ExtensionStorage = requireNativeModule('ExtensionStorage')
     const payload = buildWidgetPayload(nextWorkout, dietDays)
-    setWidgetData(JSON.stringify(payload))
-    reloadWidgets()
+    ExtensionStorage.setObject('widgetPayload', payload, 'group.app.tanren.shared')
+    ExtensionStorage.reloadWidget(null)
   } catch {}
 }

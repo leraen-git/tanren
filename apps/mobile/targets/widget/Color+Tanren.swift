@@ -9,6 +9,8 @@ extension Color {
     static let tanrenTextDim = Color(light: .init(hex: 0x555555), dark: .init(hex: 0xAAAAAA))
     static let tanrenTextMute = Color(light: .init(hex: 0x888888), dark: .init(hex: 0x888888))
     static let tanrenBorder = Color(light: .init(hex: 0xE5E5E5), dark: .init(hex: 0x222222))
+    static let tanrenAmber = Color(light: .init(hex: 0xD98E00), dark: .init(hex: 0xF59E0B))
+    static let tanrenGreen = Color(light: .init(hex: 0x1A7F2C), dark: .init(hex: 0x22C55E))
 
     init(light: UIColor, dark: UIColor) {
         self.init(uiColor: UIColor { traits in
