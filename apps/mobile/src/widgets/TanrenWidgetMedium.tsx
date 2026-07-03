@@ -111,7 +111,7 @@ function SessionTileInline({ colors, title, dayLabel }: { colors: WidgetColors; 
         />
       </FlexWidget>
 
-      <FlexWidget style={{ flex: 1 }} />
+      <FlexWidget style={{ flex: 3 }} />
       {isEmpty ? (
         <TextWidget
           text="Aucune séance planifiée"
@@ -190,7 +190,7 @@ function MealTileInline({ colors, slot, name, kcalLabel, macrosLabel }: { colors
         />
       </FlexWidget>
 
-      <FlexWidget style={{ flex: 1 }} />
+      <FlexWidget style={{ flex: 3 }} />
       {isEmpty ? (
         <TextWidget
           text="Aucun repas planifié"

@@ -60,8 +60,7 @@ export function SessionTile({ colors, title, dayLabel }: SessionTileProps) {
           />
         </FlexWidget>
 
-        {/* Body — centered via flex spacers */}
-        <FlexWidget style={{ flex: 1 }} />
+        <FlexWidget style={{ flex: 3 }} />
         {isEmpty ? (
           <TextWidget
             text="Aucune séance planifiée"
@@ -87,8 +86,6 @@ export function SessionTile({ colors, title, dayLabel }: SessionTileProps) {
           />
         )}
         <FlexWidget style={{ flex: 1 }} />
-
-        {/* Foot — day label */}
         {!isEmpty && dayLabel ? (
           <TextWidget
             text={dayLabel.toUpperCase()}

@@ -66,8 +66,7 @@ export function MealTile({ colors, slot, name, kcalLabel, macrosLabel }: MealTil
           />
         </FlexWidget>
 
-        {/* Body — centered via flex spacers */}
-        <FlexWidget style={{ flex: 1 }} />
+        <FlexWidget style={{ flex: 3 }} />
         {isEmpty ? (
           <TextWidget
             text="Aucun repas planifié"
