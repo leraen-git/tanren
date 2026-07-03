@@ -9,6 +9,16 @@ const MEAL_HOURS: Record<string, number> = {
   dessert: 21,
 }
 
+type MealPayload = {
+  title: string
+  kcalLabel: string
+  mealType: string
+  hour: number
+  proteinG: number | null
+  carbsG: number | null
+  fatG: number | null
+}
+
 type WidgetPayload = {
   nextSession: {
     title: string
@@ -16,14 +26,8 @@ type WidgetPayload = {
     muscleGroups: string | null
     templateId: string | null
   } | null
-  nextMeal: {
-    title: string
-    kcalLabel: string
-    mealType: string
-    proteinG: number | null
-    carbsG: number | null
-    fatG: number | null
-  } | null
+  nextMeal: MealPayload | null
+  todayMeals?: MealPayload[]
   updatedAt?: string
 }
 
@@ -115,16 +119,30 @@ export function buildWidgetPayload(
   }
 
   let nextMeal: WidgetPayload['nextMeal'] = null
+  let todayMeals: MealPayload[] = []
   if (dietDays?.length) {
     const todayUi = jsDowToUi(new Date().getDay())
     const todayDay = dietDays.find((d) => d.dayNumber === todayUi)
     if (todayDay?.meals?.length) {
+      todayMeals = todayDay.meals
+        .map((m) => ({
+          title: m.name,
+          kcalLabel: `${m.kcal}`,
+          mealType: MEAL_TYPE_FR[m.mealType] ?? m.mealType,
+          hour: MEAL_HOURS[m.mealType] ?? 12,
+          proteinG: m.proteinG ?? null,
+          carbsG: m.carbsG ?? null,
+          fatG: m.fatG ?? null,
+        }))
+        .sort((a, b) => a.hour - b.hour)
+
       const meal = findNextMeal(todayDay.meals)
       if (meal) {
         nextMeal = {
           title: meal.name,
           kcalLabel: `${meal.kcal}`,
           mealType: MEAL_TYPE_FR[meal.mealType] ?? meal.mealType,
+          hour: MEAL_HOURS[meal.mealType] ?? 12,
           proteinG: meal.proteinG ?? null,
           carbsG: meal.carbsG ?? null,
           fatG: meal.fatG ?? null,
@@ -133,7 +151,7 @@ export function buildWidgetPayload(
     }
   }
 
-  return { nextSession, nextMeal, updatedAt: new Date().toISOString() }
+  return { nextSession, nextMeal, todayMeals, updatedAt: new Date().toISOString() }
 }
 
 function formatMacrosLabel(p: number | null, c: number | null, f: number | null): string | null {

@@ -14,12 +14,14 @@ struct WidgetPayload: Codable {
         let title: String
         let kcalLabel: String
         let mealType: String?
+        let hour: Int?
         let proteinG: Int?
         let carbsG: Int?
         let fatG: Int?
     }
     let nextSession: Session?
     let nextMeal: Meal?
+    let todayMeals: [Meal]?
     let updatedAt: String?
 }
 
@@ -43,11 +45,52 @@ struct TanrenProvider: TimelineProvider {
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<TanrenEntry>) -> Void) {
-        let payload = loadPayload()
-        let entry = TanrenEntry(date: .now, payload: payload)
-        let nextRefresh = Calendar.current.date(byAdding: .minute, value: 30, to: .now) ?? .now
-        let timeline = Timeline(entries: [entry], policy: .after(nextRefresh))
-        completion(timeline)
+        let stored = loadPayload()
+        let meals = stored.todayMeals ?? []
+        let cal = Calendar.current
+        let now = Date.now
+
+        if meals.isEmpty {
+            let entry = TanrenEntry(date: now, payload: stored)
+            let nextRefresh = cal.date(byAdding: .minute, value: 30, to: now) ?? now
+            completion(Timeline(entries: [entry], policy: .after(nextRefresh)))
+            return
+        }
+
+        let sortedMeals = meals.sorted { ($0.hour ?? 0) < ($1.hour ?? 0) }
+        var entries: [TanrenEntry] = []
+
+        for (i, meal) in sortedMeals.enumerated() {
+            let hour = meal.hour ?? 12
+            let entryDate: Date
+            if i == 0 {
+                entryDate = now
+            } else {
+                entryDate = cal.date(bySettingHour: hour, minute: 0, second: 0, of: now) ?? now
+            }
+            if entryDate < now && i > 0 { continue }
+
+            let payloadWithMeal = WidgetPayload(
+                nextSession: stored.nextSession,
+                nextMeal: meal,
+                todayMeals: meals,
+                updatedAt: stored.updatedAt
+            )
+            entries.append(TanrenEntry(date: entryDate, payload: payloadWithMeal))
+        }
+
+        if entries.isEmpty {
+            let fallback = WidgetPayload(
+                nextSession: stored.nextSession,
+                nextMeal: sortedMeals.first,
+                todayMeals: meals,
+                updatedAt: stored.updatedAt
+            )
+            entries.append(TanrenEntry(date: now, payload: fallback))
+        }
+
+        let midnight = cal.startOfDay(for: cal.date(byAdding: .day, value: 1, to: now) ?? now)
+        completion(Timeline(entries: entries, policy: .after(midnight)))
     }
 
     private func loadPayload() -> WidgetPayload {
@@ -62,10 +105,11 @@ struct TanrenProvider: TimelineProvider {
 }
 
 extension WidgetPayload {
-    static let empty = WidgetPayload(nextSession: nil, nextMeal: nil, updatedAt: nil)
+    static let empty = WidgetPayload(nextSession: nil, nextMeal: nil, todayMeals: nil, updatedAt: nil)
     static let placeholder = WidgetPayload(
         nextSession: .init(title: "Push A", timeLabel: "Aujourd'hui", muscleGroups: "Pecs · Épaules · Triceps", templateId: nil),
-        nextMeal: .init(title: "Poulet basquaise", kcalLabel: "720", mealType: "Déjeuner", proteinG: 52, carbsG: 68, fatG: 24),
+        nextMeal: .init(title: "Poulet basquaise", kcalLabel: "720", mealType: "Déjeuner", hour: 12, proteinG: 52, carbsG: 68, fatG: 24),
+        todayMeals: nil,
         updatedAt: nil
     )
 }
