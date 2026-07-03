@@ -23,7 +23,6 @@ export function MealTile({ colors, slot, name, kcalLabel, macrosLabel }: MealTil
         width: 'match_parent',
       }}
     >
-      {/* Red left edge */}
       <FlexWidget
         style={{
           width: 4,
@@ -36,20 +35,15 @@ export function MealTile({ colors, slot, name, kcalLabel, macrosLabel }: MealTil
         style={{
           flex: 1,
           flexDirection: 'column',
-          justifyContent: 'space-between',
           paddingLeft: 10,
           paddingRight: 12,
           paddingTop: 12,
           paddingBottom: 12,
+          height: 'match_parent',
         }}
       >
         {/* Head — meal type + amber dot */}
-        <FlexWidget
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-          }}
-        >
+        <FlexWidget style={{ flexDirection: 'row', alignItems: 'center' }}>
           {!isEmpty && (
             <FlexWidget
               style={{
@@ -72,7 +66,8 @@ export function MealTile({ colors, slot, name, kcalLabel, macrosLabel }: MealTil
           />
         </FlexWidget>
 
-        {/* Body — dish name + kcal */}
+        {/* Body — centered via flex spacers */}
+        <FlexWidget style={{ flex: 1 }} />
         {isEmpty ? (
           <TextWidget
             text="Aucun repas planifié"
@@ -100,32 +95,21 @@ export function MealTile({ colors, slot, name, kcalLabel, macrosLabel }: MealTil
               <FlexWidget style={{ flexDirection: 'row', alignItems: 'center', marginTop: 2 }}>
                 <TextWidget
                   text="≈ "
-                  style={{
-                    fontFamily: fonts.monoB,
-                    fontSize: 14,
-                    color: colors.accent,
-                  }}
+                  style={{ fontFamily: fonts.monoB, fontSize: 14, color: colors.accent }}
                 />
                 <TextWidget
                   text={kcalLabel}
-                  style={{
-                    fontFamily: fonts.monoB,
-                    fontSize: 14,
-                    color: colors.text,
-                  }}
+                  style={{ fontFamily: fonts.monoB, fontSize: 14, color: colors.text }}
                 />
                 <TextWidget
                   text=" kcal"
-                  style={{
-                    fontFamily: fonts.mono,
-                    fontSize: 10,
-                    color: colors.textMute,
-                  }}
+                  style={{ fontFamily: fonts.mono, fontSize: 10, color: colors.textMute }}
                 />
               </FlexWidget>
             )}
           </FlexWidget>
         )}
+        <FlexWidget style={{ flex: 1 }} />
 
         {/* Foot — macros */}
         {!isEmpty && macrosLabel ? (

@@ -6,7 +6,8 @@ import { syncWidget } from '@/lib/widgetBridge'
 import { FLAGS } from '@/lib/flags'
 
 export function WidgetSyncWatcher() {
-  if (Platform.OS !== 'ios' || !FLAGS.WIDGET_ENABLED) return null
+  if (!FLAGS.WIDGET_ENABLED) return null
+  if (Platform.OS !== 'ios' && Platform.OS !== 'android') return null
   return <WidgetSyncInner />
 }
 

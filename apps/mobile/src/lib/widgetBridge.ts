@@ -136,17 +136,64 @@ export function buildWidgetPayload(
   return { nextSession, nextMeal, updatedAt: new Date().toISOString() }
 }
 
+function formatMacrosLabel(p: number | null, c: number | null, f: number | null): string | null {
+  if (p == null && c == null && f == null) return null
+  return `P ${p ?? 0} · G ${c ?? 0} · L ${f ?? 0} g`
+}
+
 export async function syncWidget(
   nextWorkout: NextWorkout | null | undefined,
   dietDays: DietDay[] | null | undefined,
 ): Promise<void> {
-  if (Platform.OS !== 'ios' || !FLAGS.WIDGET_ENABLED) return
+  if (!FLAGS.WIDGET_ENABLED) return
 
-  try {
-    const { requireNativeModule } = require('expo-modules-core')
-    const ExtensionStorage = requireNativeModule('ExtensionStorage')
-    const payload = buildWidgetPayload(nextWorkout, dietDays)
-    ExtensionStorage.setObject('widgetPayload', payload, 'group.app.tanren.shared')
-    ExtensionStorage.reloadWidget(null)
-  } catch {}
+  const payload = buildWidgetPayload(nextWorkout, dietDays)
+
+  if (Platform.OS === 'ios') {
+    try {
+      const { requireNativeModule } = require('expo-modules-core')
+      const ExtensionStorage = requireNativeModule('ExtensionStorage')
+      ExtensionStorage.setObject('widgetPayload', payload, 'group.app.tanren.shared')
+      ExtensionStorage.reloadWidget(null)
+    } catch {}
+  }
+
+  if (Platform.OS === 'android') {
+    try {
+      const { storage } = require('./storage')
+      const { WIDGET_PAYLOAD_KEY } = require('@/widgets/widgetPayload')
+      const { renderWidgetByName } = require('@/widgets/renderWidget')
+      const { requestWidgetUpdate } = require('react-native-android-widget')
+      const { WIDGET_SESSION, WIDGET_MEAL, WIDGET_MEDIUM } = require('@/widgets/widgetPayload')
+
+      const androidPayload = {
+        session: payload.nextSession
+          ? { title: payload.nextSession.title, dayLabel: payload.nextSession.timeLabel }
+          : null,
+        meal: payload.nextMeal
+          ? {
+              slot: payload.nextMeal.mealType,
+              name: payload.nextMeal.title,
+              kcalLabel: payload.nextMeal.kcalLabel,
+              macrosLabel: formatMacrosLabel(
+                payload.nextMeal.proteinG,
+                payload.nextMeal.carbsG,
+                payload.nextMeal.fatG,
+              ) ?? '',
+            }
+          : null,
+        updatedAt: payload.updatedAt ?? new Date().toISOString(),
+      }
+
+      storage.set(WIDGET_PAYLOAD_KEY, JSON.stringify(androidPayload))
+
+      for (const widgetName of [WIDGET_SESSION, WIDGET_MEAL, WIDGET_MEDIUM]) {
+        await requestWidgetUpdate({
+          widgetName,
+          renderWidget: () => renderWidgetByName(widgetName, androidPayload),
+          widgetNotFound: () => {},
+        }).catch(() => {})
+      }
+    } catch {}
+  }
 }

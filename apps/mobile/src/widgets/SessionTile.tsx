@@ -22,7 +22,6 @@ export function SessionTile({ colors, title, dayLabel }: SessionTileProps) {
         width: 'match_parent',
       }}
     >
-      {/* Red left edge */}
       <FlexWidget
         style={{
           width: 4,
@@ -35,20 +34,15 @@ export function SessionTile({ colors, title, dayLabel }: SessionTileProps) {
         style={{
           flex: 1,
           flexDirection: 'column',
-          justifyContent: 'space-between',
           paddingLeft: 10,
           paddingRight: 12,
           paddingTop: 12,
           paddingBottom: 12,
+          height: 'match_parent',
         }}
       >
         {/* Head — label + forge mark */}
-        <FlexWidget
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-          }}
-        >
+        <FlexWidget style={{ flexDirection: 'row', alignItems: 'center' }}>
           {!isEmpty && (
             <SvgWidget
               svg={forgeMarkSvg(colors.text, colors.accent, 40)}
@@ -66,7 +60,8 @@ export function SessionTile({ colors, title, dayLabel }: SessionTileProps) {
           />
         </FlexWidget>
 
-        {/* Body — workout name */}
+        {/* Body — centered via flex spacers */}
+        <FlexWidget style={{ flex: 1 }} />
         {isEmpty ? (
           <TextWidget
             text="Aucune séance planifiée"
@@ -90,6 +85,7 @@ export function SessionTile({ colors, title, dayLabel }: SessionTileProps) {
             }}
           />
         )}
+        <FlexWidget style={{ flex: 1 }} />
 
         {/* Foot — day label */}
         {!isEmpty && dayLabel ? (
