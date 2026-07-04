@@ -410,7 +410,7 @@ export default function WorkoutPreviewScreen() {
     <SafeAreaView style={{ flex: 1, backgroundColor: tokens.bg }}>
       {/* Header */}
       <View style={{ padding: 16, paddingBottom: 0, flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-        <TouchableOpacity onPress={() => router.back()} accessibilityLabel={t('common.back')} accessibilityRole="button">
+        <TouchableOpacity onPress={() => router.canGoBack() ? router.back() : router.replace('/(tabs)')} accessibilityLabel={t('common.back')} accessibilityRole="button">
           <Text style={{ fontFamily: fonts.sansM, fontSize: 12, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 1 }}>
             {'< '}{t('common.back').toUpperCase()}
           </Text>
