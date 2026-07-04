@@ -88,12 +88,16 @@ function jsDowToUi(jsDow: number): number {
   return jsDow === 0 ? 7 : jsDow
 }
 
+function mealKey(mealType: string): string {
+  return mealType.toLowerCase()
+}
+
 function findNextMeal(meals: DietMeal[]): DietMeal | null {
   const hour = new Date().getHours()
   const sorted = [...meals].sort(
-    (a, b) => (MEAL_HOURS[a.mealType] ?? 12) - (MEAL_HOURS[b.mealType] ?? 12),
+    (a, b) => (MEAL_HOURS[mealKey(a.mealType)] ?? 12) - (MEAL_HOURS[mealKey(b.mealType)] ?? 12),
   )
-  const upcoming = sorted.find((m) => (MEAL_HOURS[m.mealType] ?? 12) > hour)
+  const upcoming = sorted.find((m) => (MEAL_HOURS[mealKey(m.mealType)] ?? 12) > hour)
   return upcoming ?? sorted[0] ?? null
 }
 
@@ -128,8 +132,8 @@ export function buildWidgetPayload(
         .map((m) => ({
           title: m.name,
           kcalLabel: `${m.kcal}`,
-          mealType: MEAL_TYPE_FR[m.mealType] ?? m.mealType,
-          hour: MEAL_HOURS[m.mealType] ?? 12,
+          mealType: MEAL_TYPE_FR[mealKey(m.mealType)] ?? m.mealType,
+          hour: MEAL_HOURS[mealKey(m.mealType)] ?? 12,
           proteinG: m.proteinG ?? null,
           carbsG: m.carbsG ?? null,
           fatG: m.fatG ?? null,
@@ -141,8 +145,8 @@ export function buildWidgetPayload(
         nextMeal = {
           title: meal.name,
           kcalLabel: `${meal.kcal}`,
-          mealType: MEAL_TYPE_FR[meal.mealType] ?? meal.mealType,
-          hour: MEAL_HOURS[meal.mealType] ?? 12,
+          mealType: MEAL_TYPE_FR[mealKey(meal.mealType)] ?? meal.mealType,
+          hour: MEAL_HOURS[mealKey(meal.mealType)] ?? 12,
           proteinG: meal.proteinG ?? null,
           carbsG: meal.carbsG ?? null,
           fatG: meal.fatG ?? null,
