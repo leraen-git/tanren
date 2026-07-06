@@ -7,6 +7,8 @@ import { Screen } from '@/components/Screen'
 import { useIntakeDraftV2Store } from '@/stores/intakeDraftV2Store'
 import { useDietGenerationStore } from '@/stores/dietGenerationStore'
 import { useTranslation } from 'react-i18next'
+import { promptReminders } from '@/lib/reminderPrompt'
+import { useNotificationSettingsStore } from '@/stores/notificationSettingsStore'
 
 const FREQ_MAP = { '0-1': 1, '2-3': 3, '4+': 5 } as const
 const ALCOHOL_MAP = { '0': 0, '1-5': 3, '6+': 8 } as const
@@ -105,7 +107,13 @@ export default function GeneratingV2Screen() {
     if (status === 'done') {
       setProgress(100)
       reset()
+      const mealRemindersAlreadyOn = useNotificationSettingsStore.getState().meals.breakfast.enabled
+        || useNotificationSettingsStore.getState().meals.lunch.enabled
+        || useNotificationSettingsStore.getState().meals.dinner.enabled
       router.replace('/diet')
+      if (!mealRemindersAlreadyOn) {
+        setTimeout(() => promptReminders('diet'), 600)
+      }
     }
   }, [status])
 

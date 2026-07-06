@@ -1127,6 +1127,11 @@ export const en = {
     swapExercise: 'Swap',
     cannotDeleteLast: 'Cannot delete the last exercise.',
     previewHint: 'Long press an exercise to see the demo',
+    reminderPromptTitle: 'Enable reminders?',
+    reminderPromptWorkout: 'Want us to remind you on your training days?',
+    reminderPromptDiet: 'Want us to remind you about your meals?',
+    reminderPromptYes: 'Yes, enable',
+    reminderPromptLater: 'Later',
     exos: 'exos',
   },
   legal: {

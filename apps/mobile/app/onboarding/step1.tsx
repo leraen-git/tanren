@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native'
+import { View, Text, TextInput, TouchableOpacity, Alert, ScrollView } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
@@ -20,6 +20,7 @@ export default function OnboardingStep1() {
   const updateMe = trpc.users.updateMe.useMutation({
     onError: (err) => Alert.alert(t('common.error'), err.message),
   })
+  const canContinue = !!name.trim() && !!gender
 
   useEffect(() => { ob.setStep(1) }, [])
   useEffect(() => {
@@ -48,8 +49,38 @@ export default function OnboardingStep1() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: tokens.bg }}>
-      <View style={{ flex: 1, padding: 20, gap: 24, justifyContent: 'center' }}>
+      {/* Top bar: back + continue */}
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 12 }}>
+        <TouchableOpacity
+          onPress={() => router.back()}
+          accessibilityLabel={t('common.back')}
+          accessibilityRole="button"
+        >
+          <Text style={{ fontFamily: fonts.sansB, fontSize: 13, color: tokens.accent, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+            {'< '}{t('common.back').toUpperCase()}
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={handleNext}
+          disabled={!canContinue || updateMe.isPending}
+          accessibilityLabel={t('onboarding.continue')}
+          accessibilityRole="button"
+        >
+          <Text style={{
+            fontFamily: fonts.sansX, fontSize: 13,
+            color: canContinue ? tokens.accent : tokens.textGhost,
+            textTransform: 'uppercase', letterSpacing: 0.5,
+          }}>
+            {t('onboarding.continue').toUpperCase()}{' >'}
+          </Text>
+        </TouchableOpacity>
+      </View>
 
+      <ScrollView
+        contentContainerStyle={{ padding: 20, gap: 24, paddingBottom: 40 }}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
         {/* Progress dots */}
         <View style={{ flexDirection: 'row', gap: 4, justifyContent: 'center' }}>
           <View style={{ width: 16, height: 6, backgroundColor: tokens.accent }} />
@@ -140,30 +171,7 @@ export default function OnboardingStep1() {
         }}>
           {t('onboarding.privacyDisclaimer')}
         </Text>
-
-        {/* Next button */}
-        <TouchableOpacity
-          onPress={handleNext}
-          disabled={updateMe.isPending}
-          style={{
-            backgroundColor: name && gender ? tokens.accent : tokens.border,
-            height: 48,
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginTop: 8,
-          }}
-          accessibilityLabel={t('onboarding.continue')}
-          accessibilityRole="button"
-        >
-          <Text style={{
-            fontFamily: fonts.sansX, fontSize: 14,
-            color: name && gender ? '#FFFFFF' : tokens.textMute,
-            textTransform: 'uppercase', letterSpacing: 1,
-          }}>
-            {t('onboarding.continue')}
-          </Text>
-        </TouchableOpacity>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   )
 }

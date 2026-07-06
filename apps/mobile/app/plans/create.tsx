@@ -13,6 +13,8 @@ import { useTheme } from '@/theme/ThemeContext'
 import { Button } from '@/components/Button'
 import { trpc } from '@/lib/trpc'
 import { useInvalidateActivePlan } from '@/lib/invalidation'
+import { promptReminders } from '@/lib/reminderPrompt'
+import { useNotificationSettingsStore } from '@/stores/notificationSettingsStore'
 import { usePendingWorkoutStore } from '@/stores/pendingWorkoutStore'
 import { useTranslation } from 'react-i18next'
 import { translateMuscleGroup } from '@/hooks/useExercises'
@@ -77,7 +79,12 @@ export default function CreatePlanScreen() {
   const createPlan = trpc.plans.create.useMutation({
     onSuccess: () => {
       invalidatePlans()
+      const workoutRemindersAlreadyOn = useNotificationSettingsStore.getState().workoutEnabled
+      const days = planDays.map((d) => d.dayOfWeek)
       router.back()
+      if (!workoutRemindersAlreadyOn) {
+        setTimeout(() => promptReminders('workout', days), 600)
+      }
     },
     onError: (err) => Alert.alert(t('common.error'), err.message),
   })

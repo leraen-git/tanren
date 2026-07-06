@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
-import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native'
+import { View, Text, TextInput, TouchableOpacity, Alert, ScrollView } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { router } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
 import { trpc } from '@/lib/trpc'
 import { useTranslation } from 'react-i18next'
@@ -37,8 +38,50 @@ export default function OnboardingStep3() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: tokens.bg }}>
-      <View style={{ flex: 1, padding: 20, gap: 24, justifyContent: 'center' }}>
+      {/* Top bar: back + skip + finish */}
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 12 }}>
+        <TouchableOpacity
+          onPress={() => router.back()}
+          accessibilityLabel={t('common.back')}
+          accessibilityRole="button"
+        >
+          <Text style={{ fontFamily: fonts.sansB, fontSize: 13, color: tokens.accent, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+            {'< '}{t('common.back').toUpperCase()}
+          </Text>
+        </TouchableOpacity>
+        <View style={{ flexDirection: 'row', gap: 16, alignItems: 'center' }}>
+          <TouchableOpacity
+            onPress={handleFinish}
+            disabled={updateMe.isPending}
+            accessibilityLabel={t('onboarding.skip')}
+            accessibilityRole="button"
+          >
+            <Text style={{ fontFamily: fonts.sansB, fontSize: 13, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+              {t('onboarding.skip').toUpperCase()}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={handleFinish}
+            disabled={updateMe.isPending}
+            accessibilityLabel={t('onboarding.letsGo')}
+            accessibilityRole="button"
+          >
+            <Text style={{
+              fontFamily: fonts.sansX, fontSize: 13,
+              color: tokens.accent,
+              textTransform: 'uppercase', letterSpacing: 0.5,
+            }}>
+              {t('onboarding.letsGo').toUpperCase()}{' >'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
 
+      <ScrollView
+        contentContainerStyle={{ padding: 20, gap: 24, paddingBottom: 40 }}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
         {/* Progress dots */}
         <View style={{ flexDirection: 'row', gap: 4, justifyContent: 'center' }}>
           <View style={{ width: 6, height: 6, backgroundColor: tokens.border }} />
@@ -124,38 +167,7 @@ export default function OnboardingStep3() {
         }}>
           {t('onboarding.privacyDisclaimer')}
         </Text>
-
-        {/* Finish */}
-        <TouchableOpacity
-          onPress={handleFinish}
-          disabled={updateMe.isPending}
-          style={{
-            backgroundColor: tokens.accent,
-            height: 48,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-          accessibilityLabel={t('onboarding.letsGo')}
-          accessibilityRole="button"
-        >
-          <Text style={{ fontFamily: fonts.sansX, fontSize: 14, color: '#FFFFFF', textTransform: 'uppercase', letterSpacing: 1 }}>
-            {t('onboarding.letsGo')}
-          </Text>
-        </TouchableOpacity>
-
-        {/* Skip */}
-        <TouchableOpacity
-          onPress={() => handleFinish()}
-          accessibilityLabel={t('onboarding.skip')}
-          accessibilityRole="button"
-          style={{ height: 44, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: tokens.border }}
-        >
-          <Text style={{ fontFamily: fonts.sansB, fontSize: 11, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 1 }}>
-            {t('onboarding.skip')}
-          </Text>
-        </TouchableOpacity>
-
-      </View>
+      </ScrollView>
     </SafeAreaView>
   )
 }

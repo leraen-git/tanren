@@ -1130,6 +1130,11 @@ export const fr = {
     swapExercise: 'Remplacer',
     cannotDeleteLast: 'Tu ne peux pas supprimer le dernier exercice.',
     previewHint: 'Appui long sur un exercice pour voir la démo',
+    reminderPromptTitle: 'Activer les rappels ?',
+    reminderPromptWorkout: 'Tu veux qu\'on te rappelle tes jours d\'entraînement ?',
+    reminderPromptDiet: 'Tu veux qu\'on te rappelle tes repas ?',
+    reminderPromptYes: 'Oui, activer',
+    reminderPromptLater: 'Plus tard',
     exos: 'exos',
   },
   legal: {

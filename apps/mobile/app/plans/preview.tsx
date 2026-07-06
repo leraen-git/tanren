@@ -8,6 +8,8 @@ import { useTheme } from '@/theme/ThemeContext'
 import { Button } from '@/components/Button'
 import { trpc } from '@/lib/trpc'
 import { useInvalidateActivePlan, useInvalidateWorkouts } from '@/lib/invalidation'
+import { promptReminders } from '@/lib/reminderPrompt'
+import { useNotificationSettingsStore } from '@/stores/notificationSettingsStore'
 import { useAIPlanStore } from '@/stores/aiPlanStore'
 import { translateMuscleGroup } from '@/hooks/useExercises'
 import { useExercises } from '@/hooks/useExercises'
@@ -36,8 +38,13 @@ export default function PreviewPlanScreen() {
     onSuccess: async () => {
       invalidatePlans()
       invalidateWorkouts()
+      const workoutRemindersAlreadyOn = useNotificationSettingsStore.getState().workoutEnabled
+      const planDays = proposedPlan?.days.map((d) => d.dayOfWeek)
       reset()
       router.replace('/')
+      if (!workoutRemindersAlreadyOn) {
+        setTimeout(() => promptReminders('workout', planDays), 600)
+      }
     },
     onError: (err) => Alert.alert(t('common.error'), err.message),
   })

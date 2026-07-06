@@ -49,12 +49,39 @@ export default function OnboardingStep2() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: tokens.bg }}>
+      {/* Top bar: back + continue */}
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 12 }}>
+        <TouchableOpacity
+          onPress={() => router.back()}
+          accessibilityLabel={t('common.back')}
+          accessibilityRole="button"
+        >
+          <Text style={{ fontFamily: fonts.sansB, fontSize: 13, color: tokens.accent, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+            {'< '}{t('common.back').toUpperCase()}
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={handleFinish}
+          disabled={!canContinue || updateMe.isPending}
+          accessibilityLabel={t('onboarding.continue')}
+          accessibilityRole="button"
+        >
+          <Text style={{
+            fontFamily: fonts.sansX, fontSize: 13,
+            color: canContinue ? tokens.accent : tokens.textGhost,
+            textTransform: 'uppercase', letterSpacing: 0.5,
+          }}>
+            {t('onboarding.continue').toUpperCase()}{' >'}
+          </Text>
+        </TouchableOpacity>
+      </View>
+
       <ScrollView
         contentContainerStyle={{ padding: 20, gap: 24 }}
         showsVerticalScrollIndicator={false}
       >
         {/* Progress dots */}
-        <View style={{ flexDirection: 'row', gap: 4, justifyContent: 'center', marginTop: 16 }}>
+        <View style={{ flexDirection: 'row', gap: 4, justifyContent: 'center' }}>
           <View style={{ width: 6, height: 6, backgroundColor: tokens.border }} />
           <View style={{ width: 16, height: 6, backgroundColor: tokens.accent }} />
           <View style={{ width: 6, height: 6, backgroundColor: tokens.border }} />
@@ -192,33 +219,10 @@ export default function OnboardingStep2() {
         {/* Privacy disclaimer */}
         <Text style={{
           fontFamily: fonts.sans, fontSize: 10, color: tokens.textMute,
-          textAlign: 'center', lineHeight: 16, marginTop: 8,
+          textAlign: 'center', lineHeight: 16, marginTop: 8, marginBottom: 20,
         }}>
           {t('onboarding.privacyDisclaimer')}
         </Text>
-
-        {/* Continue button */}
-        <TouchableOpacity
-          onPress={handleFinish}
-          disabled={!canContinue || updateMe.isPending}
-          style={{
-            backgroundColor: canContinue ? tokens.accent : tokens.border,
-            height: 48,
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginBottom: 20,
-          }}
-          accessibilityLabel={t('onboarding.continue')}
-          accessibilityRole="button"
-        >
-          <Text style={{
-            fontFamily: fonts.sansX, fontSize: 14,
-            color: canContinue ? '#FFFFFF' : tokens.textMute,
-            textTransform: 'uppercase', letterSpacing: 1,
-          }}>
-            {t('onboarding.continue')}
-          </Text>
-        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   )
