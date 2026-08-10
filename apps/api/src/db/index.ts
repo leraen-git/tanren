@@ -365,6 +365,12 @@ export async function runPendingMigrations() {
     `)
     console.log('[migration] Ensured audit action diet_credits_reset exists')
 
+    // --- 0025: superset support ---
+    await ensureColumn(client, 'workout_exercises', 'superset_group_id', '"superset_group_id" text')
+    await ensureColumn(client, 'session_exercises', 'superset_group_id', '"superset_group_id" text')
+    await ensureColumn(client, 'exercise_sets', 'performed_in_superset', '"performed_in_superset" boolean NOT NULL DEFAULT false')
+    console.log('[migration] Ensured superset columns exist')
+
     // --- Extra indexes ---
     await client.query(`CREATE INDEX IF NOT EXISTS wt_user_idx ON workout_templates (user_id)`)
     await client.query(`CREATE INDEX IF NOT EXISTS we_template_idx ON workout_exercises (workout_template_id)`)

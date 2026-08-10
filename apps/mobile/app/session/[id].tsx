@@ -54,9 +54,67 @@ export default function SessionDetailScreen() {
             paddingBottom: 6 }}>
             {t('history.detailExercises')}
           </Text>
-          {session.exercises.map((ex, i) => (
-            <ExerciseBlock key={ex.exerciseId} exercise={ex} index={i} />
-          ))}
+          {(() => {
+            const elements: React.ReactNode[] = []
+            let i = 0
+            while (i < session.exercises.length) {
+              const ex = session.exercises[i]!
+              const gid = ex.supersetGroupId
+              if (gid) {
+                const groupStart = i
+                while (i < session.exercises.length && session.exercises[i]!.supersetGroupId === gid) i++
+                const groupExercises = session.exercises.slice(groupStart, i)
+                elements.push(
+                  <View key={`group-${gid}`} style={{
+                    borderLeftWidth: 3,
+                    borderLeftColor: tokens.accent,
+                    paddingLeft: 8,
+                    marginBottom: 8,
+                  }}>
+                    <View style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      gap: 6,
+                      marginBottom: 4,
+                    }}>
+                      <View style={{ backgroundColor: tokens.accent, paddingHorizontal: 6, paddingVertical: 2 }}>
+                        <Text style={{ fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 1.2, color: '#FFFFFF', textTransform: 'uppercase' }}>
+                          SUPERSET
+                        </Text>
+                      </View>
+                      <Text style={{ fontFamily: fonts.sans, fontSize: 10, color: tokens.textMute }}>
+                        {groupExercises.map((_, j) => String.fromCharCode(65 + j)).join(' + ')}
+                      </Text>
+                    </View>
+                    {groupExercises.map((gex, j) => (
+                      <View key={gex.exerciseId} style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 4 }}>
+                        <View style={{
+                          width: 18, height: 18,
+                          backgroundColor: tokens.accent,
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          marginTop: 8,
+                        }}>
+                          <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: '#FFFFFF' }}>
+                            {String.fromCharCode(65 + j)}
+                          </Text>
+                        </View>
+                        <View style={{ flex: 1 }}>
+                          <ExerciseBlock exercise={gex} index={groupStart + j} />
+                        </View>
+                      </View>
+                    ))}
+                  </View>
+                )
+              } else {
+                elements.push(
+                  <ExerciseBlock key={ex.exerciseId} exercise={ex} index={i} />
+                )
+                i++
+              }
+            }
+            return elements
+          })()}
         </View>
 
         {/* Action buttons */}

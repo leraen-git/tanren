@@ -115,12 +115,14 @@ export default function RecapScreen() {
         exercises: exercises.map((ex, order) => ({
           exerciseId: ex.exerciseId,
           order,
+          supersetGroupId: ex.supersetGroupId ?? null,
           sets: ex.sets.map((s, i) => ({
             setNumber: i + 1,
             reps: s.reps,
             weight: s.weight,
             restSeconds: s.restSeconds,
             isCompleted: s.isCompleted,
+            performedInSuperset: !!ex.supersetGroupId,
           })),
         })),
       }

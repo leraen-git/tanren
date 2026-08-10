@@ -60,6 +60,7 @@ export default function WorkoutBuildScreen() {
         reps: ex.defaultReps ?? 10,
         weight: ex.defaultWeight ?? 0,
         restSeconds: ex.defaultRestSeconds ?? 90,
+        supersetGroupId: ex.supersetGroupId ?? null,
       })),
     })
     setInitialized(true)
@@ -132,6 +133,7 @@ export default function WorkoutBuildScreen() {
         defaultReps: ex.reps,
         defaultWeight: ex.weight,
         defaultRestSeconds: ex.restSeconds,
+        supersetGroupId: ex.supersetGroupId ?? null,
       })),
     }
     if (isEdit) {
@@ -161,16 +163,125 @@ export default function WorkoutBuildScreen() {
   const canSave = draft.name.trim().length > 0 && draft.exercises.length > 0
   const isSaving = createMutation.isPending || updateMutation.isPending
 
-  const renderExercise = ({ item, drag, isActive, getIndex }: RenderItemParams<ExerciseEntry>) => (
-    <ExerciseRow
-      index={getIndex() ?? 0}
-      entry={item}
-      isDragging={isActive}
-      onLongPress={drag}
-      onUpdate={(patch) => draft.updateExercise(getIndex() ?? 0, patch)}
-      onDelete={() => draft.removeExercise(getIndex() ?? 0)}
-    />
-  )
+  const isFirstOfGroup = (index: number): boolean => {
+    const ex = draft.exercises[index]
+    if (!ex?.supersetGroupId) return false
+    if (index === 0) return true
+    return draft.exercises[index - 1]?.supersetGroupId !== ex.supersetGroupId
+  }
+
+  const isLastOfGroup = (index: number): boolean => {
+    const ex = draft.exercises[index]
+    if (!ex?.supersetGroupId) return false
+    if (index === draft.exercises.length - 1) return true
+    return draft.exercises[index + 1]?.supersetGroupId !== ex.supersetGroupId
+  }
+
+  const getGroupMemberLabel = (index: number): string | null => {
+    const ex = draft.exercises[index]
+    if (!ex?.supersetGroupId) return null
+    let firstIdx = index
+    while (firstIdx > 0 && draft.exercises[firstIdx - 1]?.supersetGroupId === ex.supersetGroupId) firstIdx--
+    return String.fromCharCode(65 + (index - firstIdx))
+  }
+
+  const renderExercise = ({ item, drag, isActive, getIndex }: RenderItemParams<ExerciseEntry>) => {
+    const idx = getIndex() ?? 0
+    const first = isFirstOfGroup(idx)
+    const last = isLastOfGroup(idx)
+    const memberLabel = getGroupMemberLabel(idx)
+    const inGroup = !!item.supersetGroupId
+    const canLink = !inGroup && idx < draft.exercises.length - 1
+
+    return (
+      <View>
+        {first && (
+          <View style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginBottom: 4,
+            paddingHorizontal: 4,
+          }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+              <View style={{ backgroundColor: tokens.accent, paddingHorizontal: 6, paddingVertical: 2 }}>
+                <Text style={{ fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 1.2, color: '#FFFFFF', textTransform: 'uppercase' }}>
+                  SUPERSET
+                </Text>
+              </View>
+            </View>
+            <TouchableOpacity
+              onPress={() => draft.unlinkExercise(idx)}
+              hitSlop={8}
+              accessibilityLabel={t('workout.unlinkSuperset')}
+              accessibilityRole="button"
+            >
+              <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.accent, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                {t('workout.unlinkSuperset')}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
+        <View style={inGroup ? {
+          borderLeftWidth: 3,
+          borderLeftColor: tokens.accent,
+          paddingLeft: 8,
+          marginBottom: last ? 0 : -4,
+        } : undefined}>
+          {memberLabel && (
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 2 }}>
+              <View style={{
+                width: 18, height: 18,
+                backgroundColor: tokens.accent,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+                <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: '#FFFFFF' }}>{memberLabel}</Text>
+              </View>
+              <Text style={{ fontFamily: fonts.sans, fontSize: 10, color: tokens.textMute }}>
+                {last ? `${t('workout.supersetRoundRest')}: ${item.restSeconds}s` : `${t('workout.supersetTransitionRest')}: ${item.restSeconds}s`}
+              </Text>
+            </View>
+          )}
+          <ExerciseRow
+            index={idx}
+            entry={item}
+            isDragging={isActive}
+            onLongPress={drag}
+            onUpdate={(patch) => draft.updateExercise(idx, patch)}
+            onDelete={() => draft.removeExercise(idx)}
+          />
+        </View>
+
+        {last && <View style={{ height: 4 }} />}
+
+        {canLink && (
+          <TouchableOpacity
+            onPress={() => draft.linkSuperset(idx)}
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 6,
+              paddingVertical: 6,
+              marginBottom: 4,
+              marginTop: -4,
+              borderWidth: 1,
+              borderStyle: 'dashed',
+              borderColor: tokens.accent,
+            }}
+            accessibilityLabel={t('workout.linkSuperset')}
+            accessibilityRole="button"
+          >
+            <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.accent, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+              {t('workout.linkSuperset')}
+            </Text>
+          </TouchableOpacity>
+        )}
+      </View>
+    )
+  }
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>

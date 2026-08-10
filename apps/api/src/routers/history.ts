@@ -171,6 +171,7 @@ export const historyRouter = router({
           id: sessionExercises.id,
           exerciseId: sessionExercises.exerciseId,
           order: sessionExercises.order,
+          supersetGroupId: sessionExercises.supersetGroupId,
           exerciseName: exercises.name,
           exerciseNameFr: exercises.nameFr,
         })
@@ -219,6 +220,7 @@ export const historyRouter = router({
           exerciseName: se.exerciseNameFr ?? se.exerciseName ?? '',
           order: se.order,
           volume,
+          supersetGroupId: se.supersetGroupId ?? null,
           sets: sets.map((s) => ({
             id: s.id,
             setNumber: s.setNumber,

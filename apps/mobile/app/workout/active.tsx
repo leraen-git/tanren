@@ -18,6 +18,14 @@ import { useTheme } from '@/theme/ThemeContext'
 import { TimerRing } from '@/components/TimerRing'
 import { useActiveSessionStore } from '@/stores/activeSessionStore'
 import { useTimerStore, timerStore } from '@/stores/timerStore'
+import {
+  getGroupBounds,
+  computeNextStep,
+  isLastMemberOfRound,
+  getSupersetRoundInfo,
+  getRestTimerLabel,
+  getValidateButtonLabel,
+} from '@/lib/superset'
 import { scheduleRestEndNotification, cancelRestNotification } from '@/services/timerService'
 import { MusicControlBar } from '@/components/MusicControlBar'
 import { useWorkletTimer } from '@/hooks/useWorkletTimer'
@@ -46,6 +54,7 @@ export default function ActiveWorkoutScreen() {
   const isRunning = useTimerStore((s) => s.isRunning)
   const secondsRemaining = useTimerStore((s) => s.secondsRemaining)
   const totalSeconds = useTimerStore((s) => s.totalSeconds)
+  const timerExerciseName = useTimerStore((s) => s.exerciseName)
   const start = useTimerStore((s) => s.start)
   const skip = useTimerStore((s) => s.skip)
   const pauseTimer = useTimerStore((s) => s.pause)
@@ -111,12 +120,18 @@ export default function ActiveWorkoutScreen() {
   const totalSets = exercises.reduce((sum, ex) => sum + ex.sets.length, 0)
   const completedTotal = exercises.reduce((sum, ex) => sum + ex.sets.filter((s) => s.isCompleted).length, 0)
 
+  const { start: groupStart, end: groupEnd } = getGroupBounds(exercises, currentExerciseIndex)
+  const isInSuperset = groupStart !== groupEnd
+  const roundInfo = getSupersetRoundInfo(exercises, currentExerciseIndex, currentSetIndex)
+  const groupMembers = isInSuperset ? exercises.slice(groupStart, groupEnd + 1) : []
+
   const handleSetFinish = async () => {
     if (isCurrentSetDone) return
+    const timerInfo = getRestTimerLabel(exercises, currentExerciseIndex, currentSetIndex)
     completeSet(currentExerciseIndex, currentSetIndex)
     const restSecs = currentSet?.restSeconds ?? DEFAULT_REST_SECONDS
-    start(restSecs, currentExercise.exerciseName)
-    await scheduleRestEndNotification(restSecs, currentExercise.exerciseName)
+    start(restSecs, timerInfo.label)
+    await scheduleRestEndNotification(restSecs, timerInfo.label)
   }
 
   const handleSkipRest = async () => {
@@ -203,7 +218,7 @@ export default function ActiveWorkoutScreen() {
             textTransform: 'uppercase',
             color: tokens.textMute,
           }}>
-            {currentExercise.exerciseName}
+            {timerExerciseName}
           </Text>
 
           <TimerRing progress={progress} secondsRemaining={secondsRemaining} totalSeconds={totalSeconds} size={240} />
@@ -252,14 +267,14 @@ export default function ActiveWorkoutScreen() {
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
             <TouchableOpacity
               onPress={prevExercise}
-              disabled={currentExerciseIndex === 0}
+              disabled={currentExerciseIndex === 0 || (isInSuperset && currentExerciseIndex > groupStart)}
               style={{ padding: 8 }}
               accessibilityLabel={t('workout.prevExercise')} accessibilityRole="button"
             >
               <Text style={{
                 fontFamily: fonts.sansB,
                 fontSize: 20,
-                color: currentExerciseIndex === 0 ? tokens.border : tokens.accent,
+                color: (currentExerciseIndex === 0 || (isInSuperset && currentExerciseIndex > groupStart)) ? tokens.border : tokens.accent,
               }}>‹</Text>
             </TouchableOpacity>
 
@@ -281,17 +296,82 @@ export default function ActiveWorkoutScreen() {
 
             <TouchableOpacity
               onPress={nextExercise}
-              disabled={currentExerciseIndex === exercises.length - 1}
+              disabled={currentExerciseIndex === exercises.length - 1 || (isInSuperset && currentExerciseIndex < groupEnd)}
               style={{ padding: 8 }}
               accessibilityLabel={t('workout.nextExercise')} accessibilityRole="button"
             >
               <Text style={{
                 fontFamily: fonts.sansB,
                 fontSize: 20,
-                color: currentExerciseIndex === exercises.length - 1 ? tokens.border : tokens.accent,
+                color: (currentExerciseIndex === exercises.length - 1 || (isInSuperset && currentExerciseIndex < groupEnd)) ? tokens.border : tokens.accent,
               }}>›</Text>
             </TouchableOpacity>
           </View>
+
+          {/* Superset bandeau */}
+          {isInSuperset && roundInfo && (
+            <View style={{
+              borderWidth: 1,
+              borderColor: tokens.accent,
+              padding: 12,
+              gap: 6,
+            }}>
+              <Text style={{
+                fontFamily: fonts.sansB,
+                fontSize: 11,
+                letterSpacing: 1.2,
+                textTransform: 'uppercase',
+                color: tokens.accent,
+              }}>
+                {t('workout.supersetTour')} {roundInfo.currentRound}/{roundInfo.totalRounds}
+              </Text>
+              {groupMembers.map((member, i) => {
+                const memberIdx = groupStart + i
+                const isCurrent = memberIdx === currentExerciseIndex
+                return (
+                  <View key={member.exerciseId} style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: 6,
+                  }}>
+                    <View style={{
+                      width: 18, height: 18,
+                      backgroundColor: isCurrent ? tokens.accent : 'transparent',
+                      borderWidth: isCurrent ? 0 : 1,
+                      borderColor: tokens.border,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}>
+                      <Text style={{
+                        fontFamily: fonts.sansB,
+                        fontSize: 9,
+                        color: isCurrent ? '#FFFFFF' : tokens.textMute,
+                      }}>
+                        {String.fromCharCode(65 + i)}
+                      </Text>
+                    </View>
+                    <Text style={{
+                      fontFamily: isCurrent ? fonts.sansB : fonts.sans,
+                      fontSize: 12,
+                      color: isCurrent ? tokens.text : tokens.textMute,
+                      textTransform: 'uppercase',
+                      letterSpacing: 0.3,
+                    }}>
+                      {member.exerciseName}
+                    </Text>
+                  </View>
+                )
+              })}
+              <Text style={{
+                fontFamily: fonts.sans,
+                fontSize: 10,
+                color: tokens.textGhost,
+                marginTop: 2,
+              }}>
+                {groupMembers.map((m, i) => String.fromCharCode(65 + i)).join(' → ')} : {groupMembers[0]?.sets[0]?.restSeconds ?? 15}s · {t('workout.supersetRoundRest').toLowerCase()} {groupMembers[groupMembers.length - 1]?.sets[0]?.restSeconds ?? 90}s
+              </Text>
+            </View>
+          )}
 
           {/* Progress dots */}
           <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 4 }}>
@@ -457,11 +537,11 @@ export default function ActiveWorkoutScreen() {
                 marginTop: 8,
                 opacity: isCurrentSetDone ? 0.5 : 1,
               }}
-              accessibilityLabel={`${t('workout.validateSet')} ${currentSetIndex + 1}`}
+              accessibilityLabel={getValidateButtonLabel(exercises, currentExerciseIndex, currentSetIndex, t)}
               accessibilityRole="button"
             >
               <Text style={{ fontFamily: fonts.sansX, fontSize: 20, color: '#FFFFFF', textTransform: 'uppercase', letterSpacing: 1 }}>
-                {t('workout.validateSet')} {currentSetIndex + 1}
+                {getValidateButtonLabel(exercises, currentExerciseIndex, currentSetIndex, t)}
               </Text>
             </TouchableOpacity>
           )}

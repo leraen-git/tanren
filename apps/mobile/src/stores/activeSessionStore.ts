@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 import { mmkvStateStorage } from '@/lib/storage'
+import { computeNextStep, getGroupBounds } from '@/lib/superset'
 
 export interface SetConfig {
   reps: number
@@ -23,6 +24,7 @@ export interface SessionExercise {
   prReps?: number
   previousVolume?: number
   videoUrl?: string | null
+  supersetGroupId?: string | null
   sets: SetConfig[]
 }
 
@@ -87,11 +89,17 @@ export const useActiveSessionStore = create<ActiveSessionState>()(
         })
         return { ...ex, sets }
       })
-      // Advance currentSetIndex to next incomplete set
-      const nextSetIndex = exercises[exerciseIndex]?.sets.findIndex((st, i) => i > setIndex && !st.isCompleted) ?? -1
+      const nextStep = computeNextStep(exercises, exerciseIndex, setIndex)
+      if (nextStep) {
+        return {
+          exercises,
+          currentExerciseIndex: nextStep.exerciseIndex,
+          currentSetIndex: nextStep.setIndex,
+        }
+      }
       return {
         exercises,
-        currentSetIndex: nextSetIndex >= 0 ? nextSetIndex : setIndex,
+        currentSetIndex: setIndex,
       }
     }),
 

@@ -78,6 +78,7 @@ export interface WorkoutExercise {
   defaultWeight: number
   defaultRestSeconds: number
   notes: string | null
+  supersetGroupId: string | null
 }
 
 // ─── Session ─────────────────────────────────────────────────────────────────
@@ -100,6 +101,7 @@ export interface SessionExercise {
   workoutSessionId: string
   exerciseId: string
   order: number
+  supersetGroupId: string | null
 }
 
 export interface ExerciseSet {
@@ -110,6 +112,8 @@ export interface ExerciseSet {
   weight: number
   restSeconds: number
   isCompleted: boolean
+  isPR: boolean
+  performedInSuperset: boolean
   completedAt: Date | null
   notes: string | null
 }
@@ -176,6 +180,7 @@ export interface SessionExerciseDetail {
   exerciseName: string
   order: number
   volume: number
+  supersetGroupId: string | null
   sets: SessionSetDetail[]
 }
 

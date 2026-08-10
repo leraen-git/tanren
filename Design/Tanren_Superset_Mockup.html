@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tanren · Superset — Mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Noto+Serif+JP:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --red:#FF2D3F; --red-dk:#E8192C;
+    --ink:#0A0A0A; --ink2:#141414;
+    --paper:#FFFFFF;
+    --line:#E6E6E6; --hair:#F0F0F0;
+    --muted:#9A9A9A; --muted2:#8A8A8A;
+    --ghost:#C9C9C9;
+    --green:#22c55e; --amber:#f59e0b;
+    --ui:'Barlow Condensed', system-ui, sans-serif;
+    --mono:'JetBrains Mono', ui-monospace, monospace;
+    --kanji:'Noto Serif JP', serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;}
+  body{
+    background:var(--ink2);
+    font-family:var(--ui);
+    color:#fff;
+    -webkit-font-smoothing:antialiased;
+    padding:48px 24px 80px;
+    position:relative;
+    overflow-x:hidden;
+  }
+  .watermark{
+    position:fixed; right:-2vw; bottom:-4vw;
+    font-family:var(--kanji); font-weight:700;
+    font-size:42vw; line-height:.8; color:#fff; opacity:.04;
+    pointer-events:none; user-select:none; z-index:0;
+  }
+  .page-head{max-width:1180px; margin:0 auto 40px; position:relative; z-index:1;}
+  .page-head .kanji{font-family:var(--kanji); color:var(--red); font-size:30px; vertical-align:-4px; margin-right:10px;}
+  .page-head h1{font-weight:900; text-transform:uppercase; font-size:40px; letter-spacing:.5px; margin:0 0 8px;}
+  .page-head p{font-family:var(--mono); color:#bdbdbd; font-size:13px; max-width:760px; line-height:1.6; margin:0;}
+  .page-head .meta{font-family:var(--mono); color:var(--red); font-size:11px; letter-spacing:2px; text-transform:uppercase; margin-bottom:14px;}
+
+  .grid{
+    max-width:1180px; margin:0 auto;
+    display:flex; flex-wrap:wrap; gap:40px 36px; justify-content:center;
+    position:relative; z-index:1;
+  }
+  .col{width:390px; max-width:100%;}
+  .caption{margin:0 2px 14px;}
+  .caption .n{font-family:var(--mono); color:var(--red); font-size:11px; letter-spacing:2px;}
+  .caption h2{font-weight:800; text-transform:uppercase; font-size:19px; letter-spacing:.4px; margin:4px 0 6px;}
+  .caption p{font-family:var(--mono); color:#a8a8a8; font-size:11.5px; line-height:1.65; margin:0;}
+  .caption .hl{color:var(--red);}
+
+  /* ---- phone ---- */
+  .phone{
+    width:390px; max-width:100%; background:var(--paper); color:var(--ink);
+    border-radius:38px; overflow:hidden; border:1px solid #2a2a2a;
+  }
+  .screen{padding:0 22px 26px;}
+  .statusbar{
+    height:50px; display:flex; align-items:center; justify-content:space-between;
+    padding:0 6px; font-family:var(--mono); font-weight:500; font-size:15px; color:var(--ink);
+  }
+  .statusbar .island{width:120px; height:26px; background:#000; border-radius:16px;}
+  .statusbar .right{display:flex; gap:7px; align-items:center;}
+  .statusbar .right span{display:inline-block;}
+  .bars{width:18px; height:11px; background:var(--ink); border-radius:2px;}
+  .batt{width:24px; height:12px; border:1.5px solid var(--ink); border-radius:3px; position:relative;}
+  .batt::after{content:""; position:absolute; left:2px; top:2px; bottom:2px; right:5px; background:var(--ink);}
+
+  /* generic bits */
+  .topnav{display:flex; justify-content:space-between; align-items:center; padding:8px 0 4px;}
+  .link{font-family:var(--ui); font-weight:700; color:var(--red); font-size:14px; letter-spacing:3px; text-transform:uppercase;}
+  .link.mut{color:var(--muted);}
+  .eyebrow{font-family:var(--ui); font-weight:600; color:var(--muted2); font-size:13px; letter-spacing:4px; text-transform:uppercase;}
+  .h-xl{font-weight:900; text-transform:uppercase; line-height:.96; letter-spacing:.3px; font-size:34px; margin:6px 0 10px;}
+  .h-lg{font-weight:900; text-transform:uppercase; line-height:.98; font-size:27px; margin:0;}
+  .sub-mono{font-family:var(--mono); color:var(--muted); font-size:14px;}
+  .divider{height:1px; background:var(--line); margin:16px 0;}
+  .hair{height:1px; background:var(--hair);}
+
+  .tags{display:flex; flex-wrap:wrap; gap:8px; margin:6px 0 2px;}
+  .tag{font-family:var(--ui); font-weight:600; font-size:12px; letter-spacing:1.5px; text-transform:uppercase; color:var(--ink); border:1px solid var(--line); padding:7px 11px;}
+
+  /* detail rows */
+  .ex{display:flex; align-items:flex-start; gap:14px; padding:16px 0;}
+  .ex + .ex{border-top:1px solid var(--hair);}
+  .numbox{flex:0 0 auto; width:44px; height:44px; border:2px solid var(--red); display:flex; align-items:center; justify-content:center;
+    font-family:var(--mono); font-weight:700; color:var(--red); font-size:15px;}
+  .numbox.solid{background:var(--red); border-color:var(--red); color:#fff;}
+  .ex-body{flex:1; min-width:0;}
+  .ex-name{font-weight:800; text-transform:uppercase; font-size:19px; line-height:1.02; letter-spacing:.2px;}
+  .ex-spec{font-family:var(--mono); color:var(--muted); font-size:13.5px; margin-top:3px;}
+  .ex-last{font-family:var(--mono); color:var(--ghost); font-size:11.5px; margin-top:4px;}
+  .pr{flex:0 0 auto; text-align:right;}
+  .pr .lbl{font-family:var(--ui); font-weight:700; color:var(--red); font-size:11px; letter-spacing:2px;}
+  .pr .val{font-family:var(--ui); font-weight:800; color:var(--red); font-size:21px;}
+
+  /* superset container (detail + editor) */
+  .ss{position:relative; margin:10px 0; padding-left:14px;}
+  .ss::before{content:""; position:absolute; left:0; top:6px; bottom:6px; width:3px; background:var(--red);}
+  .ss-head{display:flex; align-items:center; justify-content:space-between; gap:10px; margin:6px 0 2px;}
+  .ss-chip{display:inline-flex; align-items:center; gap:7px; border:1.5px solid var(--red); color:var(--red);
+    font-family:var(--ui); font-weight:800; font-size:11px; letter-spacing:2.5px; text-transform:uppercase; padding:4px 9px;}
+  .ss-rest{font-family:var(--mono); color:var(--muted); font-size:12px; letter-spacing:.3px;}
+  .ss-rest b{color:var(--ink); font-weight:700;}
+  .ss .ex{padding:12px 0;}
+  .ss .ex + .ex{border-top:1px dashed var(--line);}
+  .memtag{flex:0 0 auto; width:26px; height:26px; border:1.5px solid var(--red); color:var(--red); display:flex; align-items:center; justify-content:center;
+    font-family:var(--ui); font-weight:800; font-size:14px; margin-top:2px;}
+
+  .btn{display:block; width:100%; text-align:center; border:0; cursor:default;
+    font-family:var(--ui); font-weight:800; text-transform:uppercase; letter-spacing:3px;}
+  .btn-primary{background:var(--red); color:#fff; padding:20px; font-size:18px;}
+  .btn-primary.sm{padding:16px; font-size:16px; letter-spacing:2px;}
+  .btn-ghost{background:#fff; color:var(--ink); border:1px solid var(--line); padding:14px; font-size:14px; letter-spacing:2px;}
+  .btn-red-outline{background:#fff; color:var(--red); border:1.5px solid var(--red); padding:14px; font-size:14px; letter-spacing:2px;}
+
+  /* editor */
+  .ed-ex{padding:14px 0;}
+  .ed-ex .row1{display:flex; align-items:flex-start; gap:12px;}
+  .reorder{display:flex; align-items:center; gap:14px; margin-left:auto;}
+  .reorder .a{font-size:16px; color:#bdbdbd;}
+  .reorder .a.dk{color:#555;}
+  .reorder .x{color:var(--red); font-weight:800; font-size:17px;}
+  .ed-name{font-weight:900; text-transform:uppercase; font-size:21px; line-height:1.0;}
+  .ed-musc{font-family:var(--mono); color:var(--muted); font-size:12px; margin-top:5px;}
+  .setgrid{margin-top:12px;}
+  .setgrid .gh{display:grid; grid-template-columns:30px 1fr 1fr 70px; gap:10px; font-family:var(--mono); color:var(--muted); font-size:10.5px; letter-spacing:1px; padding:0 4px 6px;}
+  .setrow{display:grid; grid-template-columns:30px 1fr 1fr 70px; gap:10px; align-items:center; border:1px solid var(--line); padding:14px 8px; margin-bottom:8px;}
+  .setrow .si{font-family:var(--mono); color:var(--muted); font-size:14px; text-align:center;}
+  .setrow .v{font-family:var(--ui); font-weight:800; font-size:24px; text-align:center; border-bottom:1px solid var(--line); padding-bottom:2px;}
+  .setrow .v.gh-v{color:var(--ghost); font-weight:700;}
+  .setrow .rest{font-family:var(--mono); font-size:15px; color:var(--ink); text-align:right;}
+  .setrow .rest s{color:var(--muted); text-decoration:none; font-size:11px;}
+  .lier-wrap{display:flex; align-items:stretch; gap:8px; margin-top:12px;}
+  .lier{flex:1; display:flex; align-items:center; justify-content:center; gap:8px; cursor:default;
+    border:1.5px dashed var(--red); color:var(--red); padding:13px; font-family:var(--ui); font-weight:800; font-size:13px; letter-spacing:2px; text-transform:uppercase;}
+  .lier-x{flex:0 0 auto; width:46px; display:flex; align-items:center; justify-content:center; cursor:default;
+    border:1px solid var(--line); color:var(--muted); font-size:15px; font-weight:700;}
+
+  /* active session */
+  .as-top{display:flex; align-items:center; justify-content:space-between; gap:8px; padding:6px 0 12px;}
+  .as-top .mid{text-align:center; flex:1;}
+  .as-top .mid .t{font-family:var(--mono); font-weight:500; font-size:12.5px; letter-spacing:.4px;}
+  .as-top .mid .s{font-family:var(--mono); color:var(--muted); font-size:12px; margin-top:2px;}
+  .as-name-wrap{display:flex; align-items:center; gap:12px; padding:14px 0 4px;}
+  .arrow{font-size:30px; font-weight:700; line-height:1;}
+  .arrow.dim{color:#dcdcdc;}
+  .arrow.red{color:var(--red);}
+  .as-name{flex:1; text-align:center; font-weight:900; text-transform:uppercase; font-size:27px; line-height:1.0;}
+  .as-pos{font-family:var(--mono); color:var(--muted); font-size:13px; text-align:center; margin:6px 0 2px;}
+  .seg{display:flex; gap:5px; margin:10px 0 4px; align-items:center;}
+  .seg i{height:4px; flex:1; background:#e3e3e3; display:block;}
+  .seg i.done{background:var(--red);}
+  .seg i.cur{background:var(--red);}
+  .seg .brk{position:relative; flex:2; display:flex; gap:5px;}
+  .seg .brk::after{content:""; position:absolute; left:0; right:0; bottom:-7px; height:6px; border:1.5px solid var(--red); border-top:0;}
+
+  .ssbar{border:1.5px solid var(--red); margin:14px 0 4px;}
+  .ssbar .hd{display:flex; align-items:center; justify-content:space-between; background:var(--red); color:#fff; padding:7px 11px;}
+  .ssbar .hd .l{font-family:var(--ui); font-weight:800; font-size:12px; letter-spacing:2.5px; text-transform:uppercase;}
+  .ssbar .hd .r{font-family:var(--mono); font-weight:700; font-size:12px;}
+  .ssbar .mem{display:flex; align-items:center; gap:10px; padding:9px 11px; font-family:var(--ui);}
+  .ssbar .mem + .mem{border-top:1px solid var(--hair);}
+  .ssbar .mem .tag{border-color:var(--red); color:var(--red); width:24px; height:24px; padding:0; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:13px;}
+  .ssbar .mem.cur .tag{background:var(--red); color:#fff;}
+  .ssbar .mem .nm{font-weight:700; text-transform:uppercase; font-size:15px; letter-spacing:.2px; flex:1;}
+  .ssbar .mem .st{font-family:var(--mono); font-size:11px; letter-spacing:.3px;}
+  .ssbar .mem .st.ok{color:var(--green);}
+  .ssbar .mem .st.now{color:var(--red);}
+  .ssbar .mem .st.next{color:var(--muted);}
+  .ssbar .foot{font-family:var(--mono); color:var(--muted); font-size:11px; padding:7px 11px; border-top:1px dashed var(--line);}
+
+  .series-lbl{font-family:var(--ui); font-weight:600; color:var(--muted2); font-size:13px; letter-spacing:3px; text-transform:uppercase; margin:16px 0 10px;}
+  .scard{border:1px solid var(--line); padding:14px 12px; margin-bottom:10px; display:flex; align-items:center; gap:12px;}
+  .scard.active{border:2px solid var(--red); padding:13px 11px;}
+  .scard .si{font-family:var(--mono); color:var(--muted); font-size:15px; width:14px; text-align:center;}
+  .scard .si.cur{color:var(--red);}
+  .scard .cell{flex:1;}
+  .scard .cell .k{font-family:var(--mono); color:var(--muted); font-size:10px; letter-spacing:1px;}
+  .scard .cell .b{font-family:var(--ui); font-weight:900; font-size:30px; line-height:1; border-bottom:1px solid var(--line); display:inline-block; min-width:46px; margin-top:3px;}
+  .scard .cell .b.gh-v{color:var(--ghost);}
+  .scard .restcell{flex:0 0 auto; text-align:left;}
+  .scard .restcell .k{font-family:var(--mono); color:var(--muted); font-size:10px; letter-spacing:1px;}
+  .scard .restcell .b{font-family:var(--mono); font-size:18px; border-bottom:1px solid var(--line); padding:0 14px 1px 2px;}
+  .scard .restcell .b s{color:var(--muted); text-decoration:none; font-size:10px;}
+  .scard .chk{flex:0 0 auto; width:34px; height:34px; border:1px solid var(--line);}
+  .scard .chk.on{background:var(--green); border-color:var(--green); position:relative;}
+  .scard .chk.on::after{content:"✓"; color:#fff; position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:800;}
+  .yt{display:flex; align-items:center; justify-content:center; gap:8px; margin-top:16px; font-family:var(--ui); color:#555; font-size:14px;}
+  .yt .pl{width:22px; height:16px; background:var(--red); border-radius:3px; position:relative;}
+  .yt .pl::after{content:""; position:absolute; left:8px; top:4px; border-left:7px solid #fff; border-top:4px solid transparent; border-bottom:4px solid transparent;}
+
+  /* rest timer */
+  .restscreen{padding-top:18px; text-align:center;}
+  .restscreen .lbl{font-family:var(--ui); font-weight:600; color:var(--muted2); font-size:13px; letter-spacing:4px; text-transform:uppercase;}
+  .restscreen .next{font-family:var(--mono); color:var(--red); font-size:12px; letter-spacing:1px; margin-top:6px;}
+  .ringwrap{display:flex; justify-content:center; margin:26px 0 30px;}
+  .ringwrap svg{transform:rotate(-90deg);}
+  .timenum{font-family:var(--ui); font-weight:800; font-size:62px; line-height:.9;}
+  .timetot{font-family:var(--mono); color:var(--muted); font-size:20px; margin-top:4px;}
+  .restbtns{display:grid; grid-template-columns:1fr 1fr 64px; gap:12px; margin:0 0 16px;}
+  .restbtns .rb{border:1px solid var(--line); padding:18px 0; text-align:center; font-family:var(--ui); font-weight:800; font-size:18px;}
+  .restbtns .rb.pause{font-weight:600; color:#555;}
+  .note{font-family:var(--mono); color:var(--muted); font-size:11px; line-height:1.6; border-top:1px dashed var(--line); padding-top:12px; margin-top:6px; text-align:left;}
+</style>
+</head>
+<body>
+<div class="watermark">鍛錬</div>
+
+<div class="page-head">
+  <div class="meta">Tanren · Mockup fonctionnel</div>
+  <h1><span class="kanji">鍛</span>Superset — intégration</h1>
+  <p>Calé sur l'app réelle (détail séance · éditeur · séance active · timer de repos). Modèle : groupe = exercices consécutifs partageant un <b>superset_group_id</b>. Flux <span style="color:var(--red)">strict guidé, auto-nav uniquement dans le groupe</span> (A→B sans repos, repos après le tour). Hors superset : nav manuelle inchangée. Transition A→B = 15 s par défaut (paramétrable).</p>
+</div>
+
+<div class="grid">
+
+  <!-- PHONE 1 — détail séance -->
+  <div class="col">
+    <div class="caption">
+      <span class="n">01 · LECTURE</span>
+      <h2>Détail séance — superset affiché</h2>
+      <p>Le groupe est rendu sous un <span class="hl">crochet rouge</span> + chip SUPERSET. Membres bracketés (A / B), repos de tour porté une seule fois par le groupe. Le reste de la liste ne bouge pas.</p>
+    </div>
+    <div class="phone">
+      <div class="screen">
+        <div class="statusbar"><span>01:12</span><span class="island"></span><span class="right"><span class="bars"></span><span class="batt"></span></span></div>
+        <div class="topnav"><span class="link">‹ Retour</span><span class="link">Modifier</span></div>
+        <div style="margin-top:18px;">
+          <div class="eyebrow">Séance</div>
+          <div class="h-xl">Upper · Force &amp; Hypertrophie</div>
+          <div class="sub-mono">7 exercices / ~60 min</div>
+          <div class="tags">
+            <span class="tag">Pectoraux</span><span class="tag">Dos</span><span class="tag">Épaules</span><span class="tag">Biceps</span><span class="tag">Triceps</span>
+          </div>
+        </div>
+        <div class="divider"></div>
+        <div class="eyebrow">Exercices</div>
+
+        <div class="ex">
+          <div class="numbox">01</div>
+          <div class="ex-body">
+            <div class="ex-name">Développé couché prise serrée</div>
+            <div class="ex-spec">4s × 8r / 120s</div>
+            <div class="ex-last">Dernière : 40kg×8, 40kg×8, 40kg×8, 40kg×8</div>
+          </div>
+          <div class="pr"><div class="lbl">PR</div><div class="val">40 kg</div></div>
+        </div>
+
+        <!-- superset group -->
+        <div class="ss">
+          <div class="ss-head">
+            <span class="ss-chip">▚ Superset</span>
+            <span class="ss-rest">repos de tour <b>90 s</b></span>
+          </div>
+          <div class="ex">
+            <div class="memtag">A</div>
+            <div class="ex-body">
+              <div class="ex-name">Traction en supination</div>
+              <div class="ex-spec">4 tours × 8r · transition 15s →</div>
+            </div>
+          </div>
+          <div class="ex">
+            <div class="memtag">B</div>
+            <div class="ex-body">
+              <div class="ex-name">Curls pupitre (preacher)</div>
+              <div class="ex-spec">4 tours × 12r · repos 90s</div>
+            </div>
+            <div class="pr"><div class="lbl">PR</div><div class="val">15 kg</div></div>
+          </div>
+        </div>
+
+        <div class="ex">
+          <div class="numbox">04</div>
+          <div class="ex-body">
+            <div class="ex-name">Butterfly inversé (reverse fly)</div>
+            <div class="ex-spec">3s × 15r / 60s</div>
+          </div>
+        </div>
+
+        <div style="margin-top:18px;"><div class="btn btn-primary">Démarrer la séance</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHONE 2 — éditeur -->
+  <div class="col">
+    <div class="caption">
+      <span class="n">02 · AJOUT MANUEL</span>
+      <h2>Éditeur — lier en superset</h2>
+      <p>Sous un exercice normal : <span class="hl">« Lier au suivant »</span>. Une fois lié, le groupe se rend en bloc avec son repos de tour, ses flèches de déplacement <b>de groupe</b> et « Délier ». Reorder = le groupe bouge en bloc.</p>
+    </div>
+    <div class="phone">
+      <div class="screen">
+        <div class="statusbar"><span>01:12</span><span class="island"></span><span class="right"><span class="bars"></span><span class="batt"></span></span></div>
+        <div class="topnav"><span class="link">‹ Retour</span><span></span></div>
+        <div style="margin-top:14px;">
+          <div class="h-lg">Push · Pecto / Épaules / Triceps</div>
+          <div class="sub-mono" style="margin-top:6px;">7 exercices · ~60 min</div>
+        </div>
+        <div style="margin:16px 0;"><div class="btn btn-primary sm">Démarrer</div></div>
+
+        <!-- linked superset block -->
+        <div class="ss">
+          <div class="ss-head">
+            <span class="ss-chip">▚ Superset</span>
+            <span style="display:flex; align-items:center; gap:14px;">
+              <span class="ss-rest">repos de tour <b>90 s</b></span>
+              <span class="reorder"><span class="a">▲</span><span class="a dk">▼</span></span>
+              <span class="link mut" style="font-size:12px; letter-spacing:1.5px;">Délier</span>
+            </span>
+          </div>
+
+          <div class="ed-ex" style="padding-top:8px;">
+            <div class="row1"><div class="memtag">A</div><div style="flex:1;"><div class="ed-name">Dév. couché incliné haltères</div><div class="ed-musc">Pectoraux · Épaules · transition 15 s →</div></div></div>
+            <div class="setgrid">
+              <div class="gh"><span>#</span><span style="text-align:center;">Rép.</span><span style="text-align:center;">Kg</span><span style="text-align:right;">Trans.</span></div>
+              <div class="setrow"><span class="si">1</span><span class="v">10</span><span class="v">28</span><span class="rest">15<s> s</s></span></div>
+              <div class="setrow"><span class="si">2</span><span class="v">10</span><span class="v">28</span><span class="rest">15<s> s</s></span></div>
+            </div>
+          </div>
+
+          <div class="ed-ex" style="border-top:1px dashed var(--line);">
+            <div class="row1"><div class="memtag">B</div><div style="flex:1;"><div class="ed-name">Écarté à la poulie</div><div class="ed-musc">Pectoraux · dernier membre · repos de tour</div></div></div>
+            <div class="setgrid">
+              <div class="gh"><span>#</span><span style="text-align:center;">Rép.</span><span style="text-align:center;">Kg</span><span style="text-align:right;">Repos</span></div>
+              <div class="setrow"><span class="si">1</span><span class="v">12</span><span class="v">15</span><span class="rest">90<s> s</s></span></div>
+              <div class="setrow"><span class="si">2</span><span class="v">12</span><span class="v gh-v">15</span><span class="rest">90<s> s</s></span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- standalone with link affordance -->
+        <div class="ed-ex" style="border-top:1px solid var(--hair); margin-top:6px;">
+          <div class="row1">
+            <div class="numbox solid" style="width:36px; height:36px; font-size:14px;">3</div>
+            <div style="flex:1;"><div class="ed-name">Élévations latérales</div><div class="ed-musc">Épaules · prev: 12kg</div></div>
+            <span class="reorder"><span class="a">▲</span><span class="a dk">▼</span><span class="x">✕</span></span>
+          </div>
+          <div class="lier-wrap">
+            <div class="lier">⛓ Lier au suivant en superset</div>
+            <div class="lier-x" title="Masquer ce raccourci">✕</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- PHONE 3 — séance active superset -->
+  <div class="col">
+    <div class="caption">
+      <span class="n">03 · SÉANCE — CŒUR</span>
+      <h2>Séance active — superset en cours</h2>
+      <p>Un exercice à l'écran (paradigme actuel) + bandeau <span class="hl">SUPERSET</span> : tour courant, A fait / B en cours, repos après B. Valider B = dernier membre → enchaîne le repos de tour. Flèches ‹ › <b>grisées</b> dans le groupe (nav auto). Hors groupe, › reste manuel.</p>
+    </div>
+    <div class="phone">
+      <div class="screen">
+        <div class="statusbar"><span>01:11</span><span class="island"></span><span class="right"><span class="bars"></span><span class="batt"></span></span></div>
+        <div class="as-top">
+          <span class="link mut" style="font-size:13px;">‹ Retour</span>
+          <span class="mid"><div class="t">Push · Pecto / Épaules / Triceps</div><div class="s">04:12 · 9/24</div></span>
+          <span class="link">Terminer</span>
+        </div>
+        <div class="hair"></div>
+
+        <div class="as-name-wrap">
+          <span class="arrow dim">‹</span>
+          <span class="as-name">Écarté à la poulie</span>
+          <span class="arrow dim">›</span>
+        </div>
+        <div class="as-pos">Exercice 2 · superset</div>
+        <div class="seg">
+          <i class="done"></i>
+          <span class="brk"><i class="done"></i><i class="cur"></i></span>
+          <i></i><i></i><i></i><i></i>
+        </div>
+
+        <!-- superset bandeau -->
+        <div class="ssbar">
+          <div class="hd"><span class="l">▚ Superset</span><span class="r">Tour 2 / 4</span></div>
+          <div class="mem"><span class="tag">A</span><span class="nm">Dév. incliné haltères</span><span class="st ok">✓ tour 2</span></div>
+          <div class="mem cur"><span class="tag">B</span><span class="nm">Écarté à la poulie</span><span class="st now">● en cours</span></div>
+          <div class="foot">A → B : 15s de transition · repos de tour après B</div>
+        </div>
+
+        <div class="series-lbl">Tour 2 — série en cours</div>
+
+        <div class="scard">
+          <span class="si">1</span>
+          <span class="cell"><span class="k">REPS</span><br><span class="b">12</span></span>
+          <span class="cell"><span class="k">KG</span><br><span class="b">15</span></span>
+          <span class="restcell"><span class="k">REST</span><br><span class="b">90<s> s</s></span></span>
+          <span class="chk on"></span>
+        </div>
+        <div class="scard active">
+          <span class="si cur">2</span>
+          <span class="cell"><span class="k">REPS</span><br><span class="b">12</span></span>
+          <span class="cell"><span class="k">KG</span><br><span class="b">15</span></span>
+          <span class="restcell"><span class="k">REST</span><br><span class="b">90<s> s</s></span></span>
+          <span class="chk"></span>
+        </div>
+        <div class="scard">
+          <span class="si">3</span>
+          <span class="cell"><span class="k">REPS</span><br><span class="b">12</span></span>
+          <span class="cell"><span class="k">KG</span><br><span class="b gh-v">15</span></span>
+          <span class="restcell"><span class="k">REST</span><br><span class="b">90<s> s</s></span></span>
+          <span class="chk"></span>
+        </div>
+
+        <div style="margin-top:6px;"><div class="btn btn-primary sm">Valider — repos de tour →</div></div>
+        <div class="yt"><span class="pl"></span> Voir la vidéo</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHONE 4 — repos de tour -->
+  <div class="col">
+    <div class="caption">
+      <span class="n">04 · REPOS</span>
+      <h2>Repos de tour</h2>
+      <p>Réutilise le timer existant — seul le <span class="hl">label</span> change. Indique la fin du tour et le prochain membre (retour à A). La transition A→B = 15 s (paramétrable) : même timer, label réduit.</p>
+    </div>
+    <div class="phone">
+      <div class="screen">
+        <div class="statusbar"><span>01:11</span><span class="island"></span><span class="right"><span class="bars"></span><span class="batt"></span></span></div>
+        <div class="restscreen">
+          <div class="lbl">Superset · fin du tour 2</div>
+          <div class="next">Prochain → A · Dév. incliné haltères — tour 3</div>
+          <div class="ringwrap">
+            <svg width="240" height="240" viewBox="0 0 240 240">
+              <circle cx="120" cy="120" r="110" fill="none" stroke="#F0F0F0" stroke-width="10"/>
+              <circle cx="120" cy="120" r="110" fill="none" stroke="#FF2D3F" stroke-width="11"
+                stroke-linecap="butt" stroke-dasharray="691" stroke-dashoffset="160"/>
+            </svg>
+            <div style="position:absolute; width:240px; margin-top:78px; pointer-events:none;">
+              <div class="timenum">01:24</div>
+              <div class="timetot">/ 01:30</div>
+            </div>
+          </div>
+          <div class="restbtns">
+            <div class="rb">−15s</div><div class="rb">+15s</div><div class="rb pause">‖</div>
+          </div>
+          <div class="btn btn-primary">Passer</div>
+          <div class="note">Le repos de tour = repos du <b>dernier membre</b> (ici B, 90s). Les membres non-finaux portent la transition (15s, paramétrable). Aucune colonne en plus : <b>rest_seconds</b> est déjà par série.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

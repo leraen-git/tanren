@@ -9,6 +9,7 @@ export interface GeneratedExercise {
   defaultReps: number
   defaultWeight: number
   defaultRestSeconds: number
+  supersetGroupId?: string | null
 }
 
 export interface GeneratedDay {

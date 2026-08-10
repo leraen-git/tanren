@@ -436,6 +436,15 @@ RÈGLES :
 9. LANGUE : Toutes les valeurs texte (name, workoutName, muscleGroups) DOIVENT être en ${isFr ? 'français' : 'anglais'}. Les clés JSON et les IDs d'exercice restent en anglais.
 10. Si l'utilisateur demande un nombre de jours spécifique dans son prompt, utilise CE nombre — pas celui du profil. Le prompt a priorité sur le profil pour la fréquence.
 
+SUPERSETS :
+- Tu peux regrouper 2 ou 3 exercices en superset quand c'est pertinent : paires antagonistes (ex: biceps/triceps, pectoraux/dos), accessoires d'hypertrophie, ou pour gagner du temps.
+- Pour créer un superset, mets le même label "supersetGroup" (ex: "A", "B") sur les exercices concernés AU SEIN D'UNE MÊME séance.
+- Les exercices d'un même superset DOIVENT être consécutifs dans le tableau "exercises".
+- Ils DOIVENT avoir le même nombre de séries (defaultSets identique).
+- Les membres non-derniers du superset ont defaultRestSeconds = 15 (transition rapide). Le dernier membre a le repos de tour (60-120s selon l'intensité).
+- Exercices sans superset : supersetGroup = null.
+- Maximum 2 supersets par séance. Ne force pas de superset s'il n'est pas pertinent.
+
 Retourne cette structure JSON exacte :
 {
   "name": "Nom du plan",
@@ -452,7 +461,8 @@ Retourne cette structure JSON exacte :
           "defaultSets": 3,
           "defaultReps": 10,
           "defaultWeight": 0,
-          "defaultRestSeconds": 90
+          "defaultRestSeconds": 90,
+          "supersetGroup": null
         }
       ]
     }
@@ -512,6 +522,7 @@ Retourne cette structure JSON exacte :
             defaultReps: number
             defaultWeight: number
             defaultRestSeconds: number
+            supersetGroup?: string | null
           }>
         }>
       }
@@ -529,6 +540,34 @@ Retourne cette structure JSON exacte :
         day.exercises = day.exercises.filter((ex) => validIds.has(ex.exerciseId))
         if (day.dayOfWeek < 1 || day.dayOfWeek > 7) {
           day.dayOfWeek = Math.max(1, Math.min(7, day.dayOfWeek))
+        }
+
+        // Map superset labels to UUIDs and fix rest defaults
+        const labelToUuid = new Map<string, string>()
+        for (const ex of day.exercises) {
+          if (ex.supersetGroup) {
+            if (!labelToUuid.has(ex.supersetGroup)) {
+              labelToUuid.set(ex.supersetGroup, crypto.randomUUID())
+            }
+          }
+        }
+
+        // Assign UUIDs and normalize rests
+        for (let i = 0; i < day.exercises.length; i++) {
+          const ex = day.exercises[i]!
+          const label = ex.supersetGroup
+          if (!label) continue
+          const gid = labelToUuid.get(label)!
+          ;(ex as any).supersetGroupId = gid
+
+          // Find if this is the last member with this label
+          const isLast = !day.exercises.slice(i + 1).some((e) => e.supersetGroup === label)
+          if (!isLast && ex.defaultRestSeconds > 30) {
+            ex.defaultRestSeconds = 15
+          }
+          if (isLast && ex.defaultRestSeconds < 30) {
+            ex.defaultRestSeconds = 90
+          }
         }
       }
 
@@ -553,6 +592,7 @@ Retourne cette structure JSON exacte :
           defaultReps: z.number().int().min(1),
           defaultWeight: z.number().min(0),
           defaultRestSeconds: z.number().int().min(0),
+          supersetGroupId: z.string().nullish(),
         })),
       })),
     }))
@@ -584,6 +624,7 @@ Retourne cette structure JSON exacte :
               defaultReps: ex.defaultReps,
               defaultWeight: ex.defaultWeight,
               defaultRestSeconds: ex.defaultRestSeconds,
+              supersetGroupId: ex.supersetGroupId ?? null,
             })),
           )
         }

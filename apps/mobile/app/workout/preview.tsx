@@ -156,6 +156,7 @@ export default function WorkoutPreviewScreen() {
           prWeight: tmpl.prWeight ?? undefined,
           prReps: tmpl.prReps ?? undefined,
           videoUrl: tmpl.videoUrl ?? undefined,
+          supersetGroupId: (tmpl as any).supersetGroupId ?? null,
           previousVolume: tmpl.previousSets.length > 0
             ? tmpl.previousSets.reduce((sum: number, s: { reps: number; weight: number }) => sum + s.reps * s.weight, 0)
             : undefined,

@@ -119,6 +119,7 @@ export const workoutExercises = pgTable('workout_exercises', {
   defaultWeight: real('default_weight').notNull().default(0),
   defaultRestSeconds: integer('default_rest_seconds').notNull().default(90),
   notes: text('notes'),
+  supersetGroupId: text('superset_group_id'),
 }, (t) => [
   index('we_template_idx').on(t.workoutTemplateId),
 ])
@@ -148,6 +149,7 @@ export const sessionExercises = pgTable('session_exercises', {
   workoutSessionId: text('workout_session_id').notNull().references(() => workoutSessions.id, { onDelete: 'cascade' }),
   exerciseId: text('exercise_id').notNull().references(() => exercises.id),
   order: integer('order').notNull().default(0),
+  supersetGroupId: text('superset_group_id'),
 }, (table) => [
   index('se_session_idx').on(table.workoutSessionId),
   index('se_exercise_idx').on(table.exerciseId),
@@ -164,6 +166,7 @@ export const exerciseSets = pgTable('exercise_sets', {
   restSeconds: integer('rest_seconds').notNull().default(90),
   isCompleted: boolean('is_completed').notNull().default(false),
   isPR: boolean('is_pr').notNull().default(false),
+  performedInSuperset: boolean('performed_in_superset').notNull().default(false),
   completedAt: timestamp('completed_at'),
   notes: text('notes'),
 }, (table) => [

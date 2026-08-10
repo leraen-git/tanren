@@ -109,6 +109,7 @@ export const sessionsRouter = router({
           z.object({
             exerciseId: z.string(),
             order: z.number().int(),
+            supersetGroupId: z.string().nullish(),
             sets: z.array(
               z.object({
                 setNumber: z.number().int(),
@@ -116,6 +117,7 @@ export const sessionsRouter = router({
                 weight: z.number(),
                 restSeconds: z.number().int(),
                 isCompleted: z.boolean(),
+                performedInSuperset: z.boolean().default(false),
               }),
             ),
           }),
@@ -189,7 +191,7 @@ export const sessionsRouter = router({
       for (const ex of input.exercises) {
         const [sessEx] = await ctx.db
           .insert(sessionExercises)
-          .values({ workoutSessionId: session!.id, exerciseId: ex.exerciseId, order: ex.order })
+          .values({ workoutSessionId: session!.id, exerciseId: ex.exerciseId, order: ex.order, supersetGroupId: ex.supersetGroupId ?? null })
           .returning()
 
         let insertedSets: Array<{ id: string; setNumber: number; reps: number; weight: number; isCompleted: boolean }> = []
@@ -202,6 +204,7 @@ export const sessionsRouter = router({
               weight: s.weight,
               restSeconds: s.restSeconds,
               isCompleted: s.isCompleted,
+              performedInSuperset: s.performedInSuperset ?? false,
               completedAt: s.isCompleted ? new Date() : undefined,
             })),
           ).returning({ id: exerciseSets.id, setNumber: exerciseSets.setNumber, reps: exerciseSets.reps, weight: exerciseSets.weight, isCompleted: exerciseSets.isCompleted })

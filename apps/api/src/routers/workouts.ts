@@ -25,6 +25,7 @@ export const workoutsRouter = router({
           defaultReps: z.number().int().default(10),
           defaultWeight: z.number().default(0),
           defaultRestSeconds: z.number().int().default(90),
+          supersetGroupId: z.string().nullish(),
         })).default([]),
       }),
     )
@@ -46,6 +47,7 @@ export const workoutsRouter = router({
             defaultReps: ex.defaultReps,
             defaultWeight: ex.defaultWeight,
             defaultRestSeconds: ex.defaultRestSeconds,
+            supersetGroupId: ex.supersetGroupId ?? null,
           })),
         )
       }
@@ -85,6 +87,7 @@ export const workoutsRouter = router({
           defaultReps: z.number().int().default(10),
           defaultWeight: z.number().default(0),
           defaultRestSeconds: z.number().int().default(90),
+          supersetGroupId: z.string().nullish(),
         })).optional(),
       }),
     )
@@ -110,6 +113,7 @@ export const workoutsRouter = router({
               defaultReps: ex.defaultReps,
               defaultWeight: ex.defaultWeight,
               defaultRestSeconds: ex.defaultRestSeconds,
+              supersetGroupId: ex.supersetGroupId ?? null,
             })),
           )
         }
@@ -181,6 +185,7 @@ export const workoutsRouter = router({
           defaultWeight: workoutExercises.defaultWeight,
           defaultRestSeconds: workoutExercises.defaultRestSeconds,
           notes: workoutExercises.notes,
+          supersetGroupId: workoutExercises.supersetGroupId,
           exerciseName: sql<string>`coalesce(${exercises.nameFr}, ${exercises.name})`.as('exercise_name'),
           muscleGroups: exercises.muscleGroups,
           difficulty: exercises.difficulty,
