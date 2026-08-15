@@ -293,18 +293,20 @@ function AuthRedirect() {
       status === 'authenticated' &&
       !isRestoring &&
       !profileQuery.isPending &&
+      !profileQuery.isFetching &&
       !profileQuery.isError &&
       profileQuery.fetchStatus !== 'paused' &&
       profileQuery.dataUpdatedAt > authTimestamp.current &&
-      timeSinceAuth > 2000 &&
+      timeSinceAuth > 5000 &&
       user === null &&
       !hasSignedOut.current
     ) {
       hasSignedOut.current = true
       signOut()
     }
-  }, [status, isRestoring, profileQuery.isPending, profileQuery.isError,
-      profileQuery.fetchStatus, profileQuery.dataUpdatedAt, user, signOut])
+  }, [status, isRestoring, profileQuery.isPending, profileQuery.isFetching,
+      profileQuery.isError, profileQuery.fetchStatus, profileQuery.dataUpdatedAt,
+      user, signOut])
 
   const seg0 = segments[0] as string
   const inAuthGroup = seg0 === '(auth)'
