@@ -439,11 +439,18 @@ export default function CreatePlanScreen() {
                           {dayLabel}
                         </Text>
                       </View>
-                      <View style={{ flex: 1 }}>
+                      <TouchableOpacity
+                        style={{ flex: 1 }}
+                        onPress={() => workout?.id && router.push(`/workout/${workout.id}`)}
+                        accessibilityRole="link"
+                      >
                         <Text style={{ fontFamily: fonts.sansB, fontSize: 14, color: tokens.text, textTransform: 'uppercase' }}>
                           {workout?.name}
                         </Text>
-                      </View>
+                        <Text style={{ fontFamily: fonts.sans, fontSize: 10, color: tokens.textMute, marginTop: 2 }}>
+                          {workout?.muscleGroups?.map((g: string) => translateMuscleGroup(g, t)).join(' / ')}
+                        </Text>
+                      </TouchableOpacity>
                       <TouchableOpacity
                         onPress={() => {
                           setSelectingDayFor(pd.dayOfWeek)

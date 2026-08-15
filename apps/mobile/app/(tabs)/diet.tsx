@@ -109,7 +109,7 @@ function NoPlanView({ isGuest, showError }: { isGuest: boolean; showError?: bool
   ]
 
   return (
-    <ScrollView contentContainerStyle={{ padding: 16, gap: 16, flexGrow: 1, justifyContent: 'center' }}>
+    <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 100, gap: 16, flexGrow: 1, justifyContent: 'center' }}>
       {/* Hero */}
       <View style={{ alignItems: 'center', gap: 12 }}>
         <Text style={{
@@ -294,7 +294,7 @@ function V2ActivePlan({ plan }: { plan: V2PlanData }) {
   const hasCredits = (credits?.remaining ?? 0) > 0
 
   return (
-    <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
+    <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
       {/* Header */}
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingTop: 16, paddingBottom: 8 }}>
         <Text style={{ fontFamily: fonts.sansX, fontSize: 24, color: tokens.text, textTransform: 'uppercase', letterSpacing: 0.5 }}>

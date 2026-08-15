@@ -137,7 +137,7 @@ export default function HomeScreen() {
   return (
     <Screen showKanji kanjiChar="鍛" edges={bannerVisible ? [] : ['top']}>
       <ScrollView
-        contentContainerStyle={{ padding: 16, gap: 10 }}
+        contentContainerStyle={{ padding: 16, paddingBottom: 100, gap: 10 }}
         refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetchPlan} tintColor={tokens.accent} />}
       >
         <OfflineBanner />

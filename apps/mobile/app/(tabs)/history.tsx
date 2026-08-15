@@ -176,7 +176,7 @@ export default function HistoryScreen() {
                   onPress={() => router.push(`/session/${item.id}`)}
                 />
               )}
-              contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 20, gap: 6 }}
+              contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 100, gap: 6 }}
               stickySectionHeadersEnabled={false}
               refreshControl={<RefreshControl refreshing={false} onRefresh={onRefresh} tintColor={tokens.accent} />}
             />
@@ -236,7 +236,7 @@ function StatsView({ data, loading, onRefresh }: {
       keyExtractor={() => 'stats-content'}
       renderSectionHeader={() => null}
       renderItem={() => (
-        <View style={{ paddingHorizontal: 16, gap: 24, paddingTop: 16, paddingBottom: 40 }}>
+        <View style={{ paddingHorizontal: 16, gap: 24, paddingTop: 16, paddingBottom: 100 }}>
           {/* Total volume */}
           <View>
             <Text style={{ ...labelPreset.md, color: tokens.textMute }}>
