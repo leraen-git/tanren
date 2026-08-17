@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "499901737559",
+    "project_id": "tanren",
+    "storage_bucket": "tanren.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:499901737559:android:e6f5e6f9cf72bbfa179112",
+        "android_client_info": {
+          "package_name": "app.tanren"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "499901737559-nti35ph9sqchn2bg9jo4pkof34pd9b72.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "app.tanren",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "113861159197264652675",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCPqgeS4bHx_iQtNLgQD4v2Iq0HEVowqnY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "113861159197264652675",
+              "client_type": 3
+            },
+            {
+              "client_id": "499901737559-nqbmbv9djsi4c88eh08h8hqv0ofadesr.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "app.tanren"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
