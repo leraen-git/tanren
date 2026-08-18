@@ -13,7 +13,7 @@ function emailTemplate(code: string): string {
   <h1 style="color:#E8192C;font-size:28px;margin:0 0 4px 0;letter-spacing:2px;font-family:sans-serif;">TANREN</h1>
   <p style="color:#888;font-size:14px;margin:0 0 32px 0;">Your sign-in code</p>
   <div style="background:#111111;border-radius:8px;padding:32px;text-align:center;margin-bottom:24px;">
-    <span style="font-size:44px;font-weight:800;letter-spacing:14px;color:#FFFFFF;">${code}</span>
+    <span style="font-size:36px;font-weight:800;letter-spacing:10px;color:#FFFFFF;white-space:nowrap;">${code}</span>
   </div>
   <p style="color:#555;font-size:14px;line-height:22px;margin-bottom:32px;">
     Enter this code in the Tanren app. It expires in <strong>10 minutes</strong> and can only be used once.
