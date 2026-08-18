@@ -1391,6 +1391,7 @@ export const en = {
     auditFlags: 'Flags',
     noAuditEntries: 'No entries',
     resetDietCredits: 'Reset diet regen credits',
+    resetPlanCredits: 'Reset plan gen credits',
   },
 } as const
 

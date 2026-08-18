@@ -102,8 +102,8 @@ function TRPCProvider({ children }: { children: React.ReactNode }) {
         fetch: (url, options) => {
           const controller = new AbortController()
           const urlStr = typeof url === 'string' ? url : url.toString()
-          const isDietGen = urlStr.includes('diet.submitIntakeV2') || urlStr.includes('diet.regeneratePlanV2')
-          const timeoutMs = isDietGen ? 330_000 : 120_000
+          const isLongGen = urlStr.includes('diet.submitIntakeV2') || urlStr.includes('diet.regeneratePlanV2') || urlStr.includes('plans.generateWithAI')
+          const timeoutMs = isLongGen ? 330_000 : 120_000
           const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
           const originalSignal = options?.signal
           if (originalSignal) {

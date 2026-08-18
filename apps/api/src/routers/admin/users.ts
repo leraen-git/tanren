@@ -265,4 +265,28 @@ export const adminUsersRouter = router({
 
       return { deletedCount: deleted.length }
     }),
+
+  resetPlanCredits: adminProcedure
+    .input(z.object({ userId: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      const [target] = await db.select({ id: users.id }).from(users).where(eq(users.id, input.userId)).limit(1)
+      if (!target) throw new TRPCError({ code: 'NOT_FOUND' })
+
+      const deleted = await db.delete(aiGenerationLog)
+        .where(and(
+          eq(aiGenerationLog.userId, input.userId),
+          eq(aiGenerationLog.type, 'workout_plan'),
+        ))
+        .returning()
+
+      await recordAdminAction({
+        adminUserId: ctx.user.id,
+        action: 'plan_credits_reset',
+        targetUserId: input.userId,
+        payload: { deletedCount: deleted.length },
+        request: ctx.req,
+      })
+
+      return { deletedCount: deleted.length }
+    }),
 })

@@ -1394,5 +1394,6 @@ export const fr = {
     auditFlags: 'Flags',
     noAuditEntries: 'Aucune entrée',
     resetDietCredits: 'Reset crédits diet',
+    resetPlanCredits: 'Reset crédits plan',
   },
 } as const

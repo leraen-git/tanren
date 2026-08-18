@@ -93,7 +93,12 @@ export default function AdminUserDetailScreen() {
   })
 
   const resetDietCreditsMut = trpc.admin.users.resetDietCredits.useMutation({
-    onSuccess: (data) => Alert.alert('Done', `${data.deletedCount} credit(s) cleared`),
+    onSuccess: (data) => Alert.alert('Done', `${data.deletedCount} diet credit(s) cleared`),
+    onError: (err) => Alert.alert(t('common.error'), err.message),
+  })
+
+  const resetPlanCreditsMut = trpc.admin.users.resetPlanCredits.useMutation({
+    onSuccess: (data) => Alert.alert('Done', `${data.deletedCount} plan credit(s) cleared`),
     onError: (err) => Alert.alert(t('common.error'), err.message),
   })
 
@@ -174,6 +179,11 @@ export default function AdminUserDetailScreen() {
             label={t('admin.resetDietCredits')}
             onPress={() => resetDietCreditsMut.mutate({ userId: id! })}
             loading={resetDietCreditsMut.isPending}
+          />
+          <ResetButton
+            label={t('admin.resetPlanCredits')}
+            onPress={() => resetPlanCreditsMut.mutate({ userId: id! })}
+            loading={resetPlanCreditsMut.isPending}
           />
         </View>
 

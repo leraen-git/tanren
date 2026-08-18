@@ -381,9 +381,6 @@ export const plansRouter = router({
         })
       }
 
-      // Log this generation attempt immediately (before AI call)
-      await ctx.db.insert(aiGenerationLog).values({ userId: user.id, type: 'workout_plan' })
-
       // Fetch exercise library — filter by user level to reduce prompt size
       const levelFilter: ('BEGINNER' | 'INTERMEDIATE' | 'ADVANCED')[] = user.level === 'BEGINNER'
         ? ['BEGINNER']
@@ -529,10 +526,17 @@ Retourne cette structure JSON exacte :
 
       try {
         const cleaned = text.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim()
-        plan = JSON.parse(cleaned)
+        const jsonStart = cleaned.indexOf('{')
+        const jsonEnd = cleaned.lastIndexOf('}')
+        const jsonStr = jsonStart >= 0 && jsonEnd > jsonStart ? cleaned.slice(jsonStart, jsonEnd + 1) : cleaned
+        plan = JSON.parse(jsonStr)
       } catch {
+        ctx.req.log.error({ event: 'ai_parse_error', rawLength: text.length, raw: text.slice(0, 500) }, 'Failed to parse AI response as JSON')
         throw new TRPCError({ code: 'BAD_REQUEST', message: 'L\'IA a retourné une réponse invalide. Réessaie.' })
       }
+
+      // Log credit only after successful parse
+      await ctx.db.insert(aiGenerationLog).values({ userId: user.id, type: 'workout_plan' })
 
       // Validate exerciseIds and clamp dayOfWeek to 1-7
       const validIds = new Set(allExercises.map((e) => e.id))

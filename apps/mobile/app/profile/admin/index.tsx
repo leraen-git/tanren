@@ -26,22 +26,40 @@ function AdminDevTools() {
   const { tokens, fonts, label: labelPreset } = useTheme()
   const { t } = useTranslation()
   const { data: me } = useProfile()
-  const [resetting, setResetting] = useState(false)
-  const resetCredits = trpc.admin.users.resetDietCredits.useMutation()
+  const [resettingDiet, setResettingDiet] = useState(false)
+  const [resettingPlan, setResettingPlan] = useState(false)
+  const resetDietCredits = trpc.admin.users.resetDietCredits.useMutation()
+  const resetPlanCredits = trpc.admin.users.resetPlanCredits.useMutation()
   const utils = trpc.useUtils()
 
-  const handleReset = () => {
+  const handleResetDiet = () => {
     if (!me?.id) return
-    setResetting(true)
-    resetCredits.mutate({ userId: me.id }, {
+    setResettingDiet(true)
+    resetDietCredits.mutate({ userId: me.id }, {
       onSuccess: (data) => {
         utils.diet.getRegenCredits.invalidate()
-        Alert.alert('Done', `${data.deletedCount} credit(s) cleared`)
-        setResetting(false)
+        Alert.alert('Done', `${data.deletedCount} diet credit(s) cleared`)
+        setResettingDiet(false)
       },
       onError: (err) => {
         Alert.alert('Error', err.message)
-        setResetting(false)
+        setResettingDiet(false)
+      },
+    })
+  }
+
+  const handleResetPlan = () => {
+    if (!me?.id) return
+    setResettingPlan(true)
+    resetPlanCredits.mutate({ userId: me.id }, {
+      onSuccess: (data) => {
+        utils.plans.aiCredits.invalidate()
+        Alert.alert('Done', `${data.deletedCount} plan credit(s) cleared`)
+        setResettingPlan(false)
+      },
+      onError: (err) => {
+        Alert.alert('Error', err.message)
+        setResettingPlan(false)
       },
     })
   }
@@ -52,8 +70,8 @@ function AdminDevTools() {
         DEV TOOLS
       </Text>
       <TouchableOpacity
-        onPress={handleReset}
-        disabled={resetting}
+        onPress={handleResetDiet}
+        disabled={resettingDiet}
         accessibilityRole="button"
         style={{
           paddingVertical: 14,
@@ -62,11 +80,29 @@ function AdminDevTools() {
           flexDirection: 'row',
           justifyContent: 'space-between',
           alignItems: 'center',
-          opacity: resetting ? 0.5 : 1,
+          opacity: resettingDiet ? 0.5 : 1,
         }}
       >
         <Text style={{ fontFamily: fonts.sansM, fontSize: 14, color: tokens.accent }}>
-          {resetting ? 'Resetting...' : t('admin.resetDietCredits')}
+          {resettingDiet ? 'Resetting...' : t('admin.resetDietCredits')}
+        </Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={handleResetPlan}
+        disabled={resettingPlan}
+        accessibilityRole="button"
+        style={{
+          paddingVertical: 14,
+          borderBottomWidth: 1,
+          borderBottomColor: tokens.border,
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          opacity: resettingPlan ? 0.5 : 1,
+        }}
+      >
+        <Text style={{ fontFamily: fonts.sansM, fontSize: 14, color: tokens.accent }}>
+          {resettingPlan ? 'Resetting...' : t('admin.resetPlanCredits')}
         </Text>
       </TouchableOpacity>
     </View>
