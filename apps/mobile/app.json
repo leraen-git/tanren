@@ -35,7 +35,7 @@
         "NSCameraUsageDescription": "Tanren needs access to your camera to take a photo for your session share card.",
         "ITSAppUsesNonExemptEncryption": false
       },
-      "buildNumber": "36"
+      "buildNumber": "37"
     },
     "android": {
       "adaptiveIcon": {
@@ -45,7 +45,7 @@
       },
       "package": "app.tanren",
       "googleServicesFile": "./google-services.json",
-      "versionCode": 36,
+      "versionCode": 37,
       "permissions": []
     },
     "runtimeVersion": "1.1.3",

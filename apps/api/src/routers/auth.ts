@@ -22,6 +22,10 @@ const GOOGLE_CLIENT_IDS = [
   process.env['GOOGLE_ANDROID_CLIENT_ID'],
 ].filter(Boolean) as string[]
 
+// ─── Demo account for App Store review ───────────────────────────────────────
+const DEMO_EMAIL = 'demo@tanren.fr'
+const DEMO_OTP = '749382'
+
 // ─── OTP helpers ──────────────────────────────────────────────────────────────
 
 /** Cryptographically secure 6-digit OTP, zero-padded. */
@@ -228,6 +232,14 @@ export const authRouter = router({
           code: 'TOO_MANY_REQUESTS',
           message: 'Too many code requests. Please wait 15 minutes.',
         })
+      }
+
+      // Demo account: fixed OTP, no email sent
+      if (email === DEMO_EMAIL) {
+        const otpKey = `otp:${email}`
+        await redis.set(otpKey, JSON.stringify({ code: DEMO_OTP, attempts: 0 }), 'EX', OTP_TTL_SECONDS)
+        ctx.req.log.info({ event: 'otp_demo', emailMasked: 'de***@tanren.fr' }, 'Demo OTP set')
+        return { sent: true }
       }
 
       const code = generateOtp()
