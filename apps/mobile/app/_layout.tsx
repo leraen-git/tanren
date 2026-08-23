@@ -61,7 +61,7 @@ function TRPCProvider({ children }: { children: React.ReactNode }) {
       queries: {
         networkMode: 'offlineFirst',
         staleTime: 30_000,
-        gcTime: 24 * 60 * 60 * 1000,
+        gcTime: 7 * 24 * 60 * 60 * 1000,
         retry: (failureCount, error: any) => {
           const status = error?.data?.httpStatus
           if (status && status >= 400 && status < 500) return false
@@ -140,7 +140,7 @@ function TRPCProvider({ children }: { children: React.ReactNode }) {
         client={queryClient}
         persistOptions={{
           persister: mmkvPersister,
-          maxAge: 24 * 60 * 60 * 1000,
+          maxAge: 7 * 24 * 60 * 60 * 1000,
         }}
         onSuccess={() => {
           queryClient.resumePausedMutations()

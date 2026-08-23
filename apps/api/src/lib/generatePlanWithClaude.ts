@@ -78,7 +78,7 @@ export async function generatePlanWithClaude(intake: IntakeData, options?: { mod
   try {
     const stream = client.messages.stream(
       {
-        model: options?.model ?? 'claude-sonnet-4-6',
+        model: options?.model ?? 'claude-sonnet-5',
         max_tokens: 32000,
         system: buildDietSystemPrompt(options?.locale ?? 'fr'),
         messages: [{ role: 'user', content: userMessage }],

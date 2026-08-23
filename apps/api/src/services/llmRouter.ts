@@ -1,13 +1,13 @@
 import type { UserRole } from '../db/schema.js'
 
 export const ALLOWED_MODELS = {
-  user: ['claude-sonnet-4-6'] as const,
-  admin: ['claude-opus-4-7', 'claude-sonnet-4-6', 'claude-haiku-4-5-20251001'] as const,
+  user: ['claude-sonnet-5'] as const,
+  admin: ['claude-opus-4-8', 'claude-sonnet-5', 'claude-haiku-4-5-20251001'] as const,
 } as const
 
 export type ModelChoice = (typeof ALLOWED_MODELS.user)[number] | (typeof ALLOWED_MODELS.admin)[number]
 
-const DEFAULT_MODEL: ModelChoice = 'claude-sonnet-4-6'
+const DEFAULT_MODEL: ModelChoice = 'claude-sonnet-5'
 
 export function resolveModelForUser(input: {
   role: UserRole
