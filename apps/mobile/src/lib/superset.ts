@@ -120,8 +120,7 @@ export function getValidateButtonLabel(
 
   const nextStep = computeNextStep(exercises, exIdx, setIdx)
   if (nextStep) {
-    const nextName = exercises[nextStep.exerciseIndex]!.exerciseName
-    return `${t('workout.validateTransition')} ${nextName}`
+    return t('workout.validateTransition')
   }
 
   return `${t('workout.validateSet')} ${setIdx + 1}`

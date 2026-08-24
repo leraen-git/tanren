@@ -42,6 +42,8 @@ interface ActiveSessionState {
   completeSet: (exerciseIndex: number, setIndex: number) => void
   updateSet: (exerciseIndex: number, setIndex: number, data: Partial<SetConfig>) => void
   addExercise: (exercise: Omit<SessionExercise, 'sets'> & { sets?: SetConfig[] }) => void
+  addSupersetExercise: (anchorIndex: number, exercise: Omit<SessionExercise, 'sets'> & { sets?: SetConfig[] }) => void
+  jumpToExercise: (index: number) => void
   finishSession: () => void
 }
 
@@ -131,6 +133,42 @@ export const useActiveSessionStore = create<ActiveSessionState>()(
       currentExerciseIndex: s.exercises.length,
       currentSetIndex: 0,
     })),
+
+  addSupersetExercise: (anchorIndex, exercise) =>
+    set((s) => {
+      const anchor = s.exercises[anchorIndex]
+      if (!anchor) return s
+      const groupId = anchor.supersetGroupId || `ss-${Date.now()}`
+      const newExercises = [...s.exercises]
+      // Tag the anchor if it doesn't have a group yet
+      if (!anchor.supersetGroupId) {
+        newExercises[anchorIndex] = { ...anchor, supersetGroupId: groupId }
+      }
+      // Find the end of the current group to insert after it
+      let insertAt = anchorIndex + 1
+      while (insertAt < newExercises.length && newExercises[insertAt]!.supersetGroupId === groupId) {
+        insertAt++
+      }
+      const newEx: SessionExercise = {
+        ...exercise,
+        supersetGroupId: groupId,
+        sets: exercise.sets ?? Array.from({ length: anchor.sets.length }, () => ({
+          reps: exercise.defaultReps,
+          weight: exercise.defaultWeight,
+          restSeconds: 15,
+          isCompleted: false,
+        })),
+      }
+      newExercises.splice(insertAt, 0, newEx)
+      return {
+        exercises: newExercises,
+        currentExerciseIndex: insertAt,
+        currentSetIndex: 0,
+      }
+    }),
+
+  jumpToExercise: (index) =>
+    set({ currentExerciseIndex: index, currentSetIndex: 0 }),
 
   finishSession: () =>
     set({

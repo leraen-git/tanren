@@ -1,5 +1,6 @@
 import { createStore } from 'zustand/vanilla'
 import { useStore } from 'zustand'
+import { Vibration } from 'react-native'
 import { playTimerChime } from '@/services/timerSoundService'
 
 interface TimerState {
@@ -42,6 +43,7 @@ export const timerStore = createStore<TimerState>((set) => ({
       const next = s.secondsRemaining - 1
       if (next <= 0) {
         playTimerChime()
+        Vibration.vibrate([0, 400, 200, 400])
         return { secondsRemaining: 0, isRunning: false }
       }
       return { secondsRemaining: next }
