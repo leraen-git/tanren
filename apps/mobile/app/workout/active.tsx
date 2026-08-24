@@ -244,8 +244,12 @@ export default function ActiveWorkoutScreen() {
     const deactivate = () => deactivateKeepAwake(WAKE_LOCK_TAG)
     activate()
     appStateSubscription = AppState.addEventListener('change', (state: AppStateStatus) => {
-      if (state === 'active') activate()
-      else deactivate()
+      if (state === 'active') {
+        activate()
+        timerStore.getState().sync()
+      } else {
+        deactivate()
+      }
     })
     return () => {
       deactivate()

@@ -2,40 +2,44 @@ import * as Notifications from 'expo-notifications'
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
-    shouldPlaySound: true,
+    shouldPlaySound: false,
     shouldSetBadge: false,
-    shouldShowBanner: true,
-    shouldShowList: true,
+    shouldShowBanner: false,
+    shouldShowList: false,
   }),
 })
 
 let scheduledNotificationId: string | null = null
 
-export async function requestNotificationPermissions(): Promise<boolean> {
-  const { status } = await Notifications.requestPermissionsAsync()
-  return status === 'granted'
-}
-
 export async function scheduleRestEndNotification(
   seconds: number,
   exerciseName: string,
 ): Promise<void> {
-  if (scheduledNotificationId) {
-    await Notifications.cancelScheduledNotificationAsync(scheduledNotificationId)
+  try {
+    if (scheduledNotificationId) {
+      await Notifications.cancelScheduledNotificationAsync(scheduledNotificationId).catch(() => null)
+    }
+    scheduledNotificationId = await Notifications.scheduleNotificationAsync({
+      content: {
+        title: 'Repos terminé',
+        body: exerciseName,
+        sound: 'default',
+      },
+      trigger: { type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL, seconds, repeats: false },
+    })
+  } catch {
+    // Notification permission not granted — silent fail
   }
-  scheduledNotificationId = await Notifications.scheduleNotificationAsync({
-    content: {
-      title: 'Repos termine',
-      body: `Prochaine serie : ${exerciseName}`,
-      data: { exerciseName },
-    },
-    trigger: { type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL, seconds, repeats: false },
-  })
 }
 
 export async function cancelRestNotification(): Promise<void> {
-  if (scheduledNotificationId) {
-    await Notifications.cancelScheduledNotificationAsync(scheduledNotificationId)
-    scheduledNotificationId = null
+  try {
+    if (scheduledNotificationId) {
+      await Notifications.cancelScheduledNotificationAsync(scheduledNotificationId).catch(() => null)
+      scheduledNotificationId = null
+    }
+    await Notifications.dismissAllNotificationsAsync()
+  } catch {
+    // Silent fail
   }
 }

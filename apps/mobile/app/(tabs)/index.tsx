@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { View, Text, ScrollView, TouchableOpacity, RefreshControl } from 'react-native'
 import { router, useFocusEffect, type Href } from 'expo-router'
-import { onlineManager } from '@tanstack/react-query'
+import { onlineManager, useIsRestoring } from '@tanstack/react-query'
 import { useTheme } from '@/theme/ThemeContext'
 import { Screen } from '@/components/Screen'
 import { StatsStrip } from '@/components/StatsStrip'
@@ -49,6 +49,7 @@ export default function HomeScreen() {
     return `${dayName} ${timeOfDay}`
   }
 
+  const isRestoring = useIsRestoring()
   const { data: user, isLoading: userLoading } = useProfile()
   const isGuest = user?.authProvider === 'guest'
   const { data: activePlan, refetch: refetchPlan, isRefetching } = useActivePlan()
@@ -133,6 +134,10 @@ export default function HomeScreen() {
     }
     return { todayCalories: calories, todayProtein: protein, todayCarbs: carbs, todayFat: fat }
   }, [todayMealsSorted])
+
+  if (isRestoring) {
+    return <Screen showKanji kanjiChar="鍛" edges={bannerVisible ? [] : ['top']}><View style={{ flex: 1 }} /></Screen>
+  }
 
   return (
     <Screen showKanji kanjiChar="鍛" edges={bannerVisible ? [] : ['top']}>

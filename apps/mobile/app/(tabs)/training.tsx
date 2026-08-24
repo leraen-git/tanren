@@ -10,6 +10,7 @@ import { useWorkouts } from '@/data/useWorkouts'
 import { usePlansList } from '@/data/usePlans'
 import { useInvalidateActivePlan } from '@/lib/invalidation'
 import { useTranslation } from 'react-i18next'
+import { useIsRestoring } from '@tanstack/react-query'
 import { translateMuscleGroup } from '@/hooks/useExercises'
 
 const DOW_KEY: Record<number, string> = { 1: 'mon', 2: 'tue', 3: 'wed', 4: 'thu', 5: 'fri', 6: 'sat', 7: 'sun' }
@@ -46,6 +47,7 @@ export default function TrainingScreen() {
   const DOW_SHORT: Record<number, string> = { 1: t('common.dayShort1'), 2: t('common.dayShort2'), 3: t('common.dayShort3'), 4: t('common.dayShort4'), 5: t('common.dayShort5'), 6: t('common.dayShort6'), 7: t('common.dayShort7') }
   const bannerVisible = useGuestBannerVisible()
 
+  const isRestoring = useIsRestoring()
   const invalidateActivePlan = useInvalidateActivePlan()
   const activePlanQuery = useActivePlan()
   const { data: activePlan, isRefetching } = activePlanQuery
@@ -60,6 +62,10 @@ export default function TrainingScreen() {
   }
 
   const inactivePlans = plans?.filter((p) => !p.isActive) ?? []
+
+  if (isRestoring) {
+    return <SafeAreaView edges={bannerVisible ? [] : ['top']} style={{ flex: 1, backgroundColor: tokens.bg }}><View style={{ flex: 1 }} /></SafeAreaView>
+  }
 
   return (
     <SafeAreaView edges={bannerVisible ? [] : ['top']} style={{ flex: 1, backgroundColor: tokens.bg }}>

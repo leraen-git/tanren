@@ -18,6 +18,7 @@ import { useProfile } from '@/data/useProfile'
 import { usePersonalRecords } from '@/data/useProgress'
 import { useSessions } from '@/data/useSessions'
 import { useAuth } from '@/contexts/AuthContext'
+import { useIsRestoring } from '@tanstack/react-query'
 import { SectionStatus } from '@/components/SectionStatus'
 import { SkeletonCard } from '@/components/SkeletonCard'
 import { formatVolume } from '@/utils/format'
@@ -361,6 +362,11 @@ export default function ProfileScreen() {
 
   const isGuest = user?.authProvider === 'guest'
   const bannerVisible = useGuestBannerVisible()
+  const isRestoring = useIsRestoring()
+
+  if (isRestoring) {
+    return <SafeAreaView edges={bannerVisible ? [] : ['top']} style={{ flex: 1, backgroundColor: tokens.bg }}><View style={{ flex: 1 }} /></SafeAreaView>
+  }
 
   return (
     <SafeAreaView edges={bannerVisible ? [] : ['top']} style={{ flex: 1, backgroundColor: tokens.bg }}>

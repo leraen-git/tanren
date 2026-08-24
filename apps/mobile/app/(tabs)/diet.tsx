@@ -12,6 +12,7 @@ import { KanjiWatermark } from '@/components/KanjiWatermark'
 import { useDietGenerationStore } from '@/stores/dietGenerationStore'
 import { useTranslation } from 'react-i18next'
 import i18n from '@/i18n'
+import { useIsRestoring } from '@tanstack/react-query'
 import { trpc } from '@/lib/trpc'
 
 const DOW_DB_KEY = ['', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const
@@ -591,6 +592,7 @@ export default function DietScreen() {
   const isGuest = user?.authProvider === 'guest'
   const { status: genStatus, reset: resetGen } = useDietGenerationStore()
 
+  const isRestoring = useIsRestoring()
   const { data: v2Plan, isLoading } = useDietPlan()
 
   // Auto-reset generation status when diet data arrives after successful generation
@@ -598,7 +600,7 @@ export default function DietScreen() {
     if (genStatus === 'done' && v2Plan) resetGen()
   }, [genStatus, v2Plan])
 
-  if (isLoading && !v2Plan) {
+  if ((isLoading || isRestoring) && !v2Plan) {
     return (
       <SafeAreaView edges={bannerVisible ? [] : ['top']} style={{ flex: 1, backgroundColor: tokens.bg }}>
         <View style={{ padding: 16, gap: 12 }}>
