@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native'
+import { View, Text, ScrollView, TouchableOpacity, Linking } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useGuestBannerVisible } from '@/contexts/GuestBannerContext'
 import { router, type Href } from 'expo-router'
@@ -31,6 +31,48 @@ function MacroCell({ label, value, color }: { label: string; value: number; colo
       <Text style={{ fontFamily: fonts.monoB, fontSize: 15, color }}>
         {value}<Text style={{ fontFamily: fonts.mono, fontSize: 10, color: tokens.textMute }}>g</Text>
       </Text>
+    </View>
+  )
+}
+
+const CITATIONS = [
+  { textKey: 'diet.citationMifflin', urlKey: 'diet.citationMifflinUrl' },
+  { textKey: 'diet.citationProtein', urlKey: 'diet.citationProteinUrl' },
+  { textKey: 'diet.citationCreatine', urlKey: 'diet.citationCreatineUrl' },
+  { textKey: 'diet.citationDeficit', urlKey: 'diet.citationDeficitUrl' },
+] as const
+
+function DietSources({ tokens, fonts }: { tokens: any; fonts: any }) {
+  const { t } = useTranslation()
+  const [expanded, setExpanded] = useState(false)
+  return (
+    <View style={{ marginHorizontal: 16, marginTop: 16, marginBottom: 24, gap: 10 }}>
+      <Text style={{ fontFamily: fonts.sans, fontSize: 11, color: tokens.textGhost, lineHeight: 16 }}>
+        {t('diet.disclaimer')}
+      </Text>
+      <TouchableOpacity onPress={() => setExpanded(!expanded)} accessibilityRole="button">
+        <Text style={{ fontFamily: fonts.sansB, fontSize: 11, color: tokens.accent }}>
+          {expanded ? '▾ ' : '▸ '}{t('diet.seeSources')}
+        </Text>
+      </TouchableOpacity>
+      {expanded && (
+        <View style={{ gap: 8, paddingLeft: 8, borderLeftWidth: 2, borderLeftColor: tokens.border }}>
+          {CITATIONS.map((c, i) => (
+            <TouchableOpacity
+              key={i}
+              onPress={() => Linking.openURL(t(c.urlKey))}
+              accessibilityRole="link"
+            >
+              <Text style={{ fontFamily: fonts.sans, fontSize: 10, color: tokens.textMute, lineHeight: 14 }}>
+                [{i + 1}] {t(c.textKey)}
+              </Text>
+              <Text style={{ fontFamily: fonts.mono, fontSize: 9, color: tokens.accent, marginTop: 2 }}>
+                {t(c.urlKey)}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      )}
     </View>
   )
 }
@@ -209,6 +251,9 @@ function NoPlanView({ isGuest, showError }: { isGuest: boolean; showError?: bool
           </Text>
         </TouchableOpacity>
       )}
+
+      {/* Sources & disclaimer */}
+      <DietSources tokens={tokens} fonts={fonts} />
     </ScrollView>
   )
 }
@@ -519,6 +564,9 @@ function V2ActivePlan({ plan }: { plan: V2PlanData }) {
           }
         </Text>
       </TouchableOpacity>
+
+      {/* Sources & disclaimer */}
+      <DietSources tokens={tokens} fonts={fonts} />
     </ScrollView>
   )
 }

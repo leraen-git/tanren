@@ -592,6 +592,18 @@ export const fr = {
     localeMismatch: 'Ce plan a été généré en anglais',
     localeMismatchCta: 'Régénère pour l\'avoir en français',
     localeMismatchNoCredits: 'Régénération disponible la semaine prochaine',
+    // Citations & disclaimer
+    sourcesTitle: 'Sources & avertissement',
+    disclaimer: 'Ce plan est généré par une intelligence artificielle à titre informatif uniquement. Il ne remplace pas l\'avis d\'un médecin ou d\'un diététicien-nutritionniste diplômé. Consulte un professionnel de santé avant de modifier ton alimentation ou de prendre des compléments.',
+    citationMifflin: 'Mifflin MD et al. "A new predictive equation for resting energy expenditure in healthy individuals." Am J Clin Nutr. 1990;51(2):241-247.',
+    citationMifflinUrl: 'https://pubmed.ncbi.nlm.nih.gov/2305711/',
+    citationProtein: 'Jäger R et al. "International Society of Sports Nutrition Position Stand: protein and exercise." J Int Soc Sports Nutr. 2017;14:20.',
+    citationProteinUrl: 'https://pubmed.ncbi.nlm.nih.gov/28642676/',
+    citationCreatine: 'Kreider RB et al. "International Society of Sports Nutrition position stand: safety and efficacy of creatine supplementation." J Int Soc Sports Nutr. 2017;14:18.',
+    citationCreatineUrl: 'https://pubmed.ncbi.nlm.nih.gov/28615996/',
+    citationDeficit: 'Hall KD et al. "Quantification of the effect of energy imbalance on bodyweight." Lancet. 2011;378(9793):826-837.',
+    citationDeficitUrl: 'https://pubmed.ncbi.nlm.nih.gov/21872751/',
+    seeSources: 'Voir les sources',
   },
   explore: {
     title: 'Explorer Tanren',
